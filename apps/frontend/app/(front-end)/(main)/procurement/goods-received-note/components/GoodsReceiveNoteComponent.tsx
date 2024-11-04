@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from "@/components/ui/input";
-import { useRouter } from '@/lib/i18n';
 import { ArrowLeft, CheckSquare, Edit, Plus, Printer, Save, Trash2, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import ToggleSidebarButton from '@/components/ui-custom/ButtonToggleSidebar';
-import StatusBadge from '@/components/ui-custom/custom-status-badge';
-import ConfirmDialog from '@/components/ui-custom/ConfirmDialog';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui-custom/dialog';
-import { BulkActions } from './tabs/BulkActions';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FormAction, GoodsReceiveNote, GoodsReceiveNoteItem } from '@/lib/types';
-import { ExtraCostsTab } from './tabs/ExtraCostsTab';
-import { StockMovementTab } from './tabs/StockMovementTab';
-import { TaxTab } from './tabs/TaxTab';
-import { FinancialSummaryTab } from './tabs/FinancialSummaryTab';
-import SummaryTotal from './SummaryTotal';
-import { formSchema, FormValues } from '../../type/type';
-import { submitForm } from '../../lib/action';
-import ItemDetailForm from './tabs/ItemDetailForm';
+import { FormValues, formSchema } from '../../type/type';
+import { GoodsReceiveNoteStatus, Status } from '@/lib/types';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui-custom/CustomTabs';
-import RippleButton from '@/components/ui-custom/RippleButton';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
 
+import { BulkActions } from './tabs/BulkActions';
+import { Button } from '@/components/ui/button';
+import ConfirmDialog from '@/components/ui-custom/ConfirmDialog';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
+import { ExtraCostsTab } from './tabs/ExtraCostsTab';
+import { FinancialSummaryTab } from './tabs/FinancialSummaryTab';
+import { Input } from "@/components/ui/input";
+import ItemDetailForm from './tabs/ItemDetailForm';
+import RippleButton from '@/components/ui-custom/RippleButton';
+import StatusBadge from '@/components/ui-custom/custom-status-badge';
+import { StockMovementTab } from './tabs/StockMovementTab';
+import SummaryTotal from './SummaryTotal';
+import { TaxTab } from './tabs/TaxTab';
+import ToggleSidebarButton from '@/components/ui-custom/ButtonToggleSidebar';
+import { submitForm } from '../../lib/action';
+import { useForm } from 'react-hook-form';
+import { useRouter } from '@/lib/i18n';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const initialData = {
     id: '0',

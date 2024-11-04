@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import Header from "@/components/header";
-import Sidebar from "@/components/Sidebar";
+import React from "react";
+import Sidebar from "@/components/sidebar";
+import { usePathname } from "next/navigation";
 
 export default function MainLayout({
   children,
