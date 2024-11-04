@@ -58,21 +58,21 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  // app.enableCors({
-  //   origin: (origin, callback) => {
-  //     const allowedOrigins = [
-  //       process.env.FRONTEND_URL || 'http://localhost:3500',
-  //       'http://localhost:3000',
-  //     ];
-  //     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-  //       callback(null, true);
-  //     } else {
-  //       callback(new Error('Not allowed by CORS'));
-  //     }
-  //   },
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  //   credentials: true,
-  // });
+  app.enableCors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL || 'http://localhost:3500',
+        'http://localhost:3000',
+      ];
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
 
   await app.listen(process.env.PORT || 4000);
 }
