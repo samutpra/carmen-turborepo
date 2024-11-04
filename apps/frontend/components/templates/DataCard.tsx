@@ -28,13 +28,13 @@ const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDele
                         <div className="space-y-2">
                             {columns.map((column) => (
                                 <div key={column.key} className="flex">
-                                    <span className="w-2/5 text-sm font-medium text-gray-500">
+                                    <span className="w-3/5 text-sm font-medium text-gray-500">
                                         {column.label}
                                     </span>
                                     {typeof item[column.key] === 'boolean' ? (
                                         <IsActiveIcon isChecked={item[column.key]} />
                                     ) : (
-                                        <span className="text-sm">
+                                        <span className="text-sm w-full">
                                             {String(item[column.key] ?? '')}
                                         </span>
                                     )}

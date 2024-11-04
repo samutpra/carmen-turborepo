@@ -102,9 +102,9 @@ const ManageVendorComponent: React.FC<Props> = ({ id, mvMode }) => {
         if ((mvMode === FormAction.VIEW || mvMode === FormAction.EDIT) && id) {
             const vendorData = VendorDataList.vendors.find((vendor) => vendor.id === id);
             if (vendorData) {
-                Object.keys(vendorData).forEach((key) => {
-                    form.setValue(key, vendorData[key]);
-                });
+                // Object.keys(vendorData).forEach((key) => {
+                //     form.setValue(key, vendorData[key]);
+                // });
             }
         }
     }, [id, mvMode, form.setValue]);
