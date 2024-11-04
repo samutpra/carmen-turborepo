@@ -1,0 +1,21 @@
+meta {
+  name: refreshtoken
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh" : "{{access_token}}"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('access_token',res.body.access_token)
+}

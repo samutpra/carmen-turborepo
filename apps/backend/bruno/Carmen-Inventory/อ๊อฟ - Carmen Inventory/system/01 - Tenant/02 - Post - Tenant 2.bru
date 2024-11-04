@@ -1,0 +1,15 @@
+meta {
+  name: 02 : Post - Tenant 2
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/tenants
+  body: json
+  auth: none
+}
+
+body:json {
+  {"name" : "Tenant 2"}
+}

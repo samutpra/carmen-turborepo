@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/departments
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "USD",
+    "description": "USD Description",
+    "active": true
+  }
+}

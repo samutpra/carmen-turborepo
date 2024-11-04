@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (USD)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/currencies
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code": "USD",
+    "name": "United State USD",
+    "description": "USD Description",
+    "symbol": "$",
+    "isActive": true
+  }
+}

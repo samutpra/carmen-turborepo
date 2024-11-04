@@ -1,0 +1,20 @@
+meta {
+  name: 04 - Post (THB)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/currencies
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code": "THB",
+    "name": "Thai baht",
+    "description": "THB Description",
+    "isActive": true
+  }
+}

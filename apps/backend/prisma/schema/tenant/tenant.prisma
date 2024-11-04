@@ -1,0 +1,321 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../../node_modules/@prisma-carmen-client/tenant"
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "multiSchema", "postgresqlExtensions"]
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../ERD/tenant.md"
+  title    = "Carmen Inventory Tenant Database"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_TENANT")
+}
+
+model AddressType {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @unique @db.Uuid
+  description   String?
+  isActive      Boolean?        @default(true)
+  createdAt     DateTime?       @default(now()) @db.Timestamp(6)
+  createById    String?         @db.Uuid
+  updateAt      DateTime?       @default(now()) @db.Timestamp(6)
+  updateById    String?         @db.Uuid
+  VendorAddress VendorAddress[]
+}
+
+model ContactType {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @unique @db.Uuid
+  description   String?
+  isActive      Boolean?        @default(true)
+  createdAt     DateTime?       @default(now()) @db.Timestamp(6)
+  createById    String?         @db.Uuid
+  updateAt      DateTime?       @default(now()) @db.Timestamp(6)
+  updateById    String?         @db.Uuid
+  VendorContact VendorContact[]
+}
+
+model Currency {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String         @unique @db.VarChar(3)
+  name         String         @db.VarChar(100)
+  symbol       String?        @db.VarChar(5)
+  description  String?
+  isActive     Boolean?       @default(true)
+  rate         Float?         @default(1)
+  createdAt    DateTime?      @default(now()) @db.Timestamp(6)
+  createById   String?        @db.Uuid
+  updateAt     DateTime?      @default(now()) @db.Timestamp(6)
+  updateById   String?        @db.Uuid
+  ExchangeRate ExchangeRate[]
+}
+
+model DeliveryPoint {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?   @unique @db.VarChar
+  address    String?   @db.VarChar
+  city       String?   @db.VarChar
+  postalCode String?   @db.VarChar
+  country    String?   @db.VarChar
+  latitude   Float?
+  longitude  Float?
+  phone      String?   @db.VarChar
+  email      String?   @db.VarChar
+  isActive   Boolean?  @default(true)
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  createById String?   @db.Uuid
+  updateAt   DateTime? @default(now()) @db.Timestamp(6)
+  updateById String?   @db.Uuid
+}
+
+model Department {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.VarChar
+  isActive   Boolean?  @default(true)
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  createById String?   @db.Uuid
+  updateAt   DateTime? @default(now()) @db.Timestamp(6)
+  updateById String?   @db.Uuid
+}
+
+model ExchangeRate {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currencyId String?   @db.Uuid
+  dateAt     DateTime? @default(now()) @db.Timestamp(6)
+  rate       Float?    @default(1)
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  createById String?   @db.Uuid
+  updateAt   DateTime? @default(now()) @db.Timestamp(6)
+  updateById String?   @db.Uuid
+  Currency   Currency? @relation(fields: [currencyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Location {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+}
+
+model PRType {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String            @unique @db.VarChar
+  description     String?
+  isActive        Boolean?          @default(true)
+  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
+  createById      String?           @db.Uuid
+  updateAt        DateTime?         @default(now()) @db.Timestamp(6)
+  updateById      String?           @db.Uuid
+  PurchaseRequest PurchaseRequest[]
+}
+
+model Product {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code           String           @unique @db.VarChar
+  name           String           @unique @db.VarChar
+  description    String?
+  isActive       Boolean?         @default(true)
+  createdAt      DateTime?        @default(now()) @db.Timestamp(6)
+  createById     String?          @db.Uuid
+  updateAt       DateTime?        @default(now()) @db.Timestamp(6)
+  updateById     String?          @db.Uuid
+  ProductInfo    ProductInfo[]
+  ProductVendor  ProductVendor[]
+  UnitConversion UnitConversion[]
+}
+
+model ProductCategory {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String               @unique @db.VarChar
+  description        String?
+  isActive           Boolean?             @default(true)
+  createdAt          DateTime?            @default(now()) @db.Timestamp(6)
+  createById         String?              @db.Uuid
+  updateAt           DateTime?            @default(now()) @db.Timestamp(6)
+  updateById         String?              @db.Uuid
+  ProductSubCategory ProductSubCategory[]
+}
+
+model ProductInfo {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId  String    @db.Uuid
+  price      Float?
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  createById String?   @db.Uuid
+  updateAt   DateTime? @default(now()) @db.Timestamp(6)
+  updateById String?   @db.Uuid
+  Product    Product   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ProductItemGroup {
+  id                   String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String              @unique @db.VarChar
+  description          String?
+  isActive             Boolean?            @default(true)
+  productSubCategoryId String?             @db.Uuid
+  createdAt            DateTime?           @default(now()) @db.Timestamp(6)
+  createById           String?             @db.Uuid
+  updateAt             DateTime?           @default(now()) @db.Timestamp(6)
+  updateById           String?             @db.Uuid
+  ProductSubCategory   ProductSubCategory? @relation(fields: [productSubCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ProductSubCategory {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String             @unique @db.VarChar
+  description       String?
+  isActive          Boolean?           @default(true)
+  productCategoryId String?            @db.Uuid
+  createdAt         DateTime?          @default(now()) @db.Timestamp(6)
+  createById        String?            @db.Uuid
+  updateAt          DateTime?          @default(now()) @db.Timestamp(6)
+  updateById        String?            @db.Uuid
+  ProductItemGroup  ProductItemGroup[]
+  ProductCategory   ProductCategory?   @relation(fields: [productCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ProductVendor {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String?   @db.Uuid
+  productId   String?   @db.Uuid
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  Product     Product?  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Vendor      Vendor?   @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PurchaseOrder {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String              @unique @db.VarChar
+  description       String?
+  isActive          Boolean?            @default(true)
+  createdAt         DateTime?           @default(now()) @db.Timestamp(6)
+  createById        String?             @db.Uuid
+  updateAt          DateTime?           @default(now()) @db.Timestamp(6)
+  updateById        String?             @db.Uuid
+  PurchaseOrderItem PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String?        @unique @db.VarChar
+  description     String?
+  isActive        Boolean?       @default(true)
+  purchaseOrderId String?        @db.Uuid
+  createdAt       DateTime?      @default(now()) @db.Timestamp(6)
+  createById      String?        @db.Uuid
+  updateAt        DateTime?      @default(now()) @db.Timestamp(6)
+  updateById      String?        @db.Uuid
+  PurchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PurchaseRequest {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String                @unique @db.VarChar
+  description         String?
+  isActive            Boolean?              @default(true)
+  prTypeId            String?               @db.Uuid
+  createdAt           DateTime?             @default(now()) @db.Timestamp(6)
+  createById          String?               @db.Uuid
+  updateAt            DateTime?             @default(now()) @db.Timestamp(6)
+  updateById          String?               @db.Uuid
+  PRType              PRType?               @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  PurchaseRequestItem PurchaseRequestItem[]
+}
+
+model PurchaseRequestItem {
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String           @unique @db.VarChar
+  description       String?
+  isActive          Boolean?         @default(true)
+  purchaseRequestId String?          @db.Uuid
+  createdAt         DateTime?        @default(now()) @db.Timestamp(6)
+  createById        String?          @db.Uuid
+  updateAt          DateTime?        @default(now()) @db.Timestamp(6)
+  updateById        String?          @db.Uuid
+  PurchaseRequest   PurchaseRequest? @relation(fields: [purchaseRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Unit {
+  id                                             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                                           String           @unique @db.VarChar
+  description                                    String?
+  isActive                                       Boolean?         @default(true)
+  createdAt                                      DateTime?        @default(now()) @db.Timestamp(6)
+  createById                                     String?          @db.Uuid
+  updateAt                                       DateTime?        @default(now()) @db.Timestamp(6)
+  updateById                                     String?          @db.Uuid
+  UnitConversion_UnitConversion_fromUnitIdToUnit UnitConversion[] @relation("UnitConversion_fromUnitIdToUnit")
+  UnitConversion_UnitConversion_toUnitIdToUnit   UnitConversion[] @relation("UnitConversion_toUnitIdToUnit")
+}
+
+model UnitConversion {
+  id                                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId                            String?   @db.Uuid
+  fromUnitId                           String?   @db.Uuid
+  toUnitId                             String?   @db.Uuid
+  rate                                 Float?    @default(1)
+  description                          String?   @db.VarChar
+  isActive                             Boolean?  @default(true)
+  createdAt                            DateTime? @default(now()) @db.Timestamp(6)
+  createById                           String?   @db.Uuid
+  updateAt                             DateTime? @default(now()) @db.Timestamp(6)
+  updateById                           String?   @db.Uuid
+  Unit_UnitConversion_fromUnitIdToUnit Unit?     @relation("UnitConversion_fromUnitIdToUnit", fields: [fromUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Product                              Product?  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Unit_UnitConversion_toUnitIdToUnit   Unit?     @relation("UnitConversion_toUnitIdToUnit", fields: [toUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Vendor {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @unique @db.VarChar
+  description   String?
+  isActive      Boolean?        @default(true)
+  createdAt     DateTime?       @default(now()) @db.Timestamp(6)
+  createById    String?         @db.Uuid
+  updateAt      DateTime?       @default(now()) @db.Timestamp(6)
+  updateById    String?         @db.Uuid
+  ProductVendor ProductVendor[]
+  VendorAddress VendorAddress[]
+  VendorContact VendorContact[]
+}
+
+model VendorAddress {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId      String?     @db.Uuid
+  addressTypeId String      @db.Uuid
+  address       Json?       @db.Json
+  isActive      Boolean?    @default(true)
+  createdAt     DateTime?   @default(now()) @db.Timestamp(6)
+  createById    String?     @db.Uuid
+  updateAt      DateTime?   @default(now()) @db.Timestamp(6)
+  updateById    String?     @db.Uuid
+  AddressType   AddressType @relation(fields: [addressTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Vendor        Vendor?     @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model VendorContact {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId      String?     @db.Uuid
+  contactTypeId String      @db.Uuid
+  description   String?
+  isActive      Boolean?    @default(true)
+  createdAt     DateTime?   @default(now()) @db.Timestamp(6)
+  createById    String?     @db.Uuid
+  updateAt      DateTime?   @default(now()) @db.Timestamp(6)
+  updateById    String?     @db.Uuid
+  ContactType   ContactType @relation(fields: [contactTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Vendor        Vendor?     @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

@@ -1,0 +1,21 @@
+meta {
+  name: 05 - Update
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/v1/currencies/0438ff44-754f-42bd-95b5-53aae20dec3e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Change USD To THB",
+    "description": "THB Description",
+    "code": "USD",
+    "symbol": "###",
+    "isActive": true
+  }
+}
