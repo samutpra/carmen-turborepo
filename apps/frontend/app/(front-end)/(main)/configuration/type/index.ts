@@ -18,8 +18,8 @@ const StoreTypeEnum = z.enum(["Main"]);
 const StoreStatusEnum = z.enum(["Default", "System"]);
 
 export const storeLocationSchema = z.object({
-    id: z.string(),
-    storeCode: z.string(),
+    id: z.string().min(1, "require"),
+    storeCode: z.string().optional(),
     storeName: z.string(),
     departmentName: z.string(),
     type: StoreTypeEnum,
@@ -55,7 +55,7 @@ export interface CurrencyLabel {
 // Unit
 export const unitSchema = z.object({
     id: z.string(),
-    code: z.string(),
+    name: z.string(),
     description: z.string(),
     isActive: z.boolean(),
 });
@@ -83,7 +83,6 @@ export interface DeliveryPointLabel {
     display: string;
     type: "string" | "boolean";
 }
-
 
 // Categoty
 const itemGroupSchema = z.object({

@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import Header from "@/components/header";
 import React from "react";
-import Sidebar from "@/components/sidebar";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Header from "@/components/header";
+import Sidebar from "@/components/Sidebar";
 
 export default function MainLayout({
   children,
@@ -51,7 +50,7 @@ export default function MainLayout({
           onSidebarToggle={handleSidebarToggle}
           isSidebarOpen={isSidebarOpen}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 pt-16">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto pt-16">
           {children}
         </main>
       </div>

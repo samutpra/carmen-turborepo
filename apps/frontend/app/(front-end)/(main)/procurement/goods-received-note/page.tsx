@@ -1,10 +1,10 @@
 import React from 'react'
-import GoodReceivedNoteList from './components/GoodsReceiveNoteList'
+import GoodsReceiveNoteList from './components/GoodsReceiveNoteList'
 
 
 const GoodsReceivedNotePage = () => {
     return (
-        <GoodReceivedNoteList />
+        <GoodsReceiveNoteList />
     )
 }
 

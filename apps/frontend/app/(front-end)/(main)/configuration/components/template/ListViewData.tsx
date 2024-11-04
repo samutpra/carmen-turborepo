@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import { PlusCircle, Search } from 'lucide-react';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { Field } from '../../type';
+import { Field } from '../../../../../../../types';
 interface Props<T> {
     data: T[];
     title: string;
@@ -48,29 +48,29 @@ const ListViewData = <T extends { id?: string },>({
     const [currentPage, setCurrentPage] = useState(1);
 
 
-    const filteredAndSortedData = useCallback(() => {
-        let result = data.filter((item) =>
-            String(item[titleField]).toLowerCase().includes(searchTerm.toLowerCase())
-        );
+    // const filteredAndSortedData = useCallback(() => {
+    //     let result = data.filter((item) =>
+    //         String(item[titleField]).toLowerCase().includes(searchTerm.toLowerCase())
+    //     );
 
-        if (sortField) {
-            result = [...result].sort((a, b) => {
-                const aValue = String(a[sortField]);
-                const bValue = String(b[sortField]);
-                return sortDirection === 'asc'
-                    ? aValue.localeCompare(bValue)
-                    : bValue.localeCompare(aValue);
-            });
-        }
+    //     if (sortField) {
+    //         result = [...result].sort((a, b) => {
+    //             const aValue = String(a[sortField]);
+    //             const bValue = String(b[sortField]);
+    //             return sortDirection === 'asc'
+    //                 ? aValue.localeCompare(bValue)
+    //                 : bValue.localeCompare(aValue);
+    //         });
+    //     }
 
-        return result;
-    }, [data, searchTerm, sortField, sortDirection, titleField]);
+    //     return result;
+    // }, [data, searchTerm, sortField, sortDirection, titleField]);
 
-    const paginatedData = useCallback(() => {
-        const start = 0;
-        const end = currentPage * pageSize;
-        return filteredAndSortedData().slice(start, end);
-    }, [filteredAndSortedData, currentPage, pageSize]);
+    // const paginatedData = useCallback(() => {
+    //     const start = 0;
+    //     const end = currentPage * pageSize;
+    //     return filteredAndSortedData().slice(start, end);
+    // }, [filteredAndSortedData, currentPage, pageSize]);
 
 
     const validateForm = (): boolean => {
@@ -267,7 +267,7 @@ const ListViewData = <T extends { id?: string },>({
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
-
+            {/* 
             <div className="block lg:hidden">
                 {paginatedData().map((item, index) => (
                     <CardTemplate
@@ -279,7 +279,7 @@ const ListViewData = <T extends { id?: string },>({
                         onDelete={onDelete}
                     />
                 ))}
-            </div>
+            </div> */}
 
             <div className="hidden lg:block">
                 <TableTemplate

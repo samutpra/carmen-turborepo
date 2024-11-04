@@ -6,13 +6,13 @@ interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onConfirm: () => void;
-    idDelete: string | null
+    idDelete: string | null | undefined
 }
 
 const DialogDelete: React.FC<Props> = ({ open, onOpenChange, onConfirm, idDelete }) => {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='bg-white'>
+            <DialogContent>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogDescription>
                     Are you sure you want to delete {idDelete} This action cannot be undone.

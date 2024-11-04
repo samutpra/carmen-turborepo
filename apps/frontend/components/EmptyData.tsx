@@ -4,7 +4,7 @@ import React from 'react';
 const EmptyData: React.FC = () => {
     return (
         <div className="flex flex-col items-center justify-center h-full">
-            <div className="bg-white shadow-md rounded-lg p-6 max-w-sm flex flex-col items-center">
+            <div className="shadow-md rounded-lg p-6 max-w-sm flex flex-col items-center">
                 <Image
                     src='/images/no-data.png'
                     width={200}

@@ -142,7 +142,7 @@ export default function DashboardPage() {
 											ref={provided.innerRef}
 											{...provided.draggableProps}
 											{...provided.dragHandleProps}
-											className='p-3 rounded-lg shadow-md bg-white'>
+											className='p-3 rounded-lg shadow-md'>
 											<h2 className='text-lg font-semibold mb-3'>{item.content}</h2>
 											{renderDashboardItem(item)}
 										</div>

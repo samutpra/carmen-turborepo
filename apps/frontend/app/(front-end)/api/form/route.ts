@@ -7,12 +7,11 @@ export async function GET() {
     });
 }
 
-
 export async function POST(request: Request) {
     try {
         const body = await request.json()
         const result = formSchema.safeParse(body)
-        
+
         console.log('API Route result', result)
 
         if (!result.success) {
@@ -22,12 +21,12 @@ export async function POST(request: Request) {
             )
         }
 
-        return NextResponse.json({ 
-            success: true, 
-            data: { 
+        return NextResponse.json({
+            success: true,
+            data: {
                 message: 'Form submitted successfully',
-                receivedData: result.data 
-            } 
+                receivedData: result.data
+            }
         })
 
         // const externalResponse = await fetch('https://your-external-api.com', {
@@ -38,11 +37,11 @@ export async function POST(request: Request) {
         //     },
         //     body: JSON.stringify(result.data)
         // })
-        
+
         // if (!externalResponse.ok) {
         //     throw new Error('External API request failed')
         // }
-        
+
         // const externalData = await externalResponse.json()
         // return NextResponse.json({ success: true, data: externalData })
 

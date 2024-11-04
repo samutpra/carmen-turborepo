@@ -1,9 +1,8 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-// Define ripple styles
 const rippleStyles = `
   .ripple-effect {
     position: absolute;
@@ -15,20 +14,18 @@ const rippleStyles = `
     animation: ripple-animation 0.6s ease-out;
     pointer-events: none;
   }
-
   @keyframes ripple-animation {
     to {
       transform: scale(4);
       opacity: 0;
     }
   }
-`
+`;
 
-// Add styles to document
 if (typeof document !== 'undefined') {
-    const style = document.createElement('style')
-    style.textContent = rippleStyles
-    document.head.appendChild(style)
+    const style = document.createElement('style');
+    style.textContent = rippleStyles;
+    document.head.appendChild(style);
 }
 
 const buttonVariants = cva(
@@ -44,7 +41,7 @@ const buttonVariants = cva(
                 link: "text-primary underline-offset-4 hover:underline",
             },
             size: {
-                default: "h-9 px-4 py-2",
+                default: "px-2 py-2",
                 sm: "h-8 rounded-md px-3 text-xs",
                 lg: "h-10 rounded-md px-8",
                 icon: "h-9 w-9",
@@ -55,57 +52,54 @@ const buttonVariants = cva(
             size: "default",
         },
     }
-)
+);
 
 export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-    asChild?: boolean
+    asChild?: boolean;
+    prefixIcon?: React.ReactNode;
+    suffixIcon?: React.ReactNode;
 }
 
 const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, disabled, onClick, ...props }, ref) => {
-        const Comp = asChild ? Slot : "button"
+    ({ className, variant, size, asChild = false, disabled, prefixIcon, suffixIcon, onClick, ...props }, ref) => {
+        const Comp = asChild ? Slot : "button";
 
         const handleRipple = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-            const button = e.currentTarget
-            const rect = button.getBoundingClientRect()
+            const button = e.currentTarget;
+            const rect = button.getBoundingClientRect();
 
-            // Calculate ripple size based on button dimensions
-            const rippleSize = Math.max(button.offsetWidth, button.offsetHeight)
-            const x = e.clientX - rect.left - rippleSize / 2
-            const y = e.clientY - rect.top - rippleSize / 2
+            const rippleSize = Math.max(button.offsetWidth, button.offsetHeight);
+            const x = e.clientX - rect.left - rippleSize / 2;
+            const y = e.clientY - rect.top - rippleSize / 2;
 
-            const ripple = document.createElement("span")
-            ripple.className = "ripple-effect"
-            ripple.style.width = ripple.style.height = `${rippleSize}px`
-            ripple.style.left = `${x}px`
-            ripple.style.top = `${y}px`
+            const ripple = document.createElement("span");
+            ripple.className = "ripple-effect";
+            ripple.style.width = ripple.style.height = `${rippleSize}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
 
-            button.appendChild(ripple)
+            button.appendChild(ripple);
 
-            const removeRipple = () => {
-                ripple.remove()
-                ripple.removeEventListener('animationend', removeRipple)
-            }
-
-            ripple.addEventListener("animationend", removeRipple)
-        }, [])
+            ripple.addEventListener("animationend", () => ripple.remove());
+        }, []);
 
         const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
             if (!disabled) {
-                handleRipple(e)
-                onClick?.(e)
+                handleRipple(e);
+                onClick?.(e);
             }
-        }, [disabled, handleRipple, onClick])
+        }, [disabled, handleRipple, onClick]);
 
         const disabledClass = disabled
-            ? variant === "outline"
+            ? `cursor-not-allowed ${variant === "outline"
                 ? "bg-neutral-200 text-neutral-400"
                 : variant === "default"
                     ? "bg-neutral-300 text-neutral-600"
                     : ""
-            : ""
+            }`
+            : "";
 
         return (
             <Comp
@@ -114,11 +108,15 @@ const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 className={cn(buttonVariants({ variant, size }), disabledClass, className)}
                 disabled={disabled}
                 {...props}
-            />
-        )
+            >
+                {prefixIcon && <span>{prefixIcon}</span>}
+                {props.children}
+                {suffixIcon && <span>{suffixIcon}</span>}
+            </Comp>
+        );
     }
-)
+);
 
-CustomButton.displayName = "CustomButton"
+CustomButton.displayName = "CustomButton";
 
-export { CustomButton, buttonVariants }
+export { CustomButton, buttonVariants };

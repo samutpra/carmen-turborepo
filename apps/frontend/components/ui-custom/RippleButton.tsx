@@ -32,7 +32,7 @@ const RippleButton: React.FC<RippleButtonProps> = ({ children, onClick, classNam
     return (
         <button
             onClick={handleClick}
-            className={`relative overflow-hidden bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring transition-all duration-300 ${className}`}
+            className={`relative overflow-hidden font-semibold py-2 px-4 rounded focus:outline-none focus:ring transition-all duration-300 ${className}`}
         >
             {children}
         </button>

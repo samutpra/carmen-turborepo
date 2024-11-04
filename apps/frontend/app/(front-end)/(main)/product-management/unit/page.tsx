@@ -1,10 +1,10 @@
 import React from 'react'
 import UnitList from '../components/UnitList'
 
-const UnitPage = () => {
+const UnitListPage = () => {
     return (
         <UnitList />
     )
 }
 
-export default UnitPage
+export default UnitListPage

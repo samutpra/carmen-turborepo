@@ -43,7 +43,7 @@ const ConfirmDialog: React.FC<Props> = ({
 
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-            <AlertDialogContent className='bg-white'>
+            <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle className='text-blue-950'>{title}</AlertDialogTitle>
                     <AlertDialogDescription>{description}</AlertDialogDescription>

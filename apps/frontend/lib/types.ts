@@ -1,5 +1,7 @@
 // File: types/inventory.ts
 
+import { z } from "zod";
+
 // Common Types and Enums
 
 // export const DocumentStatus = () => {
@@ -577,7 +579,7 @@ export interface FinancialSummary {
   jvReference: string;
   jvDetail?: JournalEntryDetail[];
   jvTotal: JournalEntryTotal;
-  sourceOfTransaction: string
+  sourceOfTransaction?: string
 }
 
 export interface JournalEntryDetail {
@@ -975,4 +977,56 @@ export enum FormAction {
   CREATE = "new",
   VIEW = "",
   EDIT = "edit"
+}
+
+export interface PaginationType {
+  total: number;
+  page: number;
+  perPage: number;
+  pages: number;
+}
+
+
+// Unit
+export const UnitSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(50, "Name must be less than 50 characters"),
+  description: z.string().min(1, "Description is required").max(100, "Description must be less than 100 characters"),
+  isActive: z.boolean().default(true)
+});
+
+export type UnitType = z.infer<typeof UnitSchema>;
+export interface UnitLabel {
+  key: keyof UnitType;
+  label: string;
+}
+
+export const StoreLocationSchema = z.object({
+  id: z.string().optional(),
+  storeCode: z.string(),
+  storeName: z.string(),
+  departmentName: z.string(),
+  type: z.string(),
+  status: z.string(),
+  isActive: z.boolean().default(true),
+});
+
+export type StoreLocationType = z.infer<typeof StoreLocationSchema>;
+
+export interface StoreLocationLabel {
+  key: keyof StoreLocationType;
+  label: string;
+}
+
+export const CurrencySchema = z.object({
+  id: z.string().optional(),
+  code: z.string(),
+  description: z.string(),
+  isActive: z.boolean(),
+});
+
+export type CurrencyType = z.infer<typeof CurrencySchema>;
+export interface CurrencyLabel {
+  key: keyof CurrencyType;
+  label: string;
 }

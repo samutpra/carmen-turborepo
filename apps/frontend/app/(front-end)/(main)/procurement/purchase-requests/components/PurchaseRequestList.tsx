@@ -321,7 +321,7 @@ const PurchaseRequestList = () => {
         <>
             <div className="space-y-2" >
                 {getCurrentPageData().map((pr) => (
-                    <Card key={pr.id} className="overflow-hidden p-2 hover:bg-secondary dark:hover:bg-gray-700 bg-white dark:bg-gray-800">
+                    <Card key={pr.id} className="overflow-hidden p-2 ">
                         <div className="py-2 px-4">
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center space-x-2 mb-6">

@@ -105,7 +105,7 @@ export function DepartmentList() {
 	};
 
 	return (
-		<div className='bg-white shadow-md rounded-lg p-6'>
+		<div className='shadow-md rounded-lg p-6'>
 			<div className='flex justify-between items-center mb-6'>
 				<h1 className='text-2xl font-bold'>Department List</h1>
 				<Button onClick={() => openEditModal()}>
@@ -174,7 +174,7 @@ export function DepartmentList() {
 			</div>
 
 			<Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-				<DialogContent className='sm:max-w-[425px] bg-white'>
+				<DialogContent className='sm:max-w-[425px]'>
 					<DialogHeader>
 						<DialogTitle>{editingDepartment?.code ? 'Edit Department' : 'New Department'}</DialogTitle>
 					</DialogHeader>

@@ -136,6 +136,8 @@ export const mockGoodsReceiveNotes: GoodsReceiveNote[] = [
         cost: 249.99,
         totalCost: 1249.95,
         currency: "USD",
+        itemDescription: "",
+        lotNumber: 1
       },
       {
         id: "4",
@@ -150,6 +152,8 @@ export const mockGoodsReceiveNotes: GoodsReceiveNote[] = [
         cost: 249.99,
         totalCost: 1249.95,
         currency: "USD",
+        itemDescription: "",
+        lotNumber: 1
       },
     ],
     extraCosts: [
@@ -206,78 +210,78 @@ export const mockGoodsReceiveNotes: GoodsReceiveNote[] = [
         timestamp: new Date("2023-08-10T15:15:00Z"),
       },
     ],
-    financialSummary: 
-      {
-        id: "FS002",
-        netAmount: 4499.85,
-        taxAmount: 360,
-        totalAmount: 4859.85,
-        currency: "USD",
-        baseNetAmount: 4499.85,
-        baseTaxAmount: 360,
-        baseTotalAmount: 4859.85,
-        baseCurrency: "USD",
-        jvType: "GRN",
-        jvNumber: "JV-2023-002",
-        jvDate: new Date("2023-08-10"),
-        jvDescription: "Goods Receive Note - Kitchen Equipment",
-        jvStatus: "posted",
-        jvReference: "GRN-2023-006",
-        jvDetail: [
-          {
-            department: { id: "DEPT-001", name: "Purchasing" },
-            accountCode: { id: "ACC-001", code: "1000", name: "Inventory" },
-            accountName: "Inventory",
-            currency: "USD",
-            debit: 4499.85,
-            credit: 0,
-            baseCurrency: "USD",
-            baseDebit: 4499.85,
-            baseCredit: 0
-          },
-          {
-            department: { id: "DEPT-002", name: "Finance" },
-            accountCode: { id: "ACC-002", code: "2000", name: "Accounts Payable" },
-            accountName: "Accounts Payable",
-            currency: "USD",
-            debit: 0,
-            credit: 4499.85,
-            baseCurrency: "USD",
-            baseDebit: 0,
-            baseCredit: 4499.85
-          },
-          {
-            department: { id: "DEPT-002", name: "Finance" },
-            accountCode: { id: "ACC-003", code: "2200", name: "VAT Payable" },
-            accountName: "VAT Payable",
-            currency: "USD",
-            debit: 0,
-            credit: 360,
-            baseCurrency: "USD",
-            baseDebit: 0,
-            baseCredit: 360
-          },
-          {
-            department: { id: "DEPT-003", name: "Warehouse" },
-            accountCode: { id: "ACC-004", code: "5000", name: "Freight In" },
-            accountName: "Freight In",
-            currency: "USD",
-            debit: 360,
-            credit: 0,
-            baseCurrency: "USD",
-            baseDebit: 360,
-            baseCredit: 0
-          }
-        ],
-        jvTotal: {
-          debit: 4859.85,
-          credit: 4859.85,
-          baseDebit: 4859.85,
-          baseCredit: 4859.85,
+    financialSummary:
+    {
+      id: "FS002",
+      netAmount: 4499.85,
+      taxAmount: 360,
+      totalAmount: 4859.85,
+      currency: "USD",
+      baseNetAmount: 4499.85,
+      baseTaxAmount: 360,
+      baseTotalAmount: 4859.85,
+      baseCurrency: "USD",
+      jvType: "GRN",
+      jvNumber: "JV-2023-002",
+      jvDate: new Date("2023-08-10"),
+      jvDescription: "Goods Receive Note - Kitchen Equipment",
+      jvStatus: "posted",
+      jvReference: "GRN-2023-006",
+      jvDetail: [
+        {
+          department: { id: "DEPT-001", name: "Purchasing" },
+          accountCode: { id: "ACC-001", code: "1000", name: "Inventory" },
+          accountName: "Inventory",
+          currency: "USD",
+          debit: 4499.85,
+          credit: 0,
           baseCurrency: "USD",
+          baseDebit: 4499.85,
+          baseCredit: 0
         },
+        {
+          department: { id: "DEPT-002", name: "Finance" },
+          accountCode: { id: "ACC-002", code: "2000", name: "Accounts Payable" },
+          accountName: "Accounts Payable",
+          currency: "USD",
+          debit: 0,
+          credit: 4499.85,
+          baseCurrency: "USD",
+          baseDebit: 0,
+          baseCredit: 4499.85
+        },
+        {
+          department: { id: "DEPT-002", name: "Finance" },
+          accountCode: { id: "ACC-003", code: "2200", name: "VAT Payable" },
+          accountName: "VAT Payable",
+          currency: "USD",
+          debit: 0,
+          credit: 360,
+          baseCurrency: "USD",
+          baseDebit: 0,
+          baseCredit: 360
+        },
+        {
+          department: { id: "DEPT-003", name: "Warehouse" },
+          accountCode: { id: "ACC-004", code: "5000", name: "Freight In" },
+          accountName: "Freight In",
+          currency: "USD",
+          debit: 360,
+          credit: 0,
+          baseCurrency: "USD",
+          baseDebit: 360,
+          baseCredit: 0
+        }
+      ],
+      jvTotal: {
+        debit: 4859.85,
+        credit: 4859.85,
+        baseDebit: 4859.85,
+        baseCredit: 4859.85,
+        baseCurrency: "USD",
       },
-  
+    },
+
     exchangeRate: 1,
     baseCurrency: "USD",
     baseSubTotalPrice: 4499.85,
@@ -376,6 +380,8 @@ export const mockGoodsReceiveNotes: GoodsReceiveNote[] = [
         cost: 199.99,
         totalCost: 3999.80,
         currency: "USD",
+        itemDescription: "",
+        lotNumber: 1
       },
     ],
     extraCosts: [

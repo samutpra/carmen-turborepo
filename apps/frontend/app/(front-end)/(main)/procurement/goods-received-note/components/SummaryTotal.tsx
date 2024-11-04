@@ -45,7 +45,7 @@ export default function SummaryTotal({ poData }: ISummaryTotalProps) {
       currentAmt: poData.taxAmount ?? 0,
     },
     {
-      Label: "Total Amount",
+      Label: "Amount",
       localCurrency: poData.baseCurrency,
       localAmt: poData.baseTotalAmount ?? 0,
       currentCurrency: poData.currency,

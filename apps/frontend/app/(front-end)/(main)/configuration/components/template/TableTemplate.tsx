@@ -2,12 +2,13 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui-custom/TableCustom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown, ChevronLeft, ChevronRight, SquarePen, Trash } from 'lucide-react';
+import { ArrowUpDown, Check, ChevronLeft, ChevronRight, SquarePen, Trash, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import EmptyData from '@/components/EmptyData';
 import { Input } from '@/components/ui/input';
-import { FieldType } from '../../type';
+import { FieldType } from '../../../../../../../types';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Props<T> {
     data: T[];
@@ -40,18 +41,13 @@ const TableTemplate = <T,>({
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderCellValue = (field: Props<T>['fields'][0], value: any) => {
-        switch (field.type) {
-            case 'boolean':
-                return (
-                    <Switch
-                        checked={value}
-                        aria-label={field.display}
-                    />
-                );
-            default:
-                return String(value);
+        if (field.type === 'boolean') {
+            return value ? <Check className='text-green-700' size="16px" /> : <X className='text-gray-700' size="16px" />;
+        } else {
+            return String(value);
         }
     };
+
 
     const renderSortableHeader = (field: Props<T>['fields'][0]) => (
         <div
@@ -102,7 +98,7 @@ const TableTemplate = <T,>({
                         paginatedData.map((item, index) => (
                             <TableRow key={index}>
                                 {fields.map((field) => (
-                                    <TableCell key={String(field.key)} className="whitespace-nowrap bg-white">
+                                    <TableCell key={String(field.key)} className="whitespace-nowrap">
                                         {renderCellValue(field, item[field.key])}
                                     </TableCell>
                                 ))}
@@ -116,7 +112,7 @@ const TableTemplate = <T,>({
                                                     onClick={() => onEdit(item)}
                                                     className="hover:bg-blue-50"
                                                 >
-                                                    <SquarePen />
+                                                    <SquarePen size={12} />
                                                 </Button>
                                             )}
                                             {onDelete && (
@@ -124,9 +120,8 @@ const TableTemplate = <T,>({
                                                     variant="destructive"
                                                     size="sm"
                                                     onClick={() => onDelete(item)}
-                                                    className="hover:bg-red-600"
                                                 >
-                                                    <Trash />
+                                                    <Trash size={2} />
                                                 </Button>
                                             )}
                                         </div>

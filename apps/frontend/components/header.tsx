@@ -20,6 +20,7 @@ import React from 'react';
 import { TenantList } from '@/components/tenantList';
 import { useRouter } from '@/lib/i18n';
 import { useState } from 'react';
+import { SwitchTheme } from './SwitchTheme';
 
 export interface HeaderProps {
 	onSidebarToggle: () => void;
@@ -39,18 +40,19 @@ export default function Header({ onSidebarToggle, isSidebarOpen }: HeaderProps) 
 	};
 
 	return (
-		<header className='bg-white fixed top-0 left-0 right-0 z-40 shadow-sm border-gray-200'>
+		<header className='fixed top-0 left-0 right-0 z-40 shadow-sm border-[var(--border)] bg-[var(--cm-header)] drop-shadow-lg'>
 			<div className='px-4 py-2 sm:px-6'>
 				<div className='flex justify-end h-10'>
 					<div className='flex items-center space-x-2 sm:space-x-4'>
 						<TenantList />
-						<Button variant='ghost' size='icon' className='hidden md:inline-flex text-blue-950'>
+						<Button variant='ghost' size='icon' className='hidden md:inline-flex '>
 							<Bell size={20} />
 						</Button>
 						<LanguageSwitcher />
+						<SwitchTheme />
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant='ghost' className='relative h-8 w-8 rounded-full text-blue-950'>
+								<Button variant='ghost' className='relative h-8 w-8 rounded-full'>
 									<Avatar className='h-8 w-8'>
 										<AvatarImage src='/placeholder.svg?height=32&width=32' alt='@johndoe' />
 										<AvatarFallback>JD</AvatarFallback>

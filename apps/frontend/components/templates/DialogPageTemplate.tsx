@@ -32,9 +32,8 @@ const DialogPageTemplate: React.FC<IProps> = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
-          className={`sm:max-w-[80vw] max-w-[80vw] py-6 px-10 border-none bg-white flex flex-col justify-between ${
-            height ? height : ""
-          } ${width ? width : ""}`}
+          className={`sm:max-w-[80vw] max-w-[80vw] py-6 px-10 border-none flex flex-col justify-between ${height ? height : ""
+            } ${width ? width : ""}`}
         >
           <DialogHeader>
             <DialogTitle className="w-full flex justify-between">
