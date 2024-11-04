@@ -1,5 +1,4 @@
-import React, { useCallback, useState } from 'react';
-import CardTemplate from './CardTemplate';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import { PlusCircle, Search } from 'lucide-react';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { Field } from '../../../../../../../types';
+import { Field } from '../../type';
 interface Props<T> {
     data: T[];
     title: string;

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import React from 'react';
 import { Switch } from '@radix-ui/react-switch';
 import { SquarePen, Trash } from 'lucide-react';
-import { FieldType } from '../../../../../../../types';
+import { FieldType } from '../../type';
 
 interface Props<T> {
     item: T;

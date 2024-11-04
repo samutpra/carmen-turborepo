@@ -50,6 +50,9 @@
 //     }
 // }
 
-export const formatDate = (): string => {
-    return process.env.NEXT_PUBLIC_SHORT_DATE_FORMAT || ''
+import { format } from 'date-fns';
+
+export const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return format(date, process.env.NEXT_PUBLIC_SHORT_DATE_FORMAT || 'P'); // เปลี่ยน 'P' เป็นรูปแบบวันที่ที่ต้องการ เช่น 'MM/dd/yyyy'
 }

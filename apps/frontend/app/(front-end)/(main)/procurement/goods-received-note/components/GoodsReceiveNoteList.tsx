@@ -7,7 +7,6 @@ import DialogDelete from '@/components/ui-custom/DialogDelete';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SearchInput from '@/components/ui-custom/SearchInput';
-import { formatDate } from '@/lib/formatDate';
 import { mockGoodsReceiveNotes } from '@/lib/mock/mock_goodsReceiveNotes';
 import { GoodsReceiveNote } from '@/lib/types';
 import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
@@ -66,7 +65,7 @@ const GoodsReceiveNoteList = () => {
 
     const title = 'Goods Receive Note';
 
-    const columns = [
+    const columns: { key: keyof GoodsReceiveNote; label: string }[] = [
         { key: 'date', label: 'Date' },
         { key: 'ref', label: 'Code' },
         { key: 'description', label: 'Description' },

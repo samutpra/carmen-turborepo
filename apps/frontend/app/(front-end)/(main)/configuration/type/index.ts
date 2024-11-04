@@ -87,12 +87,14 @@ export interface DeliveryPointLabel {
 // Categoty
 const itemGroupSchema = z.object({
     id: z.string(),
+    subCategoryId: z.string(),
     name: z.string(),
 });
 
 const subCategorySchema = z.object({
     id: z.string(),
     subCategory: z.string(),
+    categoryId: z.string(),
     itemGroups: z.array(itemGroupSchema),
 });
 

@@ -329,7 +329,7 @@ const PurchaseRequestList = () => {
                                         checked={selectedPRs.includes(pr.id)}
                                         onCheckedChange={() => handleSelectPR(pr.id)}
                                     />
-                                    <StatusBadge status={pr.status} />
+                                    {/* <StatusBadge status={pr.status} /> */}
 
                                     <span className="text-sm text-muted-foreground">
                                         {pr.id}
@@ -378,11 +378,11 @@ const PurchaseRequestList = () => {
                                         <p className="  text-muted-foreground text-xs font-bold">
                                             {label}
                                         </p>
-                                        {field === 'currentStage' ?
+                                        {/* {field === 'currentStage' ?
                                             <StatusBadge status={pr[field as keyof typeof pr] as string} />
                                             :
                                             <p className="text-xs">{pr[field as keyof typeof pr]}</p>
-                                        }
+                                        } */}
                                     </div>
                                 ))}
                             </div>

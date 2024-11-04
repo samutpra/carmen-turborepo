@@ -138,130 +138,130 @@ export const deliveryPointData: deliveryPointType[] = [
 ];
 
 
-export const categoryData: CategoryType = [
-    {
-        id: "cat1",
-        category: "COMPUTER",
-        subCategories: [
-            {
-                id: "subcat1",
-                categoryId: "cat1",
-                subCategory: "COMPUTER",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        subCategoryId: "subCat1",
-                        name: "COMPUTER"
-                    }
-                ]
-            }
-        ]
-    },
+// export const categoryData: CategoryType = [
+//     {
+//         id: "cat1",
+//         category: "COMPUTER",
+//         subCategories: [
+//             {
+//                 id: "subcat1",
+//                 categoryId: "cat1",
+//                 subCategory: "COMPUTER",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         subCategoryId: "subCat1",
+//                         name: "COMPUTER"
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
 
 
 
-    {
-        id: "cat2",
-        category: "MENU",
-        subCategories: [
-            {
-                id: "subcat2",
-                subCategory: "MENU",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "MENU"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        id: "cat3",
-        category: "DECORATION",
-        subCategories: [
-            {
-                id: "subcat3",
-                subCategory: "DECORATION",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "H/K DECORATION"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        id: "cat4",
-        category: "OTHERS",
-        subCategories: [
-            {
-                id: "subcat4",
-                subCategory: "OTHERS",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "LANDSCAPING & GARDEN"
-                    },
-                    {
-                        id: "item2",
-                        name: "LEISURE & SPORT"
-                    },
-                    {
-                        id: "item3",
-                        name: "OTHERS"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        id: "cat5",
-        category: "SPARE PART",
-        subCategories: [
-            {
-                id: "subcat5",
-                subCategory: "CPU",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "AMD"
-                    },
-                    {
-                        id: "item2",
-                        name: "INTEL"
-                    },
-                    {
-                        id: "item3",
-                        name: "Laptop"
-                    }
-                ]
-            },
-            {
-                id: "subcat6",
-                subCategory: "MB",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "ASUS"
-                    },
-                    {
-                        id: "item2",
-                        name: "MSI"
-                    }
-                ]
-            },
-            {
-                id: "subcat7",
-                subCategory: "MONITOR",
-                itemGroups: [
-                    {
-                        id: "item1",
-                        name: "Monitor"
-                    }
-                ]
-            }
-        ]
-    }
-];
+//     {
+//         id: "cat2",
+//         category: "MENU",
+//         subCategories: [
+//             {
+//                 id: "subcat2",
+//                 subCategory: "MENU",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "MENU"
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         id: "cat3",
+//         category: "DECORATION",
+//         subCategories: [
+//             {
+//                 id: "subcat3",
+//                 subCategory: "DECORATION",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "H/K DECORATION"
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         id: "cat4",
+//         category: "OTHERS",
+//         subCategories: [
+//             {
+//                 id: "subcat4",
+//                 subCategory: "OTHERS",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "LANDSCAPING & GARDEN"
+//                     },
+//                     {
+//                         id: "item2",
+//                         name: "LEISURE & SPORT"
+//                     },
+//                     {
+//                         id: "item3",
+//                         name: "OTHERS"
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         id: "cat5",
+//         category: "SPARE PART",
+//         subCategories: [
+//             {
+//                 id: "subcat5",
+//                 subCategory: "CPU",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "AMD"
+//                     },
+//                     {
+//                         id: "item2",
+//                         name: "INTEL"
+//                     },
+//                     {
+//                         id: "item3",
+//                         name: "Laptop"
+//                     }
+//                 ]
+//             },
+//             {
+//                 id: "subcat6",
+//                 subCategory: "MB",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "ASUS"
+//                     },
+//                     {
+//                         id: "item2",
+//                         name: "MSI"
+//                     }
+//                 ]
+//             },
+//             {
+//                 id: "subcat7",
+//                 subCategory: "MONITOR",
+//                 itemGroups: [
+//                     {
+//                         id: "item1",
+//                         name: "Monitor"
+//                     }
+//                 ]
+//             }
+//         ]
+//     }
+// ];

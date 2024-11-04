@@ -7,8 +7,8 @@ import React, { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import EmptyData from '@/components/EmptyData';
 import { Input } from '@/components/ui/input';
-import { FieldType } from '../../../../../../../types';
 import { Checkbox } from '@/components/ui/checkbox';
+import { FieldType } from '../../type';
 
 interface Props<T> {
     data: T[];

@@ -276,7 +276,7 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
                                                     Goods Receive Note
                                                 </CardTitle>
                                             </div>
-                                            <StatusBadge status="Pending" />
+                                            {/* <StatusBadge status="Pending" /> */}
                                             <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
                                                 {!isEditable ? (
                                                     <>
