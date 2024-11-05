@@ -4,7 +4,7 @@ export const getTenantId = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("tenant-id") || "";
   }
-  return ""; // Default value for server-side rendering
+  return ""; 
 };
 
 export const setTenantId = (tenantid: string) => {
@@ -14,3 +14,6 @@ export const setTenantId = (tenantid: string) => {
 };
 
 export const TenantID = typeof window !== "undefined" ? getTenantId() : "";
+
+
+export const accessToken = ''

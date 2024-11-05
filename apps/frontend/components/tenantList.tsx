@@ -61,7 +61,7 @@ export function TenantList() {
 					setTenantId(businessUnit);
 					setBusinessUnit(businessUnit);
 				}}>
-				<SelectTrigger className='w-[140px] sm:w-[180px] text-black border border-black'>
+				<SelectTrigger className='w-[140px] sm:w-[180px]'>
 					<SelectValue placeholder='Business Unit' />
 				</SelectTrigger>
 				<SelectContent>

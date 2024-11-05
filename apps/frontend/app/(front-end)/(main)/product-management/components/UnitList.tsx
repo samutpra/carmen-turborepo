@@ -36,10 +36,9 @@ const statusOptions = [
     { value: "false", label: "Not Active" }
 ]; 
 
-const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3NzE1ODUsImV4cCI6MTczMDc3NTE4NX0.muI4vetiCQlIbxBPUYhuEvwzgb2b3IWafP6nzHW05vY'
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3NzY0MDgsImV4cCI6MTczMDc4MDAwOH0.eltGtbWVdvNmChcZBBUkcaS_GALyQRHxRznQzp-mVJ8'
 
 const UnitList = () => {
-    // const [units, setUnits] = useState<UnitType[]>([]);
     const [statusOpen, setStatusOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -102,7 +101,6 @@ const UnitList = () => {
     };
 
     const handleSave = async (data: UnitType) => {
-        console.log(data);
 
         try {
             setIsLoading(true);
