@@ -28,15 +28,15 @@ import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoadin
 import { nanoid } from 'nanoid'
 // import { unitData } from '../../configuration/data/data';
 import { useUnits } from '../unit/actions/units';
+import { accessToken } from '@/lib/currentUser';
 
 
 const statusOptions = [
     { value: "all", label: "All Statuses" },
     { value: "true", label: "Active" },
     { value: "false", label: "Not Active" }
-]; 
+];
 
-const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3NzY0MDgsImV4cCI6MTczMDc4MDAwOH0.eltGtbWVdvNmChcZBBUkcaS_GALyQRHxRznQzp-mVJ8'
 
 const UnitList = () => {
     const [statusOpen, setStatusOpen] = useState(false);
@@ -49,8 +49,8 @@ const UnitList = () => {
     const [editingItem, setEditingItem] = useState<UnitType | null>(null);
     const [formError, setFormError] = useState<string | null>(null);
 
-    const { units, setUnits, unitLoading, } = useUnits(accessToken);
-    
+    const { units, setUnits, unitLoading, error } = useUnits(accessToken);
+
     const form = useForm<UnitType>({
         resolver: zodResolver(UnitSchema),
         defaultValues: {
@@ -267,15 +267,15 @@ const UnitList = () => {
         </div>
     );
 
-    // console.log('>>>>>',units.data);
-    
 
     const content = (
         <>
             <div className="block lg:hidden">
                 {unitLoading ? (
-                    <SkeltonCardLoading />) : (
-
+                    <SkeltonCardLoading />
+                ) : error ? (
+                    <div className="text-red-500">{error.message}</div>
+                ) : (
                     <DataCard
                         data={units}
                         columns={columns}
@@ -287,10 +287,10 @@ const UnitList = () => {
             </div>
 
             <div className="hidden lg:block">
-
-
                 {unitLoading ? (
                     <SkeletonTableLoading />
+                ) : error ? (
+                    <div className="text-red-500">{error.message}</div>
                 ) : (
                     <DataTable
                         data={units}

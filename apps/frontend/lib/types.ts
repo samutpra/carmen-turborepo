@@ -1021,7 +1021,10 @@ export interface StoreLocationLabel {
 export const CurrencySchema = z.object({
   id: z.string().optional(),
   code: z.string(),
+  name: z.string(),
+  symbol: z.string(),
   description: z.string(),
+  rate: z.number(),
   isActive: z.boolean(),
 });
 

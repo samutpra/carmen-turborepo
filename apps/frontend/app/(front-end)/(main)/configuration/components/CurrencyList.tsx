@@ -4,7 +4,6 @@ import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { currencyData } from '../data/data';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -24,6 +23,7 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import SearchInput from '@/components/ui-custom/SearchInput';
+import { useCurrencys } from '../currency/actions/currency';
 
 const statusOptions = [
     { value: "all", label: "All Statuses" },
@@ -31,8 +31,9 @@ const statusOptions = [
     { value: "false", label: "Not Active" }
 ];
 
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3OTM4NDEsImV4cCI6MTczMDc5NzQ0MX0.96oEIaoOKcW3bP_nh5kHh2OIQj12r-olN3lNCnaWWXo'
+
 const CurrencyList = () => {
-    const [currencys, setCurrencys] = useState<CurrencyType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [editingItem, setEditingItem] = useState<CurrencyType | null>(null);
     const [dialogForm, setDialogForm] = useState(false);
@@ -41,32 +42,20 @@ const CurrencyList = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusOpen, setStatusOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("");
+    const { currencys, setCurrencys, currencyLoading, error } = useCurrencys(accessToken);
 
     const form = useForm<CurrencyType>({
         resolver: zodResolver(CurrencySchema),
         defaultValues: {
             code: "",
             description: "",
+            name: "",
+            symbol: "",
+            rate: 0,
             isActive: true
         }
     });
 
-    useEffect(() => {
-        setIsLoading(true)
-        const fetchUnit = async () => {
-            try {
-                const data = currencyData.map((data) => CurrencySchema.parse(data));
-                setCurrencys(data);
-            } catch (error) {
-                console.error('Error fetching units:', error);
-            }
-        };
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000);
-
-        fetchUnit();
-    }, []);
 
     useEffect(() => {
         if (editingItem) {
@@ -114,6 +103,9 @@ const CurrencyList = () => {
         form.reset({
             code: "",
             description: "",
+            name: "",
+            symbol: "",
+            rate: 0,
             isActive: true
         });
         setDialogForm(false);
@@ -124,7 +116,10 @@ const CurrencyList = () => {
 
     const columns: CurrencyLabel[] = [
         { key: 'code', label: 'Code' },
+        { key: 'name', label: 'Name' },
+        { key: 'symbol', label: 'Symbol' },
         { key: 'description', label: 'Description' },
+        { key: 'rate', label: 'Rate' },
         { key: 'isActive', label: 'Active' }
     ];
 
@@ -233,9 +228,11 @@ const CurrencyList = () => {
     const content = (
         <>
             <div className="block lg:hidden">
-                {isLoading ? (
-                    <SkeltonCardLoading />) : (
-
+                {currencyLoading ? (
+                    <SkeltonCardLoading />
+                ) : error ? (
+                    <div className="text-red-500">{error.message}</div>
+                ) : (
                     <DataCard
                         data={currencys}
                         columns={columns}
@@ -246,10 +243,10 @@ const CurrencyList = () => {
             </div>
 
             <div className="hidden lg:block">
-
-
-                {isLoading ? (
+                {currencyLoading ? (
                     <SkeletonTableLoading />
+                ) : error ? (
+                    <div className="text-red-500">{error.message}</div>
                 ) : (
                     <DataTable
                         data={currencys}
@@ -296,6 +293,42 @@ const CurrencyList = () => {
 
                             <FormField
                                 control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Name</FormLabel>
+                                        <FormControl>
+                                            <InputCustom
+                                                placeholder="Enter Name"
+                                                error={!!form.formState.errors.name}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                                required
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="symbol"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Symbol</FormLabel>
+                                        <FormControl>
+                                            <InputCustom
+                                                placeholder="Enter Symbol"
+                                                error={!!form.formState.errors.symbol}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                                required
+                            />
+
+                            <FormField
+                                control={form.control}
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
@@ -311,6 +344,26 @@ const CurrencyList = () => {
                                 )}
                                 required
                             />
+
+
+                            <FormField
+                                control={form.control}
+                                name="rate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Rate</FormLabel>
+                                        <FormControl>
+                                            <InputCustom
+                                                placeholder="Enter Rate"
+                                                error={!!form.formState.errors.rate}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                                required
+                            />
+
 
                             <FormField
                                 control={form.control}
