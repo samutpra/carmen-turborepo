@@ -23,9 +23,6 @@ import { formSchema, FormValues } from '../../type/type';
 import { submitForm } from '../../lib/action';
 import ItemDetailForm from './tabs/ItemDetailForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui-custom/CustomTabs';
-import RippleButton from '@/components/ui-custom/RippleButton';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-
 
 const initialData = {
     id: '0',
@@ -242,13 +239,7 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
 
     return (
         <>
-            <div className="p-4">
-                <CustomButton variant="default" size="lg" onClick={() => console.log("Ripple Button Clicked!")}>
-                    Ripple Button
-                </CustomButton>
-            </div>
             <div className='flex flex-col space-y-4 p-4'>
-
                 <div className='fixed right-0 top-[30rem] transform -translate-y-1/2 z-50'>
                     <ToggleSidebarButton
                         toggleSidebar={toggleSidebar}

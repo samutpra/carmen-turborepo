@@ -17,7 +17,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
 }) => {
     return (
         <div className="flex flex-col p-6 justify-center">
-            <div className="shadow p-4 sticky top-0 z-10 rounded-lg">
+            <div className="shadow p-4 sticky top-0 z-10 rounded-lg bg-background">
                 <div className="md:flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-semibold">{title}</h1>
                     {actionButtons && (
@@ -27,7 +27,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
                 {filters && <div className="mb-4">{filters}</div>}
                 {bulkActions && <div className="mb-4">{bulkActions}</div>}
             </div>
-            <div className="flex-1 overflow-y-auto bg-background mt-4 max-h-[calc(100vh-200px)]">
+            <div className="flex-1 overflow-y-auto bg-background mt-4 max-h-[calc(100vh-200px)] rounded-lg">
                 {content}
             </div>
         </div>
