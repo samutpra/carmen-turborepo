@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { EyeIcon, Pen, Trash } from 'lucide-react';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
 import { DateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
+import StatusBadge from '../ui-custom/custom-status-badge';
 
 interface Column {
     key: string;
@@ -29,22 +30,27 @@ const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDele
                         <div className="space-y-2">
                             {columns.map((column) => (
                                 <div key={column.key} className="flex">
-                                    <span className="w-3/5 text-sm font-medium text-gray-500">
-                                        {column.label}
-                                    </span>
-                                    {typeof item[column.key] === 'boolean' ? (
-                                        <IsActiveIcon isChecked={item[column.key]} />
-                                    ) : dateKeys.includes(column.key as DateKey) ? ( // ใช้ includes เพื่อตรวจสอบคีย์วันที่
-                                        <span className="text-sm w-full">
-                                            {formatDateCustom(item[column.key] as DateKey)} {/* แสดงวันที่ที่จัดรูปแบบ */}
-                                        </span>
-                                    ) : item[column.key] != null ? (
-                                        <span className="text-sm w-full">
-                                            {String(item[column.key] ?? '')} {/* แสดงค่าอื่นๆ */}
-                                        </span>
-                                    ) : (
-                                        '-'
-                                    )}
+                                    <div className="w-1/4">
+                                        <span className='text-sm font-medium text-gray-500'>{column.label}</span>
+                                    </div>
+                                    <div>
+                                        {typeof item[column.key] === 'boolean' ? (
+                                            <IsActiveIcon isChecked={item[column.key]} />
+                                        ) : dateKeys.includes(column.key as DateKey) ? (
+                                            <span className="text-sm w-full">
+                                                {formatDateCustom(item[column.key] as DateKey)}
+                                            </span>
+                                        ) : column.key === 'status' ? (
+                                            <StatusBadge status={(item[column.key])} />
+                                        ) : item[column.key] != null ? (
+                                            <span className="text-sm w-full">
+                                                {String(item[column.key] ?? '')}
+                                            </span>
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </div>
+
                                 </div>
                             ))}
 
