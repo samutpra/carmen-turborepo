@@ -1,30 +1,6 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
-
-export enum Status {
-  Open = "Open",
-  Closed = "Closed",
-  Draft = "Draft",
-  Sent = "Sent",
-  Committed = "Committed",
-  Saved = "Saved",
-  Voided = "Voided",
-  Approved = "Approved",
-  Rejected = "Rejected",
-  Pending = "Pending",
-  InProgress = "InProgress",
-  Completed = "Completed",
-  Cancelled = "Cancelled",
-  OnHold = "OnHold",
-  Delayed = "Delayed",
-  Partial = "Partial",
-  Submitted = "Submitted",
-  Accepted = "Accepted",
-  SendBack = "SendBack",
-  Review = "Review",
-  Deleted = "Deleted",
-  Received = "Received"
-}
+import { Status } from '@/lib/types';
 
 interface StatusBadgeProps {
   status: Status;

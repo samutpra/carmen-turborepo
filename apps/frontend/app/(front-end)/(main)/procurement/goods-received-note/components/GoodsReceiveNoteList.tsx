@@ -7,12 +7,14 @@ import DialogDelete from '@/components/ui-custom/DialogDelete';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SearchInput from '@/components/ui-custom/SearchInput';
+import { useRouter } from '@/lib/i18n';
 import { mockGoodsReceiveNotes } from '@/lib/mock/mock_goodsReceiveNotes';
-import { GoodsReceiveNote } from '@/lib/types';
+import { FormAction, GoodsReceiveNote } from '@/lib/types';
 import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
 const GoodsReceiveNoteList = () => {
+    const router = useRouter();
     const [grnData, setGrnData] = useState<GoodsReceiveNote[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
@@ -35,12 +37,19 @@ const GoodsReceiveNoteList = () => {
         fetchGrn();
     }, []);
 
+    const handleAdd =() => {
+        router.push(`/procurement/goods-received-note/${FormAction.CREATE}`);
+
+    }
+
     const handleView = (item: GoodsReceiveNote) => {
         console.log('Viewing unit:', item);
+        router.push(`/procurement/goods-received-note/${item.id}`);
     };
 
     const handleEdit = (item: GoodsReceiveNote) => {
         console.log(item);
+        router.push(`/procurement/goods-received-note/${item.id}/${FormAction.EDIT}`);
     };
 
     const handleDelete = (item: GoodsReceiveNote) => {
@@ -81,6 +90,7 @@ const GoodsReceiveNoteList = () => {
             <CustomButton
                 className='w-full md:w-20'
                 prefixIcon={<PlusCircle />}
+                onClick={handleAdd}
             >
                 Add
             </CustomButton>
@@ -110,7 +120,6 @@ const GoodsReceiveNoteList = () => {
             <div className="block lg:hidden">
                 {isLoading ? (
                     <SkeltonCardLoading />) : (
-
                     <DataCard
                         data={grnData}
                         columns={columns}
