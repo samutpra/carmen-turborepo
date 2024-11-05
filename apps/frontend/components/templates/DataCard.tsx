@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, Pen, Trash } from 'lucide-react';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
+import { DateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 
 interface Column {
     key: string;
@@ -33,13 +34,20 @@ const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDele
                                     </span>
                                     {typeof item[column.key] === 'boolean' ? (
                                         <IsActiveIcon isChecked={item[column.key]} />
-                                    ) : (
+                                    ) : dateKeys.includes(column.key as DateKey) ? ( // ใช้ includes เพื่อตรวจสอบคีย์วันที่
                                         <span className="text-sm w-full">
-                                            {String(item[column.key] ?? '')}
+                                            {formatDateCustom(item[column.key] as DateKey)} {/* แสดงวันที่ที่จัดรูปแบบ */}
                                         </span>
+                                    ) : item[column.key] != null ? (
+                                        <span className="text-sm w-full">
+                                            {String(item[column.key] ?? '')} {/* แสดงค่าอื่นๆ */}
+                                        </span>
+                                    ) : (
+                                        '-'
                                     )}
                                 </div>
                             ))}
+
                             {(onEdit || onDelete || onView) && (
                                 <div className="flex gap-2 pt-2 justify-end">
                                     {onView && (

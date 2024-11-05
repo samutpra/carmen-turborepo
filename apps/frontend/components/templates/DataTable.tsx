@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../ui/table'
 import { EyeIcon, Pen, Trash } from 'lucide-react';
 import { CustomButton } from '../ui-custom/CustomButton';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
-import { formatDate } from '@/lib/formatDate';
+import { DateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 
 interface ColumnProps<T> {
     key: Extract<keyof T, string>;
@@ -17,7 +17,6 @@ interface Props<T> {
     onDelete?: (item: T) => void;
     onView?: (item: T) => void;
 }
-// type keyDate = 'date' | 'invoiceDate'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DataTable = <T extends Record<string, any>>({ data, columns, onEdit, onDelete, onView }: Props<T>) => {
@@ -39,28 +38,19 @@ const DataTable = <T extends Record<string, any>>({ data, columns, onEdit, onDel
                 {data.map((item, index) => (
                     <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        {/* {columns.map((column) => (
-                            <TableCell key={column.key} className="whitespace-nowrap">
-                                {typeof item[column.key] === 'boolean' ? (
-                                    <IsActiveIcon isChecked={item[column.key]} />
-                                ) : (
-                                    String(item[column.key] ?? '')
-                                )}
-                            </TableCell>
-                        ))} */}
-
                         {columns.map((column) => (
                             <TableCell key={column.key} className="whitespace-nowrap">
-                                {typeof item[column.key] === 'boolean' ? (
-                                    <IsActiveIcon isChecked={item[column.key]} />
-                                ) : typeof item[column.key] === 'string' && column.key === 'date' ? (
-                                    formatDate(item[column.key])
-                                ) : item[column.key] != null ? (
-                                    String(item[column.key])
-                                ) : (
-                                    '-'
-                                )}
-                            </TableCell>
+                            {typeof item[column.key] === 'boolean' ? (
+                                <IsActiveIcon isChecked={item[column.key]} />
+                            ) : dateKeys.includes(column.key as DateKey) ? ( 
+                                formatDateCustom(item[column.key])
+                            ) : item[column.key] != null ? (
+                                String(item[column.key])
+                            ) : (
+                                '-'
+                            )}
+                        </TableCell>
+                        
                         ))}
                         {(onEdit || onDelete || onView) && (
                             <TableCell className="">

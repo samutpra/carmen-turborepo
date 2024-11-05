@@ -101,9 +101,7 @@ const GoodsReceiveNoteList = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     Icon={Search}
                 />
-                <div>asdasd {process.env.NEXT_PUBLIC_SHORT_DATE_FORMAT || 'pipe'}</div>
             </div>
-
         </div>
     );
 
