@@ -26,7 +26,7 @@ import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { nanoid } from 'nanoid'
-import { unitData } from '../../configuration/data/data';
+// import { unitData } from '../../configuration/data/data';
 import { useUnits } from '../unit/actions/units';
 
 
@@ -34,10 +34,12 @@ const statusOptions = [
     { value: "all", label: "All Statuses" },
     { value: "true", label: "Active" },
     { value: "false", label: "Not Active" }
-];
+]; 
+
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3NzE1ODUsImV4cCI6MTczMDc3NTE4NX0.muI4vetiCQlIbxBPUYhuEvwzgb2b3IWafP6nzHW05vY'
 
 const UnitList = () => {
-    const [units, setUnits] = useState<UnitType[]>([]);
+    // const [units, setUnits] = useState<UnitType[]>([]);
     const [statusOpen, setStatusOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -47,8 +49,9 @@ const UnitList = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [editingItem, setEditingItem] = useState<UnitType | null>(null);
     const [formError, setFormError] = useState<string | null>(null);
-    // const { units, isLoading, error } = useUnits(accessToken);
 
+    const { units, setUnits, unitLoading, } = useUnits(accessToken);
+    
     const form = useForm<UnitType>({
         resolver: zodResolver(UnitSchema),
         defaultValues: {
@@ -57,62 +60,6 @@ const UnitList = () => {
             isActive: true
         }
     });
-
-
-    // useEffect(() => {
-    //     setIsLoading(true)
-    //     const fetchUnit = async () => {
-    //         try {
-    //             const data = unitData.map((data) => UnitSchema.parse(data));
-    //             setUnits(data);
-    //         } catch (error) {
-    //             console.error('Error fetching units:', error);
-    //         }
-    //     };
-    //     setTimeout(() => {
-    //         setIsLoading(false)
-    //     }, 3000);
-
-    //     fetchUnit();
-    // }, []);
-    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3MTgwOTYsImV4cCI6MTczMDcyMTY5Nn0.JnFGcgNEsLVGcfZm_CmcG9ktMIyz_lSjSjpOBM_XBh8'
-
-
-    useEffect(() => {
-        setIsLoading(true);
-        const fetchUnits = async () => {
-            try {
-                // const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3MTQxNDEsImV4cCI6MTczMDcxNzc0MX0.4U_A_lpYFAyEEaANUgffe8GYEaNH5Ax6Rzb4IMYik_4";
-                const tenantId = 'DUMMY';
-
-                const options = {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'x-tenant-id': tenantId,
-                        'Content-Type': 'application/json',
-                    },
-                };
-
-                const response = await fetch('http://localhost:4000/api/v1/units', options);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const result = data.map((unit: UnitType) => UnitSchema.parse(unit));
-                setUnits(result);
-                console.log('result', result);
-            } catch (error) {
-                console.error('Error fetching units:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchUnits();
-    }, []);
-
 
     useEffect(() => {
         if (editingItem) {
@@ -322,10 +269,13 @@ const UnitList = () => {
         </div>
     );
 
+    // console.log('>>>>>',units.data);
+    
+
     const content = (
         <>
             <div className="block lg:hidden">
-                {isLoading ? (
+                {unitLoading ? (
                     <SkeltonCardLoading />) : (
 
                     <DataCard
@@ -341,7 +291,7 @@ const UnitList = () => {
             <div className="hidden lg:block">
 
 
-                {isLoading ? (
+                {unitLoading ? (
                     <SkeletonTableLoading />
                 ) : (
                     <DataTable
