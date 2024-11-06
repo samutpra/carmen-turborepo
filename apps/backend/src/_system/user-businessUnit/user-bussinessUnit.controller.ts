@@ -16,7 +16,7 @@ import { Prisma } from '@prisma-carmen-client/system';
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from './dto/user-businessUnit.dto';
+} from 'shared-dtos';
 
 @Controller('api/v1/user-businessUnit')
 @ApiTags('user businessUnit')

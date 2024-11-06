@@ -4,10 +4,7 @@ import { Module } from '@nestjs/common';
 
 @Module({
   controllers: [DepartmentsController],
-  providers: [
-    DepartmentsService,
-    // { provide: DrizzleDB, useValue: drizzleConnection },
-  ],
+  providers: [DepartmentsService],
   imports: [],
 })
 export class DepartmentsModule {}

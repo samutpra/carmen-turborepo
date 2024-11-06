@@ -3,7 +3,7 @@ import {
   AuthLoginDto,
   AuthLoginResponseDto,
   AuthPayloadDto,
-} from './dto/auth.dto';
+} from 'shared-dtos';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';

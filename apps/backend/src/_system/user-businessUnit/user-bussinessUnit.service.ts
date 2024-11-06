@@ -9,7 +9,7 @@ import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from './dto/user-businessUnit.dto';
+} from 'shared-dtos';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';

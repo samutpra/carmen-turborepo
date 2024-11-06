@@ -14,7 +14,7 @@ import { Department, Prisma } from '@prisma-carmen-client/tenant';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { DepartmentCreateDto, DepartmentUpdateDto } from './dto/department.dto';
+import { DepartmentCreateDto, DepartmentUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/departments')
 @ApiTags('department')

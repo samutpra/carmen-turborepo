@@ -3,7 +3,7 @@ import {
   Prisma,
   PrismaClient as dbSystem,
 } from '@prisma-carmen-client/system';
-import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from './dto/businessUnit.dto';
+import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from 'shared-dtos';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 

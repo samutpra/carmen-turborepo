@@ -5,7 +5,7 @@ import {
   PrismaClient as dbSystem,
 } from '@prisma-carmen-client/system';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { UserCreateDto, UserUpdateDto } from './dto/user.dto';
+import { UserCreateDto, UserUpdateDto } from 'shared-dtos';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';

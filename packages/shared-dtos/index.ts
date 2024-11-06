@@ -1,2 +1,11 @@
 
 export * from "./src/currency.dto"
+export * from "./src/department.dto"
+export * from "./src/exchangeRate.dto"
+export * from "./src/location.dto"
+export * from "./src/product.dto"
+export * from "./src/unit.dto"
+export * from "./src/auth.dto"
+export * from "./src/businessUnit.dto"
+export * from "./src/user-businessUnit.dto"
+export * from "./src/user.dto"
