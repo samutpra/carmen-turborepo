@@ -225,19 +225,6 @@ export interface PurchaseOrderItem {
   received?: GRNItem[];
 }
 
-export interface Attachment {
-  id: string;
-  description?: string;
-  publicAccess: boolean;
-  userId: string;
-  userName: string;
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  fileUrl: string;
-  uploadDate: Date;
-}
-
 export enum PurchaseOrderStatus {
   Open = "Open",
   Voided = "Voided",
@@ -268,6 +255,21 @@ export enum POLineStatus {
   OPEN = "OPEN",
   CLOSED = "CLOSED",
 }
+
+export interface Attachment {
+  id: string;
+  description?: string;
+  publicAccess: boolean;
+  userId: string;
+  userName: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileUrl: string;
+  uploadDate: Date;
+}
+
+
 
 // Purchase Request (PR) Types
 
@@ -1051,3 +1053,138 @@ export interface PrLabel {
   key: keyof PrType;
   label: string;
 }
+
+//PO
+
+const PurchaseOrderStatusSchema = z.enum([
+  "Open",
+  "Voided",
+  "Closed",
+  "Draft",
+  "Sent",
+  "Partial",
+  "FullyReceived",
+  "Cancelled",
+  "Deleted",
+  "Pending"
+]);
+
+const POLineStatusSchema = z.enum(["OPEN", "CLOSED"]);
+
+const AttachmentSchema = z.object({
+  id: z.string(),
+  description: z.string().optional(),
+  publicAccess: z.boolean(),
+  userId: z.string(),
+  userName: z.string(),
+  fileName: z.string(),
+  fileType: z.string(),
+  fileSize: z.number(),
+  fileUrl: z.string().url(),
+  uploadDate: z.date(),
+});
+
+const InventoryInfoSchema = z.object({
+  onHand: z.number(),
+  onOrdered: z.number(),
+  reorderLevel: z.number(),
+  restockLevel: z.number(),
+  averageMonthlyUsage: z.number(),
+  lastPrice: z.number(),
+  lastOrderDate: z.date(),
+  lastVendor: z.string(),
+});
+
+export const PurchaseOrderItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  convRate: z.number(),
+  orderedQuantity: z.number(),
+  orderUnit: z.string(),
+  baseQuantity: z.number(),
+  baseUnit: z.string(),
+  baseReceivingQty: z.number(),
+  receivedQuantity: z.number(),
+  remainingQuantity: z.number(),
+  unitPrice: z.number(),
+  status: PurchaseOrderStatusSchema,
+  isFOC: z.boolean(),
+  taxRate: z.number(),
+  discountRate: z.number(),
+  attachments: z.array(AttachmentSchema).optional(),
+  baseSubTotalPrice: z.number(),
+  subTotalPrice: z.number(),
+  baseNetAmount: z.number(),
+  netAmount: z.number(),
+  baseDiscAmount: z.number(),
+  discountAmount: z.number(),
+  baseTaxAmount: z.number(),
+  taxAmount: z.number(),
+  baseTotalAmount: z.number(),
+  totalAmount: z.number(),
+  comment: z.string().optional(),
+  taxIncluded: z.boolean(),
+  adjustments: z.object({
+    discount: z.boolean(),
+    tax: z.boolean(),
+  }).optional(),
+  lastReceiveDate: z.date().optional(),
+  lastPrice: z.number().optional(),
+  lastVendorId: z.number().optional(),
+  attachedFile: z.instanceof(File).nullable().optional(),
+  inventoryInfo: InventoryInfoSchema,
+  received: z.array(z.any()).optional(),
+});
+
+export const PurchaseOrderLineSchema = z.object({
+  poLineId: z.number(),
+  poId: z.number(),
+  itemId: z.number(),
+  orderedQuantity: z.number(),
+  orderedUnitId: z.number(),
+  unitPrice: z.number(),
+  receivedQuantity: z.number(),
+  lineStatus: POLineStatusSchema,
+  lastReceiveDate: z.date().optional(),
+  lastPrice: z.number().optional(),
+  lastVendorId: z.number().optional(),
+});
+
+export const PurchaseOrderSchema = z.object({
+  poId: z.string(),
+  number: z.string(),
+  vendorId: z.number(),
+  vendorName: z.string(),
+  orderDate: z.date(),
+  deliveryDate: z.date().nullable().optional(),
+  status: PurchaseOrderStatusSchema,
+  currencyCode: z.string(),
+  exchangeRate: z.number(),
+  notes: z.string().optional(),
+  createdBy: z.number(),
+  approvedBy: z.number().optional(),
+  approvalDate: z.date().optional(),
+  email: z.string().email(),
+  buyer: z.string(),
+  creditTerms: z.string(),
+  description: z.string(),
+  remarks: z.string(),
+  items: z.array(PurchaseOrderItemSchema),
+  baseCurrencyCode: z.string(),
+  baseSubTotalPrice: z.number(),
+  subTotalPrice: z.number(),
+  baseNetAmount: z.number(),
+  netAmount: z.number(),
+  baseDiscAmount: z.number(),
+  discountAmount: z.number(),
+  baseTaxAmount: z.number(),
+  taxAmount: z.number(),
+  baseTotalAmount: z.number(),
+  totalAmount: z.number(),
+});
+
+export type PurchaseOrderType = z.infer<typeof PurchaseOrderSchema>;
+export type PurchaseOrderItemType = z.infer<typeof PurchaseOrderItemSchema>;
+export type PurchaseOrderLineType = z.infer<typeof PurchaseOrderLineSchema>;
+export type AttachmentType = z.infer<typeof AttachmentSchema>;

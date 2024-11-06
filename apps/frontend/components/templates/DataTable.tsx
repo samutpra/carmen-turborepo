@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../ui/table'
 import { EyeIcon, Pen, Trash } from 'lucide-react';
 import { CustomButton } from '../ui-custom/CustomButton';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
-import { DateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
+import { TypeDateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 import StatusBadge from '../ui-custom/custom-status-badge';
 
 interface ColumnProps<T> {
@@ -43,7 +43,7 @@ const DataTable = <T extends Record<string, any>>({ data, columns, onEdit, onDel
                             <TableCell key={column.key} className="whitespace-nowrap">
                                 {typeof item[column.key] === 'boolean' ? (
                                     <IsActiveIcon isChecked={item[column.key]} />
-                                ) : dateKeys.includes(column.key as DateKey) ? (
+                                ) : dateKeys.includes(column.key as TypeDateKey) ? (
                                     formatDateCustom(item[column.key])
                                 ) : column.key === 'status' ? (
                                     <StatusBadge status={(item[column.key])} />
