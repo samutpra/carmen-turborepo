@@ -10,10 +10,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { ApiBody, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { Prisma, Product } from '@prisma-carmen-client/tenant';
+import { Product } from '@prisma-carmen-client-tenant';
 import { ProductCreateDto, ProductUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/products')

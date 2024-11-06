@@ -12,7 +12,6 @@ import {
 import { UnitsService } from './units.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { Prisma } from '@prisma-carmen-client/tenant';
 import { UnitCreateDto, UnitUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/units')

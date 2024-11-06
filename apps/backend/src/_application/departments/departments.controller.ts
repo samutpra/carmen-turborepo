@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
-import { Department, Prisma } from '@prisma-carmen-client/tenant';
+import { Department } from '@prisma-carmen-client-tenant';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ApiTags } from '@nestjs/swagger';

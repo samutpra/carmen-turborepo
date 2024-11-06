@@ -1,11 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
-  Prisma,
-  User,
   UserBusinessUnit,
   PrismaClient as dbSystem,
-} from '@prisma-carmen-client/system';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+} from '@prisma-carmen-client-system';
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,

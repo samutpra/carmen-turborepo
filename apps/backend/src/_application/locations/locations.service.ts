@@ -1,9 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   Location,
-  Prisma,
   PrismaClient as dbTenant,
-} from '@prisma-carmen-client/tenant';
+} from '@prisma-carmen-client-tenant';
 import { LocationCreateDto, LocationUpdateDto } from 'shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 

@@ -10,25 +10,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { ExchangerateService } from './exchangerate.service';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiInternalServerErrorResponse,
-  ApiMethodNotAllowedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-  ApiTooManyRequestsResponse,
-  ApiUnauthorizedResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { ExchangeRate, Prisma } from '@prisma-carmen-client/tenant';
+import { ExchangeRate } from '@prisma-carmen-client-tenant';
 import { ExchangeRateCreateDto, ExchangeRateUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/exchangerate')

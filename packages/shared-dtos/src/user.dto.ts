@@ -1,8 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-
 export class UserCreateDto {
   id?: string;
-
   username: string;
 }
 

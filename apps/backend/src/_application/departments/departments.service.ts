@@ -1,8 +1,7 @@
 import {
   Department,
-  Prisma,
   PrismaClient as dbTenant,
-} from '@prisma-carmen-client/tenant';
+} from '@prisma-carmen-client-tenant';
 import { DepartmentCreateDto, DepartmentUpdateDto } from 'shared-dtos';
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';

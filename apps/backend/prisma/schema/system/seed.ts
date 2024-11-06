@@ -1,10 +1,4 @@
-import {
-  BusinessUnit,
-  Prisma,
-  User,
-  UserBusinessUnit,
-  PrismaClient as dbSystem,
-} from '@prisma-carmen-client-system';
+import { Prisma, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 const prisma = new dbSystem();
 

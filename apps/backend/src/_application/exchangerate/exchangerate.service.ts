@@ -1,14 +1,12 @@
 import {
   ExchangeRate,
-  Prisma,
   PrismaClient as dbTenant,
-} from '@prisma-carmen-client/tenant';
+} from '@prisma-carmen-client-tenant';
 import { ExchangeRateCreateDto, ExchangeRateUpdateDto } from 'shared-dtos';
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
-import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 

@@ -10,9 +10,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiHeader, ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { Prisma } from '@prisma-carmen-client/system';
 import { UserCreateDto, UserUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/users')

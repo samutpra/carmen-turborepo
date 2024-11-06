@@ -5,8 +5,6 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';

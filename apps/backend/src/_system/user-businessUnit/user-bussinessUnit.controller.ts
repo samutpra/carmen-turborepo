@@ -9,10 +9,9 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserBusinessUnitService } from './user-bussinessUnit.service';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { Prisma } from '@prisma-carmen-client/system';
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,

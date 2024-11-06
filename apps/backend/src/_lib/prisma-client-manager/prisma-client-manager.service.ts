@@ -1,7 +1,7 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 
-import { PrismaClient as prismaClientTenant } from '@prisma-carmen-client/tenant';
-import { PrismaClient as prismaSystemTenant } from '@prisma-carmen-client/system';
+import { PrismaClient as prismaClientTenant } from '@prisma-carmen-client-tenant';
+import { PrismaClient as prismaSystemTenant } from '@prisma-carmen-client-system';
 
 @Injectable()
 export class PrismaClientManagerService implements OnModuleDestroy {

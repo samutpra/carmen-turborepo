@@ -13,7 +13,7 @@ import { BusinessUnitsService } from './businessUnit.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { Prisma, BusinessUnit } from '@prisma-carmen-client/system';
+import { BusinessUnit } from '@prisma-carmen-client-system';
 import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/businessUnits')

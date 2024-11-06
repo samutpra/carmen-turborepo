@@ -1,6 +1,5 @@
 import {
   HttpStatus,
-  Inject,
   Injectable,
   NotFoundException,
   NotImplementedException,
@@ -9,7 +8,7 @@ import {
   Prisma,
   Product,
   PrismaClient as dbTenant,
-} from '@prisma-carmen-client/tenant';
+} from '@prisma-carmen-client-tenant';
 import { ProductCreateDto, ProductUpdateDto } from 'shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 

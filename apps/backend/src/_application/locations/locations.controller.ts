@@ -10,10 +10,9 @@ import {
   Req,
 } from '@nestjs/common';
 import { LocationsService } from './locations.service';
-import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { Prisma } from '@prisma-carmen-client/tenant';
 import { LocationCreateDto, LocationUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/locations')

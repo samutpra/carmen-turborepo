@@ -2,7 +2,7 @@ import {
   Currency,
   Prisma,
   PrismaClient as dbTenant,
-} from '@prisma-carmen-client/tenant';
+} from '@prisma-carmen-client-tenant';
 import {
   HttpStatus,
   Injectable,
