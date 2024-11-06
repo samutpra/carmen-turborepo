@@ -4,11 +4,8 @@ import {
   Prisma,
   PrismaClient as dbTenant,
 } from '@prisma-carmen-client/tenant';
+import { LocationCreateDto, LocationUpdateDto } from './dto/location.dto';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import {
-  StoreLocationCreateDto,
-  StoreLocationUpdateDto,
-} from './dto/storeLocation.dto';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
@@ -16,7 +13,7 @@ import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 @Injectable()
-export class StoreLocationsService {
+export class LocationsService {
   private db_tenant: dbTenant;
 
   constructor(
@@ -72,7 +69,7 @@ export class StoreLocationsService {
 
   async create(
     req: Request,
-    createDto: StoreLocationCreateDto,
+    createDto: LocationCreateDto,
   ): Promise<ResponseId<string>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
@@ -107,7 +104,7 @@ export class StoreLocationsService {
   async update(
     req: Request,
     id: string,
-    updateDto: StoreLocationUpdateDto,
+    updateDto: LocationUpdateDto,
   ): Promise<ResponseId<string>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);

@@ -1,10 +1,10 @@
-export class StoreLocationCreateDto {
+export class LocationCreateDto {
   id?: string;
   name: string;
   description?: string | null;
   isActive?: boolean | null;
 }
 
-export class StoreLocationUpdateDto extends StoreLocationCreateDto {
+export class LocationUpdateDto extends LocationCreateDto {
   id: string;
 }
