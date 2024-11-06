@@ -24,6 +24,13 @@ export async function GET(request: Request) {
 
         const response = await fetch(`${API_URL}/units`, options);
 
+        if (response.status === 401) {
+            return NextResponse.json(
+                { error: 'Unauthorized access - Invalid or expired token' },
+                { status: 401 }
+            );
+        }
+
         if (!response.ok) {
             throw new Error(`Failed to fetch units: ${response.status} ${response.statusText}`);
         }

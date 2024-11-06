@@ -12,18 +12,22 @@ export const fetchUnits = async (accessToken: string): Promise<UnitType[]> => {
             },
         });
 
+        if (response.status === 401) {
+            throw new Error('Unauthorized access - Invalid or expired token');
+        }
+
         if (!response.ok) {
             throw new Error(`Failed to fetch units: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-
-        const result = data.data.data
+        
+        const result = data.data.data;
                   
         return result.map((unit: UnitType) => UnitSchema.parse(unit));
     } catch (error) {
         console.error('Fetch Units Error:', error);
-        throw new Error('Failed to fetch units');
+        throw error;
     }
 };
 
@@ -31,7 +35,7 @@ export const useUnits = (accessToken: string) => {
     const [units, setUnits] = useState<UnitType[]>([]);
     const [unitLoading, setUnitLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-
+    
     useEffect(() => {
         let isMounted = true;
         const getUnits = async () => {
@@ -45,7 +49,11 @@ export const useUnits = (accessToken: string) => {
                 }
             } catch (err) {
                 if (isMounted) {
-                    setError(err instanceof Error ? err : new Error('An error occurred while fetching units'));
+                    if (err instanceof Error && err.message.includes('Unauthorized access')) {
+                        setError(new Error('Unauthorized - Please check your credentials.'));
+                    } else {
+                        setError(err instanceof Error ? err : new Error('An error occurred while fetching units'));
+                    }
                 }
             } finally {
                 if (isMounted) {
@@ -63,4 +71,3 @@ export const useUnits = (accessToken: string) => {
 
     return { units, unitLoading, error, setUnits };
 };
-

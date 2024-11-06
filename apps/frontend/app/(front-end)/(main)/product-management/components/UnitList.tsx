@@ -267,14 +267,15 @@ const UnitList = () => {
         </div>
     );
 
-
     const content = (
         <>
             <div className="block lg:hidden">
                 {unitLoading ? (
                     <SkeltonCardLoading />
                 ) : error ? (
-                    <div className="text-red-500">{error.message}</div>
+                    <div className="flex items-center justify-center h-96 text-red-500">
+                        {error.message}
+                    </div>
                 ) : (
                     <DataCard
                         data={units}
@@ -290,7 +291,9 @@ const UnitList = () => {
                 {unitLoading ? (
                     <SkeletonTableLoading />
                 ) : error ? (
-                    <div className="text-red-500">{error.message}</div>
+                    <div className="flex items-center justify-center h-96 text-red-500">
+                        {error.message}
+                    </div>
                 ) : (
                     <DataTable
                         data={units}
