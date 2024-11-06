@@ -11,6 +11,8 @@
     "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./paraglide"
   },
   "dependencies": {
+    "shared-types": "1.0.0",
+    "shared-dtos": "1.0.0",
     "@hookform/resolvers": "^3.9.1",
     "@inlang/paraglide-next": "^0.5.2",
     "@radix-ui/react-accordion": "^1.2.1",
