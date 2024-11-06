@@ -1,24 +1,30 @@
-import { Prisma, PrismaClient as dbSystem } from '@prisma-carmen-client/system';
+import {
+  BusinessUnit,
+  Prisma,
+  User,
+  UserBusinessUnit,
+  PrismaClient as dbSystem,
+} from '@prisma-carmen-client/system';
 
 const prisma = new dbSystem();
 
 async function main() {
-  await prisma.userTenant.deleteMany({});
+  await prisma.userBusinessUnit.deleteMany({});
   await prisma.user.deleteMany({});
-  await prisma.tenant.deleteMany({});
-  await prisma.company.deleteMany({});
+  await prisma.businessUnit.deleteMany({});
+  await prisma.cluster.deleteMany({});
 
-  const company1Obj: Prisma.CompanyCreateInput = {
+  const cluster1Obj: Prisma.ClusterCreateInput = {
     code: 'test_company',
     name: 'Test Company',
   };
 
-  const company1 = await prisma.company.upsert({
+  const cluster1 = await prisma.cluster.upsert({
     where: {
-      code: company1Obj.code,
+      code: cluster1Obj.code,
     },
     update: {},
-    create: company1Obj,
+    create: cluster1Obj,
   });
 
   const user1Obj: Prisma.UserCreateInput = {
@@ -41,62 +47,31 @@ async function main() {
     create: user2Obj,
   });
 
-  const tenant1Obj: Prisma.TenantCreateInput = {
+  const tenant1Obj: Prisma.BusinessUnitCreateInput = {
     code: 'tenant_1',
     name: 'tenant 1',
-    Company: {
-      //create: company1Obj,
+    isHq: true,
 
-      connectOrCreate: {
-        where: {
-          code: company1Obj.code,
-        },
-        create: company1Obj,
-      },
-      connect: company1,
+    Cluster: {
+      connect: cluster1,
+    },
+    UserBusinessUnit: {
+      connect: [user1, user2],
     },
   };
 
-  const tenant1 = await prisma.tenant.create({
+  const businessUnit1 = await prisma.businessUnit.create({
     data: tenant1Obj,
   });
 
-  const tenant2Obj: Prisma.TenantCreateInput = {
-    code: 'tenant_2',
-    name: 'tenant 2',
-    Company: {
-      connect: company1,
+  const businessUnit1Obj: Prisma.UserBusinessUnitCreateInput = {
+    BusinessUnit: {
+      connect: businessUnit1,
     },
   };
 
-  const tenant2 = await prisma.tenant.create({
-    data: tenant2Obj,
-  });
-
-  const userTenant1Obj: Prisma.UserTenantCreateInput = {
-    Tenant: {
-      connect: tenant1,
-    },
-    User: {
-      connect: user1,
-    },
-  };
-
-  const userTenant1 = await prisma.userTenant.create({
-    data: userTenant1Obj,
-  });
-
-  const userTenant2Obj: Prisma.UserTenantCreateInput = {
-    Tenant: {
-      connect: tenant1,
-    },
-    User: {
-      connect: user2,
-    },
-  };
-
-  const userTenant2 = await prisma.userTenant.create({
-    data: userTenant2Obj,
+  const userBusinessUnit1 = await prisma.userBusinessUnit.create({
+    data: businessUnit1Obj,
   });
 }
 

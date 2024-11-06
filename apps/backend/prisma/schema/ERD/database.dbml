@@ -56,7 +56,83 @@ Table CARMEN_SYSTEM.UserProfile {
   }
 }
 
-Table CARMEN_SYSTEM.Company {
+Enum CARMEN_SYSTEM.SubscriptionStatus {
+  Active
+  Inactive
+  Expired
+}
+
+Table CARMEN_SYSTEM.Module {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  name        varchar   [not null, unique]
+  description text
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+    name [name: "module_name_idx"]
+  }
+}
+
+Table CARMEN_SYSTEM.BusinessUnitModule {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  businessUnitId uuid [not null, ref: > CARMEN_SYSTEM.BusinessUnit.id]
+  moduleId uuid [not null, ref: > CARMEN_SYSTEM.Module.id]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+    (businessUnitId, moduleId) [name: "businessunitmodule_businessunitid_moduleid_u"]
+  }
+}
+
+Table CARMEN_SYSTEM.Subscription {
+   id uuid [not null, pk, default: `gen_random_uuid()`]
+   clusterId uuid [not null, ref: > CARMEN_SYSTEM.Cluster.id]
+
+   startDate date [not null]
+   endDate date [not null]
+
+   status CARMEN_SYSTEM.SubscriptionStatus [not null]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+
+  }
+}
+
+Table CARMEN_SYSTEM.SubscriptionDetail {
+   id uuid [not null, pk, default: `gen_random_uuid()`]
+
+    subscriptionId uuid [not null, ref: > CARMEN_SYSTEM.Subscription.id]
+    bussinessUnitId uuid [not null, ref: > CARMEN_SYSTEM.BusinessUnit.id]
+    moduleId uuid [not null, ref: > CARMEN_SYSTEM.Module.id]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+    (subscriptionId, bussinessUnitId, moduleId) [unique, name: "subscriptiondetail_subscriptionid_businessunitid_moduleid_u"]
+  }
+}
+
+Table CARMEN_SYSTEM.Cluster {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar(30) [not null, unique]
   name text [not null, unique]
@@ -73,12 +149,14 @@ Table CARMEN_SYSTEM.Company {
   }
 }
 
-table CARMEN_SYSTEM.Tenant {
+table CARMEN_SYSTEM.BusinessUnit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  companyId uuid [not null, ref: > CARMEN_SYSTEM.Company.id]
+  clusterId uuid [not null, ref: > CARMEN_SYSTEM.Cluster.id]
   code varchar(30) [not null]
   name text [not null]
 
+  isHq bool [default: true]
+
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid [ref: > CARMEN_SYSTEM.User.id]
 
@@ -86,16 +164,16 @@ table CARMEN_SYSTEM.Tenant {
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   indexes {
-    companyId [name: "tenant_companyid_idx"]
-    code [name: "tenant_code_idx"]
-    (companyId, code) [unique, name: "tenant_companyid_code_u"]
+    clusterId [name: "tenant_clusertid_idx"]
+    code [name: "businessunit_code_idx"]
+    (clusterId, code) [unique, name: "businessunit_clusertid_code_u"]
   }
 }
 
-table CARMEN_SYSTEM.UserTenant {
+table CARMEN_SYSTEM.UserBusinessUnit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   userId uuid [ref: > CARMEN_SYSTEM.User.id]
-  tenantId uuid [ref: > CARMEN_SYSTEM.Tenant.id]
+  businessunitId uuid [ref: > CARMEN_SYSTEM.BusinessUnit.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid [ref: > CARMEN_SYSTEM.User.id]
@@ -104,12 +182,48 @@ table CARMEN_SYSTEM.UserTenant {
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   indexes {
-    (userId, tenantId) [unique, name: "usertenant_userid_tenantid_u"]
+    (userId, businessunitId) [unique, name: "usertenant_userid_bussinessunitid_u"]
+  }
+}
+
+table CARMEN_SYSTEM.NotificationPreference {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  userId uuid [not null, unique, ref: > CARMEN_SYSTEM.User.id]
+
+  isEmail bool [not null, default: false]
+  isSMS bool [default: false]
+  isInApp bool [default: true]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+    userId [name: "notificationpreference_userid_u"]
+  }
+}
+
+table CARMEN_SYSTEM.Notification {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  userId uuid [not null, ref: > CARMEN_SYSTEM.User.id]
+  message text
+  isRead bool [default: false]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
   }
 }
 
 Table CARMEN_SYSTEM.Role {
   id uuid [not null, pk, default: `gen_random_uuid()`]
+  bussinessUnitId uuid [not null, ref: > CARMEN_SYSTEM.BusinessUnit.id]
   name        varchar   [not null, unique]
   description text
 
@@ -121,7 +235,7 @@ Table CARMEN_SYSTEM.Role {
 
   indexes {
     name [name: "role_name_idx"]
-    name [unique, name: "role_name_u"]
+    (bussinessUnitId, name) [unique, name: "role_bussinessunitid_name_u"]
   }
 }
 
@@ -130,11 +244,21 @@ Table CARMEN_SYSTEM.Permission {
   name        varchar   [unique, not null]
   description text
 
+  canGet bool [not null, default: true]
+  canCreate bool [not null, default: true]
+  canUpdate bool [not null, default: true]
+  canDelete bool [not null, default: true]
+  canPrint bool [not null, default: true]
+
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
+
+  indexes {
+    name [name: "permission_name_u"]
+  }
 }
 
 Table CARMEN_SYSTEM.UserRole {
@@ -149,7 +273,7 @@ Table CARMEN_SYSTEM.UserRole {
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   Indexes {
-    (userId, roleId) [unique]
+    (userId, roleId) [unique, name: "userrole_userid_roleid_u"]
   }
 }
 
@@ -165,22 +289,26 @@ Table CARMEN_SYSTEM.RolePermission {
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   Indexes {
-    (roleId, permissionId) [unique]
+    (roleId, permissionId) [unique, name: "rolepermission_roleid_permissionid_u"]
   }
 }
 
 Table TENANT_DUMMY.Menu {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  code varchar(5) [unique, not null]
+  name varchar(5) [unique, not null]
   description text
   isActive bool [default: true]
   isVisible bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "menu_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.Currency {
@@ -188,35 +316,117 @@ Table TENANT_DUMMY.Currency {
   code varchar(3) [unique, not null]
   name varchar(100) [not null]
   symbol varchar(5)
-  description text
+  description text [default: ""]
   isActive bool [default: true]
   rate float [default: 1]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    code [name: "currency_code_u"]
+
+  }
+}
+
+Table TENANT_DUMMY.ExchangeRate {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  dateAt timestamp [default: `now()`]
+  currencyId uuid [ref: > TENANT_DUMMY.Currency.id]
+  rate float [default: 1]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid 
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid
+
+  indexes {
+    (dateAt, currencyId) [unique, name: "exchangerate_dateat_currencyid_u"]
+  }
+}
+
+Table TENANT_DUMMY.Location {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  name varchar [unique, not null]
+  description text
+  isActive bool [default: true]
+
+  deliveryPointId uuid [ref: > TENANT_DUMMY.DeliveryPoint.id]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid 
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid
+
+  indexes {
+    name [name: "location_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.DeliveryPoint {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  name varchar [unique]
-  address varchar
-  city varchar
-  postalCode varchar
-  country varchar
-  latitude Float
-  longitude Float
-  phone varchar
-  email varchar
+  name varchar [unique, not null]
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "deliverypoint_name_u"]
+  }
+}
+
+Table TENANT_DUMMY.Unit {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  name varchar [unique, not null]
+  description text
+  isActive bool [default: true]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid 
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid
+
+  indexes {
+    name [name: "unit_name_u"]
+  }
+}
+
+Enum TENANT_DUMMY.UnitType {
+  OrderUnit
+  InventoryUnit
+  RecipeUnit
+}
+
+Table TENANT_DUMMY.UnitConversion {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  productId uuid [ref: > TENANT_DUMMY.Product.id]
+  unitType TENANT_DUMMY.UnitType [not null]
+  fromUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
+  toUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
+  rate float [default: 1]
+  description text
+  isActive bool [default: true]
+
+  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
+  createById uuid 
+
+  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updateById uuid
+
+  indexes {
+    (productId, unitType) [name: "unitconversion_productid_unittype_u"]
+  }
 }
 
 Table TENANT_DUMMY.Department {
@@ -225,24 +435,14 @@ Table TENANT_DUMMY.Department {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
-}
 
-Table TENANT_DUMMY.ExchangeRate {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-
-  currencyId uuid [ref: > TENANT_DUMMY.Currency.id]
-  dateAt timestamp [default: `now()`]
-  rate float [default: 1]
-
-  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
-
-  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updateById uuid
+  indexes {
+    name [name: "department_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.Product {
@@ -250,26 +450,39 @@ Table TENANT_DUMMY.Product {
   code varchar [unique, not null]
   name varchar [unique, not null]
   description text
-  isActive bool [default: true]
 
+  primaryUnit uuid [not null, ref: > TENANT_DUMMY.Unit.id]
+
+  isActive bool [default: true]
+  
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    code [name: "product_code_u"]
+    name [name: "product_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.ProductInfo {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  productId uuid [not null, ref: - TENANT_DUMMY.Product.id]
+  productId uuid [unique, not null, ref: - TENANT_DUMMY.Product.id]
   price Float
 
+  info json
+
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
 
+  indexes {
+    productId [name: "productinfo_productid_u"]
+  }
 }
 
 Table TENANT_DUMMY.ProductCategory {
@@ -279,14 +492,18 @@ Table TENANT_DUMMY.ProductCategory {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "productcategory_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.ProductSubCategory {
-
+ 
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -294,10 +511,14 @@ Table TENANT_DUMMY.ProductSubCategory {
   productCategoryId uuid [ref: > TENANT_DUMMY.ProductCategory.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "productsubcategory_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.ProductItemGroup {
@@ -308,53 +529,69 @@ Table TENANT_DUMMY.ProductItemGroup {
   productSubCategoryId uuid [ref: > TENANT_DUMMY.ProductSubCategory.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "productitemgroup_name_u"]
+  }
 }
 
-Table TENANT_DUMMY.PRType {
+Table TENANT_DUMMY.PurchaseRequestType {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "purchaserequesttype_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.PurchaseRequest {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
-  isActive bool [default: true]
-  prTypeId uuid [ref: > TENANT_DUMMY.PRType.id]
 
+  isActive bool [default: true]
+  prTypeId uuid [ref: > TENANT_DUMMY.PurchaseRequestType.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "purchaserequest_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.PurchaseRequestItem {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
+
   isActive bool [default: true]
   purchaseRequestId uuid [ref: > TENANT_DUMMY.PurchaseRequest.id]
 
-
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+   indexes {
+    name [name: "purchaserequestitem_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.PurchaseOrder {
@@ -364,10 +601,14 @@ Table TENANT_DUMMY.PurchaseOrder {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+  
+  indexes {
+    name [name: "purchaseorder_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.PurchaseOrderItem {
@@ -378,53 +619,16 @@ Table TENANT_DUMMY.PurchaseOrderItem {
   purchaseOrderId uuid [ref: > TENANT_DUMMY.PurchaseOrder.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "purchaseorderitem_name_u"]
+  }
 }
 
-Table TENANT_DUMMY.Location {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name varchar [unique, not null]
-  description text
-  isActive bool [default: true]
-
-  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
-
-  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updateById uuid
-}
-
-Table TENANT_DUMMY.Unit {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name varchar [unique, not null]
-  description text
-  isActive bool [default: true]
-
-  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
-
-  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updateById uuid
-}
-
-Table TENANT_DUMMY.UnitConversion {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  productId uuid [ref: > TENANT_DUMMY.Product.id]
-  fromUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
-  toUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
-  rate float [default: 1]
-  description varchar
-  isActive bool [default: true]
-
-  createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
-
-  updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updateById uuid
-}
 
 Table TENANT_DUMMY.Vendor {
   id uuid [not null, pk, default: `gen_random_uuid()`]
@@ -433,10 +637,14 @@ Table TENANT_DUMMY.Vendor {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "vendor_name_u"]
+  }
 }
 
 
@@ -447,10 +655,14 @@ Table TENANT_DUMMY.ContactType {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "contacttype_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.VendorContact {
@@ -461,10 +673,14 @@ Table TENANT_DUMMY.VendorContact {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    (vendorId, contactTypeId) [unique, name: "vendorcontact_vendorid_contacttypeid_u"]
+  }
 }
 
 
@@ -475,10 +691,14 @@ Table TENANT_DUMMY.AddressType {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    name [name: "addresstype_name_u"]
+  }
 }
 
 Table TENANT_DUMMY.VendorAddress {
@@ -489,10 +709,14 @@ Table TENANT_DUMMY.VendorAddress {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    (vendorId, addressTypeId) [unique, name: "vendorcontact_vendorid_addresstypeid_u"]
+  }
 }
 
 Table TENANT_DUMMY.ProductVendor {
@@ -505,8 +729,12 @@ Table TENANT_DUMMY.ProductVendor {
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
-  createById uuid
+  createById uuid 
 
   updateAt timestamp [null, default: `CURRENT_TIMESTAMP`]
   updateById uuid
+
+  indexes {
+    (vendorId, productId) [unique, name: "productvendor_vendorid_productid_u"]
+  }
 }

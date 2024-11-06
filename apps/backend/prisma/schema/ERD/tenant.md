@@ -41,15 +41,7 @@ erDiagram
 }
 "DeliveryPoint" {
   String id PK
-  String name UK "nullable"
-  String address "nullable"
-  String city "nullable"
-  String postalCode "nullable"
-  String country "nullable"
-  Float latitude "nullable"
-  Float longitude "nullable"
-  String phone "nullable"
-  String email "nullable"
+  String name UK
   Boolean isActive "nullable"
   DateTime createdAt "nullable"
   String createById "nullable"
@@ -67,8 +59,8 @@ erDiagram
 }
 "ExchangeRate" {
   String id PK
-  String currencyId FK "nullable"
   DateTime dateAt "nullable"
+  String currencyId FK "nullable"
   Float rate "nullable"
   DateTime createdAt "nullable"
   String createById "nullable"
@@ -80,16 +72,7 @@ erDiagram
   String name UK
   String description "nullable"
   Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
-}
-"PRType" {
-  String id PK
-  String name UK
-  String description "nullable"
-  Boolean isActive "nullable"
+  String deliveryPointId FK "nullable"
   DateTime createdAt "nullable"
   String createById "nullable"
   DateTime updateAt "nullable"
@@ -100,6 +83,7 @@ erDiagram
   String code UK
   String name UK
   String description "nullable"
+  String primaryUnit FK
   Boolean isActive "nullable"
   DateTime createdAt "nullable"
   String createById "nullable"
@@ -120,6 +104,7 @@ erDiagram
   String id PK
   String productId FK
   Float price "nullable"
+  Json info "nullable"
   DateTime createdAt "nullable"
   String createById "nullable"
   DateTime updateAt "nullable"
@@ -214,6 +199,7 @@ erDiagram
 "UnitConversion" {
   String id PK
   String productId FK "nullable"
+  UnitType unitType
   String fromUnitId FK "nullable"
   String toUnitId FK "nullable"
   Float rate "nullable"
@@ -256,14 +242,37 @@ erDiagram
   DateTime updateAt "nullable"
   String updateById "nullable"
 }
+"Menu" {
+  String id PK
+  String name UK
+  String description "nullable"
+  Boolean isActive "nullable"
+  Boolean isVisible "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
+"PurchaseRequestType" {
+  String id PK
+  String name UK
+  String description "nullable"
+  Boolean isActive "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
 "ExchangeRate" }o--o| "Currency" : Currency
-"ProductInfo" }o--|| "Product" : Product
+"Location" }o--o| "DeliveryPoint" : DeliveryPoint
+"Product" }o--|| "Unit" : Unit
+"ProductInfo" |o--|| "Product" : Product
 "ProductItemGroup" }o--o| "ProductSubCategory" : ProductSubCategory
 "ProductSubCategory" }o--o| "ProductCategory" : ProductCategory
 "ProductVendor" }o--o| "Product" : Product
 "ProductVendor" }o--o| "Vendor" : Vendor
 "PurchaseOrderItem" }o--o| "PurchaseOrder" : PurchaseOrder
-"PurchaseRequest" }o--o| "PRType" : PRType
+"PurchaseRequest" }o--o| "PurchaseRequestType" : PRType
 "PurchaseRequestItem" }o--o| "PurchaseRequest" : PurchaseRequest
 "UnitConversion" }o--o| "Unit" : Unit_UnitConversion_fromUnitIdToUnit
 "UnitConversion" }o--o| "Product" : Product
@@ -318,14 +327,6 @@ erDiagram
 **Properties**
   - `id`: 
   - `name`: 
-  - `address`: 
-  - `city`: 
-  - `postalCode`: 
-  - `country`: 
-  - `latitude`: 
-  - `longitude`: 
-  - `phone`: 
-  - `email`: 
   - `isActive`: 
   - `createdAt`: 
   - `createById`: 
@@ -347,8 +348,8 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `currencyId`: 
   - `dateAt`: 
+  - `currencyId`: 
   - `rate`: 
   - `createdAt`: 
   - `createById`: 
@@ -362,18 +363,7 @@ erDiagram
   - `name`: 
   - `description`: 
   - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
-### `PRType`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `isActive`: 
+  - `deliveryPointId`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
@@ -386,6 +376,7 @@ erDiagram
   - `code`: 
   - `name`: 
   - `description`: 
+  - `primaryUnit`: 
   - `isActive`: 
   - `createdAt`: 
   - `createById`: 
@@ -410,6 +401,7 @@ erDiagram
   - `id`: 
   - `productId`: 
   - `price`: 
+  - `info`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
@@ -522,6 +514,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `productId`: 
+  - `unitType`: 
   - `fromUnitId`: 
   - `toUnitId`: 
   - `rate`: 
@@ -563,6 +556,31 @@ erDiagram
   - `id`: 
   - `vendorId`: 
   - `contactTypeId`: 
+  - `description`: 
+  - `isActive`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `Menu`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `isActive`: 
+  - `isVisible`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `PurchaseRequestType`
+
+**Properties**
+  - `id`: 
+  - `name`: 
   - `description`: 
   - `isActive`: 
   - `createdAt`: 

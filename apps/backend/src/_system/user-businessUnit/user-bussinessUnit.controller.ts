@@ -10,20 +10,20 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { UserTenantService } from './user-tenant.service';
+import { UserBusinessUnitService } from './user-bussinessUnit.service';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { Prisma } from '@prisma-carmen-client/system';
 import {
-  UserTenantCreateDto,
-  UserTenantUpdateDto,
-} from './dto/user-tenant.dto';
+  UserBusinessUnitCreateDto,
+  UserBusinessUnitUpdateDto,
+} from './dto/user-businessUnit.dto';
 
-@Controller('api/v1/user-tenant')
-@ApiTags('user tenant')
+@Controller('api/v1/user-businessUnit')
+@ApiTags('user businessUnit')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-export class UserTenantController {
-  constructor(private readonly userTenantService: UserTenantService) {}
+export class UserBusinessUnitController {
+  constructor(private readonly userTenantService: UserBusinessUnitService) {}
 
   @Get(':id')
   async getOne(@Param('id') id: string, @Req() req: Request) {
@@ -36,14 +36,17 @@ export class UserTenantController {
   }
 
   @Post()
-  async create(@Body() createDto: UserTenantCreateDto, @Req() req: Request) {
+  async create(
+    @Body() createDto: UserBusinessUnitCreateDto,
+    @Req() req: Request,
+  ) {
     return this.userTenantService.create(req, createDto);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateDto: UserTenantUpdateDto,
+    @Body() updateDto: UserBusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
     return this.userTenantService.update(req, id, updateDto);

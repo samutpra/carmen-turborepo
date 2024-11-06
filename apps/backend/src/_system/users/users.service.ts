@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Prisma,
-  Tenant,
   User,
   PrismaClient as dbSystem,
 } from '@prisma-carmen-client/system';

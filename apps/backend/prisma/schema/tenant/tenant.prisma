@@ -25,6 +25,8 @@ model AddressType {
   updateAt      DateTime?       @default(now()) @db.Timestamp(6)
   updateById    String?         @db.Uuid
   VendorAddress VendorAddress[]
+
+  @@index([name], map: "addresstype_name_u")
 }
 
 model ContactType {
@@ -37,6 +39,8 @@ model ContactType {
   updateAt      DateTime?       @default(now()) @db.Timestamp(6)
   updateById    String?         @db.Uuid
   VendorContact VendorContact[]
+
+  @@index([name], map: "contacttype_name_u")
 }
 
 model Currency {
@@ -44,7 +48,7 @@ model Currency {
   code         String         @unique @db.VarChar(3)
   name         String         @db.VarChar(100)
   symbol       String?        @db.VarChar(5)
-  description  String?
+  description  String?        @default("")
   isActive     Boolean?       @default(true)
   rate         Float?         @default(1)
   createdAt    DateTime?      @default(now()) @db.Timestamp(6)
@@ -52,24 +56,21 @@ model Currency {
   updateAt     DateTime?      @default(now()) @db.Timestamp(6)
   updateById   String?        @db.Uuid
   ExchangeRate ExchangeRate[]
+
+  @@index([code], map: "currency_code_u")
 }
 
 model DeliveryPoint {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String?   @unique @db.VarChar
-  address    String?   @db.VarChar
-  city       String?   @db.VarChar
-  postalCode String?   @db.VarChar
-  country    String?   @db.VarChar
-  latitude   Float?
-  longitude  Float?
-  phone      String?   @db.VarChar
-  email      String?   @db.VarChar
-  isActive   Boolean?  @default(true)
-  createdAt  DateTime? @default(now()) @db.Timestamp(6)
-  createById String?   @db.Uuid
-  updateAt   DateTime? @default(now()) @db.Timestamp(6)
-  updateById String?   @db.Uuid
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String     @unique @db.VarChar
+  isActive   Boolean?   @default(true)
+  createdAt  DateTime?  @default(now()) @db.Timestamp(6)
+  createById String?    @db.Uuid
+  updateAt   DateTime?  @default(now()) @db.Timestamp(6)
+  updateById String?    @db.Uuid
+  Location   Location[]
+
+  @@index([name], map: "deliverypoint_name_u")
 }
 
 model Department {
@@ -80,41 +81,37 @@ model Department {
   createById String?   @db.Uuid
   updateAt   DateTime? @default(now()) @db.Timestamp(6)
   updateById String?   @db.Uuid
+
+  @@index([name], map: "department_name_u")
 }
 
 model ExchangeRate {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  currencyId String?   @db.Uuid
   dateAt     DateTime? @default(now()) @db.Timestamp(6)
+  currencyId String?   @db.Uuid
   rate       Float?    @default(1)
   createdAt  DateTime? @default(now()) @db.Timestamp(6)
   createById String?   @db.Uuid
   updateAt   DateTime? @default(now()) @db.Timestamp(6)
   updateById String?   @db.Uuid
   Currency   Currency? @relation(fields: [currencyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([dateAt, currencyId], map: "exchangerate_dateat_currencyid_u")
 }
 
 model Location {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String    @unique @db.VarChar
-  description String?
-  isActive    Boolean?  @default(true)
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
-  createById  String?   @db.Uuid
-  updateAt    DateTime? @default(now()) @db.Timestamp(6)
-  updateById  String?   @db.Uuid
-}
-
-model PRType {
-  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String            @unique @db.VarChar
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String         @unique @db.VarChar
   description     String?
-  isActive        Boolean?          @default(true)
-  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
-  createById      String?           @db.Uuid
-  updateAt        DateTime?         @default(now()) @db.Timestamp(6)
-  updateById      String?           @db.Uuid
-  PurchaseRequest PurchaseRequest[]
+  isActive        Boolean?       @default(true)
+  deliveryPointId String?        @db.Uuid
+  createdAt       DateTime?      @default(now()) @db.Timestamp(6)
+  createById      String?        @db.Uuid
+  updateAt        DateTime?      @default(now()) @db.Timestamp(6)
+  updateById      String?        @db.Uuid
+  DeliveryPoint   DeliveryPoint? @relation(fields: [deliveryPointId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "location_name_u")
 }
 
 model Product {
@@ -122,14 +119,19 @@ model Product {
   code           String           @unique @db.VarChar
   name           String           @unique @db.VarChar
   description    String?
+  primaryUnit    String           @db.Uuid
   isActive       Boolean?         @default(true)
   createdAt      DateTime?        @default(now()) @db.Timestamp(6)
   createById     String?          @db.Uuid
   updateAt       DateTime?        @default(now()) @db.Timestamp(6)
   updateById     String?          @db.Uuid
-  ProductInfo    ProductInfo[]
+  Unit           Unit             @relation(fields: [primaryUnit], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ProductInfo    ProductInfo?
   ProductVendor  ProductVendor[]
   UnitConversion UnitConversion[]
+
+  @@index([code], map: "product_code_u")
+  @@index([name], map: "product_name_u")
 }
 
 model ProductCategory {
@@ -142,17 +144,22 @@ model ProductCategory {
   updateAt           DateTime?            @default(now()) @db.Timestamp(6)
   updateById         String?              @db.Uuid
   ProductSubCategory ProductSubCategory[]
+
+  @@index([name], map: "productcategory_name_u")
 }
 
 model ProductInfo {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId  String    @db.Uuid
+  productId  String    @unique @db.Uuid
   price      Float?
+  info       Json?     @db.Json
   createdAt  DateTime? @default(now()) @db.Timestamp(6)
   createById String?   @db.Uuid
   updateAt   DateTime? @default(now()) @db.Timestamp(6)
   updateById String?   @db.Uuid
   Product    Product   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([productId], map: "productinfo_productid_u")
 }
 
 model ProductItemGroup {
@@ -166,6 +173,8 @@ model ProductItemGroup {
   updateAt             DateTime?           @default(now()) @db.Timestamp(6)
   updateById           String?             @db.Uuid
   ProductSubCategory   ProductSubCategory? @relation(fields: [productSubCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "productitemgroup_name_u")
 }
 
 model ProductSubCategory {
@@ -180,6 +189,8 @@ model ProductSubCategory {
   updateById        String?            @db.Uuid
   ProductItemGroup  ProductItemGroup[]
   ProductCategory   ProductCategory?   @relation(fields: [productCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "productsubcategory_name_u")
 }
 
 model ProductVendor {
@@ -194,6 +205,8 @@ model ProductVendor {
   updateById  String?   @db.Uuid
   Product     Product?  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Vendor      Vendor?   @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([vendorId, productId], map: "productvendor_vendorid_productid_u")
 }
 
 model PurchaseOrder {
@@ -206,6 +219,8 @@ model PurchaseOrder {
   updateAt          DateTime?           @default(now()) @db.Timestamp(6)
   updateById        String?             @db.Uuid
   PurchaseOrderItem PurchaseOrderItem[]
+
+  @@index([name], map: "purchaseorder_name_u")
 }
 
 model PurchaseOrderItem {
@@ -219,6 +234,8 @@ model PurchaseOrderItem {
   updateAt        DateTime?      @default(now()) @db.Timestamp(6)
   updateById      String?        @db.Uuid
   PurchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "purchaseorderitem_name_u")
 }
 
 model PurchaseRequest {
@@ -231,8 +248,10 @@ model PurchaseRequest {
   createById          String?               @db.Uuid
   updateAt            DateTime?             @default(now()) @db.Timestamp(6)
   updateById          String?               @db.Uuid
-  PRType              PRType?               @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  PRType              PurchaseRequestType?  @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   PurchaseRequestItem PurchaseRequestItem[]
+
+  @@index([name], map: "purchaserequest_name_u")
 }
 
 model PurchaseRequestItem {
@@ -246,6 +265,8 @@ model PurchaseRequestItem {
   updateAt          DateTime?        @default(now()) @db.Timestamp(6)
   updateById        String?          @db.Uuid
   PurchaseRequest   PurchaseRequest? @relation(fields: [purchaseRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "purchaserequestitem_name_u")
 }
 
 model Unit {
@@ -257,17 +278,21 @@ model Unit {
   createById                                     String?          @db.Uuid
   updateAt                                       DateTime?        @default(now()) @db.Timestamp(6)
   updateById                                     String?          @db.Uuid
+  Product                                        Product[]
   UnitConversion_UnitConversion_fromUnitIdToUnit UnitConversion[] @relation("UnitConversion_fromUnitIdToUnit")
   UnitConversion_UnitConversion_toUnitIdToUnit   UnitConversion[] @relation("UnitConversion_toUnitIdToUnit")
+
+  @@index([name], map: "unit_name_u")
 }
 
 model UnitConversion {
   id                                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productId                            String?   @db.Uuid
+  unitType                             UnitType
   fromUnitId                           String?   @db.Uuid
   toUnitId                             String?   @db.Uuid
   rate                                 Float?    @default(1)
-  description                          String?   @db.VarChar
+  description                          String?
   isActive                             Boolean?  @default(true)
   createdAt                            DateTime? @default(now()) @db.Timestamp(6)
   createById                           String?   @db.Uuid
@@ -276,6 +301,8 @@ model UnitConversion {
   Unit_UnitConversion_fromUnitIdToUnit Unit?     @relation("UnitConversion_fromUnitIdToUnit", fields: [fromUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Product                              Product?  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Unit_UnitConversion_toUnitIdToUnit   Unit?     @relation("UnitConversion_toUnitIdToUnit", fields: [toUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([productId, unitType], map: "unitconversion_productid_unittype_u")
 }
 
 model Vendor {
@@ -290,6 +317,8 @@ model Vendor {
   ProductVendor ProductVendor[]
   VendorAddress VendorAddress[]
   VendorContact VendorContact[]
+
+  @@index([name], map: "vendor_name_u")
 }
 
 model VendorAddress {
@@ -304,6 +333,8 @@ model VendorAddress {
   updateById    String?     @db.Uuid
   AddressType   AddressType @relation(fields: [addressTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Vendor        Vendor?     @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([vendorId, addressTypeId], map: "vendorcontact_vendorid_addresstypeid_u")
 }
 
 model VendorContact {
@@ -318,4 +349,40 @@ model VendorContact {
   updateById    String?     @db.Uuid
   ContactType   ContactType @relation(fields: [contactTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Vendor        Vendor?     @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([vendorId, contactTypeId], map: "vendorcontact_vendorid_contacttypeid_u")
+}
+
+model Menu {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar(5)
+  description String?
+  isActive    Boolean?  @default(true)
+  isVisible   Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+
+  @@index([name], map: "menu_name_u")
+}
+
+model PurchaseRequestType {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String            @unique @db.VarChar
+  description     String?
+  isActive        Boolean?          @default(true)
+  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
+  createById      String?           @db.Uuid
+  updateAt        DateTime?         @default(now()) @db.Timestamp(6)
+  updateById      String?           @db.Uuid
+  PurchaseRequest PurchaseRequest[]
+
+  @@index([name], map: "purchaserequesttype_name_u")
+}
+
+enum UnitType {
+  OrderUnit
+  InventoryUnit
+  RecipeUnit
 }

@@ -20,3 +20,9 @@ export class DuplicateException extends HttpException {
     });
   }
 }
+
+export class NotImplementYet extends HttpException {
+  constructor() {
+    super('Not Implement Yet', HttpStatus.NOT_IMPLEMENTED);
+  }
+}

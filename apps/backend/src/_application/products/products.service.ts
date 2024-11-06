@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common';
 import {
   Prisma,
@@ -93,26 +94,33 @@ export class ProductsService {
       });
     }
 
-    const obj: Prisma.ProductCreateInput = {
-      id: createDto.id,
-      code: createDto.code,
-      name: createDto.name,
-      description: createDto.description,
-      isActive: createDto.isActive,
-      // ProductInfo: null,
-      // ProductVendor: null,
-      // UnitConversion: createDto.UnitConversion,
-    };
+    throw new NotImplementedException();
 
-    const createObj = await this.db_tenant.product.create({
-      data: obj,
-    });
+    // const obj: Prisma.ProductCreateInput = {
+    //   id: createDto.id,
+    //   code: createDto.code,
+    //   name: createDto.name,
+    //   description: createDto.description,
+    //   isActive: createDto.isActive,
+    //   Unit: {
+    //     create: undefined,
+    //     connectOrCreate: {
+    //       where: undefined,
+    //       create: undefined
+    //     },
+    //     connect: undefined
+    //   }
+    // };
 
-    const res: ResponseId<string> = {
-      id: createObj.id,
-    };
+    // const createObj = await this.db_tenant.product.create({
+    //   data: obj,
+    // });
 
-    return res;
+    // const res: ResponseId<string> = {
+    //   id: createObj.id,
+    // };
+
+    // return res;
   }
 
   async update(req: Request, id: string, updateDto: ProductUpdateDto) {

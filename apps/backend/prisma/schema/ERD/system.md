@@ -6,15 +6,6 @@
 ## default
 ```mermaid
 erDiagram
-"Company" {
-  String id PK
-  String code UK
-  String name "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
-}
 "Password" {
   String id PK
   String userId FK
@@ -25,6 +16,11 @@ erDiagram
   String id PK
   String name UK
   String description "nullable"
+  Boolean canGet
+  Boolean canCreate
+  Boolean canUpdate
+  Boolean canDelete
+  Boolean canPrint
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
@@ -32,6 +28,7 @@ erDiagram
 }
 "Role" {
   String id PK
+  String bussinessUnitId FK
   String name UK
   String description "nullable"
   DateTime createdAt "nullable"
@@ -43,16 +40,6 @@ erDiagram
   String id PK
   String roleId FK
   String permissionId FK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
-}
-"Tenant" {
-  String id PK
-  String companyId FK
-  String code
-  String name
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
@@ -88,29 +75,105 @@ erDiagram
   DateTime updateAt "nullable"
   String updateById FK "nullable"
 }
-"UserTenant" {
+"BusinessUnit" {
   String id PK
-  String userId FK "nullable"
-  String tenantId FK "nullable"
+  String clusterId FK
+  String code
+  String name
+  Boolean isHq "nullable"
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
   String updateById FK "nullable"
 }
-"Company" }o--o| "User" : User_Company_createByIdToUser
-"Company" }o--o| "User" : User_Company_updateByIdToUser
+"BusinessUnitModule" {
+  String id PK
+  String businessUnitId FK
+  String moduleId FK
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"Cluster" {
+  String id PK
+  String code UK
+  String name UK
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"Module" {
+  String id PK
+  String name UK
+  String description "nullable"
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"Notification" {
+  String id PK
+  String userId FK
+  String message "nullable"
+  Boolean isRead "nullable"
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"NotificationPreference" {
+  String id PK
+  String userId FK
+  Boolean isEmail
+  Boolean isSMS "nullable"
+  Boolean isInApp "nullable"
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"Subscription" {
+  String id PK
+  String clusterId FK
+  DateTime startDate
+  DateTime endDate
+  SubscriptionStatus status
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"SubscriptionDetail" {
+  String id PK
+  String subscriptionId FK
+  String bussinessUnitId FK
+  String moduleId FK
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
+"UserBusinessUnit" {
+  String id PK
+  String userId FK "nullable"
+  String businessunitId FK "nullable"
+  DateTime createdAt "nullable"
+  String createById FK "nullable"
+  DateTime updateAt "nullable"
+  String updateById FK "nullable"
+}
 "Password" }o--|| "User" : User
 "Permission" }o--o| "User" : User_Permission_createByIdToUser
 "Permission" }o--o| "User" : User_Permission_updateByIdToUser
+"Role" }o--|| "BusinessUnit" : BusinessUnit
 "Role" }o--o| "User" : User_Role_createByIdToUser
 "Role" }o--o| "User" : User_Role_updateByIdToUser
 "RolePermission" }o--o| "User" : User_RolePermission_createByIdToUser
 "RolePermission" }o--|| "Permission" : Permission
 "RolePermission" }o--|| "Role" : Role
 "RolePermission" }o--o| "User" : User_RolePermission_updateByIdToUser
-"Tenant" }o--|| "Company" : Company
-"Tenant" }o--o| "User" : User_Tenant_createByIdToUser
-"Tenant" }o--o| "User" : User_Tenant_updateByIdToUser
 "User" }o--o| "User" : User_User_createByIdToUser
 "User" }o--o| "User" : User_User_updateByIdToUser
 "UserProfile" }o--o| "User" : User_UserProfile_createByIdToUser
@@ -120,22 +183,36 @@ erDiagram
 "UserRole" }o--|| "Role" : Role
 "UserRole" }o--o| "User" : User_UserRole_updateByIdToUser
 "UserRole" }o--|| "User" : User
-"UserTenant" }o--o| "User" : User_UserTenant_createByIdToUser
-"UserTenant" }o--o| "Tenant" : Tenant
-"UserTenant" }o--o| "User" : User_UserTenant_updateByIdToUser
-"UserTenant" }o--o| "User" : User
+"BusinessUnit" }o--|| "Cluster" : Cluster
+"BusinessUnit" }o--o| "User" : User_BusinessUnit_createByIdToUser
+"BusinessUnit" }o--o| "User" : User_BusinessUnit_updateByIdToUser
+"BusinessUnitModule" }o--|| "BusinessUnit" : BusinessUnit
+"BusinessUnitModule" }o--o| "User" : User_BusinessUnitModule_createByIdToUser
+"BusinessUnitModule" }o--|| "Module" : Module
+"BusinessUnitModule" }o--o| "User" : User_BusinessUnitModule_updateByIdToUser
+"Cluster" }o--o| "User" : User_Cluster_createByIdToUser
+"Cluster" }o--o| "User" : User_Cluster_updateByIdToUser
+"Module" }o--o| "User" : User_Module_createByIdToUser
+"Module" }o--o| "User" : User_Module_updateByIdToUser
+"Notification" }o--o| "User" : User_Notification_createByIdToUser
+"Notification" }o--o| "User" : User_Notification_updateByIdToUser
+"Notification" }o--|| "User" : User_Notification_userIdToUser
+"NotificationPreference" }o--o| "User" : User_NotificationPreference_createByIdToUser
+"NotificationPreference" }o--o| "User" : User_NotificationPreference_updateByIdToUser
+"NotificationPreference" |o--|| "User" : User_NotificationPreference_userIdToUser
+"Subscription" }o--|| "Cluster" : Cluster
+"Subscription" }o--o| "User" : User_Subscription_createByIdToUser
+"Subscription" }o--o| "User" : User_Subscription_updateByIdToUser
+"SubscriptionDetail" }o--|| "BusinessUnit" : BusinessUnit
+"SubscriptionDetail" }o--o| "User" : User_SubscriptionDetail_createByIdToUser
+"SubscriptionDetail" }o--|| "Module" : Module
+"SubscriptionDetail" }o--|| "Subscription" : Subscription
+"SubscriptionDetail" }o--o| "User" : User_SubscriptionDetail_updateByIdToUser
+"UserBusinessUnit" }o--o| "BusinessUnit" : BusinessUnit
+"UserBusinessUnit" }o--o| "User" : User_UserBusinessUnit_createByIdToUser
+"UserBusinessUnit" }o--o| "User" : User_UserBusinessUnit_updateByIdToUser
+"UserBusinessUnit" }o--o| "User" : User_UserBusinessUnit_userIdToUser
 ```
-
-### `Company`
-
-**Properties**
-  - `id`: 
-  - `code`: 
-  - `name`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
 
 ### `Password`
 
@@ -151,6 +228,11 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
+  - `canGet`: 
+  - `canCreate`: 
+  - `canUpdate`: 
+  - `canDelete`: 
+  - `canPrint`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
@@ -160,6 +242,7 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `bussinessUnitId`: 
   - `name`: 
   - `description`: 
   - `createdAt`: 
@@ -173,18 +256,6 @@ erDiagram
   - `id`: 
   - `roleId`: 
   - `permissionId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
-### `Tenant`
-
-**Properties**
-  - `id`: 
-  - `companyId`: 
-  - `code`: 
-  - `name`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
@@ -226,12 +297,108 @@ erDiagram
   - `updateAt`: 
   - `updateById`: 
 
-### `UserTenant`
+### `BusinessUnit`
+
+**Properties**
+  - `id`: 
+  - `clusterId`: 
+  - `code`: 
+  - `name`: 
+  - `isHq`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `BusinessUnitModule`
+
+**Properties**
+  - `id`: 
+  - `businessUnitId`: 
+  - `moduleId`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `Cluster`
+
+**Properties**
+  - `id`: 
+  - `code`: 
+  - `name`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `Module`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `Notification`
 
 **Properties**
   - `id`: 
   - `userId`: 
-  - `tenantId`: 
+  - `message`: 
+  - `isRead`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `NotificationPreference`
+
+**Properties**
+  - `id`: 
+  - `userId`: 
+  - `isEmail`: 
+  - `isSMS`: 
+  - `isInApp`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `Subscription`
+
+**Properties**
+  - `id`: 
+  - `clusterId`: 
+  - `startDate`: 
+  - `endDate`: 
+  - `status`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `SubscriptionDetail`
+
+**Properties**
+  - `id`: 
+  - `subscriptionId`: 
+  - `bussinessUnitId`: 
+  - `moduleId`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `UserBusinessUnit`
+
+**Properties**
+  - `id`: 
+  - `userId`: 
+  - `businessunitId`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
