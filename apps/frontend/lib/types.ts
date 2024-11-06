@@ -947,7 +947,6 @@ export interface Contact {
   isPrimary: boolean;
 }
 
-
 export enum Status {
   Open = "Open",
   Closed = "Closed",

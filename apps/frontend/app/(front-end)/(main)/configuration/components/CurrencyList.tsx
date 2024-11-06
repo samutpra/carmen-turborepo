@@ -31,7 +31,7 @@ const statusOptions = [
     { value: "false", label: "Not Active" }
 ];
 
-const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA3OTM4NDEsImV4cCI6MTczMDc5NzQ0MX0.96oEIaoOKcW3bP_nh5kHh2OIQj12r-olN3lNCnaWWXo'
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA4NTg4MDEsImV4cCI6MTczMDg2MjQwMX0.SqbL218f0vdw2MuyO04kCTykCCfA9embajIzk-ic0B4'
 
 const CurrencyList = () => {
     const [isLoading, setIsLoading] = useState(false);
