@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, Pen, Trash } from 'lucide-react';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
-import { DateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
+import { TypeDateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 import StatusBadge from '../ui-custom/custom-status-badge';
 
 interface Column {
@@ -36,9 +36,9 @@ const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDele
                                     <div>
                                         {typeof item[column.key] === 'boolean' ? (
                                             <IsActiveIcon isChecked={item[column.key]} />
-                                        ) : dateKeys.includes(column.key as DateKey) ? (
+                                        ) : dateKeys.includes(column.key as TypeDateKey) ? (
                                             <span className="text-sm w-full">
-                                                {formatDateCustom(item[column.key] as DateKey)}
+                                                {formatDateCustom(item[column.key] as TypeDateKey)}
                                             </span>
                                         ) : column.key === 'status' ? (
                                             <StatusBadge status={(item[column.key])} />

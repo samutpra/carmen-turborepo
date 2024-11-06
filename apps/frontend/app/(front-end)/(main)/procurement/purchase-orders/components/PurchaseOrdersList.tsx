@@ -40,11 +40,9 @@ const PurchaseOrdersList = () => {
 
     const handleAdd = () => {
         router.push(`/procurement/purchase-orders/${FormAction.CREATE}`);
-
     }
 
     const handleView = (item: PurchaseOrderType) => {
-        console.log('Viewing unit:', item);
         router.push(`/procurement/purchase-orders/${item.poId}`);
     };
 
@@ -52,7 +50,6 @@ const PurchaseOrdersList = () => {
         console.log(item);
         router.push(`/procurement/purchase-orders/${item.poId}/${FormAction.EDIT}`);
     };
-
 
     const handleDelete = (item: PurchaseOrderType) => {
         setIdToDelete(item.poId);
@@ -131,8 +128,6 @@ const PurchaseOrdersList = () => {
             </div>
 
             <div className="hidden lg:block">
-
-
                 {isLoading ? (
                     <SkeletonTableLoading />
                 ) : (

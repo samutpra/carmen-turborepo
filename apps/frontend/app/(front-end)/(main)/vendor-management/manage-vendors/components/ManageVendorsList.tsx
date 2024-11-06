@@ -5,28 +5,36 @@ import { VendorType } from '../types';
 import { VendorDataList } from '../vendorsData';
 import { FormAction } from '@/lib/types';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui-custom/TableCustom"
-import ListPageTemplate from '@/components/templates/ListPageTemplate';
-import EmptyData from '@/components/EmptyData';
+import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
+import SearchInput from '@/components/ui-custom/SearchInput';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import DataCard from '@/components/templates/DataCard';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import DataTable from '@/components/templates/DataTable';
+import DialogDelete from '@/components/ui-custom/DialogDelete';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 
 
 const ManageVendorsList = () => {
     const router = useRouter();
     const [vendors, setVendors] = useState<VendorType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
+    const [dialogDelete, setDialogDelete] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
 
     useEffect(() => {
         async function fetchVendors() {
             try {
                 setIsLoading(true);
-                // const response = await fetch('/api/vendors');
-                // if (!response.ok) {
-                //   throw new Error('Failed to fetch vendors');
-                // }
-                // const data = await response.json();
-                const data = VendorDataList;
-
-                setVendors(data.vendors || []);
+                const data = VendorDataList.map(vendor => ({
+                    ...vendor,
+                    primaryAddress: vendor.addresses[0] ? formatAddress(vendor.addresses[0]) : '-',
+                    primaryContact: vendor.contacts[0] ? formatContact(vendor.contacts[0]) : '-',
+                    businessTypeName: vendor.businessType.name
+                }));
+                setVendors(data);
             } catch (err) {
                 console.error('Fetch error:', err);
                 setVendors([]);
@@ -38,78 +46,130 @@ const ManageVendorsList = () => {
         fetchVendors();
     }, []);
 
-    const handleAddVendor = () => {
-        router.push(`/vendor-management/manage-vendors/${FormAction.CREATE}`);
+    const handleAdd = () => {
+        router.push(`/procurement/purchase-orders/${FormAction.CREATE}`);
+    }
+
+    const handleView = (item: VendorType) => {
+        router.push(`/procurement/purchase-orders/${item.id}`);
     };
 
-    const handleEditVendor = (id: string) => {
-        router.push(`/vendor-management/manage-vendors/${id}/${FormAction.EDIT}`);
+    const handleEdit = (item: VendorType) => {
+        console.log(item);
+        router.push(`/procurement/purchase-orders/${item.id}/${FormAction.EDIT}`);
     };
 
-    const handleViewVendor = (id: string) => {
-        router.push(`/vendor-management/manage-vendors/${id}`);
+    const handleDelete = (item: VendorType) => {
+        setIdToDelete(item.id);
+        setDialogDelete(true);
     };
 
+    const confirmDelete = async () => {
+        try {
+            setIsLoading(true);
+            setVendors((prev) => prev.filter((item) => item.id !== idToDelete));
+            setDialogDelete(false);
+        } catch (error) {
+            console.error('Error deleting:', error);
+        } finally {
+            setIsLoading(false);
+            setIdToDelete(null);
+        }
+    }
+
+    const formatAddress = (address: VendorType['addresses'][0]): string => {
+        return `${address.addressLine}, ${address.subDistrictId ?? ''}, ${address.districtId ?? ''}, ${address.provinceId ?? ''} ${address.postalCode ?? ''}`.trim();
+    };
+    
+    const formatContact = (contact: VendorType['contacts'][0]): string => {
+        return `${contact.name} - ${contact.phone}`;
+    };
+
+    const title = 'Vendor Management';
+
+    const columns: { key: keyof VendorType; label: string }[] = [
+        { key: 'companyName', label: 'Company Name' },
+        { key: 'businessTypeName', label: 'Vendor Name' },
+        { key: 'primaryAddress', label: 'Address' },
+        { key: 'primaryContact', label: 'Contact' },
+        { key: 'isActive', label: 'Status' },
+    ];
 
     const actionButtons = (
-        <CustomButton onClick={handleAddVendor}>
-            Add Vendor
-        </CustomButton>
+        <div className="flex flex-col gap-4 md:flex-row">
+            <CustomButton
+                className='w-full md:w-20'
+                prefixIcon={<PlusCircle />}
+                onClick={handleAdd}
+            >
+                Add
+            </CustomButton>
+            <div className='flex flex-row md:flex-row gap-4'>
+                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Sheet />}>Export</CustomButton>
+                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Printer />}>Print</CustomButton>
+            </div>
+
+        </div>
     );
+
+    const filter = (
+        <div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+            <div className="w-full sm:w-auto flex-grow">
+                <SearchInput
+                    placeholder="Search Vendor..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    Icon={Search}
+                />
+            </div>
+        </div>
+    );
+
+
 
     const content = (
         <>
-            {isLoading ? (
-                <div>Loading...</div>
-            ) : vendors.length > 0 ? (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Company Name</TableHead>
-                            <TableHead>Business Type</TableHead>
-                            <TableHead>Primary Address</TableHead>
-                            <TableHead>Primary Contact</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {vendors.map((vendor) => (
-                            <TableRow key={vendor.id} className='hover:bg-zinc-50'>
-                                <TableCell>{vendor.companyName}</TableCell>
-                                <TableCell>{vendor.businessType?.name}</TableCell>
-                                <TableCell>
-                                    {vendor.addresses.find(a => a.isPrimary)?.addressLine || 'N/A'}
-                                </TableCell>
-                                <TableCell>
-                                    {vendor.contacts.find(c => c.isPrimary)?.name || 'N/A'}
-                                    {' '}
-                                    {vendor.contacts.find(c => c.isPrimary)?.phone || ''}
-                                </TableCell>
-                                <TableCell>
-                                    <div className='flex items-center space-x-4'>
-                                        <CustomButton size="sm" className='text-xs'
-                                            onClick={() => handleViewVendor(vendor.id)}
-                                        >View</CustomButton>
-                                        <CustomButton size="sm" className='text-xs'
-                                            onClick={() => handleEditVendor(vendor.id)}
-                                        >Edit</CustomButton>
-                                    </div>
+            <div className="block lg:hidden">
+                {isLoading ? (
+                    <SkeltonCardLoading />) : (
+                    <DataCard
+                        data={vendors}
+                        columns={columns}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onView={handleView}
+                    />
+                )}
+            </div>
 
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            ) : (
-                <EmptyData />
-            )}
+            <div className="hidden lg:block">
+                {isLoading ? (
+                    <SkeletonTableLoading />
+                ) : (
+                    <DataTable
+                        data={vendors}
+                        columns={columns}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onView={handleView}
+                    />
+                )}
+            </div>
+
+            <DialogDelete
+                open={dialogDelete}
+                onOpenChange={setDialogDelete}
+                onConfirm={confirmDelete}
+                idDelete={idToDelete}
+            />
         </>
     );
 
     return (
-        <ListPageTemplate
-            title="Vendor Management"
+        <DataDisplayTemplate
+            title={title}
             actionButtons={actionButtons}
+            filters={filter}
             content={content}
         />
     )

@@ -5,7 +5,7 @@ export const VendorSchema = z.object({
     companyName: z.string().min(1, "Company name is required"),
     businessRegistrationNumber: z.string().min(1, "Business registration number is required"),
     taxId: z.string().min(1, "Tax ID is required"),
-    establishmentDate: z.string().optional(),
+    establishmentDate: z.date().optional(),
     businessType: z.object({
         id: z.string().min(1, "Business type ID is required"),
         name: z.string().min(1, "Business type name is required")
@@ -22,7 +22,7 @@ export const VendorSchema = z.object({
             postalCode: z.string().optional(),
             isPrimary: z.boolean()
         })
-    ),
+    ).nonempty("At least one address is required"),
     contacts: z.array(
         z.object({
             id: z.string().optional(),
@@ -33,8 +33,12 @@ export const VendorSchema = z.object({
             department: z.string().optional(),
             isPrimary: z.boolean()
         })
-    ),
-    rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating must not exceed 5").optional()
+    ).nonempty("At least one contact is required"),
+    rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating must not exceed 5").optional(),
+    businessTypeName: z.string().optional(),
+    primaryAddress: z.string().optional(),
+    primaryContact: z.string().optional(),
 });
 
 export type VendorType = z.infer<typeof VendorSchema>;
+
