@@ -37,7 +37,7 @@ const GoodsReceiveNoteList = () => {
         fetchGrn();
     }, []);
 
-    const handleAdd =() => {
+    const handleAdd = () => {
         router.push(`/procurement/goods-received-note/${FormAction.CREATE}`);
 
     }

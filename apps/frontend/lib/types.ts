@@ -1033,3 +1033,22 @@ export interface CurrencyLabel {
   key: keyof CurrencyType;
   label: string;
 }
+
+
+export const PrSchema = z.object({
+  id: z.string().optional(),
+  type: z.string(),
+  requestor: z.string(),
+  department: z.string(),
+  description: z.string(),
+  date: z.preprocess((arg) => (typeof arg === "string" ? new Date(arg) : arg), z.date()),
+  status: z.string(),
+  amount: z.number(),
+  currentStage: z.string()
+});
+
+export type PrType = z.infer<typeof PrSchema>;
+export interface PrLabel {
+  key: keyof PrType;
+  label: string;
+}
