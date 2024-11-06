@@ -9,7 +9,7 @@ import {
   Product,
   PrismaClient as dbTenant,
 } from '@prisma-carmen-client-tenant';
-import { ProductCreateDto, ProductUpdateDto } from 'shared-dtos';
+import { ProductCreateDto, ProductUpdateDto } from '@shared/dto/product.dto';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';

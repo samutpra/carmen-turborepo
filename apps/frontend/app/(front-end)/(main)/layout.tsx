@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/components/header";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/sidebar";
 
 export default function MainLayout({
   children,

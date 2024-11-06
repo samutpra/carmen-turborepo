@@ -1,13 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { FormAction } from "@/lib/types";
-import { useFieldArray, useForm } from "react-hook-form";
-import { VendorSchema, VendorType } from "../types";
-import { VendorDataList } from "../vendorsData";
-import { PlusCircle, Trash } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Form,
     FormControl,
@@ -16,6 +9,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui-custom/FormCustom";
+import { PlusCircle, Trash } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import {
     Select,
     SelectContent,
@@ -23,14 +18,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui-custom/TableCustom";
+import { VendorSchema, VendorType } from "../types";
+import { useFieldArray, useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useRouter } from "@/lib/i18n";
+import { FormAction } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 import { InputCustom } from "@/components/ui-custom/InputCustom";
 import Rating from "@/components/Rating";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui-custom/TableCustom";
-
+import { VendorDataList } from "../vendorsData";
+import { useRouter } from "@/lib/i18n";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Props {
     id?: string;
@@ -52,7 +53,7 @@ const ManageVendorComponent: React.FC<Props> = ({ id, mvMode }) => {
             companyName: "",
             businessRegistrationNumber: "",
             taxId: "",
-            establishmentDate: "",
+            establishmentDate: undefined,
             businessType: { id: "", name: "" },
             isActive: true,
             addresses: [
@@ -100,12 +101,12 @@ const ManageVendorComponent: React.FC<Props> = ({ id, mvMode }) => {
 
     useEffect(() => {
         if ((mvMode === FormAction.VIEW || mvMode === FormAction.EDIT) && id) {
-            const vendorData = VendorDataList.vendors.find((vendor) => vendor.id === id);
-            if (vendorData) {
+            // const vendorData = VendorDataList.vendors.find((vendor) => vendor.id === id);
+            // if (vendorData) {
                 // Object.keys(vendorData).forEach((key) => {
                 //     form.setValue(key, vendorData[key]);
                 // });
-            }
+            // }
         }
     }, [id, mvMode, form.setValue]);
 
@@ -209,12 +210,12 @@ const ManageVendorComponent: React.FC<Props> = ({ id, mvMode }) => {
                                     <FormItem>
                                         <FormLabel>Establishment Date</FormLabel>
                                         <FormControl>
-                                            <InputCustom
+                                            {/* <InputCustom
                                                 type="date"
                                                 placeholder="Enter Establishment Date"
                                                 error={!!form.formState.errors.establishmentDate}
                                                 {...field}
-                                            />
+                                            /> */}
                                         </FormControl>
                                     </FormItem>
                                 )}

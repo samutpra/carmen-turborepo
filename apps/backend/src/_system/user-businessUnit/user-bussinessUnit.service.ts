@@ -7,7 +7,7 @@ import {
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from 'shared-dtos';
+} from '@shared/dto/user-businessUnit.dto';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';

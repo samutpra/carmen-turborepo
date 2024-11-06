@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { CurrencyCreateDto } from 'shared-dtos';
+import { CurrencyCreateDto } from '@shared/dto/currency.dto';
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';

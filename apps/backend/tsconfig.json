@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "strict": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -19,7 +18,11 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
     "lib": ["esnext"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@shared/*": ["../../packages/shared/src/*"]
+    },
+    "strict": true
   },
   "plugins": ["@nestjs/swagger"]
 }
