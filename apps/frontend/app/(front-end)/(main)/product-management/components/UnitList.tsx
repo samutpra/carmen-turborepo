@@ -29,6 +29,7 @@ import { nanoid } from 'nanoid'
 // import { unitData } from '../../configuration/data/data';
 import { useUnits } from '../unit/actions/units';
 import { accessToken } from '@/lib/currentUser';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 
 const statusOptions = [
@@ -273,9 +274,7 @@ const UnitList = () => {
                 {unitLoading ? (
                     <SkeltonCardLoading />
                 ) : error ? (
-                    <div className="flex items-center justify-center h-96 text-red-500">
-                        {error.message}
-                    </div>
+                    <ErrorDisplay errMessage={error.message} />
                 ) : (
                     <DataCard
                         data={units}
@@ -291,9 +290,7 @@ const UnitList = () => {
                 {unitLoading ? (
                     <SkeletonTableLoading />
                 ) : error ? (
-                    <div className="flex items-center justify-center h-96 text-red-500">
-                        {error.message}
-                    </div>
+                    <ErrorDisplay errMessage={error.message} />
                 ) : (
                     <DataTable
                         data={units}
