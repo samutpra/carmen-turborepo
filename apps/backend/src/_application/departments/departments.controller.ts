@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { Department } from '@prisma-carmen-client-tenant';
@@ -31,8 +32,13 @@ export class DepartmentsController {
   }
 
   @Get()
-  async findAll(@Req() req: Request) {
-    return this.departmentsService.findAll(req);
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page: number = 1,
+    @Query('perPage') perPage: number = 10,
+    @Query('search') search: string = '',
+  ) {
+    return this.departmentsService.findAll(req, page, perPage, search);
   }
 
   @Post()

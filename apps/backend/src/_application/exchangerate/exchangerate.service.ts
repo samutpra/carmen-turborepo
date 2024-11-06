@@ -49,19 +49,28 @@ export class ExchangerateService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<ExchangeRate>> {
+  async findAll(
+    req: Request,
+    page: number,
+    perPage: number,
+    search: string,
+  ): Promise<ResponseList<ExchangeRate>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.exchangeRate.count({});
-    const listObj = await this.db_tenant.exchangeRate.findMany();
+    const max = await this.db_tenant.exchangeRate.count({ where: {} });
+    const listObj = await this.db_tenant.exchangeRate.findMany({
+      where: {},
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
 
     const res: ResponseList<ExchangeRate> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: page,
+        perPage: perPage,
+        pages: Math.ceil(max / perPage),
       },
     };
     return res;

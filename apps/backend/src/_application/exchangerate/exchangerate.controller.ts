@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ExchangerateService } from './exchangerate.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -35,8 +36,13 @@ export class ExchangerateController {
 
   //#region GET ALL
   @Get()
-  async findAll(@Req() req: Request): Promise<ResponseList<ExchangeRate>> {
-    return this.exchangerateService.findAll(req);
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page: number = 1,
+    @Query('perPage') perPage: number = 10,
+    @Query('search') search: string = '',
+  ): Promise<ResponseList<ExchangeRate>> {
+    return this.exchangerateService.findAll(req, page, perPage, search);
   }
   //#endregion GET ALL
 

@@ -46,19 +46,30 @@ export class DepartmentsService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<Department>> {
+  async findAll(
+    req: Request,
+    page: number,
+    perPage: number,
+    search: string,
+  ): Promise<ResponseList<Department>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.department.count({});
-    const listObj = await this.db_tenant.department.findMany();
+    const max = await this.db_tenant.department.count({
+      where: { name: { contains: search } },
+    });
+    const listObj = await this.db_tenant.department.findMany({
+      where: { name: { contains: search } },
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
 
     const res: ResponseList<Department> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: page,
+        perPage: perPage,
+        pages: Math.ceil(max / perPage),
       },
     };
 
@@ -67,14 +78,14 @@ export class DepartmentsService {
 
   async create(
     req: Request,
-    departmentCreateDto: DepartmentCreateDto,
+    createDto: DepartmentCreateDto,
   ): Promise<ResponseId<string>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
     const found = await this.db_tenant.department.findUnique({
       where: {
-        name: departmentCreateDto.name,
+        name: createDto.name,
       },
     });
 
@@ -87,18 +98,14 @@ export class DepartmentsService {
     }
 
     const createObj = await this.db_tenant.department.create({
-      data: departmentCreateDto,
+      data: createDto,
     });
 
     const res: ResponseId<string> = { id: createObj.id };
     return res;
   }
 
-  async update(
-    req: Request,
-    id: string,
-    departmentUpdateDto: DepartmentUpdateDto,
-  ) {
+  async update(req: Request, id: string, updateDto: DepartmentUpdateDto) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getOne(this.db_tenant, id);
@@ -111,7 +118,7 @@ export class DepartmentsService {
       where: {
         id,
       },
-      data: departmentUpdateDto,
+      data: updateDto,
     });
 
     const res: ResponseId<string> = {

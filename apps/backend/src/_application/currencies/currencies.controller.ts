@@ -9,6 +9,8 @@ import {
   UseGuards,
   Req,
   ValidationPipe,
+  Query,
+  Logger,
 } from '@nestjs/common';
 import { CurrenciesService } from './currencies.service';
 
@@ -26,6 +28,8 @@ import { CurrencyCreateDto, CurrencyUpdateDto } from 'shared-dtos';
 @UseGuards(JwtAuthGuard)
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
+
+  private readonly logger = new Logger(CurrenciesController.name);
 
   //#region GET ONE
   @Get(':id')
@@ -45,17 +49,28 @@ export class CurrenciesController {
 
   //#region GET ALL
   @Get()
-  async findAll(@Req() req: Request): Promise<ResponseList<Currency>> {
-    return this.currenciesService.findAll(req);
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page: number,
+    @Query('perpage') perpage: number,
+    @Query('search') search: string = '',
+    @Query('filter') filter: Record<string, string> = {},
+  ): Promise<ResponseList<Currency>> {
+    if (!page) page = 1;
+    if (!perpage) perpage = 10;
+    page = parseInt(page.toString());
+    perpage = parseInt(perpage.toString());
+    return this.currenciesService.findAll(req, page, perpage, search, filter);
   }
   //#endregion GET ALL
 
   //#region CREATE
   @Post()
   async create(
-    @Body(new ValidationPipe()) createDto: CurrencyCreateDto,
+    @Body() createDto: any,
     @Req() req: Request,
   ): Promise<ResponseId<string>> {
+    this.logger.log('createDto: ', createDto);
     return this.currenciesService.create(req, createDto);
   }
   //#endregion CREATE
@@ -64,7 +79,7 @@ export class CurrenciesController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateDto: CurrencyUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ): Promise<ResponseId<string>> {
     return this.currenciesService.update(req, id, updateDto);
