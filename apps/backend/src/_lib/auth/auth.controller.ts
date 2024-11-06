@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { AuthLoginDto, AuthLoginResponseDto } from '@shared/dto/auth.dto';
+import { AuthLoginDto, AuthLoginResponseDto } from 'shared-dtos';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';

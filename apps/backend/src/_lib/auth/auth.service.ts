@@ -1,4 +1,4 @@
-import { AuthLoginResponseDto, AuthPayloadDto } from '@shared/dto/auth.dto';
+import { AuthLoginResponseDto, AuthPayloadDto } from 'shared-dtos';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { Injectable } from '@nestjs/common';

@@ -2,10 +2,7 @@ import {
   ExchangeRate,
   PrismaClient as dbTenant,
 } from '@prisma-carmen-client-tenant';
-import {
-  ExchangeRateCreateDto,
-  ExchangeRateUpdateDto,
-} from '@shared/dto/exchangeRate.dto';
+import { ExchangeRateCreateDto, ExchangeRateUpdateDto } from 'shared-dtos';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 

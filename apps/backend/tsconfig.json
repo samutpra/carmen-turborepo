@@ -18,11 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
     "lib": ["esnext"],
-    "esModuleInterop": true,
-    "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
-    },
-    "strict": true
+    "esModuleInterop": true
   },
   "plugins": ["@nestjs/swagger"]
 }

@@ -14,7 +14,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import { Product } from '@prisma-carmen-client-tenant';
-import { ProductCreateDto, ProductUpdateDto } from '@shared/dto/product.dto';
+import { ProductCreateDto, ProductUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/products')
 @ApiTags('products')

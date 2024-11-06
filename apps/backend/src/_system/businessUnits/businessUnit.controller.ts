@@ -14,10 +14,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import { BusinessUnit } from '@prisma-carmen-client-system';
-import {
-  BusinessUnitCreateDto,
-  BusinessUnitUpdateDto,
-} from '@shared/dto/businessUnit.dto';
+import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/businessUnits')
 @ApiTags('businessUnit')

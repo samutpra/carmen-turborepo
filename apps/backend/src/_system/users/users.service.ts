@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
-import { UserCreateDto, UserUpdateDto } from '@shared/dto/user.dto';
+import { UserCreateDto, UserUpdateDto } from 'shared-dtos';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';

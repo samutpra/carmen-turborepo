@@ -15,7 +15,7 @@ import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from '@shared/dto/user-businessUnit.dto';
+} from 'shared-dtos';
 
 @Controller('api/v1/user-businessUnit')
 @ApiTags('user businessUnit')

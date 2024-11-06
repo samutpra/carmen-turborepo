@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "nest start --watch",
-    "build": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && nest build",
+    "build": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma &&nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -19,6 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma",
     "prisma:generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma",
     "prisma:reset": "prisma migrate reset --schema prisma/schema/system/system.prisma && prisma migrate reset --schema prisma/schema/tenant/tenant.prisma",
     "prisma:dev": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && ts-node ./src/main.ts",
@@ -52,6 +53,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "shared-dtos": "*",
+    "shared-types": "*",
     "@faker-js/faker": "^9.0.1",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",

@@ -13,7 +13,7 @@ import { LocationsService } from './locations.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { LocationCreateDto, LocationUpdateDto } from '@shared/dto/location.dto';
+import { LocationCreateDto, LocationUpdateDto } from 'shared-dtos';
 
 @Controller('api/v1/locations')
 @ApiTags('locations')
