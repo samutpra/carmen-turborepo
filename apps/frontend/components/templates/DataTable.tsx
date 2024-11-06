@@ -5,6 +5,7 @@ import { CustomButton } from '../ui-custom/CustomButton';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
 import { TypeDateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 import StatusBadge from '../ui-custom/custom-status-badge';
+import { amountKeys, formatPrice, TypeAmountKey } from '@/lib/formatPrice';
 
 interface ColumnProps<T> {
     key: Extract<keyof T, string>;
@@ -21,7 +22,6 @@ interface Props<T> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DataTable = <T extends Record<string, any>>({ data, columns, onEdit, onDelete, onView }: Props<T>) => {
-
     return (
         <Table>
             <TableHeader>
@@ -39,21 +39,27 @@ const DataTable = <T extends Record<string, any>>({ data, columns, onEdit, onDel
                 {data.map((item, index) => (
                     <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        {columns.map((column) => (
-                            <TableCell key={column.key} className="whitespace-nowrap">
-                                {typeof item[column.key] === 'boolean' ? (
-                                    <IsActiveIcon isChecked={item[column.key]} />
-                                ) : dateKeys.includes(column.key as TypeDateKey) ? (
-                                    formatDateCustom(item[column.key])
-                                ) : column.key === 'status' ? (
-                                    <StatusBadge status={(item[column.key])} />
-                                ): item[column.key] != null ? (
-                                    String(item[column.key])
-                                ) : (
-                                    '-'
-                                )}
-                            </TableCell>
-                        ))}
+                        {columns.map((column) => {
+                            const value = item[column.key];
+                            return (
+                                <TableCell key={column.key} className="whitespace-nowrap">
+                                    {typeof value === 'boolean' ? (
+                                        <IsActiveIcon isChecked={value} />
+                                    ) : dateKeys.includes(column.key as TypeDateKey) ? (
+                                        formatDateCustom(value)
+                                    ) : column.key === 'status' ? (
+                                        <StatusBadge status={value} />
+                                    ) : amountKeys.includes(column.key as TypeAmountKey) ? (
+                                        formatPrice(value)
+                                    ) : value != null ? (
+                                        String(value)
+                                    ) : (
+                                        '-'
+                                    )}
+                                </TableCell>
+                            );
+                        })}
+                        
                         {(onEdit || onDelete || onView) && (
                             <TableCell className="">
                                 <div className="flex gap-2">

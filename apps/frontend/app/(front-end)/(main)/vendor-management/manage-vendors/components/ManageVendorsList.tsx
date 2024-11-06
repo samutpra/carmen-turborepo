@@ -14,7 +14,6 @@ import DataTable from '@/components/templates/DataTable';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 
-
 const ManageVendorsList = () => {
     const router = useRouter();
     const [vendors, setVendors] = useState<VendorType[]>([]);
@@ -22,7 +21,6 @@ const ManageVendorsList = () => {
     const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
     const [dialogDelete, setDialogDelete] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-
 
     useEffect(() => {
         async function fetchVendors() {
@@ -124,8 +122,6 @@ const ManageVendorsList = () => {
             </div>
         </div>
     );
-
-
 
     const content = (
         <>

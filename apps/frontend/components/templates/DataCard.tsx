@@ -5,6 +5,7 @@ import { EyeIcon, Pen, Trash } from 'lucide-react';
 import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
 import { TypeDateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
 import StatusBadge from '../ui-custom/custom-status-badge';
+import { amountKeys, formatPrice, TypeAmountKey } from '@/lib/formatPrice';
 
 interface Column {
     key: string;
@@ -27,66 +28,66 @@ const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDele
             {data.map((item, index) => (
                 <Card key={index} className="overflow-hidden">
                     <CardContent>
-                        <div className="space-y-2">
-                            {columns.map((column) => (
-                                <div key={column.key} className="flex">
-                                    <div className="w-1/4">
-                                        <span className='text-sm font-medium text-gray-500'>{column.label}</span>
+                        {columns.map((column) => {
+                            const value = item[column.key];
+                            return (
+                                <div key={column.key} className="flex items-center">
+                                    <div className="flex w-2/5">
+                                        <span className="text-sm font-medium text-gray-500">{column.label}</span>
                                     </div>
                                     <div>
-                                        {typeof item[column.key] === 'boolean' ? (
-                                            <IsActiveIcon isChecked={item[column.key]} />
+                                        {typeof value === 'boolean' ? (
+                                            <IsActiveIcon isChecked={value} />
                                         ) : dateKeys.includes(column.key as TypeDateKey) ? (
                                             <span className="text-sm w-full">
-                                                {formatDateCustom(item[column.key] as TypeDateKey)}
+                                                {formatDateCustom(value as TypeDateKey)}
                                             </span>
                                         ) : column.key === 'status' ? (
-                                            <StatusBadge status={(item[column.key])} />
-                                        ) : item[column.key] != null ? (
-                                            <span className="text-sm w-full">
-                                                {String(item[column.key] ?? '')}
-                                            </span>
+                                            <StatusBadge status={value} />
+                                        ) : amountKeys.includes(column.key as TypeAmountKey) ? (
+                                            <span className="text-sm w-full">{formatPrice(value)}</span>
+                                        ) : value != null ? (
+                                            <span className="text-sm w-full">{String(value)}</span>
                                         ) : (
                                             '-'
                                         )}
                                     </div>
-
                                 </div>
-                            ))}
+                            );
+                        })}
 
-                            {(onEdit || onDelete || onView) && (
-                                <div className="flex gap-2 pt-2 justify-end">
-                                    {onView && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => onView(item)}
-                                            className="hover:bg-blue-50"
-                                        >
-                                            <EyeIcon />
-                                        </Button>
-                                    )}
-                                    {onEdit && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => onEdit(item)}
-                                            className="hover:bg-blue-50"
-                                        >
-                                            <Pen />                                        </Button>
-                                    )}
-                                    {onDelete && (
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => onDelete(item)}
-                                        >
-                                            <Trash />
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                        {(onEdit || onDelete || onView) && (
+                            <div className="flex gap-2 pt-2 justify-end">
+                                {onView && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onView(item)}
+                                        className="hover:bg-blue-50"
+                                    >
+                                        <EyeIcon />
+                                    </Button>
+                                )}
+                                {onEdit && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onEdit(item)}
+                                        className="hover:bg-blue-50"
+                                    >
+                                        <Pen />                                        </Button>
+                                )}
+                                {onDelete && (
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => onDelete(item)}
+                                    >
+                                        <Trash />
+                                    </Button>
+                                )}
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             ))}

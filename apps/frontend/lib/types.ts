@@ -1054,8 +1054,6 @@ export interface PrLabel {
   label: string;
 }
 
-//PO
-
 const PurchaseOrderStatusSchema = z.enum([
   "Open",
   "Voided",
@@ -1188,3 +1186,82 @@ export type PurchaseOrderType = z.infer<typeof PurchaseOrderSchema>;
 export type PurchaseOrderItemType = z.infer<typeof PurchaseOrderItemSchema>;
 export type PurchaseOrderLineType = z.infer<typeof PurchaseOrderLineSchema>;
 export type AttachmentType = z.infer<typeof AttachmentSchema>;
+
+
+const CreditNoteItemSchema = z.object({
+  id: z.number(),
+  description: z.string(),
+  quantity: z.number(),
+  unitPrice: z.number(),
+  discountPercentage: z.number(),
+  taxPercentage: z.number(),
+});
+
+const CreditNoteAttachmentSchema = z.object({
+  id: z.number(),
+  fileName: z.string(),
+  fileSize: z.number(),
+  uploadDate: z.date(),
+  uploadedBy: z.string(),
+});
+
+export const EditedItemSchema = z.object({
+  id: z.string(),
+  productName: z.string(),
+  productDescription: z.string(),
+  location: z.string(),
+  lotNo: z.string(),
+  orderUnit: z.string(),
+  inventoryUnit: z.string(),
+  rcvQty: z.number(),
+  cnQty: z.number(),
+  unitPrice: z.number(),
+  cnAmt: z.number(),
+  costVariance: z.number(),
+  discountAmount: z.number(),
+  totalReceivedQty: z.number(),
+  grnNumber: z.string(),
+  grnDate: z.date(),
+  taxRate: z.number(),
+  tax: z.number(),
+  total: z.number(),
+  appliedLots: z.array(
+    z.object({
+      lotNumber: z.string(),
+      receiveDate: z.date(),
+      grnNumber: z.string(),
+      invoiceNumber: z.string(),
+    })
+  ).optional(),
+});
+
+const CreditNoteStatusSchema = z.enum(['Draft', 'Pending', 'Approved', 'Rejected', 'Void']);
+
+export const CreditNoteSchema = z.object({
+  id: z.string(),
+  refNumber: z.string(),
+  description: z.string(),
+  vendorId: z.number(),
+  vendorName: z.string(),
+  createdDate: z.date(),
+  docNumber: z.string(),
+  docDate: z.date(),
+  netAmount: z.number(),
+  taxAmount: z.number(),
+  totalAmount: z.number(),
+  currency: z.string(),
+  status: CreditNoteStatusSchema,
+  notes: z.string(),
+  createdBy: z.string(),
+  updatedDate: z.date(),
+  updatedBy: z.string(),
+  items: z.array(CreditNoteItemSchema),
+  attachments: z.array(CreditNoteAttachmentSchema),
+});
+
+export type CreditNoteType = z.infer<typeof CreditNoteSchema>;
+export type CreditNoteStatusType = z.infer<typeof CreditNoteStatusSchema>;
+export type CreditNoteItemType = z.infer<typeof CreditNoteItemSchema>;
+export type CreditNoteAttachmentType = z.infer<typeof CreditNoteAttachmentSchema>;
+export type EditedItemType = z.infer<typeof EditedItemSchema>;
+
