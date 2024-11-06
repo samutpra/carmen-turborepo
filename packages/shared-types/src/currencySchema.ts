@@ -1,17 +1,18 @@
 import { z } from "zod";
 
 // Currency
-export const currencySchema = z.object({
-    id: z.string(),
+export const CurrencySchema = z.object({
+    id: z.string().optional(),
     code: z.string(),
+    name: z.string(),
+    symbol: z.string(),
     description: z.string(),
+    rate: z.number(),
     isActive: z.boolean(),
-});
-
-export type currencyType = z.infer<typeof currencySchema>;
-
-export interface CurrencyLabel {
-    key: keyof currencyType;
-    display: string;
-    type: "string" | "boolean";
-}
+  });
+  
+  export type CurrencyType = z.infer<typeof CurrencySchema>;
+  export interface CurrencyLabel {
+    key: keyof CurrencyType;
+    label: string;
+  }
