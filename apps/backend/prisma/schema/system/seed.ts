@@ -4,7 +4,7 @@ import {
   User,
   UserBusinessUnit,
   PrismaClient as dbSystem,
-} from '@prisma-carmen-client/system';
+} from '@prisma-carmen-client-system';
 
 const prisma = new dbSystem();
 

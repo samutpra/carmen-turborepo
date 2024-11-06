@@ -11,8 +11,6 @@
     "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./paraglide"
   },
   "dependencies": {
-    "shared-types": "1.0.0",
-    "shared-dtos": "1.0.0",
     "@hookform/resolvers": "^3.9.1",
     "@inlang/paraglide-next": "^0.5.2",
     "@radix-ui/react-accordion": "^1.2.1",
@@ -63,8 +61,10 @@
     "react-hook-form": "^7.53.1",
     "react-resizable-panels": "^2.1.6",
     "recharts": "^2.13.3",
-    "shadcn": "^2.0.7",
-    "shadcn-ui": "^0.9.1",
+    "shadcn": "^1.0.0",
+    "shadcn-ui": "^0.2.3",
+    "shared-dtos": "1.0.0",
+    "shared-types": "1.0.0",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",

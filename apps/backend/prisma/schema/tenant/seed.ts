@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient as dbTenant } from '@prisma-carmen-client/tenant';
+import { Prisma, PrismaClient as dbTenant } from '@prisma-carmen-client-tenant';
 
 const prisma = new dbTenant();
 
