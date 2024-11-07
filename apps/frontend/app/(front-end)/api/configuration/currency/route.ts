@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
         }
     };
 
-    const urlWithParams = `${apiUrl}?page=${page}&perpage=${perPage}&search=${search}`;
+    const url = `${apiUrl}?page=${page}&perpage=${perPage}&search=${search}`;
 
     try {
-        const response = await fetch(urlWithParams, options);
+        const response = await fetch(url, options);
         if (!response.ok) {
             return NextResponse.json(
                 { error: `Failed to fetch data: ${response.statusText}` },

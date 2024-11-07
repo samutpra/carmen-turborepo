@@ -4,7 +4,7 @@ import { CurrencySchema, CurrencyType, PaginationType } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
-interface FetchParams {
+interface ParamsType {
     page?: number;
     perpage?: number;
     search?: string;
@@ -19,7 +19,7 @@ class APIError extends Error {
 
 export const fetchCurrency = async (
     accessToken: string,
-    params: FetchParams = {}
+    params: ParamsType = {}
 ): Promise<{ currencies: CurrencyType[]; pagination: PaginationType }> => {
 
     if (!accessToken) {
@@ -28,7 +28,7 @@ export const fetchCurrency = async (
 
     const query = new URLSearchParams({
         page: params.page?.toString() || '1',
-        perpage: params.perpage?.toString() || '1',
+        perpage: params.perpage?.toString() || '10',
         search: params.search || '',
     });
 
@@ -70,37 +70,29 @@ export const fetchCurrency = async (
     }
 };
 
-export const useCurrencies = (
-    accessToken: string,
-    params: FetchParams = {}
-) => {
-
+export const useCurrencies = (token: string) => {
+    const [search, setSearch] = useState('');
     const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
-    const [search, setSearch] = useState<string>(params.search || '');
     const [pagination, setPagination] = useState<PaginationType>({
         total: 0,
-        page: params.page || 1,
-        perPage: params.perpage || 1,
+        page: 1,
+        perPage: 10,
         pages: 1,
-
     });
+    const [shouldFetch, setShouldFetch] = useState(true);
 
     const fetchData = useCallback(async () => {
-
-        if (!accessToken) {
-            setError(new Error('Access token is required'));
+        if (!token || !shouldFetch) {
             return;
         }
 
         setLoading(true);
         setError(null);
-
         try {
             const { currencies: fetchedCurrencies, pagination: fetchedPagination } =
-
-                await fetchCurrency(accessToken, {
+                await fetchCurrency(token, {
                     page: pagination.page,
                     perpage: pagination.perPage,
                     search,
@@ -112,8 +104,9 @@ export const useCurrencies = (
             setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         } finally {
             setLoading(false);
+            setShouldFetch(false);
         }
-    }, [accessToken, pagination.page, pagination.perPage, search]);
+    }, [token, pagination.page, pagination.perPage, search, shouldFetch]);
 
     const goToPage = useCallback((page: number) => {
         setPagination(prev => ({ ...prev, page }));
@@ -141,16 +134,19 @@ export const useCurrencies = (
         }));
     }, []);
 
-    const handleSearch = useCallback((searchTerm: string) => {
-        setSearch(searchTerm);
-        setPagination(prev => ({ ...prev, page: 1 }));
-    }, []);
+    const handleSearch = (value: string, shouldSearch: boolean = false) => {
+        setSearch(value);
+        if (shouldSearch) {
+            setPagination(prev => ({ ...prev, page: 1 }));
+            setShouldFetch(true);
+        }
+    };
 
     useEffect(() => {
         let isMounted = true;
 
         const fetchWithMount = async () => {
-            if (isMounted) {
+            if (isMounted && shouldFetch) {
                 await fetchData();
             }
         };
@@ -163,27 +159,17 @@ export const useCurrencies = (
     }, [fetchData]);
 
     return {
-        // Data
         currencies,
+        setCurrencies,
         loading,
         error,
         pagination,
         search,
-
-        // Setters
-        setCurrencies,
-        setPagination,
-
-        // Pagination handlers
+        handleSearch,
         goToPage,
         nextPage,
         previousPage,
         setPerPage,
-
-        // Search handler
-        handleSearch,
-
-        // Refresh data
-        refetch: fetchData,
+        fetchData,
     };
 };

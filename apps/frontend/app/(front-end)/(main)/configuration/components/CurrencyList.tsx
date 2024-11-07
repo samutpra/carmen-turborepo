@@ -38,7 +38,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NjQ5NzMsImV4cCI6MTczMDk2ODU3M30.PvPpoq2H2138-zd4O96mseGOMxjxIlUWeMGwl0N7hfY';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NzM2NzgsImV4cCI6MTczMDk3NzI3OH0.8JG0Vdf0kpFQBR_nrRZQmbw3jjNbKPEHRQbfFpsjYnA';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +61,6 @@ const CurrencyList = () => {
 		previousPage,
 		setPerPage,
 		handleSearch,
-		refetch
 	} = useCurrencies(accessToken);
 
 	const form = useForm<CurrencyType>({
@@ -80,16 +79,15 @@ const CurrencyList = () => {
 		if (editingItem) {
 			form.reset({
 				code: editingItem.code,
+				name: editingItem.name,
+				symbol: editingItem.symbol,
 				description: editingItem.description,
+				rate: editingItem.rate,
 				isActive: editingItem.isActive,
 			});
 		}
 	}, [editingItem, form]);
 
-
-	// const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	setSearchTerm(e.target.value);
-	// };
 
 	const handleEdit = (item: CurrencyType) => {
 		form.setValue('code', item.code);
@@ -167,7 +165,15 @@ const CurrencyList = () => {
 				<SearchInput
 					placeholder='Search Currency...'
 					value={search}
-					onChange={(e) => handleSearch(e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+						handleSearch(e.target.value, false);
+					}}
+					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							handleSearch(e.currentTarget.value, true);
+						}
+					}}
 					Icon={Search}
 				/>
 			</div>
@@ -280,53 +286,71 @@ const CurrencyList = () => {
 			/>
 
 			<Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
-				<DialogContent>
+				<DialogContent className="sm:max-w-[700px]">
 					<DialogHeader>
 						<DialogTitle>{editingItem ? `Edit ${title}` : `Add New ${title}`}</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(handleSave)} className='space-y-4'>
-							<FormField
-								control={form.control}
-								name='code'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Code</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Code name' error={!!form.formState.errors.code} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+							<div className="grid grid-cols-2 gap-4">
+								<FormField
+									control={form.control}
+									name='code'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Code</FormLabel>
+											<FormControl>
+												<InputCustom placeholder='Enter Code name' error={!!form.formState.errors.code} {...field} />
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
 
-							<FormField
-								control={form.control}
-								name='name'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Name</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Name' error={!!form.formState.errors.name} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+								<FormField
+									control={form.control}
+									name='name'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Name</FormLabel>
+											<FormControl>
+												<InputCustom placeholder='Enter Name' error={!!form.formState.errors.name} {...field} />
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
+							</div>
 
-							<FormField
-								control={form.control}
-								name='symbol'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Symbol</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Symbol' error={!!form.formState.errors.symbol} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+							<div className="grid grid-cols-2 gap-4">
+								<FormField
+									control={form.control}
+									name='symbol'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Symbol</FormLabel>
+											<FormControl>
+												<InputCustom placeholder='Enter Symbol' error={!!form.formState.errors.symbol} {...field} />
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
+
+								<FormField
+									control={form.control}
+									name='rate'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Rate</FormLabel>
+											<FormControl>
+												<InputCustom placeholder='Enter Rate' error={!!form.formState.errors.rate} {...field} />
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
+							</div>
 
 							<FormField
 								control={form.control}
@@ -348,20 +372,6 @@ const CurrencyList = () => {
 
 							<FormField
 								control={form.control}
-								name='rate'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Rate</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Rate' error={!!form.formState.errors.rate} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
-
-							<FormField
-								control={form.control}
 								name='isActive'
 								render={({ field }) => (
 									<FormItem className='flex items-center space-x-2'>
@@ -374,7 +384,7 @@ const CurrencyList = () => {
 								)}
 							/>
 							<DialogFooter>
-								<Button type='button' variant='secondary' onClick={handleCloseDialog} disabled={isLoading} className=''>
+								<Button type='button' variant='secondary' onClick={handleCloseDialog} disabled={isLoading}>
 									Cancel
 								</Button>
 								<LoaderButton type='submit' disabled={isLoading} isLoading={isLoading}>
