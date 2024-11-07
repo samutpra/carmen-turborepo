@@ -27,7 +27,7 @@ import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { Switch } from '@/components/ui/switch';
-import { useCurrencies } from '../currency/actions/currency';
+import { useCurrencies, updateCurrency, deleteCurrency } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -38,7 +38,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NzM2NzgsImV4cCI6MTczMDk3NzI3OH0.8JG0Vdf0kpFQBR_nrRZQmbw3jjNbKPEHRQbfFpsjYnA';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NzkyNzgsImV4cCI6MTczMDk4Mjg3OH0.KMQ8JHv6OgnqQ2tugOs-FZJLIq3YdgS1xPKvrswU6-c';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +66,7 @@ const CurrencyList = () => {
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
 		defaultValues: {
+			id: '',
 			code: '',
 			description: '',
 			name: '',
@@ -90,14 +91,21 @@ const CurrencyList = () => {
 
 
 	const handleEdit = (item: CurrencyType) => {
-		form.setValue('code', item.code);
-		form.setValue('description', item.description);
-		form.setValue('isActive', item.isActive);
 		setEditingItem(item);
+		form.reset({
+			id: item.id,
+			code: item.code,
+			name: item.name,
+			symbol: item.symbol,
+			description: item.description,
+			rate: item.rate,
+			isActive: item.isActive,
+		});
 		setDialogForm(true);
 	};
 
 	const handleDelete = (item: CurrencyType) => {
+		console.log('Preparing to delete currency:', item);
 		setIdToDelete(item.id);
 		setDialogDelete(true);
 	};
@@ -105,10 +113,22 @@ const CurrencyList = () => {
 	const confirmDelete = async () => {
 		try {
 			setIsLoading(true);
-			setCurrencies((prev: CurrencyType[]) => prev.filter((currency: CurrencyType) => currency.id !== idToDelete));
-			setDialogDelete(false);
+			if (idToDelete) {
+				console.log('Starting delete process for ID:', idToDelete);
+
+				await deleteCurrency(accessToken, idToDelete);
+
+				setCurrencies((prev: CurrencyType[]) =>
+					prev.filter((currency: CurrencyType) => currency.id !== idToDelete)
+				);
+
+				setDialogDelete(false);
+				// Optionally refresh the data
+				// fetchData();
+			}
 		} catch (error) {
 			console.error('Error deleting currency:', error);
+			// You might want to show an error message to the user here
 		} finally {
 			setIsLoading(false);
 			setIdToDelete(null);
@@ -116,7 +136,46 @@ const CurrencyList = () => {
 	};
 
 	const handleSave = async (data: CurrencyType) => {
-		console.log(data);
+		try {
+			setIsLoading(true);
+			if (editingItem?.id) {
+				const updatedFields: Partial<CurrencyType> = {
+					code: data.code,
+					name: data.name,
+					symbol: data.symbol,
+					description: data.description,
+					rate: data.rate,
+					isActive: data.isActive,
+				};
+
+				console.log('1. Starting update process with:', {
+					id: editingItem.id,
+					updatedFields,
+					accessToken: accessToken.substring(0, 20) + '...' // Log partial token for security
+				});
+
+				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
+
+				console.log('4. Received updated currency:', updatedCurrency);
+
+				setCurrencies((prev: CurrencyType[]) =>
+					prev.map((currency) =>
+						currency.id === editingItem.id ? updatedCurrency : currency
+					)
+				);
+
+				console.log('5. State updated successfully');
+				handleCloseDialog();
+			}
+		} catch (error) {
+			console.error('Save error details:', {
+				error,
+				message: error instanceof Error ? error.message : 'Unknown error',
+				stack: error instanceof Error ? error.stack : undefined
+			});
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleCloseDialog = () => {

@@ -36,8 +36,9 @@ export const fetchCurrency = async (
         const response = await fetch(`/api/configuration/currency?${query}`, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
+                'x-tenant-id': 'DUMMY',
             },
         });
 
@@ -59,14 +60,88 @@ export const fetchCurrency = async (
             pagination: data.pagination,
         };
     } catch (error) {
+        console.error('Fetch Currencies Error:', error);
         if (error instanceof APIError) {
             throw error;
         }
         if (error instanceof z.ZodError) {
             throw new Error('Invalid currency data received from server');
         }
-        console.error('Fetch Currencies Error:', error);
         throw new Error('Failed to fetch currencies');
+    }
+};
+
+export const updateCurrency = async (
+    accessToken: string,
+    id: string,
+    data: Partial<CurrencyType>
+): Promise<CurrencyType> => {
+    console.log('2. updateCurrency called with:', {
+        id,
+        data,
+        accessToken: accessToken.substring(0, 20) + '...'
+    });
+
+    if (!accessToken) {
+        throw new Error('Access token is required');
+    }
+
+    try {
+        console.log(`2a. Sending PATCH request to: /api/configuration/currency/${id}`);
+
+        const response = await fetch(`/api/configuration/currency/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'x-tenant-id': 'DUMMY',
+            },
+            body: JSON.stringify(data),
+        });
+
+        console.log('2b. Response received:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok
+        });
+
+        const responseData = await response.json();
+        console.log('2c. Response data:', responseData);
+
+        if (!response.ok) {
+            console.error('2d. Error response:', responseData);
+            throw new APIError(
+                response.status,
+                responseData.message || `Failed to update currency: ${response.status} ${response.statusText}`
+            );
+        }
+
+        if (!responseData.data) {
+            console.error('2e. Invalid response format:', responseData);
+            throw new Error('Invalid response format from server');
+        }
+
+        const parsedData = CurrencySchema.parse(responseData.data);
+        console.log('3. Parsed response data:', parsedData);
+
+        return parsedData;
+    } catch (error) {
+        console.error('Update Currency Error Details:', {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined
+        });
+
+        if (error instanceof APIError) {
+            throw error;
+        }
+        if (error instanceof z.ZodError) {
+            console.error('Zod validation error:', error.errors);
+            throw new Error('Invalid currency data received from server');
+        }
+
+        throw new Error(error instanceof Error ? error.message : 'Failed to update currency');
     }
 };
 
@@ -172,4 +247,38 @@ export const useCurrencies = (token: string) => {
         setPerPage,
         fetchData,
     };
+};
+
+export const deleteCurrency = async (
+    accessToken: string,
+    id: string
+): Promise<void> => {
+    if (!accessToken) {
+        throw new Error('Access token is required');
+    }
+
+    try {
+        const response = await fetch(`/api/configuration/currency/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'x-tenant-id': 'DUMMY',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new APIError(
+                response.status,
+                errorData?.message || `Failed to delete currency: ${response.status} ${response.statusText}`
+            );
+        }
+    } catch (error) {
+        console.error('Delete Currency Error:', error);
+        if (error instanceof APIError) {
+            throw error;
+        }
+        throw new Error('Failed to delete currency');
+    }
 };
