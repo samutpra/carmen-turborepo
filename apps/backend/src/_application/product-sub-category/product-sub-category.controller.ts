@@ -13,7 +13,7 @@ import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
-} from 'shared-dtos';
+} from '@carmensoftware/shared-dtos';
 
 import { ApiTags } from '@nestjs/swagger';
 import { ProductSubCategory } from '@prisma-carmen-client-tenant';

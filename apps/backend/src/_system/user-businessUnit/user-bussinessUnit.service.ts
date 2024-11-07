@@ -7,7 +7,7 @@ import {
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from 'shared-dtos';
+} from '@carmensoftware/shared-dtos';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';

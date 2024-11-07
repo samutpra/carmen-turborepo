@@ -6,7 +6,7 @@ import {
 import {
   ProductItemGroupCreateDto,
   ProductItemGroupUpdateDto,
-} from 'shared-dtos';
+} from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';

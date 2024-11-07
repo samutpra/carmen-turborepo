@@ -15,7 +15,10 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import { ExchangeRate } from '@prisma-carmen-client-tenant';
-import { ExchangeRateCreateDto, ExchangeRateUpdateDto } from 'shared-dtos';
+import {
+  ExchangeRateCreateDto,
+  ExchangeRateUpdateDto,
+} from '@carmensoftware/shared-dtos';
 
 @Controller('api/v1/exchangerate')
 @ApiTags('exchangerate')

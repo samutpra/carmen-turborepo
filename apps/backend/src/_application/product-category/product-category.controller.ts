@@ -12,7 +12,7 @@ import {
 import {
   ProductCategoryCreateDto,
   ProductCategoryUpdateDto,
-} from 'shared-dtos';
+} from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 
 import { ApiTags } from '@nestjs/swagger';

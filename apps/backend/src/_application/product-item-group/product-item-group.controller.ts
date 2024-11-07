@@ -13,7 +13,7 @@ import { ProductItemGroupService } from './product-item-group.service';
 import {
   ProductItemGroupCreateDto,
   ProductItemGroupUpdateDto,
-} from 'shared-dtos';
+} from '@carmensoftware/shared-dtos';
 
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 

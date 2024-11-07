@@ -3,7 +3,10 @@ import {
   Location,
   PrismaClient as dbTenant,
 } from '@prisma-carmen-client-tenant';
-import { LocationCreateDto, LocationUpdateDto } from 'shared-dtos';
+import {
+  LocationCreateDto,
+  LocationUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Default_PerPage } from 'lib/helper/perpage.default';

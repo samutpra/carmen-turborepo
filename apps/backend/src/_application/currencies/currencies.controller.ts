@@ -27,7 +27,10 @@ import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Currency } from '@prisma-carmen-client-tenant';
-import { CurrencyCreateDto, CurrencyUpdateDto } from 'shared-dtos';
+import {
+  CurrencyCreateDto,
+  CurrencyUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/currencies')

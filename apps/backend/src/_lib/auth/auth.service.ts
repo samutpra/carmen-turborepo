@@ -1,4 +1,7 @@
-import { AuthLoginResponseDto, AuthPayloadDto } from 'shared-dtos';
+import {
+  AuthLoginResponseDto,
+  AuthPayloadDto,
+} from '@carmensoftware/shared-dtos';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { Injectable } from '@nestjs/common';
