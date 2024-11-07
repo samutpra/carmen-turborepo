@@ -1265,3 +1265,67 @@ export type CreditNoteItemType = z.infer<typeof CreditNoteItemSchema>;
 export type CreditNoteAttachmentType = z.infer<typeof CreditNoteAttachmentSchema>;
 export type EditedItemType = z.infer<typeof EditedItemSchema>;
 
+// Product
+
+export const UnitConversionSchema = z.object({
+  id: z.string(),
+  unitId: z.string(),
+  unitName: z.string(),
+  conversionFactor: z.number(),
+  type: z.string(),
+  unitType: z.enum(['INVENTORY', 'ORDER', 'RECIPE', 'COUNTING']),
+  fromUnit: z.string(),
+  toUnit: z.string(),
+});
+
+export type IUnitConversion = z.infer<typeof UnitConversionSchema>;
+
+export const ProductSchema = z.object({
+  id: z.string(),
+  productCode: z.string(),
+  name: z.string(),
+  description: z.string(),
+  localDescription: z.string(),
+  categoryId: z.string(),
+  subCategoryId: z.string(),
+  itemGroupId: z.string(),
+  primaryInventoryUnitId: z.string(),
+  size: z.string(),
+  color: z.string(),
+  barcode: z.string(),
+  isActive: z.boolean(),
+  basePrice: z.number(),
+  currency: z.string(),
+  taxType: z.string(),
+  taxRate: z.number(),
+  standardCost: z.number(),
+  lastCost: z.number(),
+  priceDeviationLimit: z.number(),
+  quantityDeviationLimit: z.number(),
+  minStockLevel: z.number(),
+  maxStockLevel: z.number(),
+  isForSale: z.boolean(),
+  isIngredient: z.boolean(),
+  weight: z.number(),
+  dimensions: z.object({
+    length: z.number(),
+    width: z.number(),
+    height: z.number(),
+  }),
+  shelfLife: z.number(),
+  storageInstructions: z.string(),
+  imageUrl: z.string(),
+  preferVendor: z.string(),
+  unitConversions: z.array(UnitConversionSchema),
+  itemGroup: z.string().optional(),
+});
+
+export type IProductType = z.infer<typeof ProductSchema>;
+
+export const ProductListSchema = z.object({
+  total: z.number(),
+  data: z.array(ProductSchema),
+});
+
+export type IProductList = z.infer<typeof ProductListSchema>;
+
