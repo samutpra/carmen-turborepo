@@ -13,7 +13,7 @@ import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { VendorDataList } from '../vendorsData';
-import { VendorType } from 'shared-types';
+import { VendorType } from '@carmensoftware/shared-types';
 import { useRouter } from '@/lib/i18n';
 
 const ManageVendorsList = () => {

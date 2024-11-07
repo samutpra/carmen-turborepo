@@ -6,5 +6,5 @@ export class UnitCreateDto {
 }
 
 export class UnitUpdateDto extends UnitCreateDto {
-	id!: string;
+	override id!: string;
 }

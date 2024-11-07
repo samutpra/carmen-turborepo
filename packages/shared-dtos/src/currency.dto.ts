@@ -9,5 +9,5 @@ export class CurrencyCreateDto {
 }
 
 export class CurrencyUpdateDto extends CurrencyCreateDto {
-	id!: string;
+	override id!: string;
 }

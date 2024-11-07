@@ -1,4 +1,3 @@
-import { subCategoryData } from '../../../apps/frontend/app/(front-end)/(main)/configuration/data/store';
 export class ProductItemGroupCreateDto {
 	id?: string;
 	name!: string;
@@ -8,5 +7,5 @@ export class ProductItemGroupCreateDto {
 }
 
 export class ProductItemGroupUpdateDto extends ProductItemGroupCreateDto {
-	id!: string;
+	override id!: string;
 }

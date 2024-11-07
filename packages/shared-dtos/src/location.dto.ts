@@ -6,5 +6,5 @@ export class LocationCreateDto {
 }
 
 export class LocationUpdateDto extends LocationCreateDto {
-	id!: string;
+	override id!: string;
 }

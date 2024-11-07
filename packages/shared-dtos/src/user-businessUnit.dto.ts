@@ -5,5 +5,5 @@ export class UserBusinessUnitCreateDto {
 }
 
 export class UserBusinessUnitUpdateDto extends UserBusinessUnitCreateDto {
-	id!: string;
+	override id!: string;
 }

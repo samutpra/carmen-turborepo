@@ -10,7 +10,7 @@ export class ProductCreateDto {
 }
 
 export class ProductUpdateDto extends ProductCreateDto {
-	id!: string;
+	override id!: string;
 }
 
 export class ProductInfoCreateDto {
@@ -19,7 +19,7 @@ export class ProductInfoCreateDto {
 }
 
 export class ProductInfoUpdateDto extends ProductInfoCreateDto {
-	id!: string;
+	override id!: string;
 }
 
 export class ProductVendorCreateDto {

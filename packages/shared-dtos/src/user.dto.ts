@@ -4,5 +4,5 @@ export class UserCreateDto {
 }
 
 export class UserUpdateDto extends UserCreateDto {
-	id!: string;
+	override id!: string;
 }

@@ -5,5 +5,5 @@ export class ExchangeRateCreateDto {
 }
 
 export class ExchangeRateUpdateDto extends ExchangeRateCreateDto {
-	id!: string;
+	override id!: string;
 }

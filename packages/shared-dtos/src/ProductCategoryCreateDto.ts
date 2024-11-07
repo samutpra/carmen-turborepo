@@ -6,5 +6,5 @@ export class ProductCategoryCreateDto {
 }
 
 export class ProductCategoryUpdateDto extends ProductCategoryCreateDto {
-	id!: string;
+	override id!: string;
 }

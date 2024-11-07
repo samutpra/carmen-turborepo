@@ -5,7 +5,7 @@ export class DepartmentCreateDto {
 }
 
 export class DepartmentUpdateDto extends DepartmentCreateDto {
-	id!: string;
+	override id!: string;
 }
 
 export class DepartmentDto {
