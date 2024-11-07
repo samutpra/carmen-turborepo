@@ -29,11 +29,11 @@ interface Props<T> {
     onEdit?: (item: T) => void;
     onDelete?: (item: T) => void;
     onView?: (item: T) => void;
-    pagination: PaginationType;
-    goToPage: (page: number) => void;
-    nextPage: () => void;
-    previousPage: () => void;
-    setPerPage: (perPage: number) => void;
+    pagination?: PaginationType;
+    goToPage?: (page: number) => void;
+    nextPage?: () => void;
+    previousPage?: () => void;
+    setPerPage?: (perPage: number) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,10 +49,9 @@ const DataTable = <T extends Record<string, any>>({
     previousPage,
     setPerPage
 }: Props<T>) => {
-
     const getPageNumbers = () => {
-        const currentPage = pagination.page;
-        const totalPages = pagination.pages;
+        const currentPage = pagination?.page;
+        const totalPages = pagination?.pages;
         const delta = 2;
 
         const pages: (number | 'ellipsis')[] = [];
@@ -158,7 +157,7 @@ const DataTable = <T extends Record<string, any>>({
             <div className='flex justify-end mt-10'>
                 <div className='flex items-center'>
                     <Select
-                        value={String(pagination.perPage)}
+                        value={String(pagination?.perPage)}
                         onValueChange={(value) => setPerPage(Number(value))}
                     >
                         <SelectTrigger className="w-[70px]">
@@ -188,7 +187,7 @@ const DataTable = <T extends Record<string, any>>({
                                     ) : (
                                         <PaginationLink
                                             onClick={() => goToPage(pageNum)}
-                                            isActive={pagination.page === pageNum}
+                                            isActive={pagination?.page === pageNum}
                                             className="cursor-pointer"
                                         >
                                             {pageNum}
