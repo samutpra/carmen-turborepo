@@ -980,14 +980,6 @@ export enum FormAction {
   EDIT = "edit"
 }
 
-export interface PaginationType {
-  total: number;
-  page: number;
-  perPage: number;
-  pages: number;
-}
-
-
 // Unit
 export const UnitSchema = z.object({
   id: z.string().optional(),
@@ -1328,4 +1320,12 @@ export const ProductListSchema = z.object({
 });
 
 export type IProductList = z.infer<typeof ProductListSchema>;
+
+export type PaginationType = {
+  page?: number | 0;
+  pages?: number | 0;
+  perPage?: number | 10;
+  total?: number | 0;
+}
+
 

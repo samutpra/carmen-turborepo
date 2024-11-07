@@ -27,7 +27,7 @@ import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { Switch } from '@/components/ui/switch';
-import { useCurrencys } from '../currency/actions/currency';
+import { useCurrencies } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -38,7 +38,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NjAwNzEsImV4cCI6MTczMDk2MzY3MX0.HAiK5qtI7U559xtTAwzsgyOjLpOZRyr6r6zlX7SqwQY';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NjQ5NzMsImV4cCI6MTczMDk2ODU3M30.PvPpoq2H2138-zd4O96mseGOMxjxIlUWeMGwl0N7hfY';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -46,11 +46,23 @@ const CurrencyList = () => {
 	const [dialogForm, setDialogForm] = useState(false);
 	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
 	const [dialogDelete, setDialogDelete] = useState(false);
-	const [searchTerm, setSearchTerm] = useState('');
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState('');
 
-	const { currencys, setCurrencys, currencyLoading, error } = useCurrencys(accessToken, { page: 1, perpage: 20, search: searchTerm });
+	const {
+		currencies,
+		setCurrencies,
+		loading,
+		error,
+		pagination,
+		search,
+		goToPage,
+		nextPage,
+		previousPage,
+		setPerPage,
+		handleSearch,
+		refetch
+	} = useCurrencies(accessToken);
 
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
@@ -74,6 +86,11 @@ const CurrencyList = () => {
 		}
 	}, [editingItem, form]);
 
+
+	// const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	setSearchTerm(e.target.value);
+	// };
+
 	const handleEdit = (item: CurrencyType) => {
 		form.setValue('code', item.code);
 		form.setValue('description', item.description);
@@ -90,7 +107,7 @@ const CurrencyList = () => {
 	const confirmDelete = async () => {
 		try {
 			setIsLoading(true);
-			setCurrencys((prev) => prev.filter((currency) => currency.id !== idToDelete));
+			setCurrencies((prev: CurrencyType[]) => prev.filter((currency: CurrencyType) => currency.id !== idToDelete));
 			setDialogDelete(false);
 		} catch (error) {
 			console.error('Error deleting currency:', error);
@@ -149,8 +166,8 @@ const CurrencyList = () => {
 			<div className='w-full sm:w-auto flex-grow'>
 				<SearchInput
 					placeholder='Search Currency...'
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
+					value={search}
+					onChange={(e) => handleSearch(e.target.value)}
 					Icon={Search}
 				/>
 			</div>
@@ -226,22 +243,32 @@ const CurrencyList = () => {
 	const content = (
 		<>
 			<div className='block lg:hidden'>
-				{currencyLoading ? (
+				{loading ? (
 					<SkeltonCardLoading />
 				) : error ? (
 					<div className='text-red-500'>{error.message}</div>
 				) : (
-					<DataCard data={currencys} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
+					<DataCard data={currencies} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
 				)}
 			</div>
 
 			<div className='hidden lg:block'>
-				{currencyLoading ? (
+				{loading ? (
 					<SkeletonTableLoading />
 				) : error ? (
 					<div className='text-red-500'>{error.message}</div>
 				) : (
-					<DataTable data={currencys} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
+					<DataTable
+						data={currencies}
+						columns={columns}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
+						pagination={pagination}
+						goToPage={goToPage}
+						nextPage={nextPage}
+						previousPage={previousPage}
+						setPerPage={setPerPage}
+					/>
 				)}
 			</div>
 
