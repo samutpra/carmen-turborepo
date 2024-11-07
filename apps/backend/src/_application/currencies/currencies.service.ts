@@ -11,14 +11,11 @@ import {
   Request,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { nan, object } from 'zod';
 
 import { CurrencyCreateDto } from 'shared-dtos';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import { contains } from 'class-validator';
-import { json } from 'node:stream/consumers';
 
 @Injectable()
 export class CurrenciesService {
@@ -30,11 +27,6 @@ export class CurrenciesService {
   ) {}
 
   logger = new Logger(CurrenciesService.name);
-
-  /*
-  _prisma_create: Prisma.CurrencyCreateInput = { code: '', name: '' };
-  _prisma_update: Prisma.CurrencyUpdateInput = {};sss
-  */
 
   async _getById(db_tenant: dbTenant, id: string): Promise<Currency> {
     const res = await db_tenant.currency.findUnique({
@@ -92,8 +84,6 @@ export class CurrenciesService {
       };
     }
 
-    this.logger.debug('Conditions: ', where);
-
     const max = await this.db_tenant.currency.count({
       where: where,
     });
@@ -108,7 +98,7 @@ export class CurrenciesService {
       data: listObj,
       pagination: {
         total: max,
-        page: parseInt(page.toString()),
+        page: page,
         perPage: perPage,
         pages: max == 0 ? 1 : Math.ceil(max / perPage),
       },

@@ -14,17 +14,29 @@ import {
 } from '@nestjs/common';
 import { CurrenciesService } from './currencies.service';
 
-import { ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+  ApiQuery,
+  ApiHeader,
+} from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
 import { Currency } from '@prisma-carmen-client-tenant';
 import { CurrencyCreateDto, CurrencyUpdateDto } from 'shared-dtos';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/currencies')
 @ApiTags('currencies')
 @ApiBearerAuth()
+@ApiHeader({
+  name: 'x-tenant-id',
+  description: 'description',
+})
 @UseGuards(JwtAuthGuard)
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
@@ -49,6 +61,7 @@ export class CurrenciesController {
 
   //#region GET ALL
   @Get()
+  @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
     @Query('page') page: number,
@@ -66,6 +79,10 @@ export class CurrenciesController {
 
   //#region CREATE
   @Post()
+  @ApiBody({
+    type: CurrencyCreateDto,
+    description: 'CurrencyCreateDto',
+  })
   async create(
     @Body() createDto: any,
     @Req() req: Request,

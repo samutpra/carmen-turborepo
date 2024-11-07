@@ -34,11 +34,12 @@ export class DepartmentsController {
   @Get()
   async findAll(
     @Req() req: Request,
-    @Query('page') page: number = 1,
-    @Query('perPage') perPage: number = 10,
+    @Query('page') page: number,
+    @Query('perpage') perpage: number,
     @Query('search') search: string = '',
+    @Query('filter') filter: Record<string, string> = {},
   ) {
-    return this.departmentsService.findAll(req, page, perPage, search);
+    return this.departmentsService.findAll(req, page, perpage, search, filter);
   }
 
   @Post()

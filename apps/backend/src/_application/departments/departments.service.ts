@@ -20,10 +20,7 @@ export class DepartmentsService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.DepartmentCreateInput = { name: '' };
-  // _prisma_update: Prisma.DepartmentUpdateInput = {};
-
-  async _getOne(db_tenant: dbTenant, id: string): Promise<Department> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<Department> {
     const res = await db_tenant.department.findUnique({
       where: {
         id: id,
@@ -35,7 +32,7 @@ export class DepartmentsService {
   async findOne(req: Request, id: string): Promise<ResponseSingle<Department>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Department not found');
@@ -51,14 +48,35 @@ export class DepartmentsService {
     page: number,
     perPage: number,
     search: string,
+    filter: Record<string, string>,
   ): Promise<ResponseList<Department>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+
+    const where: any = {};
+
+    if (filter && Object.keys(filter).length > 0) {
+      where.AND = Object.entries(filter).map(([key, value]) => ({
+        [key]: { contains: value, mode: 'insensitive' },
+      }));
+    }
+
+    if (search !== '') {
+      where.AND = {
+        ...where,
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { code: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ],
+      };
+    }
+
     const max = await this.db_tenant.department.count({
-      where: { name: { contains: search } },
+      where: where,
     });
     const listObj = await this.db_tenant.department.findMany({
-      where: { name: { contains: search } },
+      where: where,
       skip: (page - 1) * perPage,
       take: perPage,
     });
@@ -69,7 +87,7 @@ export class DepartmentsService {
         total: max,
         page: page,
         perPage: perPage,
-        pages: Math.ceil(max / perPage),
+        pages: max == 0 ? 1 : Math.ceil(max / perPage),
       },
     };
 
@@ -108,7 +126,7 @@ export class DepartmentsService {
   async update(req: Request, id: string, updateDto: DepartmentUpdateDto) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Department not found');
@@ -131,7 +149,7 @@ export class DepartmentsService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Department not found');
