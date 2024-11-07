@@ -21,9 +21,9 @@ export const fetchUnits = async (accessToken: string): Promise<UnitType[]> => {
         }
 
         const data = await response.json();
-        
+
         const result = data.data.data;
-                  
+
         return result.map((unit: UnitType) => UnitSchema.parse(unit));
     } catch (error) {
         console.error('Fetch Units Error:', error);
@@ -35,7 +35,7 @@ export const useUnits = (accessToken: string) => {
     const [units, setUnits] = useState<UnitType[]>([]);
     const [unitLoading, setUnitLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    
+
     useEffect(() => {
         let isMounted = true;
         const getUnits = async () => {

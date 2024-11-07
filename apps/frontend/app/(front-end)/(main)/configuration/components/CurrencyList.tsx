@@ -38,7 +38,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA4NTg4MDEsImV4cCI6MTczMDg2MjQwMX0.SqbL218f0vdw2MuyO04kCTykCCfA9embajIzk-ic0B4';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NjAwNzEsImV4cCI6MTczMDk2MzY3MX0.HAiK5qtI7U559xtTAwzsgyOjLpOZRyr6r6zlX7SqwQY';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +49,8 @@ const CurrencyList = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState('');
-	const { currencys, setCurrencys, currencyLoading, error } = useCurrencys(accessToken);
+
+	const { currencys, setCurrencys, currencyLoading, error } = useCurrencys(accessToken, { page: 1, perpage: 20, search: searchTerm });
 
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),

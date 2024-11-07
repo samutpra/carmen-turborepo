@@ -18,5 +18,8 @@
 	"prettier.bracketSameLine": true,
 	"prettier.printWidth": 120,
 	"prettier.useTabs": true,
-	"Codegeex.RepoIndex": true
+	"Codegeex.RepoIndex": true,
+	"apc.font.family": "'JetBrains Mono'",
+	"editor.fontFamily": "JetBrains Mono",
+	"editor.fontLigatures": true,
 }

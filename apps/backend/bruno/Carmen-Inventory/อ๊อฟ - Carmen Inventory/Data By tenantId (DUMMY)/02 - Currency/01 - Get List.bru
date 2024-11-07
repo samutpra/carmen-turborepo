@@ -7,7 +7,7 @@ meta {
 get {
   url: {{host}}/api/v1/currencies?page=1&perpage=1&search=th
   body: none
-  auth: none
+  auth: bearer
 }
 
 params:query {
@@ -16,4 +16,12 @@ params:query {
   search: th
   ~filter[name]: TH
   ~filter[code]: th
+}
+
+headers {
+  x-tenant-id: {{tenantId}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
