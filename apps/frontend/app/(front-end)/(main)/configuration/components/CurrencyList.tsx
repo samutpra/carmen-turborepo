@@ -61,6 +61,7 @@ const CurrencyList = () => {
 		previousPage,
 		setPerPage,
 		handleSearch,
+		fetchData
 	} = useCurrencies(accessToken);
 
 	const form = useForm<CurrencyType>({
@@ -105,7 +106,6 @@ const CurrencyList = () => {
 	};
 
 	const handleDelete = (item: CurrencyType) => {
-		console.log('Preparing to delete currency:', item);
 		setIdToDelete(item.id);
 		setDialogDelete(true);
 	};
@@ -114,7 +114,6 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 			if (idToDelete) {
-				console.log('Starting delete process for ID:', idToDelete);
 
 				await deleteCurrency(accessToken, idToDelete);
 
@@ -124,7 +123,7 @@ const CurrencyList = () => {
 
 				setDialogDelete(false);
 				// Optionally refresh the data
-				// fetchData();
+				fetchData();
 			}
 		} catch (error) {
 			console.error('Error deleting currency:', error);
@@ -147,24 +146,13 @@ const CurrencyList = () => {
 					rate: data.rate,
 					isActive: data.isActive,
 				};
-
-				console.log('1. Starting update process with:', {
-					id: editingItem.id,
-					updatedFields,
-					accessToken: accessToken.substring(0, 20) + '...' // Log partial token for security
-				});
-
 				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
-
-				console.log('4. Received updated currency:', updatedCurrency);
 
 				setCurrencies((prev: CurrencyType[]) =>
 					prev.map((currency) =>
 						currency.id === editingItem.id ? updatedCurrency : currency
 					)
 				);
-
-				console.log('5. State updated successfully');
 				handleCloseDialog();
 			}
 		} catch (error) {
