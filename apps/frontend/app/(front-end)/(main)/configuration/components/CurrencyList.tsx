@@ -30,6 +30,7 @@ import { Switch } from '@/components/ui/switch';
 import { useCurrencies, updateCurrency, deleteCurrency } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -38,7 +39,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NzkyNzgsImV4cCI6MTczMDk4Mjg3OH0.KMQ8JHv6OgnqQ2tugOs-FZJLIq3YdgS1xPKvrswU6-c';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzExNDU0NDYsImV4cCI6MTczMTE0OTA0Nn0.l6nWpnEK7h6PMs0OwbyFYDRt4SNmne182oF2KIpXOek';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -309,7 +310,7 @@ const CurrencyList = () => {
 				{loading ? (
 					<SkeletonTableLoading />
 				) : error ? (
-					<div className='text-red-500'>{error.message}</div>
+					<ErrorDisplay errMessage={error.message} />
 				) : (
 					<DataTable
 						data={currencies}

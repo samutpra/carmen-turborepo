@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const apiUrl = 'http://localhost:4000/api/v1';
+
 export async function PATCH(
     request: NextRequest,
     { params }: { params: { id: string } }
@@ -17,15 +19,13 @@ export async function PATCH(
 
         const data = await request.json();
 
-        const apiUrl = 'http://localhost:4000/api/v1';
         const fullUrl = `${apiUrl}/currencies/${params.id}`;
 
         const response = await fetch(fullUrl, {
             method: 'PATCH',
             headers: {
-                'Authorization': token,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'x-tenant-id': 'DUMMY',
             },
             body: JSON.stringify(data),
@@ -66,32 +66,21 @@ export async function DELETE(
     try {
         const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 
-        console.log('token adasdad', token);
-
-
         if (!token) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 402 }
             );
         }
-
-        const apiUrl = 'http://localhost:4000/api/v1';
         const fullUrl = `${apiUrl}/currencies/${params.id}`;
-
-
         const response = await fetch(fullUrl, {
             method: 'DELETE',
             headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
                 'x-tenant-id': 'DUMMY',
+                'Content-Type': 'application/json',
             },
         });
-
-        console.log('resss', response);
-
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => null);
