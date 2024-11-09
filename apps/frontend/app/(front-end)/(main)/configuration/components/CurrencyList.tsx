@@ -2,7 +2,7 @@
 
 import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
+// import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
 	DropdownMenu,
@@ -13,7 +13,6 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import React, { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import DataCard from '@/components/templates/DataCard';
@@ -27,10 +26,11 @@ import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { Switch } from '@/components/ui/switch';
-import { useCurrencies, updateCurrency, deleteCurrency } from '../currency/actions/currency';
+import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -68,12 +68,11 @@ const CurrencyList = () => {
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
 		defaultValues: {
-			id: '',
-			code: '',
-			description: '',
-			name: '',
-			symbol: '',
-			rate: 0,
+			code: "",
+			name: "",
+			symbol: "",
+			description: "",
+			rate: "",
 			isActive: true,
 		},
 	});
@@ -123,12 +122,10 @@ const CurrencyList = () => {
 				);
 
 				setDialogDelete(false);
-				// Optionally refresh the data
 				fetchData();
 			}
 		} catch (error) {
 			console.error('Error deleting currency:', error);
-			// You might want to show an error message to the user here
 		} finally {
 			setIsLoading(false);
 			setIdToDelete(null);
@@ -138,7 +135,9 @@ const CurrencyList = () => {
 	const handleSave = async (data: CurrencyType) => {
 		try {
 			setIsLoading(true);
+
 			if (editingItem?.id) {
+				// Update existing currency
 				const updatedFields: Partial<CurrencyType> = {
 					code: data.code,
 					name: data.name,
@@ -147,6 +146,7 @@ const CurrencyList = () => {
 					rate: data.rate,
 					isActive: data.isActive,
 				};
+
 				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
 
 				setCurrencies((prev: CurrencyType[]) =>
@@ -154,8 +154,21 @@ const CurrencyList = () => {
 						currency.id === editingItem.id ? updatedCurrency : currency
 					)
 				);
-				handleCloseDialog();
+			} else {
+				const newCurrency = await createCurrency(accessToken, {
+					code: data.code,
+					name: data.name,
+					symbol: data.symbol,
+					description: data.description,
+					rate: data.rate,
+					isActive: data.isActive,
+				});
+
+				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
 			}
+
+			handleCloseDialog();
+
 		} catch (error) {
 			console.error('Save error details:', {
 				error,
@@ -173,7 +186,7 @@ const CurrencyList = () => {
 			description: '',
 			name: '',
 			symbol: '',
-			rate: 0,
+			rate: '',
 			isActive: true,
 		});
 		setDialogForm(false);
@@ -348,7 +361,12 @@ const CurrencyList = () => {
 										<FormItem>
 											<FormLabel>Code</FormLabel>
 											<FormControl>
-												<InputCustom placeholder='Enter Code name' error={!!form.formState.errors.code} {...field} />
+												<InputCustom
+													placeholder='Enter Code name'
+													error={!!form.formState.errors.code}
+													{...field}
+													maxLength={3}
+												/>
 											</FormControl>
 										</FormItem>
 									)}
@@ -362,7 +380,11 @@ const CurrencyList = () => {
 										<FormItem>
 											<FormLabel>Name</FormLabel>
 											<FormControl>
-												<InputCustom placeholder='Enter Name' error={!!form.formState.errors.name} {...field} />
+												<InputCustom
+													placeholder='Enter Name'
+													error={!!form.formState.errors.name}
+													{...field}
+												/>
 											</FormControl>
 										</FormItem>
 									)}
@@ -378,7 +400,12 @@ const CurrencyList = () => {
 										<FormItem>
 											<FormLabel>Symbol</FormLabel>
 											<FormControl>
-												<InputCustom placeholder='Enter Symbol' error={!!form.formState.errors.symbol} {...field} />
+												<InputCustom
+													placeholder='Enter Symbol'
+													error={!!form.formState.errors.symbol}
+													{...field}
+													maxLength={3}
+												/>
 											</FormControl>
 										</FormItem>
 									)}
@@ -392,7 +419,10 @@ const CurrencyList = () => {
 										<FormItem>
 											<FormLabel>Rate</FormLabel>
 											<FormControl>
-												<InputCustom placeholder='Enter Rate' error={!!form.formState.errors.rate} {...field} />
+												<InputCustom placeholder='Enter Rate'
+													error={!!form.formState.errors.rate}
+													{...field}
+												/>
 											</FormControl>
 										</FormItem>
 									)}

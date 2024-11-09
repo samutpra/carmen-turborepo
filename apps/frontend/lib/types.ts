@@ -1017,7 +1017,7 @@ export const CurrencySchema = z.object({
   name: z.string(),
   symbol: z.string(),
   description: z.string(),
-  rate: z.number(),
+  rate: z.string(),
   isActive: z.boolean(),
 });
 

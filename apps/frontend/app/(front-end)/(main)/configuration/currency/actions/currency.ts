@@ -145,6 +145,35 @@ export const updateCurrency = async (
     }
 };
 
+export const createCurrency = async (
+    accessToken: string,
+    data: Omit<CurrencyType, 'id'>
+): Promise<CurrencyType> => {
+
+    try {
+        const response = await fetch(`/api/configuration/currency`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to create currency');
+        }
+
+        return response.json();
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`Failed to create currency: ${error.message}`);
+        }
+        throw new Error('Failed to create currency: Unknown error occurred');
+    }
+};
+
 export const useCurrencies = (token: string) => {
     const [search, setSearch] = useState('');
     const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
