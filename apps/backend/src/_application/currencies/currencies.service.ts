@@ -16,6 +16,7 @@ import { CurrencyCreateDto } from '@carmensoftware/shared-dtos';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class CurrenciesService {
@@ -54,53 +55,23 @@ export class CurrenciesService {
   //#endregion GET ONE
 
   //#region GET ALL
-  async findAll(
-    req: Request,
-    page: number,
-    perPage: number,
-    search: string,
-    filter: Record<string, string>,
-  ): Promise<ResponseList<Currency>> {
+  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Currency>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const where: any = {};
-
-    if (filter && Object.keys(filter).length > 0) {
-      where.AND = Object.entries(filter).map(([key, value]) => ({
-        [key]: { contains: value, mode: 'insensitive' },
-      }));
-    }
-
-    if (search !== '') {
-      where.AND = {
-        ...where,
-        OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { code: { contains: search, mode: 'insensitive' } },
-          { symbol: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
-        ],
-      };
-    }
-
     const max = await this.db_tenant.currency.count({
-      where: where,
+      where: q.where(),
     });
 
-    const listObj = await this.db_tenant.currency.findMany({
-      where: where,
-      skip: (page - 1) * perPage,
-      take: perPage,
-    });
+    const listObj = await this.db_tenant.currency.findMany(q.findMany());
 
     const res: ResponseList<Currency> = {
       data: listObj,
       pagination: {
         total: max,
-        page: page,
-        perPage: perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / perPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
     return res;

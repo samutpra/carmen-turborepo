@@ -32,6 +32,7 @@ import {
   CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams from 'lib/types';
 
 @Controller('api/v1/currencies')
 @ApiTags('currencies')
@@ -70,13 +71,32 @@ export class CurrenciesController {
     @Query('page') page: number,
     @Query('perpage') perpage: number,
     @Query('search') search: string = '',
+    @Query('searchfields') searchfields: string = '',
     @Query('filter') filter: Record<string, string> = {},
+    @Query('sort') sort: string = '',
   ): Promise<ResponseList<Currency>> {
     if (!page) page = 1;
     if (!perpage) perpage = 10;
     page = parseInt(page.toString());
     perpage = parseInt(perpage.toString());
-    return this.currenciesService.findAll(req, page, perpage, search, filter);
+
+    const defaultSearchFields: string[] = [
+      'name',
+      'code',
+      'symbol',
+      'description',
+    ];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+    );
+    return this.currenciesService.findAll(req, q);
   }
   //#endregion GET ALL
 

@@ -5,17 +5,19 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/currencies?page=1&perpage=1&search=th
+  url: {{host}}/api/v1/currencies?page=1&sort=code, name:asc
   body: none
   auth: bearer
 }
 
 params:query {
   page: 1
-  perpage: 1
-  search: th
-  ~filter[name]: TH
+  sort: code, name:asc
+  ~search: uni
+  ~searchfields: code
   ~filter[code]: th
+  ~perpage: 2
+  ~filter[symbol]: 
 }
 
 headers {
