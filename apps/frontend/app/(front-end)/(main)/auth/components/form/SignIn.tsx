@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import GoogleIcon from '@/components/icons/GoogleIcon';
+// import { CustomButton } from '@/components/ui-custom/CustomButton';
+// import GoogleIcon from '@/components/icons/GoogleIcon';
 import { Separator } from '@/components/ui/separator';
 
 interface Props {
