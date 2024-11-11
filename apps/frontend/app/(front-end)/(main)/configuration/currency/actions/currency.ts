@@ -137,7 +137,12 @@ export const createCurrency = async (
             throw new Error(errorData.message || 'Failed to create currency');
         }
 
-        return data;
+        const idReturn = await response.json();
+
+        return {
+            id: idReturn,
+            ...data
+        }
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(`Failed to create currency: ${error.message}`);

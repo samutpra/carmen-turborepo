@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        return NextResponse.json(data, { status: 201 });
+        return NextResponse.json(data.id, { status: 201 });
     } catch (error) {
         console.error('Currency creation error:', error);
 

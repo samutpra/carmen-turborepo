@@ -31,6 +31,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
+import { toast } from 'sonner';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -39,7 +40,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEyOTgxMzUsImV4cCI6MTczMTMwMTczNX0.MQjsZNJ7y7VbrsL75X9lxTx9hpS2y-Smp5vO7bJN2xA';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEzMDYzOTEsImV4cCI6MTczMTMwOTk5MX0.t9B5vLKv4CI7_bvK32KL3elJuOQrsuxoG489j2FD6Sc';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -120,7 +121,7 @@ const CurrencyList = () => {
 				setCurrencies((prev: CurrencyType[]) =>
 					prev.filter((currency: CurrencyType) => currency.id !== idToDelete)
 				);
-
+				toast("Event has been created.")
 				setDialogDelete(false);
 				fetchData();
 			}
@@ -136,11 +137,7 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 
-			console.log('form', data);
-
-
 			if (editingItem?.id) {
-				// Update existing currency
 				const updatedFields: CurrencyType = {
 					code: data.code,
 					name: data.name,

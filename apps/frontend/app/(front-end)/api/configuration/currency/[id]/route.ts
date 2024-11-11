@@ -19,9 +19,9 @@ export async function PATCH(
 
         const data = await request.json();
 
-        const fullUrl = `${apiUrl}/currencies/${params.id}`;
+        const URL = `${apiUrl}/currencies/${params.id}`;
 
-        const response = await fetch(fullUrl, {
+        const response = await fetch(URL, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -72,8 +72,8 @@ export async function DELETE(
                 { status: 402 }
             );
         }
-        const fullUrl = `${apiUrl}/currencies/${params.id}`;
-        const response = await fetch(fullUrl, {
+        const URL = `${apiUrl}/currencies/${params.id}`;
+        const response = await fetch(URL, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
