@@ -13,6 +13,14 @@ import { z } from "zod";
 //   }
 // }
 
+export enum AuthFormType {
+  SignIn = 1,
+  SignUp = 2,
+  ForgotPassword = 3,
+  CreatePassword = 4,
+  ResetPassword = 5,
+}
+
 export type Money = {
   amount: number;
   currency: string;
