@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -46,7 +46,11 @@ const ForgotPassword: React.FC<Props> = ({ handleForm }) => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="name@example.com" {...field} />
+                                    <InputCustom
+                                        placeholder="Email"
+                                        error={!!form.formState.errors.email}
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

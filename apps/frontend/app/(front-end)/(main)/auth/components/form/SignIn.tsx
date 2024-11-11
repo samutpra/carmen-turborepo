@@ -6,11 +6,11 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 // import { CustomButton } from '@/components/ui-custom/CustomButton';
 // import GoogleIcon from '@/components/icons/GoogleIcon';
 import { Separator } from '@/components/ui/separator';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -76,7 +76,11 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                             <FormItem>
                                 <FormLabel>Username</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Username" {...field} />
+                                    <InputCustom
+                                        placeholder="Username"
+                                        error={!!form.formState.errors.username}
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -90,7 +94,11 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="Password" {...field} />
+                                    <InputCustom
+                                        placeholder="Password"
+                                        error={!!form.formState.errors.password}
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
