@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
         headers: {
             'Authorization': `Bearer ${token}`,
             'x-tenant-id': 'DUMMY',
-            'Content-Type': 'application/json',
         }
     };
 
@@ -30,6 +29,9 @@ export async function GET(request: NextRequest) {
 
     try {
         const response = await fetch(url, options);
+
+        console.log(response);
+
         if (!response.ok) {
             return NextResponse.json(
                 { error: `Failed to fetch data: ${response.statusText}` },
@@ -38,6 +40,10 @@ export async function GET(request: NextRequest) {
         }
 
         const data = await response.json();
+
+        console.log(data);
+
+
         return NextResponse.json(data);
     } catch (error) {
         console.error('Fetch error:', error);

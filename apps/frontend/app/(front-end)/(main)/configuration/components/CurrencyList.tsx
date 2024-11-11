@@ -3,14 +3,13 @@
 import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 // import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -20,18 +19,15 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DataTable from '@/components/templates/DataTable';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
 import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { Switch } from '@/components/ui/switch';
 import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
-import { toast } from 'sonner';
+import CurrencyForm from './form/CurrencyForm';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -40,7 +36,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEzMDYzOTEsImV4cCI6MTczMTMwOTk5MX0.t9B5vLKv4CI7_bvK32KL3elJuOQrsuxoG489j2FD6Sc';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEzMTAzMDEsImV4cCI6MTczMTMxMzkwMX0.2VR7UQuqwtVPDeKAQ3KkHFWKZ2IiEHg2YPrshUX1Lns';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -115,15 +111,10 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 			if (idToDelete) {
-
 				await deleteCurrency(accessToken, idToDelete);
-
-				setCurrencies((prev: CurrencyType[]) =>
-					prev.filter((currency: CurrencyType) => currency.id !== idToDelete)
-				);
-				toast("Event has been created.")
-				setDialogDelete(false);
+				setCurrencies(prev => prev.filter(currency => currency.id !== idToDelete));
 				fetchData();
+				setDialogDelete(false);
 			}
 		} catch (error) {
 			console.error('Error deleting currency:', error);
@@ -138,40 +129,14 @@ const CurrencyList = () => {
 			setIsLoading(true);
 
 			if (editingItem?.id) {
-				const updatedFields: CurrencyType = {
-					code: data.code,
-					name: data.name,
-					symbol: data.symbol,
-					description: data.description,
-					rate: data.rate,
-					isActive: data.isActive,
-				};
-
+				const updatedFields: CurrencyType = { ...data };
 				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
-
-				setCurrencies((prev: CurrencyType[]) =>
-					prev.map((currency) => {
-						if ('id' in currency && currency.id === editingItem.id) {
-							return updatedCurrency;
-						}
-						return currency;
-					}) as CurrencyType[]
-				);
+				setCurrencies(prev => prev.map(currency => (currency.id === editingItem.id ? updatedCurrency : currency)));
 			} else {
-				const newCurrency = await createCurrency(accessToken, {
-					code: data.code,
-					name: data.name,
-					symbol: data.symbol,
-					description: data.description,
-					rate: data.rate,
-					isActive: data.isActive,
-				});
-
+				const newCurrency = await createCurrency(accessToken, data);
 				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
 			}
-
 			handleCloseDialog();
-
 		} catch (error) {
 			console.error('Save error details:', {
 				error,
@@ -349,12 +314,21 @@ const CurrencyList = () => {
 				idDelete={idToDelete}
 			/>
 
-			<Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
+			<CurrencyForm
+				open={dialogForm}
+				editingItem={editingItem}
+				isLoading={isLoading}
+				onOpenChange={setDialogForm}
+				onSubmit={handleSave}
+			/>
+
+
+			{/* <Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
 				<DialogContent className="sm:max-w-[700px]">
 					<DialogHeader>
 						<DialogTitle>{editingItem ? `Edit ${title}` : `Add New ${title}`}</DialogTitle>
 					</DialogHeader>
-					<Form {...form}>
+					{/* <Form {...form}>
 						<form onSubmit={form.handleSubmit(handleSave)} className='space-y-4'>
 							<div className="grid grid-cols-2 gap-4">
 								<FormField
@@ -475,13 +449,21 @@ const CurrencyList = () => {
 								</LoaderButton>
 							</DialogFooter>
 						</form>
-					</Form>
-				</DialogContent>
-			</Dialog>
+					</Form> */}
 		</>
 	);
 
-	return <DataDisplayTemplate title={title} actionButtons={actionButtons} filters={filter} content={content} />;
+	return (
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
+	);
 };
 
 export default CurrencyList;
+
+
+
