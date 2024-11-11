@@ -5,15 +5,16 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/currencies?page=1&sort=code, name:asc
+  url: {{host}}/api/v1/currencies?advance={'where':{'code':'usd'}}&page=1&sort=code:desc, name:asc&search=aaa
   body: none
   auth: bearer
 }
 
 params:query {
+  advance: {'where':{'code':'usd'}}
   page: 1
-  sort: code, name:asc
-  ~search: uni
+  sort: code:desc, name:asc
+  search: aaa
   ~searchfields: code
   ~filter[code]: th
   ~perpage: 2
