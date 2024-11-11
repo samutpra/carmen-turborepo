@@ -74,58 +74,29 @@ export const fetchCurrency = async (
 export const updateCurrency = async (
     accessToken: string,
     id: string,
-    data: Partial<CurrencyType>
-): Promise<CurrencyType> => {
-    console.log('2. updateCurrency called with:', {
-        id,
-        data,
-        accessToken: accessToken.substring(0, 20) + '...'
-    });
+    data: CurrencyType
+) => {
 
     if (!accessToken) {
         throw new Error('Access token is required');
     }
-
     try {
-        console.log(`2a. Sending PATCH request to: /api/configuration/currency/${id}`);
-
         const response = await fetch(`/api/configuration/currency/${id}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'x-tenant-id': 'DUMMY',
             },
             body: JSON.stringify(data),
         });
 
-        console.log('2b. Response received:', {
-            status: response.status,
-            statusText: response.statusText,
-            ok: response.ok
-        });
-
-        const responseData = await response.json();
-        console.log('2c. Response data:', responseData);
-
         if (!response.ok) {
-            console.error('2d. Error response:', responseData);
             throw new APIError(
                 response.status,
-                responseData.message || `Failed to update currency: ${response.status} ${response.statusText}`
+                `Failed to update currency: ${response.status} ${response.statusText}`
             );
         }
-
-        if (!responseData.data) {
-            console.error('2e. Invalid response format:', responseData);
-            throw new Error('Invalid response format from server');
-        }
-
-        const parsedData = CurrencySchema.parse(responseData.data);
-        console.log('3. Parsed response data:', parsedData);
-
-        return parsedData;
+        return data;
     } catch (error) {
         console.error('Update Currency Error Details:', {
             error,
@@ -145,10 +116,11 @@ export const updateCurrency = async (
     }
 };
 
+
 export const createCurrency = async (
     accessToken: string,
-    data: Omit<CurrencyType, 'id'>
-): Promise<CurrencyType> => {
+    data: CurrencyType
+) => {
 
     try {
         const response = await fetch(`/api/configuration/currency`, {
@@ -165,7 +137,7 @@ export const createCurrency = async (
             throw new Error(errorData.message || 'Failed to create currency');
         }
 
-        return response.json();
+        return data;
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(`Failed to create currency: ${error.message}`);

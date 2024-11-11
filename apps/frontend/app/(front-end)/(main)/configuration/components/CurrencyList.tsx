@@ -39,7 +39,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzExNDU0NDYsImV4cCI6MTczMTE0OTA0Nn0.l6nWpnEK7h6PMs0OwbyFYDRt4SNmne182oF2KIpXOek';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEyOTgxMzUsImV4cCI6MTczMTMwMTczNX0.MQjsZNJ7y7VbrsL75X9lxTx9hpS2y-Smp5vO7bJN2xA';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +72,7 @@ const CurrencyList = () => {
 			name: "",
 			symbol: "",
 			description: "",
-			rate: "",
+			rate: 0,
 			isActive: true,
 		},
 	});
@@ -136,9 +136,12 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 
+			console.log('form', data);
+
+
 			if (editingItem?.id) {
 				// Update existing currency
-				const updatedFields: Partial<CurrencyType> = {
+				const updatedFields: CurrencyType = {
 					code: data.code,
 					name: data.name,
 					symbol: data.symbol,
@@ -150,9 +153,12 @@ const CurrencyList = () => {
 				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
 
 				setCurrencies((prev: CurrencyType[]) =>
-					prev.map((currency) =>
-						currency.id === editingItem.id ? updatedCurrency : currency
-					)
+					prev.map((currency) => {
+						if ('id' in currency && currency.id === editingItem.id) {
+							return updatedCurrency;
+						}
+						return currency;
+					}) as CurrencyType[]
 				);
 			} else {
 				const newCurrency = await createCurrency(accessToken, {
@@ -186,7 +192,7 @@ const CurrencyList = () => {
 			description: '',
 			name: '',
 			symbol: '',
-			rate: '',
+			rate: 0,
 			isActive: true,
 		});
 		setDialogForm(false);
@@ -422,8 +428,10 @@ const CurrencyList = () => {
 												<InputCustom placeholder='Enter Rate'
 													error={!!form.formState.errors.rate}
 													{...field}
+													onChange={(e) => field.onChange(parseFloat(e.target.value) || '')}
 												/>
 											</FormControl>
+											<FormMessage />
 										</FormItem>
 									)}
 									required

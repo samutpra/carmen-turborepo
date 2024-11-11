@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-tenant-id': 'DUMMY',
             },
             body: JSON.stringify(body)
         });
