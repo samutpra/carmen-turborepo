@@ -2,6 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react"
 
 const rippleStyles = `
   .ripple-effect {
@@ -60,10 +61,11 @@ export interface ButtonProps
     asChild?: boolean;
     prefixIcon?: React.ReactNode;
     suffixIcon?: React.ReactNode;
+    loading?: boolean;
 }
 
 const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, disabled, prefixIcon, suffixIcon, onClick, ...props }, ref) => {
+    ({ className, variant, size, asChild = false, disabled, loading, prefixIcon, suffixIcon, onClick, ...props }, ref) => {
         const Comp = asChild ? Slot : "button";
 
         const handleRipple = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -92,7 +94,7 @@ const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }
         }, [disabled, handleRipple, onClick]);
 
-        const disabledClass = disabled
+        const disabledClass = disabled || loading
             ? `cursor-not-allowed ${variant === "outline"
                 ? "bg-neutral-200 text-neutral-400"
                 : variant === "default"
@@ -106,12 +108,21 @@ const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 onClick={handleClick}
                 className={cn(buttonVariants({ variant, size }), disabledClass, className)}
-                disabled={disabled}
+                disabled={disabled || loading}
                 {...props}
             >
-                {prefixIcon && <span>{prefixIcon}</span>}
-                {props.children}
-                {suffixIcon && <span>{suffixIcon}</span>}
+                {loading ? (
+                    <>
+                        <span>loading</span>
+                        <Loader2 className="ml-2 animate-spin" />
+                    </>
+                ) : (
+                    <>
+                        {prefixIcon && <span>{prefixIcon}</span>}
+                        {props.children}
+                        {suffixIcon && <span>{suffixIcon}</span>}
+                    </>
+                )}
             </Comp>
         );
     }

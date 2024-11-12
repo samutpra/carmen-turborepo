@@ -1,11 +1,10 @@
 "use client"
 
 import { AuthFormType, SignInSchema } from '@/lib/types';
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 // import { CustomButton } from '@/components/ui-custom/CustomButton';
 // import GoogleIcon from '@/components/icons/GoogleIcon';
@@ -13,6 +12,8 @@ import { Separator } from '@/components/ui/separator';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from '@/lib/i18n';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -21,6 +22,9 @@ interface Props {
 
 const SignIn: React.FC<Props> = ({ handleForm }) => {
     const { handleLogin } = useAuth();
+    const router = useRouter();
+
+    const [loading, setLoading] = useState(false);
 
     const form = useForm<z.infer<typeof SignInSchema>>({
         resolver: zodResolver(SignInSchema),
@@ -31,6 +35,7 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
     });
 
     const onSubmit = async (data: z.infer<typeof SignInSchema>) => {
+        setLoading(true)
         try {
             console.log("Form data:", data);
             const response = await fetch('/api/auth/signin', {
@@ -57,8 +62,11 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                 },
                 result.access_token
             );
+            router.push('/dashboard');
         } catch (error) {
             console.error('Error during signin:', error);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -126,9 +134,9 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         )}
                         required
                     />
-                    <Button type="submit" className="w-full mt-4">
+                    <CustomButton type="submit" className="w-full mt-4" loading={loading}>
                         Sign in
-                    </Button>
+                    </CustomButton>
                     <Separator className="my-4" />
                     <p className='font-medium text-xs cursor-pointer' onClick={onForgotPassword}>Forgot your password?</p>
                     <p className='font-medium text-xs cursor-pointer' onClick={onResetPassword}>Reset your password</p>
