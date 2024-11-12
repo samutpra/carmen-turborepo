@@ -63,6 +63,9 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
                     Sign Up
                 </Button>
                 <Separator className="my-4" />
+                <p className='font-medium text-xs cursor-pointer'
+                >Have Account Already? Back to Sign in
+                </p>
                 <p className='font-medium text-xs cursor-pointer' onClick={onSignIn}>Have Account Already? Back to Sign in</p>
             </form>
         </Form>
