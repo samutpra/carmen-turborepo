@@ -1,6 +1,6 @@
 "use client"
 
-import { AuthFormType } from '@/lib/types';
+import { AuthFormType, SignInSchema } from '@/lib/types';
 import React from 'react'
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -16,29 +16,38 @@ interface Props {
     handleForm: (form: AuthFormType) => void;
 }
 
-const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    password: z.string().min(6, {
-        message: "Password must be at least 6 characters.",
-    }),
-});
-
 
 const SignIn: React.FC<Props> = ({ handleForm }) => {
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof SignInSchema>>({
+        resolver: zodResolver(SignInSchema),
         defaultValues: {
             username: "",
             password: "",
         },
     });
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
-        console.log("Form data:", data);
-        // handleForm(data); Uncomment this line to use handleForm when ready
+    const onSubmit = async (data: z.infer<typeof SignInSchema>) => {
+        try {
+            console.log("Form data:", data);
+            const response = await fetch('/api/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                console.error('Signin failed:', result);
+                return;
+            }
+            console.log('Signin successful:', result);
+        } catch (error) {
+            console.error('Error during signin:', error);
+        }
     }
 
     const onForgotPassword = () => {
