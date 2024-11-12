@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';  // Assuming you're using Lucide icons
+import { Eye, EyeOff } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -29,7 +29,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInput>(
                         className
                     )}
                     ref={ref}
-                    type={isPasswordVisible ? 'text' : 'password'}  // Toggle input type
+                    type={isPasswordVisible ? 'text' : 'password'}
                     {...props}
                 />
                 <div
@@ -40,7 +40,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInput>(
                     )}
                     onClick={togglePasswordVisibility}
                 >
-                    {isPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} {/* Eye icon */}
+                    {isPasswordVisible ? <EyeOff className="h-4 w-4 cursor-pointer" /> : <Eye className="h-4 w-4 cursor-pointer" />}
                 </div>
             </div>
         );
