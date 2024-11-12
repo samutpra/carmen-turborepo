@@ -1,10 +1,23 @@
-import { contains } from 'class-validator';
-import { json } from 'stream/consumers';
-import { stringify } from 'querystring';
-
 export interface QueryAdvance {
   where: Record<string, string>;
 }
+export class KeyValueString {
+  public Key: string;
+  public Value: string;
+
+  constructor(key: string, value: string) {
+    this.Key = key;
+    this.Value = value;
+  }
+}
+
+// export enum enumSearchStrType {
+//   Number,
+//   String,
+//   Date,
+//   Boolean,
+// }
+
 export default class QueryParams {
   public readonly page: number;
   public readonly perPage: number;
@@ -19,7 +32,7 @@ export default class QueryParams {
     page: number = 1,
     perpage: number = 10,
     search: string = '',
-    searchFields: string,
+    searchFields: string = null,
     defaultSearchFields: string[] = [],
     filter: Record<string, string> = {},
     sort: string = '',
@@ -28,23 +41,55 @@ export default class QueryParams {
     this.page = page;
     this.perPage = perpage;
     this.search = search;
-    this.searchFields = searchFields.split(',') || [];
+    this.searchFields = searchFields ? searchFields.split(',') : [];
+
     this.defaultSearchFields = defaultSearchFields;
+
+    // console.log({ searchFields: this.searchFields });
+    // console.log({ searchFields_length: this.searchFields.length });
+
+    if (this.searchFields.length <= 0) {
+      this.searchFields = this.defaultSearchFields;
+    }
     this.filter = filter;
     this.sort = sort.split(',');
     this.advance = advance;
 
-    console.log({
-      title: 'constructor',
-      page: this.page,
-      perPage: this.perPage,
-      search: this.search,
-      searchFields: this.searchFields,
-      filter: this.filter,
-      sort: this.sort,
-      advance: this.advance,
-    });
+    // console.log({
+    //   title: 'constructor',
+    //   page: this.page,
+    //   perPage: this.perPage,
+    //   search: this.search,
+    //   searchFields: this.searchFields,
+    //   filter: this.filter,
+    //   sort: this.sort,
+    //   advance: this.advance,
+    // });
   }
+
+  // public searchTypeIs(): enumSearchStrType {
+  //   if (this.searchFields.length <= 0) {
+  //     this.searchFields = this.defaultSearchFields;
+  //   }
+
+  //   if (this.searchFields.length <= 0) {
+  //     return enumSearchStrType.String;
+  //   }
+
+  //   const searchType = this.searchFields[0].split(':')[1];
+
+  //   if (searchType == 'number') {
+  //     return enumSearchStrType.Number;
+  //   } else if (searchType == 'string') {
+  //     return enumSearchStrType.String;
+  //   } else if (searchType == 'date') {
+  //     return enumSearchStrType.Date;
+  //   } else if (searchType == 'boolean') {
+  //     return enumSearchStrType.Boolean;
+  //   } else {
+  //     return enumSearchStrType.String;
+  //   }
+  // }
 
   public where(): any {
     const _where: any = {};
@@ -53,37 +98,97 @@ export default class QueryParams {
       _where.AND = this.advance?.where;
     } else {
       if (this.filter && Object.keys(this.filter).length > 0) {
-        _where.AND = Object.entries(this.filter).map(([key, value]) => ({
-          [key]: { contains: value, mode: 'insensitive' },
-        }));
+        _where.AND = Object.entries(this.filter).map(([key, value]) => {
+          const [k, f] = key.split(':');
+
+          switch (f) {
+            case 'number':
+            case 'num':
+              return {
+                [k]: value,
+              };
+
+            case 'bool':
+            case 'boolean':
+              return {
+                [k]:
+                  value.toLowerCase() == 'true' || value.toLowerCase() == '1',
+              };
+
+            case 'date':
+            case 'datetime':
+              return {
+                [k]: new Date(value),
+              };
+
+            default:
+              return {
+                [k]: { contains: value, mode: 'insensitive' },
+              };
+          }
+
+          // return {
+          //   [k.trim()]: { contains: value, mode: 'insensitive' },
+          // };
+        });
       }
 
       if (this.searchFields.length <= 0) {
         this.searchFields = this.defaultSearchFields;
       }
 
-      let searchCol: any = {};
+      // console.log({ defaultSearchFields: this.defaultSearchFields });
+      // console.log({ searchfield: this.searchFields });
+
+      // if (this.search != ''
+      let searchCol: KeyValueString[] = [];
 
       if (this.search != '') {
-        searchCol = this.searchFields.map((field) => {
-          const k = field.trim();
-          const v = {
-            contains: this.search,
-            mode: 'insensitive',
-          };
-
-          return {
-            [k]: v,
-          };
+        searchCol = this.searchFields.map((f) => {
+          const [k, t] = f.split(':');
+          return new KeyValueString(k.trim(), t ?? 'string');
         });
-      }
 
-      // if (this.search != '') {
-      //   _where.OR = { ...searchCol };
-      // }
+        // console.log({ searchCol: searchCol });
+
+        _where.OR = searchCol.map((o) => {
+          const k = o.Key;
+          const f = o.Value;
+
+          switch (f) {
+            case 'number':
+            case 'num':
+              return {
+                [k]: this.search,
+              };
+            case 'bool':
+            case 'boolean':
+              return {
+                [k]:
+                  this.search.toLowerCase() == 'true' ||
+                  this.search.toLowerCase() == '1',
+              };
+            case 'date':
+            case 'datetime':
+              return {
+                [k]: new Date(this.search),
+              };
+            default:
+              return {
+                [k]: { contains: this.search, mode: 'insensitive' },
+              };
+          }
+        });
+
+        // console.log({
+        //   title: 'searchCol',
+        //   searchCol: searchCol,
+        //   where_or: _where.OR,
+        // });
+      }
     }
 
-    console.log({ title: 'where', where: _where });
+    // console.log({ title: 'where', where: _where });
     return _where;
   }
 
@@ -108,7 +213,7 @@ export default class QueryParams {
       result = {};
     }
 
-    console.log({ title: 'orderBy', orderBy: this.orderBy });
+    // console.log({ title: 'orderBy', orderBy: this.orderBy });
     return result;
   }
 
@@ -119,7 +224,7 @@ export default class QueryParams {
     const s: any = (this.page - 1) * this.perPage;
     const t: any = this.perPage;
 
-    console.log({ title: 'findMany', where: w, orderBy: o, skip: s, take: t });
+    // console.log({ title: 'findMany', where: w, orderBy: o, skip: s, take: t });
 
     return {
       where: w,
