@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Separator } from '@/components/ui/separator';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -19,6 +20,7 @@ interface Props {
 
 
 const SignIn: React.FC<Props> = ({ handleForm }) => {
+    const { handleLogin } = useAuth();
 
     const form = useForm<z.infer<typeof SignInSchema>>({
         resolver: zodResolver(SignInSchema),
@@ -45,7 +47,16 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                 console.error('Signin failed:', result);
                 return;
             }
-            console.log('Signin successful:', result);
+            await handleLogin(
+                {
+                    user: {
+                        id: result.id,
+                        username: result.username
+                    },
+                    refresh_token: result.refresh_token,
+                },
+                result.access_token
+            );
         } catch (error) {
             console.error('Error during signin:', error);
         }
