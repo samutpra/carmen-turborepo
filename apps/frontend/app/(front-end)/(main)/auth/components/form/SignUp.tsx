@@ -48,6 +48,7 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
                             <FormLabel>Email</FormLabel>
                             <FormControl>
                                 <InputCustom
+                                    type='email'
                                     placeholder="Email"
                                     error={!!form.formState.errors.email}
                                     {...field}
@@ -64,7 +65,7 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
                 </Button>
                 <Separator className="my-4" />
                 <p className='font-medium text-xs cursor-pointer'
-                >Have Account Already? Back to Sign in
+                >By signing up, you are agreeing to our privacy policy, terms of use conditions.
                 </p>
                 <p className='font-medium text-xs cursor-pointer' onClick={onSignIn}>Have Account Already? Back to Sign in</p>
             </form>

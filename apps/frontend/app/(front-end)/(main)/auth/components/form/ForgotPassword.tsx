@@ -47,6 +47,7 @@ const ForgotPassword: React.FC<Props> = ({ handleForm }) => {
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
                                     <InputCustom
+                                        type='email'
                                         placeholder="Email"
                                         error={!!form.formState.errors.email}
                                         {...field}
