@@ -1,9 +1,9 @@
 import React from 'react'
-import Auth from './components/Auth'
+import AuthList from './components/AuthList'
 
 const AuthPage = () => {
     return (
-        <Auth />
+        <AuthList />
     )
 }
 

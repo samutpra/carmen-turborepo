@@ -6,7 +6,7 @@ import SignUp from './form/SignUp';
 import ForgotPassword from './form/ForgotPassword';
 import ResetPassword from './form/ResetPassword';
 
-const Auth = () => {
+const AuthList = () => {
     const [formType, setFormType] = useState<AuthFormType>(AuthFormType.SignIn);
     const handleForm = (formType: AuthFormType) => {
         setFormType(formType);
@@ -33,4 +33,4 @@ const Auth = () => {
     )
 }
 
-export default Auth
+export default AuthList
