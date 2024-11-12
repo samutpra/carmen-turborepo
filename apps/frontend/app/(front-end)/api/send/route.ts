@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { EmailTemplate } from "@/components/EmailTemplate";
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function POST(request: NextRequest) {
+    try {
+
+        const { subject, email } = await request.json();
+
+        console.log(email);
+
+
+        const { data, error } = await resend.emails.send({
+            from: 'test@mail.semapru.com',
+            to: email,
+            subject: subject,
+            react: EmailTemplate({ firstName: 'Daew' }),
+        });
+
+        if (error) {
+            return NextResponse.json({ error: error.message || "Unknown error" }, { status: 500 });
+        }
+
+        return NextResponse.json(data, { status: 200 });
+
+    } catch (error: unknown) {
+        // กำหนดประเภทของ error เป็น unknown แล้วแปลงเป็น string เมื่อใช้ใน response
+        const errorMessage = error instanceof Error ? error.message : 'Unexpected error occurred';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+}

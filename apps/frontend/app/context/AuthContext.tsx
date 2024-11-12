@@ -10,8 +10,11 @@ const USER_DATA = 'user_data';
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const [authState, setAuthState] = useState<AuthState>(() => {
-        const storedUser = localStorage.getItem(USER_DATA);
-        return storedUser ? JSON.parse(storedUser) : { user: null, refresh_token: '' };
+        if (typeof window !== 'undefined') {
+            const storedUser = localStorage.getItem(USER_DATA);
+            return storedUser ? JSON.parse(storedUser) : { user: null, refresh_token: '' };
+        }
+        return { user: null, refresh_token: '' };
     });
 
     const [accessToken, setAccessToken] = useState<string | null>(() => {
@@ -20,8 +23,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         return null;
     });
-
-    // console.log(authState);
 
     useEffect(() => {
         if (accessToken) {
