@@ -11,6 +11,7 @@ erDiagram
   String userId FK
   String hash
   DateTime expiredOn
+  DateTime createdAt "nullable"
 }
 "Permission" {
   String id PK
@@ -221,6 +222,7 @@ erDiagram
   - `userId`: 
   - `hash`: 
   - `expiredOn`: 
+  - `createdAt`: 
 
 ### `Permission`
 
