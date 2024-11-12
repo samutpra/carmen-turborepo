@@ -1363,4 +1363,29 @@ export interface AuthContextType extends AuthState {
   updateAccessToken: (token: string) => void;
 }
 
+export const VerifySchema = z.object({
+  firstName: z.string().min(2, {
+    message: "First name must be at least 2 characters.",
+  }),
+  lastName: z.string().min(2, {
+    message: "Last name must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+  confirmPassword: z.string().min(6, {
+    message: "Confirm password must be at least 6 characters.",
+  }),
+}).superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      code: "custom",
+      message: "The passwords did not match",
+      path: ['confirmPassword'],
+    });
+  }
+});
+
+export type VerifyType = z.infer<typeof VerifySchema>;
+
 
