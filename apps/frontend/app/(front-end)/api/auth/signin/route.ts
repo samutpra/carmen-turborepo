@@ -1,4 +1,5 @@
 import { SignInSchema } from "@/lib/types";
+import { API_URL } from "@/lib/util/api";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
         }
         const { username, password } = result.data;
 
-        const response = await fetch('http://localhost:4000/api/v1/auth/login', {
+        const response = await fetch(API_URL + '/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
