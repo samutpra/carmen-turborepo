@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 // import GoogleIcon from '@/components/icons/GoogleIcon';
 import { Separator } from '@/components/ui/separator';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -103,7 +104,7 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <InputCustom
+                                    <PasswordInput
                                         placeholder="Password"
                                         error={!!form.formState.errors.password}
                                         {...field}
