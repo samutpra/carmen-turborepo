@@ -7,6 +7,7 @@ CREATE TABLE "Password" (
     "userId" UUID NOT NULL,
     "hash" TEXT NOT NULL,
     "expiredOn" DATE NOT NULL DEFAULT (now() + '1 day'::interval),
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Password_pkey" PRIMARY KEY ("id")
 );

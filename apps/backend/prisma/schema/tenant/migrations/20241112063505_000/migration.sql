@@ -1,6 +1,21 @@
 -- CreateEnum
 CREATE TYPE "UnitType" AS ENUM ('OrderUnit', 'InventoryUnit', 'RecipeUnit');
 
+-- CreateEnum
+CREATE TYPE "InvDocType" AS ENUM ('GRN', 'CN', 'SR', 'ISSUE', 'ADJ', 'SI', 'SO');
+
+-- CreateEnum
+CREATE TYPE "LocationType" AS ENUM ('Inventory', 'Direct');
+
+-- CreateEnum
+CREATE TYPE "POStatus" AS ENUM ('Open', 'Voided', 'Closed', 'Draft', 'Sent', 'Partial', 'FullyReceived', 'Cancelled', 'Deleted');
+
+-- CreateEnum
+CREATE TYPE "PRDocStatus" AS ENUM ('Draft', 'WIP', 'Complete');
+
+-- CreateEnum
+CREATE TYPE "PRWorkflowStatus" AS ENUM ('Draft', 'Pending', 'Review', 'Accept');
+
 -- CreateTable
 CREATE TABLE "AddressType" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -90,6 +105,7 @@ CREATE TABLE "ExchangeRate" (
 CREATE TABLE "Location" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR NOT NULL,
+    "inventoryType" "LocationType" NOT NULL,
     "description" TEXT,
     "isActive" BOOLEAN DEFAULT true,
     "deliveryPointId" UUID,
@@ -191,65 +207,6 @@ CREATE TABLE "ProductVendor" (
 );
 
 -- CreateTable
-CREATE TABLE "PurchaseOrder" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR NOT NULL,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "PurchaseOrder_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PurchaseOrderItem" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "purchaseOrderId" UUID,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "PurchaseOrderItem_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PurchaseRequest" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR NOT NULL,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "prTypeId" UUID,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "PurchaseRequest_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PurchaseRequestItem" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR NOT NULL,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "purchaseRequestId" UUID,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "PurchaseRequestItem_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Unit" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR NOT NULL,
@@ -341,7 +298,58 @@ CREATE TABLE "Menu" (
 );
 
 -- CreateTable
-CREATE TABLE "PurchaseRequestType" (
+CREATE TABLE "GRN0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "GRN0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "GRN1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "GRN0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "GRN1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Inv0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "invDocType" "InvDocType",
+
+    CONSTRAINT "Inv0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Inv1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "fromLot" UUID,
+    "currentLotName" VARCHAR,
+    "qty" DECIMAL,
+    "cost" DECIMAL(15,5),
+
+    CONSTRAINT "Inv1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Inv2" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv1Id" UUID NOT NULL,
+    "lotName" VARCHAR,
+    "lotIndex" INTEGER NOT NULL DEFAULT 1,
+    "qty" DECIMAL,
+    "cost" DECIMAL(15,5),
+
+    CONSTRAINT "Inv2_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PO" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR NOT NULL,
     "description" TEXT,
@@ -351,7 +359,139 @@ CREATE TABLE "PurchaseRequestType" (
     "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "updateById" UUID,
 
-    CONSTRAINT "PurchaseRequestType_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PO_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "POItem" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR,
+    "description" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "POId" UUID,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "POItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PR0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "refName" VARCHAR NOT NULL,
+    "prDate" DATE,
+    "prTypeId" UUID,
+    "requestorId" UUID,
+    "departmentId" UUID,
+    "isActive" BOOLEAN DEFAULT true,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "PR0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PR1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "PR0Id" UUID,
+    "locationId" UUID,
+    "productId" UUID,
+    "unitId" UUID,
+    "description" TEXT,
+    "requestQty" DOUBLE PRECISION,
+    "approveQty" DOUBLE PRECISION,
+    "currencyId" UUID,
+    "currencyRate" DOUBLE PRECISION,
+    "price" DECIMAL(15,5),
+    "totalPrice" DECIMAL(15,5),
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "PR1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PR1Workflow" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "PR1Id" UUID,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+
+    CONSTRAINT "PR1Workflow_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PRType" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "PRType_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SI0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SI0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SI1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "SI0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SI1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SO0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SO0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SO1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "SO0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SO1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SR0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SR0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SR1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "SR0Id" UUID NOT NULL,
+    "name" VARCHAR,
+
+    CONSTRAINT "SR1_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -433,30 +573,6 @@ CREATE INDEX "productsubcategory_name_u" ON "ProductSubCategory"("name");
 CREATE UNIQUE INDEX "productvendor_vendorid_productid_u" ON "ProductVendor"("vendorId", "productId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PurchaseOrder_name_key" ON "PurchaseOrder"("name");
-
--- CreateIndex
-CREATE INDEX "purchaseorder_name_u" ON "PurchaseOrder"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PurchaseOrderItem_name_key" ON "PurchaseOrderItem"("name");
-
--- CreateIndex
-CREATE INDEX "purchaseorderitem_name_u" ON "PurchaseOrderItem"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PurchaseRequest_name_key" ON "PurchaseRequest"("name");
-
--- CreateIndex
-CREATE INDEX "purchaserequest_name_u" ON "PurchaseRequest"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PurchaseRequestItem_name_key" ON "PurchaseRequestItem"("name");
-
--- CreateIndex
-CREATE INDEX "purchaserequestitem_name_u" ON "PurchaseRequestItem"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Unit_name_key" ON "Unit"("name");
 
 -- CreateIndex
@@ -484,10 +600,34 @@ CREATE UNIQUE INDEX "Menu_name_key" ON "Menu"("name");
 CREATE INDEX "menu_name_u" ON "Menu"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PurchaseRequestType_name_key" ON "PurchaseRequestType"("name");
+CREATE UNIQUE INDEX "Inv0_name_key" ON "Inv0"("name");
 
 -- CreateIndex
-CREATE INDEX "purchaserequesttype_name_u" ON "PurchaseRequestType"("name");
+CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "Inv2"("lotName", "lotIndex");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PO_name_key" ON "PO"("name");
+
+-- CreateIndex
+CREATE INDEX "PO_name_u" ON "PO"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "POItem_name_key" ON "POItem"("name");
+
+-- CreateIndex
+CREATE INDEX "POitem_name_u" ON "POItem"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PR0_refName_key" ON "PR0"("refName");
+
+-- CreateIndex
+CREATE INDEX "PR0_refname_u" ON "PR0"("refName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PRType_name_key" ON "PRType"("name");
+
+-- CreateIndex
+CREATE INDEX "PRtype_name_u" ON "PRType"("name");
 
 -- AddForeignKey
 ALTER TABLE "ExchangeRate" ADD CONSTRAINT "ExchangeRate_currencyId_fkey" FOREIGN KEY ("currencyId") REFERENCES "Currency"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -514,15 +654,6 @@ ALTER TABLE "ProductVendor" ADD CONSTRAINT "ProductVendor_productId_fkey" FOREIG
 ALTER TABLE "ProductVendor" ADD CONSTRAINT "ProductVendor_vendorId_fkey" FOREIGN KEY ("vendorId") REFERENCES "Vendor"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "PurchaseOrderItem" ADD CONSTRAINT "PurchaseOrderItem_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "PurchaseOrder"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "PurchaseRequest" ADD CONSTRAINT "PurchaseRequest_prTypeId_fkey" FOREIGN KEY ("prTypeId") REFERENCES "PurchaseRequestType"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "PurchaseRequestItem" ADD CONSTRAINT "PurchaseRequestItem_purchaseRequestId_fkey" FOREIGN KEY ("purchaseRequestId") REFERENCES "PurchaseRequest"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
 ALTER TABLE "UnitConversion" ADD CONSTRAINT "UnitConversion_fromUnitId_fkey" FOREIGN KEY ("fromUnitId") REFERENCES "Unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -542,3 +673,45 @@ ALTER TABLE "VendorContact" ADD CONSTRAINT "VendorContact_contactTypeId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "VendorContact" ADD CONSTRAINT "VendorContact_vendorId_fkey" FOREIGN KEY ("vendorId") REFERENCES "Vendor"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "GRN0" ADD CONSTRAINT "GRN0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "GRN1" ADD CONSTRAINT "GRN1_GRN0Id_fkey" FOREIGN KEY ("GRN0Id") REFERENCES "GRN0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Inv1" ADD CONSTRAINT "Inv1_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Inv2" ADD CONSTRAINT "Inv2_inv1Id_fkey" FOREIGN KEY ("inv1Id") REFERENCES "Inv1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "POItem" ADD CONSTRAINT "POItem_POId_fkey" FOREIGN KEY ("POId") REFERENCES "PO"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "PR0" ADD CONSTRAINT "PR0_prTypeId_fkey" FOREIGN KEY ("prTypeId") REFERENCES "PRType"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "PR1" ADD CONSTRAINT "PR1_PR0Id_fkey" FOREIGN KEY ("PR0Id") REFERENCES "PR0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "PR1Workflow" ADD CONSTRAINT "PR1Workflow_PR1Id_fkey" FOREIGN KEY ("PR1Id") REFERENCES "PR1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SI0" ADD CONSTRAINT "SI0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SI1" ADD CONSTRAINT "SI1_SI0Id_fkey" FOREIGN KEY ("SI0Id") REFERENCES "SI0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SO0" ADD CONSTRAINT "SO0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SO1" ADD CONSTRAINT "SO1_SO0Id_fkey" FOREIGN KEY ("SO0Id") REFERENCES "SO0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SR0" ADD CONSTRAINT "SR0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "SR1" ADD CONSTRAINT "SR1_SR0Id_fkey" FOREIGN KEY ("SR0Id") REFERENCES "SR0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

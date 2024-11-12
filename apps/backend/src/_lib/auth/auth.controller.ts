@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   AuthLoginDto,
   AuthLoginResponseDto,
@@ -8,6 +15,7 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
+import { UserRegisterDto } from './auth.dto';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
@@ -48,5 +56,10 @@ export class AuthController {
   @UseGuards(RefreshJwtAuthGuard)
   async refreshToken(@Request() req) {
     return this.authService.refreshToken(req.user);
+  }
+
+  @Post('register')
+  async register(@Body() userRegisterDto: UserRegisterDto, @Request() req) {
+    return this.authService.register(userRegisterDto, req);
   }
 }

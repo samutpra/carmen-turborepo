@@ -102,6 +102,7 @@ model ExchangeRate {
 model Location {
   id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String         @unique @db.VarChar
+  inventoryType   LocationType
   description     String?
   isActive        Boolean?       @default(true)
   deliveryPointId String?        @db.Uuid
@@ -209,66 +210,6 @@ model ProductVendor {
   @@unique([vendorId, productId], map: "productvendor_vendorid_productid_u")
 }
 
-model PurchaseOrder {
-  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String              @unique @db.VarChar
-  description       String?
-  isActive          Boolean?            @default(true)
-  createdAt         DateTime?           @default(now()) @db.Timestamp(6)
-  createById        String?             @db.Uuid
-  updateAt          DateTime?           @default(now()) @db.Timestamp(6)
-  updateById        String?             @db.Uuid
-  PurchaseOrderItem PurchaseOrderItem[]
-
-  @@index([name], map: "purchaseorder_name_u")
-}
-
-model PurchaseOrderItem {
-  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String?        @unique @db.VarChar
-  description     String?
-  isActive        Boolean?       @default(true)
-  purchaseOrderId String?        @db.Uuid
-  createdAt       DateTime?      @default(now()) @db.Timestamp(6)
-  createById      String?        @db.Uuid
-  updateAt        DateTime?      @default(now()) @db.Timestamp(6)
-  updateById      String?        @db.Uuid
-  PurchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([name], map: "purchaseorderitem_name_u")
-}
-
-model PurchaseRequest {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                String                @unique @db.VarChar
-  description         String?
-  isActive            Boolean?              @default(true)
-  prTypeId            String?               @db.Uuid
-  createdAt           DateTime?             @default(now()) @db.Timestamp(6)
-  createById          String?               @db.Uuid
-  updateAt            DateTime?             @default(now()) @db.Timestamp(6)
-  updateById          String?               @db.Uuid
-  PRType              PurchaseRequestType?  @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  PurchaseRequestItem PurchaseRequestItem[]
-
-  @@index([name], map: "purchaserequest_name_u")
-}
-
-model PurchaseRequestItem {
-  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String           @unique @db.VarChar
-  description       String?
-  isActive          Boolean?         @default(true)
-  purchaseRequestId String?          @db.Uuid
-  createdAt         DateTime?        @default(now()) @db.Timestamp(6)
-  createById        String?          @db.Uuid
-  updateAt          DateTime?        @default(now()) @db.Timestamp(6)
-  updateById        String?          @db.Uuid
-  PurchaseRequest   PurchaseRequest? @relation(fields: [purchaseRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([name], map: "purchaserequestitem_name_u")
-}
-
 model Unit {
   id                                             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                                           String           @unique @db.VarChar
@@ -367,22 +308,232 @@ model Menu {
   @@index([name], map: "menu_name_u")
 }
 
-model PurchaseRequestType {
-  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String            @unique @db.VarChar
-  description     String?
-  isActive        Boolean?          @default(true)
-  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
-  createById      String?           @db.Uuid
-  updateAt        DateTime?         @default(now()) @db.Timestamp(6)
-  updateById      String?           @db.Uuid
-  PurchaseRequest PurchaseRequest[]
+model GRN0 {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv0Id String  @db.Uuid
+  name   String? @db.VarChar
+  Inv0   Inv0    @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  GRN1   GRN1[]
+}
 
-  @@index([name], map: "purchaserequesttype_name_u")
+model GRN1 {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  GRN0Id String  @db.Uuid
+  name   String? @db.VarChar
+  GRN0   GRN0    @relation(fields: [GRN0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Inv0 {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String      @unique @db.VarChar
+  invDocType InvDocType?
+  GRN0       GRN0[]
+  Inv1       Inv1[]
+  SI0        SI0[]
+  SO0        SO0[]
+  SR0        SR0[]
+}
+
+model Inv1 {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv0Id         String   @db.Uuid
+  fromLot        String?  @db.Uuid
+  currentLotName String?  @db.VarChar
+  qty            Decimal? @db.Decimal
+  cost           Decimal? @db.Decimal(15, 5)
+  Inv0           Inv0     @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Inv2           Inv2[]
+}
+
+model Inv2 {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv1Id   String   @db.Uuid
+  lotName  String?  @db.VarChar
+  lotIndex Int      @default(1)
+  qty      Decimal? @db.Decimal
+  cost     Decimal? @db.Decimal(15, 5)
+  Inv1     Inv1     @relation(fields: [inv1Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([lotName, lotIndex], map: "inv2_lotname_lotindex_u")
+}
+
+model PO {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  POItem      POItem[]
+
+  @@index([name], map: "PO_name_u")
+}
+
+model POItem {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String?   @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  POId        String?   @db.Uuid
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  PO          PO?       @relation(fields: [POId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "POitem_name_u")
+}
+
+model PR0 {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  refName      String    @unique @db.VarChar
+  prDate       DateTime? @db.Date
+  prTypeId     String?   @db.Uuid
+  requestorId  String?   @db.Uuid
+  departmentId String?   @db.Uuid
+  isActive     Boolean?  @default(true)
+  createdAt    DateTime? @default(now()) @db.Timestamp(6)
+  createById   String?   @db.Uuid
+  updateAt     DateTime? @default(now()) @db.Timestamp(6)
+  updateById   String?   @db.Uuid
+  PRType       PRType?   @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  PR1          PR1[]
+
+  @@index([refName], map: "PR0_refname_u")
+}
+
+model PR1 {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  PR0Id        String?       @db.Uuid
+  locationId   String?       @db.Uuid
+  productId    String?       @db.Uuid
+  unitId       String?       @db.Uuid
+  description  String?
+  requestQty   Float?
+  approveQty   Float?
+  currencyId   String?       @db.Uuid
+  currencyRate Float?
+  price        Decimal?      @db.Decimal(15, 5)
+  totalPrice   Decimal?      @db.Decimal(15, 5)
+  createdAt    DateTime?     @default(now()) @db.Timestamp(6)
+  createById   String?       @db.Uuid
+  updateAt     DateTime?     @default(now()) @db.Timestamp(6)
+  updateById   String?       @db.Uuid
+  PR0          PR0?          @relation(fields: [PR0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  PR1Workflow  PR1Workflow[]
+}
+
+model PR1Workflow {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  PR1Id      String?   @db.Uuid
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  createById String?   @db.Uuid
+  PR1        PR1?      @relation(fields: [PR1Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PRType {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  PR0         PR0[]
+
+  @@index([name], map: "PRtype_name_u")
+}
+
+model SI0 {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv0Id String  @db.Uuid
+  name   String? @db.VarChar
+  Inv0   Inv0    @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  SI1    SI1[]
+}
+
+model SI1 {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  SI0Id String  @db.Uuid
+  name  String? @db.VarChar
+  SI0   SI0     @relation(fields: [SI0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model SO0 {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv0Id String  @db.Uuid
+  name   String? @db.VarChar
+  Inv0   Inv0    @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  SO1    SO1[]
+}
+
+model SO1 {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  SO0Id String  @db.Uuid
+  name  String? @db.VarChar
+  SO0   SO0     @relation(fields: [SO0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model SR0 {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inv0Id String  @db.Uuid
+  name   String? @db.VarChar
+  Inv0   Inv0    @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  SR1    SR1[]
+}
+
+model SR1 {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  SR0Id String  @db.Uuid
+  name  String? @db.VarChar
+  SR0   SR0     @relation(fields: [SR0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum UnitType {
   OrderUnit
   InventoryUnit
   RecipeUnit
+}
+
+enum InvDocType {
+  GRN
+  CN
+  SR
+  ISSUE
+  ADJ
+  SI
+  SO
+}
+
+enum LocationType {
+  Inventory
+  Direct
+}
+
+enum POStatus {
+  Open
+  Voided
+  Closed
+  Draft
+  Sent
+  Partial
+  FullyReceived
+  Cancelled
+  Deleted
+}
+
+enum PRDocStatus {
+  Draft
+  WIP
+  Complete
+}
+
+enum PRWorkflowStatus {
+  Draft
+  Pending
+  Review
+  Accept
 }

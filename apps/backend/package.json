@@ -24,6 +24,7 @@
     "prisma:reset": "prisma migrate reset --schema prisma/schema/system/system.prisma && prisma migrate reset --schema prisma/schema/tenant/tenant.prisma",
     "prisma:dev": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && ts-node ./src/main.ts",
     "prisma:seed": "prisma db seed",
+    "prisma:db-pull": "prisma db pull --schema prisma/schema/system/system.prisma &&prisma db pull --schema prisma/schema/tenant/tenant.prisma",
     "prisma:migrate": "prisma migrate dev --name 000 --schema prisma/schema/system/system.prisma && prisma migrate dev --name 000 --schema prisma/schema/tenant/tenant.prisma",
     "prisma:generate:migrate": "npm run prisma:generate && npm run prisma:migrate"
   },

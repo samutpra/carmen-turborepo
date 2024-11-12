@@ -16,11 +16,12 @@ datasource db {
 }
 
 model Password {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @db.Uuid
   hash      String
-  expiredOn DateTime @default(dbgenerated("(now() + '1 day'::interval)")) @db.Date
-  User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expiredOn DateTime  @default(dbgenerated("(now() + '1 day'::interval)")) @db.Date
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([userId], map: "password_userid_idx")
 }
