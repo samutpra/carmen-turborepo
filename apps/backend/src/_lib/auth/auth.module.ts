@@ -10,6 +10,7 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaClientManagerModule } from '../prisma-client-manager/prisma-client-manager.module';
 import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
+import { SendMailModule } from 'src/_lib/send-mail/send-mail.module';
 import { UserModule } from 'src/_system/users/users.module';
 
 dotenv.config();
@@ -19,6 +20,7 @@ dotenv.config();
     PrismaClientManagerModule,
     UserModule,
     PassportModule,
+    SendMailModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },

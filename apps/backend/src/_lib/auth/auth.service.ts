@@ -2,15 +2,20 @@ import {
   AuthLoginResponseDto,
   AuthPayloadDto,
 } from '@carmensoftware/shared-dtos';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
+import {
+  UserForgotPassDto,
+  UserRegisterDto,
+  UserRegisterEmailDto,
+} from './auth.dto';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { DuplicateException } from 'lib/utils/exceptions';
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
 import { ResponseId } from 'lib/helper/iResponse';
-import { UserRegisterDto } from './auth.dto';
+import { SendMailService } from 'src/_lib/send-mail/send-mail.service';
 import { UsersService } from 'src/_system/users/users.service';
 
 // const fakeUsers = [
@@ -33,20 +38,67 @@ export class AuthService {
   constructor(
     private prismaClientMamager: PrismaClientManagerService,
     private jwtService: JwtService,
+    private usersService: UsersService,
+    private sendEmail: SendMailService,
   ) {}
 
   private db_System: dbSystem;
+
+  async ForgotPassword(userForgotPassDto: UserForgotPassDto, req: any) {
+    this.db_System = this.prismaClientMamager.getSystemDB();
+    const user = await this.usersService.findByUsername(
+      this.db_System,
+      userForgotPassDto.username,
+    );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+  async registerEmail(
+    userRegisterEmailDto: UserRegisterEmailDto,
+    req: Request,
+  ): Promise<string> {
+    this.db_System = this.prismaClientMamager.getSystemDB();
+    const found = await this.usersService.findByUsername(
+      this.db_System,
+      userRegisterEmailDto.email,
+    );
+
+    if (found) {
+      throw new DuplicateException('User already exists');
+    }
+
+    // const createUserObj = await this.db_System.user.create({
+    //   data: {
+    //     username: userRegisterDto.username,
+    //   },
+    // });
+
+    // const passObj = await this.db_System.password.create({
+    //   data: {
+    //     userId: createUserObj.id,
+    //     hash: hashPassword(userRegisterDto.password),
+    //   },
+    // });
+
+    // const res: ResponseId<string> = {
+    //   id: createUserObj.id,
+    // };
+
+    return 'please check your email';
+  }
 
   async register(
     userRegisterDto: UserRegisterDto,
     req: Request,
   ): Promise<ResponseId<string>> {
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const found = await this.db_System.user.findUnique({
-      where: {
-        username: userRegisterDto.username,
-      },
-    });
+    const found = await this.usersService.findByUsername(
+      this.db_System,
+      userRegisterDto.username,
+    );
 
     if (found) {
       throw new DuplicateException('User already exists');
@@ -76,11 +128,11 @@ export class AuthService {
     username,
     password,
   }: AuthPayloadDto): Promise<AuthLoginResponseDto> {
-    const findUser = await this.db_System.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    this.db_System = this.prismaClientMamager.getSystemDB();
+    const findUser = await this.usersService.findByUsername(
+      this.db_System,
+      username,
+    );
 
     if (!findUser) return null;
 

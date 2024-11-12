@@ -15,7 +15,11 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
-import { UserRegisterDto } from './auth.dto';
+import {
+  UserForgotPassDto,
+  UserRegisterDto,
+  UserRegisterEmailDto,
+} from './auth.dto';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
@@ -23,23 +27,6 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @ApiBody({
-    type: AuthLoginDto,
-    examples: {
-      example1: {
-        value: {
-          username: 'test1',
-          password: 'password1',
-        },
-      },
-      example2: {
-        value: {
-          username: 'test2',
-          password: 'password2',
-        },
-      },
-    },
-  })
   @UseGuards(LocalGuard)
   login(@Request() req): AuthLoginResponseDto {
     return req.user;
@@ -58,8 +45,16 @@ export class AuthController {
     return this.authService.refreshToken(req.user);
   }
 
-  @Post('register')
-  async register(@Body() userRegisterDto: UserRegisterDto, @Request() req) {
-    return this.authService.register(userRegisterDto, req);
+  @Post('register/sendemail')
+  async register(
+    @Body() userRegisterEmailDto: UserRegisterEmailDto,
+    @Request() req,
+  ) {
+    return this.authService.registerEmail(userRegisterEmailDto, req);
+  }
+
+  @Post('forgot')
+  async forgot(@Body() userForgotPassDto: UserForgotPassDto, @Request() req) {
+    return this.authService.ForgotPassword(userForgotPassDto, req);
   }
 }

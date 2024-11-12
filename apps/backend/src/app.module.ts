@@ -19,10 +19,12 @@ import { ProductSubCategoryModule } from './_application/product-sub-category/pr
 import { ProductsModule } from './_application/products/products.module';
 import { PurchaseOrderModule } from './_application/purchase-order/purchase-order.module';
 import { PurchaseRequestModule } from './_application/purchase-request/purchase-request.module';
+import { SendMailModule } from './_lib/send-mail/send-mail.module';
 import { StoreRequisitionModule } from './_application/store-requisition/store-requisition.module';
 import { UnitsModule } from './_application/units/units.module';
 import { UserBussinessUnitModule } from './_system/user-businessUnit/user-bussinessUnit.module';
 import { UserModule } from './_system/users/users.module';
+import { UserProfileModule } from './_system/user-profile/user-profile.module';
 import { VendorModule } from './_application/vendors/vendor.module';
 import { VendorProductModule } from './_application/vendor-product/vendor-product.module';
 
@@ -55,6 +57,8 @@ import { VendorProductModule } from './_application/vendor-product/vendor-produc
     VendorModule,
     VendorProductModule,
     ClusterModule,
+    SendMailModule,
+    UserProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
