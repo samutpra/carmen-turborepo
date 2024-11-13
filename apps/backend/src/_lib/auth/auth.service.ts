@@ -100,6 +100,13 @@ export class AuthService {
     userForgotPassDto: UserForgotPassDto,
     req: any,
   ): Promise<ResponseId<string>> {
+    if (
+      userForgotPassDto.emailToken === null ||
+      userForgotPassDto.emailToken === undefined ||
+      userForgotPassDto.emailToken === ''
+    ) {
+      throw new NullException();
+    }
     const payload = this.jwtService.verify(userForgotPassDto.emailToken);
 
     if (!payload) {
@@ -190,6 +197,14 @@ export class AuthService {
     userRegisterDto: UserRegisterDto,
     req: Request,
   ): Promise<ResponseId<string>> {
+    if (
+      userRegisterDto.emailToken === null ||
+      userRegisterDto.emailToken === undefined ||
+      userRegisterDto.emailToken === ''
+    ) {
+      throw new NullException();
+    }
+
     const payload = this.jwtService.verify(userRegisterDto.emailToken);
 
     if (!payload) {
