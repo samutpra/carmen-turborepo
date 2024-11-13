@@ -245,10 +245,7 @@ export class AuthService {
     return res;
   }
 
-  async validateUser({
-    username,
-    password,
-  }: AuthPayloadDto): Promise<AuthLoginResponseDto> {
+  async validateUser({ username, password }: AuthPayloadDto) {
     this.db_System = this.prismaClientMamager.getSystemDB();
     const findUser = await this.usersService.findByUsername(
       this.db_System,
@@ -270,9 +267,10 @@ export class AuthService {
     const isMatch = comparePassword(password, lastPassword.hash);
 
     if (isMatch) {
-      const { ...user } = findUser;
+      const { consent, createdAt, createById, updateAt, updateById, ...user } =
+        findUser;
 
-      const res: AuthLoginResponseDto = {
+      const res = {
         id: findUser.id,
         username: user.username,
         access_token: this.jwtService.sign(user),

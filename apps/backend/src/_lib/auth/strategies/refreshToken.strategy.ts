@@ -21,6 +21,15 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   validate(payload: any) {
-    return payload;
+    const {
+      email,
+      consent,
+      createdAt,
+      createById,
+      updateAt,
+      updateById,
+      ...res
+    } = payload;
+    return res;
   }
 }
