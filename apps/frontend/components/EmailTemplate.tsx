@@ -9,7 +9,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     email,
     token,
 }) => {
-    const verificationLink = `http://localhost:3500/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+    const verificationLink = `http://localhost:3500/auth/verify?token=${token}`;
 
     return (
         <div style={{

@@ -1365,36 +1365,35 @@ export interface AuthContextType extends AuthState {
 
 
 export const VerifySchema = z.object({
-  userName: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  middleName: z.string().optional(),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-  confirmPassword: z.string().min(6, {
-    message: "Confirm password must be at least 6 characters.",
-  }),
-  terms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the terms and conditions.",
+  email: z.string().email({ message: "Invalid email address." }),
+  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string().min(6, { message: "Confirm password must be at least 6 characters." }),
+  consent: z.boolean(),
+  emailToken: z.string(),
+  userInfo: z.object({
+    firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
+    middleName: z.string().optional(),
+    lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
   }),
 }).superRefine(({ confirmPassword, password }, ctx) => {
   if (confirmPassword !== password) {
     ctx.addIssue({
       code: "custom",
       message: "The passwords did not match",
-      path: ['confirmPassword'],
+      path: ["confirmPassword"],
     });
   }
 });
 
-
 export type VerifyType = z.infer<typeof VerifySchema>;
+export type PayloadVerifyType = Omit<VerifyType, 'confirmPassword'>;
+
+export const EmailSchema = z.object({
+  email: z.string().email()
+});
+
+export type EmailType = z.infer<typeof EmailSchema>;
+
 
 
