@@ -16,7 +16,11 @@ import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
-import { UserForgotPassDto, UserRegisterDto, EmailDto } from './auth.dto';
+import {
+  UserForgotPassDto,
+  UserRegisterDto,
+  EmailDto,
+} from '@carmensoftware/shared-dtos';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
