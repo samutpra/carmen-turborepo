@@ -75,74 +75,75 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
         }
     }
 
-    if (isEmailSent) {
-        return (
-            <div className="w-full">
-                <SendEmailSuccess
-                    email={userEmail}
-                    onResend={handleResendEmail}
-                    isResending={isLoading}
-                />
-                <p className='font-medium text-xs cursor-pointer mt-4 text-center' onClick={onSignIn}>
-                    Back to Sign in
-                </p>
-            </div>
-        );
-    }
-
     return (
         <>
-            <p className="text-[32px] font-bold">Create an account</p>
-            <p className="mb-2.5 mt-2.5 font-normal">
-                Enter your email below to create your account
-            </p>
-            <Separator className="my-4" />
-
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <InputCustom
-                                        type='email'
-                                        placeholder="Email"
-                                        error={!!form.formState.errors.email}
-                                        disabled={isLoading}
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                        required
+            {isEmailSent ? (
+                <div className="w-full">
+                    <SendEmailSuccess
+                        email={userEmail}
+                        onResend={handleResendEmail}
+                        isResending={isLoading}
                     />
+                    <p className='font-medium text-xs cursor-pointer mt-4 text-center' onClick={onSignIn}>
+                        Back to Sign in
+                    </p>
+                </div>
+            ) : (
 
-                    <Button
-                        type="submit"
-                        className="w-full mt-4"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Sending...' : 'Sign Up'}
-                    </Button>
-
+                <>
+                    <p className="text-[32px] font-bold">Create an account</p>
+                    <p className="mb-2.5 mt-2.5 font-normal">
+                        Enter your email below to create your account
+                    </p>
                     <Separator className="my-4" />
 
-                    <p className='font-medium text-xs cursor-pointer'>
-                        By signing up, you are agreeing to our privacy policy, terms of use conditions.
-                    </p>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <InputCustom
+                                                type='email'
+                                                placeholder="Email"
+                                                error={!!form.formState.errors.email}
+                                                disabled={isLoading}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                                required
+                            />
 
-                    <p
-                        className='font-medium text-xs cursor-pointer'
-                        onClick={onSignIn}
-                    >
-                        Have Account Already? Back to Sign in
-                    </p>
-                </form>
-            </Form>
+                            <Button
+                                type="submit"
+                                className="w-full mt-4"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Sending...' : 'Sign Up'}
+                            </Button>
+
+                            <Separator className="my-4" />
+
+                            <p className='font-medium text-xs cursor-pointer'>
+                                By signing up, you are agreeing to our privacy policy, terms of use conditions.
+                            </p>
+
+                            <p
+                                className='font-medium text-xs cursor-pointer'
+                                onClick={onSignIn}
+                            >
+                                Have Account Already? Back to Sign in
+                            </p>
+                        </form>
+                    </Form>
+                </>
+            )}
         </>
     );
 }
