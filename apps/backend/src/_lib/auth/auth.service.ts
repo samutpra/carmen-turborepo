@@ -22,9 +22,8 @@ import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
-import { SendMailService } from 'src/_lib/send-mail/send-mail.service';
 import { UsersService } from 'src/_system/users/users.service';
-import { addMonths } from 'lib/utils/functions';
+import { isWelformJWT } from '../../../lib/utils/functions';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +36,12 @@ export class AuthService {
   private db_System: dbSystem;
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
+    const isWelformJWT_ = isWelformJWT(token);
+
+    if (!isWelformJWT_) {
+      throw new InvalidTokenException('Invalid token');
+    }
+
     const payload = this.jwtService.decode(token);
 
     if (!payload) {
@@ -100,13 +105,12 @@ export class AuthService {
     userForgotPassDto: UserForgotPassDto,
     req: any,
   ): Promise<ResponseId<string>> {
-    if (
-      userForgotPassDto.emailToken === null ||
-      userForgotPassDto.emailToken === undefined ||
-      userForgotPassDto.emailToken === ''
-    ) {
-      throw new NullException();
+    const isWelformJWT_ = isWelformJWT(userForgotPassDto.emailToken);
+
+    if (!isWelformJWT_) {
+      throw new InvalidTokenException('Invalid token');
     }
+
     const payload = this.jwtService.verify(userForgotPassDto.emailToken);
 
     if (!payload) {
@@ -197,12 +201,10 @@ export class AuthService {
     userRegisterDto: UserRegisterDto,
     req: Request,
   ): Promise<ResponseId<string>> {
-    if (
-      userRegisterDto.emailToken === null ||
-      userRegisterDto.emailToken === undefined ||
-      userRegisterDto.emailToken === ''
-    ) {
-      throw new NullException();
+    const isWelformJWT_ = isWelformJWT(userRegisterDto.emailToken);
+
+    if (!isWelformJWT_) {
+      throw new InvalidTokenException('Invalid token');
     }
 
     const payload = this.jwtService.verify(userRegisterDto.emailToken);
