@@ -109,6 +109,10 @@ export class CurrenciesService {
         symbol: createDto.symbol ?? '',
         description: createDto.description ?? '',
         isActive: createDto.isActive ?? false,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
       },
     });
 
@@ -136,7 +140,7 @@ export class CurrenciesService {
       where: {
         id,
       },
-      data: updateDto,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {
