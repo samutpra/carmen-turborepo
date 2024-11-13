@@ -12,6 +12,10 @@ export async function POST(request: NextRequest) {
 
         const token = nanoid();
 
+        // ส่งไปที่ nest
+
+        // /register/sendMail
+
         const { data, error } = await resend.emails.send({
             from: 'test@mail.semapru.com',
             to: email,
