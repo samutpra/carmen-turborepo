@@ -79,6 +79,7 @@ export class UsersService {
     const found = await this.db_System.user.findUnique({
       where: {
         username: createDto.username,
+        email: createDto.email,
       },
     });
 

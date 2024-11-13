@@ -39,7 +39,7 @@ import QueryParams, { QueryAdvance } from 'lib/types';
 @ApiBearerAuth()
 @ApiHeader({
   name: 'x-tenant-id',
-  description: 'description',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class CurrenciesController {
@@ -55,10 +55,7 @@ export class CurrenciesController {
     required: true,
     type: 'uuid',
   })
-  async findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<ResponseSingle<Currency>> {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     return this.currenciesService.findOne(req, id);
   }
   //#endregion GET ONE
@@ -75,12 +72,7 @@ export class CurrenciesController {
     @Query('filter') filter: Record<string, string> = {},
     @Query('sort') sort: string = '',
     @Query('advance') advance: QueryAdvance = null,
-  ): Promise<ResponseList<Currency>> {
-    if (!page) page = 1;
-    if (!perpage) perpage = 10;
-    page = parseInt(page.toString());
-    perpage = parseInt(perpage.toString());
-
+  ) {
     const defaultSearchFields: string[] = [
       'name',
       'code',
@@ -108,10 +100,7 @@ export class CurrenciesController {
     type: CurrencyCreateDto,
     description: 'CurrencyCreateDto',
   })
-  async create(
-    @Body() createDto: any,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.log('createDto: ', createDto);
     return this.currenciesService.create(req, createDto);
   }
@@ -123,7 +112,7 @@ export class CurrenciesController {
     @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  ) {
     return this.currenciesService.update(req, id, updateDto);
   }
   //#endregion UPDATE

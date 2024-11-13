@@ -22,7 +22,8 @@ async function main() {
   });
 
   const user1Obj: Prisma.UserCreateInput = {
-    username: 'user1',
+    username: 'user1@carmensoftware.com',
+    email: 'user1@carmensoftware.com',
   };
 
   const user1 = await prisma.user.upsert({
@@ -32,7 +33,8 @@ async function main() {
   });
 
   const user2Obj: Prisma.UserCreateInput = {
-    username: 'user2',
+    username: 'user2@carmensoftware.com',
+    email: 'user2@carmensoftware.com',
   };
 
   const user2 = await prisma.user.upsert({
