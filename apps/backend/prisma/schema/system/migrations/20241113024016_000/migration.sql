@@ -61,6 +61,7 @@ CREATE TABLE "RolePermission" (
 CREATE TABLE "User" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "username" VARCHAR(30) NOT NULL,
+    "email" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "createById" UUID,
     "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
@@ -76,7 +77,6 @@ CREATE TABLE "UserProfile" (
     "firstname" VARCHAR(100),
     "middlename" VARCHAR(100),
     "lastname" VARCHAR(100),
-    "email" VARCHAR(255) NOT NULL,
     "bio" JSON,
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "createById" UUID,
@@ -252,7 +252,7 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 CREATE INDEX "user_username_idx" ON "User"("username");
 
 -- CreateIndex
-CREATE INDEX "userprofile_email_idx" ON "UserProfile"("email");
+CREATE INDEX "user_email_idx" ON "User"("email");
 
 -- CreateIndex
 CREATE INDEX "userprofile_firstname_lastname_idx" ON "UserProfile"("firstname", "lastname");

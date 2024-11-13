@@ -53,8 +53,21 @@ export class AuthController {
     return this.authService.registerEmail(userRegisterEmailDto, req);
   }
 
-  @Post('forgot')
+  @Post('register/confirm')
+  async confirm(@Body() userRegisterDto: UserRegisterDto, @Request() req) {
+    return this.authService.registerConfirm(userRegisterDto, req);
+  }
+
+  @Post('forgotpassword/sendemail')
   async forgot(@Body() userForgotPassDto: UserForgotPassDto, @Request() req) {
-    return this.authService.ForgotPassword(userForgotPassDto, req);
+    return this.authService.forgotPasswordEmail(userForgotPassDto, req);
+  }
+
+  @Post('forgotpassword/confirm')
+  async forgotConfirm(
+    @Body() userRegisterDto: UserRegisterDto,
+    @Request() req,
+  ) {
+    return this.authService.forgotPasswordConfirm(userRegisterDto, req);
   }
 }

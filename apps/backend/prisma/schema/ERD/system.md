@@ -49,6 +49,7 @@ erDiagram
 "User" {
   String id PK
   String username UK
+  String email
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
@@ -60,7 +61,6 @@ erDiagram
   String firstname "nullable"
   String middlename "nullable"
   String lastname "nullable"
-  String email
   Json bio "nullable"
   DateTime createdAt "nullable"
   String createById FK "nullable"
@@ -268,6 +268,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `username`: 
+  - `email`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
@@ -281,7 +282,6 @@ erDiagram
   - `firstname`: 
   - `middlename`: 
   - `lastname`: 
-  - `email`: 
   - `bio`: 
   - `createdAt`: 
   - `createById`: 
