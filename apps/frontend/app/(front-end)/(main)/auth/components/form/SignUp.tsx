@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { AuthFormType, EmailSchema, EmailType } from '@/lib/types';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { sendVerificationEmail } from '../../actions/sendVerifyEmail';
 import SendEmailSuccess from '../SendEmailSucess';
+import { sendVerificationEmail } from '../../actions/actions'
 
 interface Props {
     handleForm: (form: AuthFormType) => void;

@@ -11,6 +11,7 @@ import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useRouter } from '@/lib/i18n';
+import { submitSignup } from '../actions/actions';
 
 interface Props {
     token: string;
@@ -19,28 +20,6 @@ interface Props {
 interface CustomJwtPayload extends JwtPayload {
     email?: string;
 }
-
-const submitSignup = async (payload: PayloadVerifyType) => {
-    try {
-        const response = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            return { success: true, data: result };
-        } else {
-            return { success: false, message: result.message || 'Unknown error' };
-        }
-    } catch (error) {
-        console.error('Error during signup:', error);
-        return { success: false, message: 'An error occurred while processing your request' };
-    }
-};
 
 const VerifyComponent: React.FC<Props> = ({ token }) => {
     const [loading, setLoading] = useState(false);
