@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { Resend } from 'resend';
+import { nanoid } from 'nanoid';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -9,11 +10,13 @@ export async function POST(request: NextRequest) {
 
         const { subject, email } = await request.json();
 
+        const token = nanoid();
+
         const { data, error } = await resend.emails.send({
             from: 'test@mail.semapru.com',
             to: email,
             subject: subject,
-            react: EmailTemplate({ firstName: 'Daew' }),
+            react: EmailTemplate({ email: email, token: token }),
         });
 
         if (error) {

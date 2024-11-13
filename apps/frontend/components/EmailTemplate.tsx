@@ -1,13 +1,67 @@
 import * as React from 'react';
 
 interface EmailTemplateProps {
-    firstName: string;
+    email: string;
+    token: string;
 }
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
-    firstName,
-}) => (
-    <div>
-        <h1>Welcome, {firstName}!</h1>
-    </div>
-);
+    email,
+    token,
+}) => {
+    const verificationLink = `http://localhost:3500/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+
+    return (
+        <div style={{
+            fontFamily: 'sans-serif',
+            color: '#1a202c'
+        }}>
+            <h1 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#2563eb'
+            }}>Account Verification</h1>
+
+            <p style={{ marginTop: '16px' }}>Hello!!</p>
+
+            <p style={{ marginTop: '8px' }}>
+                We received a request to verify your email address: <span style={{ fontWeight: 600 }}>{email}</span>.
+            </p>
+
+            <p style={{ marginTop: '8px' }}>
+                Please click the link below to verify your account and complete the registration process:
+            </p>
+
+            <a
+                href={verificationLink}
+                style={{
+                    display: 'inline-block',
+                    marginTop: '16px',
+                    padding: '8px 16px',
+                    backgroundColor: '#2563eb',
+                    color: 'white',
+                    fontWeight: 600,
+                    borderRadius: '6px',
+                    textDecoration: 'none'
+                }}
+            >
+                Verify your account
+            </a>
+
+            <p style={{
+                marginTop: '24px',
+                fontSize: '14px',
+                color: '#4b5563'
+            }}>
+                If you didn&apos;t request this, you can safely ignore this email.
+            </p>
+
+            <p style={{ marginTop: '16px', fontSize: '14px' }}>
+                Best regards,<br />
+                The Team
+            </p>
+
+            <p>support@carmen.com</p>
+        </div>
+    );
+};
