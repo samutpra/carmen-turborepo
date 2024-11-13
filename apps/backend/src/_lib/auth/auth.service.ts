@@ -4,7 +4,11 @@ import {
   AuthLoginResponseDto,
   AuthPayloadDto,
 } from '@carmensoftware/shared-dtos';
-import { EmailDto, UserForgotPassDto, UserRegisterDto } from './auth.dto';
+import {
+  EmailDto,
+  UserForgotPassDto,
+  UserRegisterDto,
+} from '@carmensoftware/shared-dtos';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
@@ -199,9 +203,9 @@ export class AuthService {
     const userInfoObj = await this.db_System.userProfile.create({
       data: {
         userId: createUserObj.id,
-        firstname: userRegisterDto.userInfo.firstname,
-        middlename: userRegisterDto.userInfo.middlename,
-        lastname: userRegisterDto.userInfo.lastname,
+        firstname: userRegisterDto.userInfo.firstName,
+        middlename: userRegisterDto.userInfo.middleName,
+        lastname: userRegisterDto.userInfo.lastName,
         // bio: userRegisterDto.userInfo.bio,
       },
     });
