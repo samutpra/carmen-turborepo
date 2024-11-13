@@ -6,7 +6,7 @@ CREATE TABLE "Password" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "userId" UUID NOT NULL,
     "hash" TEXT NOT NULL,
-    "expiredOn" DATE NOT NULL DEFAULT (now() + '1 day'::interval),
+    "isActive" BOOLEAN DEFAULT false,
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Password_pkey" PRIMARY KEY ("id")
@@ -62,6 +62,7 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "username" VARCHAR(30) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
+    "consent" TIMESTAMP(6),
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "createById" UUID,
     "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,

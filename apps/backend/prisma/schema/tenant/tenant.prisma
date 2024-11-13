@@ -357,35 +357,6 @@ model Inv2 {
   @@unique([lotName, lotIndex], map: "inv2_lotname_lotindex_u")
 }
 
-model PO {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String    @unique @db.VarChar
-  description String?
-  isActive    Boolean?  @default(true)
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
-  createById  String?   @db.Uuid
-  updateAt    DateTime? @default(now()) @db.Timestamp(6)
-  updateById  String?   @db.Uuid
-  POItem      POItem[]
-
-  @@index([name], map: "PO_name_u")
-}
-
-model POItem {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String?   @unique @db.VarChar
-  description String?
-  isActive    Boolean?  @default(true)
-  POId        String?   @db.Uuid
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
-  createById  String?   @db.Uuid
-  updateAt    DateTime? @default(now()) @db.Timestamp(6)
-  updateById  String?   @db.Uuid
-  PO          PO?       @relation(fields: [POId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([name], map: "POitem_name_u")
-}
-
 model PR0 {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   refName      String    @unique @db.VarChar
@@ -490,6 +461,35 @@ model SR1 {
   SR0Id String  @db.Uuid
   name  String? @db.VarChar
   SR0   SR0     @relation(fields: [SR0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PO0 {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  PO1         PO1[]
+
+  @@index([name], map: "PO_name_u")
+}
+
+model PO1 {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String?   @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  PO0Id       String?   @db.Uuid
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
+  PO0         PO0?      @relation(fields: [PO0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "PO1_name_u")
 }
 
 enum UnitType {

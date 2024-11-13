@@ -10,6 +10,7 @@ TABLE CARMEN_SYSTEM.User {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   username varchar(30) [unique, not null]
   email varchar(255) [not null]
+  
   consent timestamp
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -28,7 +29,10 @@ TABLE CARMEN_SYSTEM.Password {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   userId uuid [not null, ref: > CARMEN_SYSTEM.User.id]
   hash text [not null]
-  expiredOn date [not null, default: `now() + '1 day'::interval`]
+
+  isActive bool [default: false]
+
+  //expiredOn date [not null, default: `now() + '1 day'::interval`]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
 
@@ -631,7 +635,7 @@ TABLE TENANT_DUMMY.PR1Workflow {
   
 }
 
-TABLE TENANT_DUMMY.PO {
+TABLE TENANT_DUMMY.PO0 {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -648,12 +652,13 @@ TABLE TENANT_DUMMY.PO {
   }
 }
 
-TABLE TENANT_DUMMY.POItem {
+TABLE TENANT_DUMMY.PO1 {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique]
   description text
   isActive bool [default: true]
-  POId uuid [ref: > TENANT_DUMMY.PO.id]
+
+  PO0Id uuid [ref: > TENANT_DUMMY.PO0.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid 
@@ -662,7 +667,7 @@ TABLE TENANT_DUMMY.POItem {
   updateById uuid
 
   indexes {
-    name [name: "POitem_name_u"]
+    name [name: "PO1_name_u"]
   }
 }
 

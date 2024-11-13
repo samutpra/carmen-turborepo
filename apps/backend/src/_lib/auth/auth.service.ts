@@ -5,6 +5,12 @@ import {
   AuthPayloadDto,
 } from '@carmensoftware/shared-dtos';
 import {
+  DuplicateException,
+  ForbiddenException,
+  InvalidTokenException,
+  NullException,
+} from 'lib/utils/exceptions';
+import {
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
@@ -14,11 +20,11 @@ import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 
-import { DuplicateException } from 'lib/utils/exceptions';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
 import { SendMailService } from 'src/_lib/send-mail/send-mail.service';
 import { UsersService } from 'src/_system/users/users.service';
+import { addMonths } from 'lib/utils/functions';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +40,7 @@ export class AuthService {
     const payload = this.jwtService.decode(token);
 
     if (!payload) {
-      throw new NotFoundException('Invalid token');
+      throw new InvalidTokenException('Invalid token');
     }
 
     const isTokenValid = this.jwtService.verify(token);
@@ -72,6 +78,7 @@ export class AuthService {
     }
 
     const { ...payload } = {
+      type: 'forgotpassword',
       username: user.username,
       email: user.email,
     };
@@ -96,11 +103,11 @@ export class AuthService {
     const payload = this.jwtService.verify(userForgotPassDto.emailToken);
 
     if (!payload) {
-      throw new NotFoundException('Invalid token');
+      throw new InvalidTokenException('Invalid token');
     }
 
     if (payload.username !== userForgotPassDto.username) {
-      throw new NotFoundException('Invalid token');
+      throw new InvalidTokenException('Invalid token');
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
@@ -113,10 +120,20 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    await this.db_System.password.updateMany({
+      where: {
+        userId: user.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+
     const passObj = await this.db_System.password.create({
       data: {
         userId: user.id,
         hash: hashPassword(userForgotPassDto.password),
+        isActive: true,
       },
     });
 
@@ -131,7 +148,13 @@ export class AuthService {
     userRegisterEmailDto: EmailDto,
     req: Request,
   ): Promise<ResponseSingle<string>> {
-    console.log(userRegisterEmailDto);
+    if (
+      userRegisterEmailDto.email === null ||
+      userRegisterEmailDto.email === undefined ||
+      userRegisterEmailDto.email === ''
+    ) {
+      throw new NullException();
+    }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
     const found = await this.usersService.findByUsername(
@@ -144,6 +167,7 @@ export class AuthService {
     }
 
     const { ...payload }: object = {
+      type: 'register',
       username: userRegisterEmailDto.email,
       email: userRegisterEmailDto.email,
     };
@@ -169,11 +193,14 @@ export class AuthService {
     const payload = this.jwtService.verify(userRegisterDto.emailToken);
 
     if (!payload) {
-      throw new NotFoundException('Invalid token');
+      throw new InvalidTokenException('Invalid token');
     }
 
-    if (payload.username !== userRegisterDto.username) {
-      throw new NotFoundException('Invalid token');
+    if (
+      payload.username !== userRegisterDto.username ||
+      payload.email !== userRegisterDto.email
+    ) {
+      throw new InvalidTokenException('Invalid token');
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
@@ -197,15 +224,16 @@ export class AuthService {
       data: {
         userId: createUserObj.id,
         hash: hashPassword(userRegisterDto.password),
+        isActive: true,
       },
     });
 
     const userInfoObj = await this.db_System.userProfile.create({
       data: {
         userId: createUserObj.id,
-        firstname: userRegisterDto.userInfo.firstName,
-        middlename: userRegisterDto.userInfo.middleName,
-        lastname: userRegisterDto.userInfo.lastName,
+        firstname: userRegisterDto.userInfo.firstName || '',
+        middlename: userRegisterDto.userInfo.middleName || '',
+        lastname: userRegisterDto.userInfo.lastName || '',
         // bio: userRegisterDto.userInfo.bio,
       },
     });
@@ -232,6 +260,7 @@ export class AuthService {
     const lastPassword = await this.db_System.password.findFirst({
       where: {
         userId: findUser.id,
+        isActive: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -247,7 +276,9 @@ export class AuthService {
         id: findUser.id,
         username: user.username,
         access_token: this.jwtService.sign(user),
-        refresh_token: this.jwtService.sign(user, { expiresIn: '7d' }),
+        refresh_token: this.jwtService.sign(user, {
+          expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+        }),
       };
       return res;
     }

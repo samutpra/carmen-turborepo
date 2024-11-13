@@ -242,27 +242,6 @@ erDiagram
   Decimal qty "nullable"
   Decimal cost "nullable"
 }
-"PO" {
-  String id PK
-  String name UK
-  String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
-}
-"POItem" {
-  String id PK
-  String name UK "nullable"
-  String description "nullable"
-  Boolean isActive "nullable"
-  String POId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
-}
 "PR0" {
   String id PK
   String refName UK
@@ -340,6 +319,27 @@ erDiagram
   String SR0Id FK
   String name "nullable"
 }
+"PO0" {
+  String id PK
+  String name UK
+  String description "nullable"
+  Boolean isActive "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
+"PO1" {
+  String id PK
+  String name UK "nullable"
+  String description "nullable"
+  Boolean isActive "nullable"
+  String PO0Id FK "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
 "ExchangeRate" }o--o| "Currency" : Currency
 "Location" }o--o| "DeliveryPoint" : DeliveryPoint
 "Product" }o--|| "Unit" : Unit
@@ -359,7 +359,6 @@ erDiagram
 "GRN1" }o--|| "GRN0" : GRN0
 "Inv1" }o--|| "Inv0" : Inv0
 "Inv2" }o--|| "Inv1" : Inv1
-"POItem" }o--o| "PO" : PO
 "PR0" }o--o| "PRType" : PRType
 "PR1" }o--o| "PR0" : PR0
 "PR1Workflow" }o--o| "PR1" : PR1
@@ -369,6 +368,7 @@ erDiagram
 "SO1" }o--|| "SO0" : SO0
 "SR0" }o--|| "Inv0" : Inv0
 "SR1" }o--|| "SR0" : SR0
+"PO1" }o--o| "PO0" : PO0
 ```
 
 ### `AddressType`
@@ -655,31 +655,6 @@ erDiagram
   - `qty`: 
   - `cost`: 
 
-### `PO`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
-### `POItem`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `isActive`: 
-  - `POId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
 ### `PR0`
 
 **Properties**
@@ -776,3 +751,28 @@ erDiagram
   - `id`: 
   - `SR0Id`: 
   - `name`: 
+
+### `PO0`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `isActive`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `PO1`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `isActive`: 
+  - `PO0Id`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 

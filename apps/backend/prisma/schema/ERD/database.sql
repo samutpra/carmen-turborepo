@@ -1,5 +1,3 @@
-DROP schema if exists "CARMEN_SYSTEM" CASCADE;
-DROP SCHEMA if exists "TENANT_DUMMY" CASCADE;
 CREATE SCHEMA "CARMEN_SYSTEM";
 CREATE SCHEMA "TENANT_DUMMY";
 CREATE TYPE "CARMEN_SYSTEM"."SubscriptionStatus" AS ENUM ('Active', 'Inactive', 'expired');
@@ -45,7 +43,7 @@ CREATE TABLE "CARMEN_SYSTEM"."Password" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "userId" uuid NOT NULL,
   "hash" text NOT NULL,
-  "expiredOn" date NOT NULL DEFAULT (now() + '1 day'::interval),
+  "isActive" bool DEFAULT false,
   "createdAt" timestamp DEFAULT (CURRENT_TIMESTAMP)
 );
 CREATE TABLE "CARMEN_SYSTEM"."UserProfile" (
@@ -380,7 +378,7 @@ CREATE TABLE "TENANT_DUMMY"."PR1Workflow" (
   "createdAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "createById" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."PO" (
+CREATE TABLE "TENANT_DUMMY"."PO0" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "description" text,
@@ -390,12 +388,12 @@ CREATE TABLE "TENANT_DUMMY"."PO" (
   "updateAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updateById" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."POItem" (
+CREATE TABLE "TENANT_DUMMY"."PO1" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE,
   "description" text,
   "isActive" bool DEFAULT true,
-  "POId" uuid,
+  "PO0Id" uuid,
   "createdAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "createById" uuid,
   "updateAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -561,8 +559,8 @@ CREATE INDEX "productsubcategory_name_u" ON "TENANT_DUMMY"."ProductSubCategory" 
 CREATE INDEX "productitemgroup_name_u" ON "TENANT_DUMMY"."ProductItemGroup" ("name");
 CREATE INDEX "PRtype_name_u" ON "TENANT_DUMMY"."PRType" ("name");
 CREATE INDEX "PR0_refname_u" ON "TENANT_DUMMY"."PR0" ("refName");
-CREATE INDEX "PO_name_u" ON "TENANT_DUMMY"."PO" ("name");
-CREATE INDEX "POitem_name_u" ON "TENANT_DUMMY"."POItem" ("name");
+CREATE INDEX "PO_name_u" ON "TENANT_DUMMY"."PO0" ("name");
+CREATE INDEX "PO1_name_u" ON "TENANT_DUMMY"."PO1" ("name");
 CREATE INDEX "vendor_name_u" ON "TENANT_DUMMY"."Vendor" ("name");
 CREATE INDEX "contacttype_name_u" ON "TENANT_DUMMY"."ContactType" ("name");
 CREATE UNIQUE INDEX "vendorcontact_vendorid_contacttypeid_u" ON "TENANT_DUMMY"."VendorContact" ("vendorId", "contactTypeId");
@@ -690,8 +688,8 @@ ALTER TABLE "TENANT_DUMMY"."PR1"
 ADD FOREIGN KEY ("PR0Id") REFERENCES "TENANT_DUMMY"."PR0" ("id");
 ALTER TABLE "TENANT_DUMMY"."PR1Workflow"
 ADD FOREIGN KEY ("PR1Id") REFERENCES "TENANT_DUMMY"."PR1" ("id");
-ALTER TABLE "TENANT_DUMMY"."POItem"
-ADD FOREIGN KEY ("POId") REFERENCES "TENANT_DUMMY"."PO" ("id");
+ALTER TABLE "TENANT_DUMMY"."PO1"
+ADD FOREIGN KEY ("PO0Id") REFERENCES "TENANT_DUMMY"."PO0" ("id");
 ALTER TABLE "TENANT_DUMMY"."VendorContact"
 ADD FOREIGN KEY ("vendorId") REFERENCES "TENANT_DUMMY"."Vendor" ("id");
 ALTER TABLE "TENANT_DUMMY"."VendorContact"

@@ -1,0 +1,21 @@
+meta {
+  name: forgot-email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/auth/forgotpassword/email-token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test@carmensoftware.com"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('email_forgot_token',res.body.data)
+}

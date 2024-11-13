@@ -349,35 +349,6 @@ CREATE TABLE "Inv2" (
 );
 
 -- CreateTable
-CREATE TABLE "PO" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR NOT NULL,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "PO_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "POItem" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR,
-    "description" TEXT,
-    "isActive" BOOLEAN DEFAULT true,
-    "POId" UUID,
-    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "createById" UUID,
-    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-    "updateById" UUID,
-
-    CONSTRAINT "POItem_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "PR0" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "refName" VARCHAR NOT NULL,
@@ -494,6 +465,35 @@ CREATE TABLE "SR1" (
     CONSTRAINT "SR1_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "PO0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "PO0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PO1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR,
+    "description" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "PO0Id" UUID,
+    "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "createById" UUID,
+    "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updateById" UUID,
+
+    CONSTRAINT "PO1_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "AddressType_name_key" ON "AddressType"("name");
 
@@ -606,18 +606,6 @@ CREATE UNIQUE INDEX "Inv0_name_key" ON "Inv0"("name");
 CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "Inv2"("lotName", "lotIndex");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PO_name_key" ON "PO"("name");
-
--- CreateIndex
-CREATE INDEX "PO_name_u" ON "PO"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "POItem_name_key" ON "POItem"("name");
-
--- CreateIndex
-CREATE INDEX "POitem_name_u" ON "POItem"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "PR0_refName_key" ON "PR0"("refName");
 
 -- CreateIndex
@@ -628,6 +616,18 @@ CREATE UNIQUE INDEX "PRType_name_key" ON "PRType"("name");
 
 -- CreateIndex
 CREATE INDEX "PRtype_name_u" ON "PRType"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PO0_name_key" ON "PO0"("name");
+
+-- CreateIndex
+CREATE INDEX "PO_name_u" ON "PO0"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PO1_name_key" ON "PO1"("name");
+
+-- CreateIndex
+CREATE INDEX "PO1_name_u" ON "PO1"("name");
 
 -- AddForeignKey
 ALTER TABLE "ExchangeRate" ADD CONSTRAINT "ExchangeRate_currencyId_fkey" FOREIGN KEY ("currencyId") REFERENCES "Currency"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -687,9 +687,6 @@ ALTER TABLE "Inv1" ADD CONSTRAINT "Inv1_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFE
 ALTER TABLE "Inv2" ADD CONSTRAINT "Inv2_inv1Id_fkey" FOREIGN KEY ("inv1Id") REFERENCES "Inv1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "POItem" ADD CONSTRAINT "POItem_POId_fkey" FOREIGN KEY ("POId") REFERENCES "PO"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
 ALTER TABLE "PR0" ADD CONSTRAINT "PR0_prTypeId_fkey" FOREIGN KEY ("prTypeId") REFERENCES "PRType"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -715,3 +712,6 @@ ALTER TABLE "SR0" ADD CONSTRAINT "SR0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERE
 
 -- AddForeignKey
 ALTER TABLE "SR1" ADD CONSTRAINT "SR1_SR0Id_fkey" FOREIGN KEY ("SR0Id") REFERENCES "SR0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "PO1" ADD CONSTRAINT "PO1_PO0Id_fkey" FOREIGN KEY ("PO0Id") REFERENCES "PO0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

@@ -10,7 +10,7 @@ erDiagram
   String id PK
   String userId FK
   String hash
-  DateTime expiredOn
+  Boolean isActive "nullable"
   DateTime createdAt "nullable"
 }
 "Permission" {
@@ -50,6 +50,7 @@ erDiagram
   String id PK
   String username UK
   String email
+  DateTime consent "nullable"
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
@@ -221,7 +222,7 @@ erDiagram
   - `id`: 
   - `userId`: 
   - `hash`: 
-  - `expiredOn`: 
+  - `isActive`: 
   - `createdAt`: 
 
 ### `Permission`
@@ -269,6 +270,7 @@ erDiagram
   - `id`: 
   - `username`: 
   - `email`: 
+  - `consent`: 
   - `createdAt`: 
   - `createById`: 
   - `updateAt`: 
