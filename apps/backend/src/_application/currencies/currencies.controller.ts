@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  ValidationPipe,
   Query,
   Logger,
 } from '@nestjs/common';
@@ -19,14 +18,10 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiBody,
-  ApiQuery,
   ApiHeader,
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-
-import { Currency } from '@prisma-carmen-client-tenant';
 import {
   CurrencyCreateDto,
   CurrencyUpdateDto,
@@ -101,13 +96,22 @@ export class CurrenciesController {
     description: 'CurrencyCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
-    this.logger.log('createDto: ', createDto);
     return this.currenciesService.create(req, createDto);
   }
   //#endregion CREATE
 
   //#region UPDATE
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: CurrencyUpdateDto,
+    description: 'CurrencyUpdateDto',
+  })
   async update(
     @Param('id') id: string,
     @Body() updateDto: any,
@@ -119,6 +123,12 @@ export class CurrenciesController {
 
   //#region DELETE
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async delete(@Param('id') id: string, @Req() req: Request) {
     return this.currenciesService.delete(req, id);
   }
