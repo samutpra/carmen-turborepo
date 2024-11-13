@@ -32,13 +32,14 @@ import {
   CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 
 @Controller('api/v1/currencies')
 @ApiTags('currencies')
 @ApiBearerAuth()
 @ApiHeader({
   name: 'x-tenant-id',
-  description: 'description',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class CurrenciesController {
@@ -54,10 +55,7 @@ export class CurrenciesController {
     required: true,
     type: 'uuid',
   })
-  async findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<ResponseSingle<Currency>> {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     return this.currenciesService.findOne(req, id);
   }
   //#endregion GET ONE
@@ -70,13 +68,29 @@ export class CurrenciesController {
     @Query('page') page: number,
     @Query('perpage') perpage: number,
     @Query('search') search: string = '',
+    @Query('searchfields') searchfields: string = '',
     @Query('filter') filter: Record<string, string> = {},
-  ): Promise<ResponseList<Currency>> {
-    if (!page) page = 1;
-    if (!perpage) perpage = 10;
-    page = parseInt(page.toString());
-    perpage = parseInt(perpage.toString());
-    return this.currenciesService.findAll(req, page, perpage, search, filter);
+    @Query('sort') sort: string = '',
+    @Query('advance') advance: QueryAdvance = null,
+  ) {
+    const defaultSearchFields: string[] = [
+      'name',
+      'code',
+      'symbol',
+      'description',
+    ];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+    return this.currenciesService.findAll(req, q);
   }
   //#endregion GET ALL
 
@@ -86,10 +100,7 @@ export class CurrenciesController {
     type: CurrencyCreateDto,
     description: 'CurrencyCreateDto',
   })
-  async create(
-    @Body() createDto: any,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.log('createDto: ', createDto);
     return this.currenciesService.create(req, createDto);
   }
@@ -101,7 +112,7 @@ export class CurrenciesController {
     @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  ) {
     return this.currenciesService.update(req, id, updateDto);
   }
   //#endregion UPDATE

@@ -13,6 +13,14 @@ import { z } from "zod";
 //   }
 // }
 
+export enum AuthFormType {
+  SignIn = 1,
+  SignUp = 2,
+  ForgotPassword = 3,
+  CreatePassword = 4,
+  ResetPassword = 5,
+}
+
 export type Money = {
   amount: number;
   currency: string;
@@ -1015,10 +1023,10 @@ export const CurrencySchema = z.object({
   id: z.string().optional(),
   code: z.string(),
   name: z.string(),
-  symbol: z.string(),
+  symbol: z.string().optional(),
   description: z.string(),
   rate: z.number(),
-  isActive: z.boolean(),
+  isActive: z.boolean().optional(),
 });
 
 export type CurrencyType = z.infer<typeof CurrencySchema>;
@@ -1327,5 +1335,66 @@ export type PaginationType = {
   perPage?: number | 10;
   total?: number | 0;
 }
+
+export const SignInSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+});
+
+export interface User {
+  id: string;
+  username: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  refresh_token: string;
+}
+
+export interface AuthContextType extends AuthState {
+  isAuthenticated: boolean;
+  accessToken: string | null;
+  handleLogin: (data: AuthState, token: string) => void;
+  handleLogout: () => void;
+  updateAccessToken: (token: string) => void;
+}
+
+
+export const VerifySchema = z.object({
+  userName: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  firstName: z.string().min(2, {
+    message: "First name must be at least 2 characters.",
+  }),
+  middleName: z.string().optional(),
+  lastName: z.string().min(2, {
+    message: "Last name must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+  confirmPassword: z.string().min(6, {
+    message: "Confirm password must be at least 6 characters.",
+  }),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms and conditions.",
+  }),
+}).superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      code: "custom",
+      message: "The passwords did not match",
+      path: ['confirmPassword'],
+    });
+  }
+});
+
+
+export type VerifyType = z.infer<typeof VerifySchema>;
 
 

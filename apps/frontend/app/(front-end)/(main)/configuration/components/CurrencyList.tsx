@@ -2,18 +2,16 @@
 
 import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+// import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import React, { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import DataCard from '@/components/templates/DataCard';
@@ -21,15 +19,15 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DataTable from '@/components/templates/DataTable';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
 import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { Switch } from '@/components/ui/switch';
-import { useCurrencies } from '../currency/actions/currency';
+import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '../currency/actions/currency';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import ErrorDisplay from '@/components/ErrorDisplay';
+import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
+import CurrencyForm from './form/CurrencyForm';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -38,7 +36,7 @@ const statusOptions = [
 ];
 
 const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzA5NjQ5NzMsImV4cCI6MTczMDk2ODU3M30.PvPpoq2H2138-zd4O96mseGOMxjxIlUWeMGwl0N7hfY';
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEzMTAzMDEsImV4cCI6MTczMTMxMzkwMX0.2VR7UQuqwtVPDeKAQ3KkHFWKZ2IiEHg2YPrshUX1Lns';
 
 const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -61,16 +59,16 @@ const CurrencyList = () => {
 		previousPage,
 		setPerPage,
 		handleSearch,
-		refetch
+		fetchData
 	} = useCurrencies(accessToken);
 
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
 		defaultValues: {
-			code: '',
-			description: '',
-			name: '',
-			symbol: '',
+			code: "",
+			name: "",
+			symbol: "",
+			description: "",
 			rate: 0,
 			isActive: true,
 		},
@@ -80,22 +78,27 @@ const CurrencyList = () => {
 		if (editingItem) {
 			form.reset({
 				code: editingItem.code,
+				name: editingItem.name,
+				symbol: editingItem.symbol,
 				description: editingItem.description,
+				rate: editingItem.rate,
 				isActive: editingItem.isActive,
 			});
 		}
 	}, [editingItem, form]);
 
 
-	// const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	setSearchTerm(e.target.value);
-	// };
-
 	const handleEdit = (item: CurrencyType) => {
-		form.setValue('code', item.code);
-		form.setValue('description', item.description);
-		form.setValue('isActive', item.isActive);
 		setEditingItem(item);
+		form.reset({
+			id: item.id,
+			code: item.code,
+			name: item.name,
+			symbol: item.symbol,
+			description: item.description,
+			rate: item.rate,
+			isActive: item.isActive,
+		});
 		setDialogForm(true);
 	};
 
@@ -107,8 +110,12 @@ const CurrencyList = () => {
 	const confirmDelete = async () => {
 		try {
 			setIsLoading(true);
-			setCurrencies((prev: CurrencyType[]) => prev.filter((currency: CurrencyType) => currency.id !== idToDelete));
-			setDialogDelete(false);
+			if (idToDelete) {
+				await deleteCurrency(accessToken, idToDelete);
+				setCurrencies(prev => prev.filter(currency => currency.id !== idToDelete));
+				fetchData();
+				setDialogDelete(false);
+			}
 		} catch (error) {
 			console.error('Error deleting currency:', error);
 		} finally {
@@ -118,7 +125,27 @@ const CurrencyList = () => {
 	};
 
 	const handleSave = async (data: CurrencyType) => {
-		console.log(data);
+		try {
+			setIsLoading(true);
+
+			if (editingItem?.id) {
+				const updatedFields: CurrencyType = { ...data };
+				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
+				setCurrencies(prev => prev.map(currency => (currency.id === editingItem.id ? updatedCurrency : currency)));
+			} else {
+				const newCurrency = await createCurrency(accessToken, data);
+				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
+			}
+			handleCloseDialog();
+		} catch (error) {
+			console.error('Save error details:', {
+				error,
+				message: error instanceof Error ? error.message : 'Unknown error',
+				stack: error instanceof Error ? error.stack : undefined
+			});
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleCloseDialog = () => {
@@ -167,7 +194,15 @@ const CurrencyList = () => {
 				<SearchInput
 					placeholder='Search Currency...'
 					value={search}
-					onChange={(e) => handleSearch(e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+						handleSearch(e.target.value, false);
+					}}
+					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							handleSearch(e.currentTarget.value, true);
+						}
+					}}
 					Icon={Search}
 				/>
 			</div>
@@ -256,7 +291,7 @@ const CurrencyList = () => {
 				{loading ? (
 					<SkeletonTableLoading />
 				) : error ? (
-					<div className='text-red-500'>{error.message}</div>
+					<ErrorDisplay errMessage={error.message} />
 				) : (
 					<DataTable
 						data={currencies}
@@ -279,54 +314,100 @@ const CurrencyList = () => {
 				idDelete={idToDelete}
 			/>
 
-			<Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
-				<DialogContent>
+			<CurrencyForm
+				open={dialogForm}
+				editingItem={editingItem}
+				isLoading={isLoading}
+				onOpenChange={setDialogForm}
+				onSubmit={handleSave}
+			/>
+
+
+			{/* <Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
+				<DialogContent className="sm:max-w-[700px]">
 					<DialogHeader>
 						<DialogTitle>{editingItem ? `Edit ${title}` : `Add New ${title}`}</DialogTitle>
 					</DialogHeader>
-					<Form {...form}>
+					{/* <Form {...form}>
 						<form onSubmit={form.handleSubmit(handleSave)} className='space-y-4'>
-							<FormField
-								control={form.control}
-								name='code'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Code</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Code name' error={!!form.formState.errors.code} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+							<div className="grid grid-cols-2 gap-4">
+								<FormField
+									control={form.control}
+									name='code'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Code</FormLabel>
+											<FormControl>
+												<InputCustom
+													placeholder='Enter Code name'
+													error={!!form.formState.errors.code}
+													{...field}
+													maxLength={3}
+												/>
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
 
-							<FormField
-								control={form.control}
-								name='name'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Name</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Name' error={!!form.formState.errors.name} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+								<FormField
+									control={form.control}
+									name='name'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Name</FormLabel>
+											<FormControl>
+												<InputCustom
+													placeholder='Enter Name'
+													error={!!form.formState.errors.name}
+													{...field}
+												/>
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
+							</div>
 
-							<FormField
-								control={form.control}
-								name='symbol'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Symbol</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Symbol' error={!!form.formState.errors.symbol} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
+							<div className="grid grid-cols-2 gap-4">
+								<FormField
+									control={form.control}
+									name='symbol'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Symbol</FormLabel>
+											<FormControl>
+												<InputCustom
+													placeholder='Enter Symbol'
+													error={!!form.formState.errors.symbol}
+													{...field}
+													maxLength={3}
+												/>
+											</FormControl>
+										</FormItem>
+									)}
+									required
+								/>
+
+								<FormField
+									control={form.control}
+									name='rate'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Rate</FormLabel>
+											<FormControl>
+												<InputCustom placeholder='Enter Rate'
+													error={!!form.formState.errors.rate}
+													{...field}
+													onChange={(e) => field.onChange(parseFloat(e.target.value) || '')}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+									required
+								/>
+							</div>
 
 							<FormField
 								control={form.control}
@@ -348,20 +429,6 @@ const CurrencyList = () => {
 
 							<FormField
 								control={form.control}
-								name='rate'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Rate</FormLabel>
-										<FormControl>
-											<InputCustom placeholder='Enter Rate' error={!!form.formState.errors.rate} {...field} />
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
-
-							<FormField
-								control={form.control}
 								name='isActive'
 								render={({ field }) => (
 									<FormItem className='flex items-center space-x-2'>
@@ -374,7 +441,7 @@ const CurrencyList = () => {
 								)}
 							/>
 							<DialogFooter>
-								<Button type='button' variant='secondary' onClick={handleCloseDialog} disabled={isLoading} className=''>
+								<Button type='button' variant='secondary' onClick={handleCloseDialog} disabled={isLoading}>
 									Cancel
 								</Button>
 								<LoaderButton type='submit' disabled={isLoading} isLoading={isLoading}>
@@ -382,13 +449,21 @@ const CurrencyList = () => {
 								</LoaderButton>
 							</DialogFooter>
 						</form>
-					</Form>
-				</DialogContent>
-			</Dialog>
+					</Form> */}
 		</>
 	);
 
-	return <DataDisplayTemplate title={title} actionButtons={actionButtons} filters={filter} content={content} />;
+	return (
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
+	);
 };
 
 export default CurrencyList;
+
+
+

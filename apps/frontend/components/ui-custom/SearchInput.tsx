@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 interface SearchInputProps {
     placeholder?: string;
     value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     Icon?: React.ComponentType<{ className?: string }>;
     variant?: "prefix" | "suffix";
     className?: string;
@@ -15,6 +16,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(({
     placeholder,
     value,
     onChange,
+    onKeyDown,
     Icon,
     variant = "prefix",
     className,
@@ -32,6 +34,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(({
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 className={cn(
                     variant === "prefix" && "pl-10",
                     variant === "suffix" && "pr-10",

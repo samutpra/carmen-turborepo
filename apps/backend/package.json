@@ -24,6 +24,7 @@
     "prisma:reset": "prisma migrate reset --schema prisma/schema/system/system.prisma && prisma migrate reset --schema prisma/schema/tenant/tenant.prisma",
     "prisma:dev": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && ts-node ./src/main.ts",
     "prisma:seed": "prisma db seed",
+    "prisma:db-pull": "prisma db pull --schema prisma/schema/system/system.prisma &&prisma db pull --schema prisma/schema/tenant/tenant.prisma",
     "prisma:migrate": "prisma migrate dev --name 000 --schema prisma/schema/system/system.prisma && prisma migrate dev --name 000 --schema prisma/schema/tenant/tenant.prisma",
     "prisma:generate:migrate": "npm run prisma:generate && npm run prisma:migrate"
   },
@@ -48,6 +49,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.0",
+    "resend": "^4.0.1-alpha.0",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "tsx": "^4.19.2",

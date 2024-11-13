@@ -16,11 +16,12 @@ datasource db {
 }
 
 model Password {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @db.Uuid
   hash      String
-  expiredOn DateTime @default(dbgenerated("(now() + '1 day'::interval)")) @db.Date
-  User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expiredOn DateTime  @default(dbgenerated("(now() + '1 day'::interval)")) @db.Date
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([userId], map: "password_userid_idx")
 }
@@ -83,6 +84,7 @@ model RolePermission {
 model User {
   id                                                             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username                                                       String                   @unique @db.VarChar(30)
+  email                                                          String                   @db.VarChar(255)
   createdAt                                                      DateTime?                @default(now()) @db.Timestamp(6)
   createById                                                     String?                  @db.Uuid
   updateAt                                                       DateTime?                @default(now()) @db.Timestamp(6)
@@ -127,6 +129,7 @@ model User {
   UserRole                                                       UserRole[]
 
   @@index([username], map: "user_username_idx")
+  @@index([email], map: "user_email_idx")
 }
 
 model UserProfile {
@@ -135,7 +138,6 @@ model UserProfile {
   firstname                         String?   @db.VarChar(100)
   middlename                        String?   @db.VarChar(100)
   lastname                          String?   @db.VarChar(100)
-  email                             String    @db.VarChar(255)
   bio                               Json?     @db.Json
   createdAt                         DateTime? @default(now()) @db.Timestamp(6)
   createById                        String?   @db.Uuid
@@ -145,7 +147,6 @@ model UserProfile {
   User_UserProfile_updateByIdToUser User?     @relation("UserProfile_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User_UserProfile_userIdToUser     User?     @relation("UserProfile_userIdToUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([email], map: "userprofile_email_idx")
   @@index([firstname, lastname], map: "userprofile_firstname_lastname_idx")
   @@index([userId], map: "userprofile_userid_idx")
 }

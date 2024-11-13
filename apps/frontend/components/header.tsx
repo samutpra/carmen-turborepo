@@ -39,6 +39,10 @@ export default function Header({ onSidebarToggle, isSidebarOpen }: HeaderProps) 
 		router.push('/edit-profile');
 	};
 
+	const onSignIn = () => {
+		router.push('/auth')
+	}
+
 	return (
 		<header className='fixed top-0 left-0 right-0 z-40 shadow-sm border-[var(--border)] bg-[var(--cm-header)] drop-shadow-lg'>
 			<div className='px-4 py-2 sm:px-6'>
@@ -82,6 +86,9 @@ export default function Header({ onSidebarToggle, isSidebarOpen }: HeaderProps) 
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
+						<Button variant="ghost" onClick={onSignIn}>
+							<User />
+						</Button>
 					</div>
 				</div>
 			</div>

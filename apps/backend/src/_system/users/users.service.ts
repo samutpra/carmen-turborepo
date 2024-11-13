@@ -29,6 +29,15 @@ export class UsersService {
     return res;
   }
 
+  async findByUsername(db_System: dbSystem, username: string): Promise<User> {
+    const res = await db_System.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+    return res;
+  }
+
   async findOne(req: Request, id: string): Promise<ResponseSingle<User>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
@@ -70,6 +79,7 @@ export class UsersService {
     const found = await this.db_System.user.findUnique({
       where: {
         username: createDto.username,
+        email: createDto.email,
       },
     });
 
