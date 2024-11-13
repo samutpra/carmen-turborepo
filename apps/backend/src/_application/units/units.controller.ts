@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import {
@@ -33,6 +34,8 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 @UseGuards(JwtAuthGuard)
 export class UnitsController {
   constructor(private readonly unitsService: UnitsService) {}
+
+  private readonly logger = new Logger(UnitsController.name);
 
   @Get(':id')
   @ApiParam({
@@ -82,6 +85,16 @@ export class UnitsController {
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: UnitUpdateDto,
+    description: 'UnitUpdateDto',
+  })
   async update(
     @Param('id') id: string,
     @Body() updateDto: UnitUpdateDto,
@@ -91,6 +104,12 @@ export class UnitsController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async remove(@Param('id') id: string, @Req() req: Request) {
     return this.unitsService.delete(req, id);
   }

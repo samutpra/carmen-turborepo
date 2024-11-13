@@ -8,47 +8,114 @@ import {
   Delete,
   UseGuards,
   Req,
+  Logger,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiTags, ApiBody } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import { QueryAdvance } from 'lib/types';
 import { UserCreateDto, UserUpdateDto } from '@carmensoftware/shared-dtos';
+import QueryParams from 'lib/types';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/users')
-@ApiTags('users')
+@ApiTags('system/users')
 @ApiBearerAuth()
+@ApiHeader({
+  name: 'x-tenant-id',
+  description: 'tenant id',
+})
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  private readonly logger = new Logger(UsersController.name);
+
   @Get(':id')
-  async getOne(@Param('id') id: string, @Req() req: Request) {
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     return this.usersService.findOne(req, id);
   }
 
   @Get()
-  async getAll(@Req() req: Request) {
-    return this.usersService.findAll(req);
+  @ApiUserFilterQueries()
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page: number,
+    @Query('perpage') perpage: number,
+    @Query('search') search: string = '',
+    @Query('searchfields') searchfields: string = '',
+    @Query('filter') filter: Record<string, string> = {},
+    @Query('sort') sort: string = '',
+    @Query('advance') advance: QueryAdvance = null,
+  ) {
+    const defaultSearchFields: string[] = [
+      'name',
+      'code',
+      'symbol',
+      'description',
+    ];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+    return this.usersService.findAll(req, q);
   }
 
   @Post()
   @ApiBody({
     type: UserCreateDto,
+    description: 'UserCreateDto',
   })
   async create(@Body() createDto: UserCreateDto, @Req() req: Request) {
     return this.usersService.create(req, createDto);
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: UserUpdateDto,
+    description: 'UserUpdateDto',
+  })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: UserUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
     return this.usersService.update(req, id, updateDto);
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async delete(@Param('id') id: string, @Req() req: Request) {
     return this.usersService.delete(req, id);
   }

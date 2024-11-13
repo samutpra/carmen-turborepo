@@ -20,12 +20,9 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { BusinessUnit } from '@prisma-carmen-client-system';
 import {
   BusinessUnitCreateDto,
   BusinessUnitUpdateDto,
-  CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';

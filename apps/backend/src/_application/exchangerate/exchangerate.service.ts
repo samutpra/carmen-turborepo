@@ -6,12 +6,18 @@ import {
   ExchangeRateCreateDto,
   ExchangeRateUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
+import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class ExchangerateService {
@@ -22,10 +28,9 @@ export class ExchangerateService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.ExchangeRateCreateInput = {};
-  // _prisma_update: Prisma.ExchangeRateUpdateInput = {};
+  logger = new Logger(ExchangerateService.name);
 
-  async _getOne(db_tenant: dbTenant, id: string): Promise<ExchangeRate> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<ExchangeRate> {
     const res = await db_tenant.exchangeRate.findUnique({
       where: {
         id: id,
@@ -40,7 +45,7 @@ export class ExchangerateService {
   ): Promise<ResponseSingle<ExchangeRate>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Exchangerate not found');
@@ -54,26 +59,20 @@ export class ExchangerateService {
 
   async findAll(
     req: Request,
-    page: number,
-    perPage: number,
-    search: string,
+    q: QueryParams,
   ): Promise<ResponseList<ExchangeRate>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.exchangeRate.count({ where: {} });
-    const listObj = await this.db_tenant.exchangeRate.findMany({
-      where: {},
-      skip: (page - 1) * perPage,
-      take: perPage,
-    });
+    const max = await this.db_tenant.exchangeRate.count({ where: q.where() });
+    const listObj = await this.db_tenant.exchangeRate.findMany(q.findMany());
 
     const res: ResponseList<ExchangeRate> = {
       data: listObj,
       pagination: {
         total: max,
-        page: page,
-        perPage: perPage,
-        pages: Math.ceil(max / perPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
     return res;
@@ -86,23 +85,31 @@ export class ExchangerateService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    // const found = await this.db_tenant.exchangeRate.findUnique({
-    //   where: {
-    //     currencyId: createDto.currencyId,
-    //     dateAt: createDto.dateAt,
-    //   },
-    // });
+    const found = await this.db_tenant.exchangeRate.findUnique({
+      where: {
+        dateAt_currencyId: {
+          currencyId: createDto.currencyId,
+          dateAt: createDto.dateAt,
+        },
+      },
+    });
 
-    // if (found) {
-    //   throw new DuplicateException({
-    //     statusCode: HttpStatus.CONFLICT,
-    //     message: 'Exchange Rate already exists',
-    //     id: found.id,
-    //   });
-    // }
+    if (found) {
+      throw new DuplicateException({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'Exchange Rate already exists',
+        id: found.id,
+      });
+    }
 
     const createObj = await this.db_tenant.exchangeRate.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
+      },
     });
 
     const res: ResponseId<string> = {
@@ -111,14 +118,10 @@ export class ExchangerateService {
     return res;
   }
 
-  async update(
-    req: Request,
-    id: string,
-    updateDto: ExchangeRateUpdateDto,
-  ): Promise<ResponseId<string>> {
+  async update(req: Request, id: string, updateDto: ExchangeRateUpdateDto) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Exchangerate not found');
@@ -128,7 +131,7 @@ export class ExchangerateService {
       where: {
         id,
       },
-      data: updateDto,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -141,7 +144,7 @@ export class ExchangerateService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Exchangerate not found');

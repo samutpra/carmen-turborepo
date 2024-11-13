@@ -8,7 +8,6 @@ import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import { Unit, PrismaClient as dbTenant } from '@prisma-carmen-client-tenant';
 import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';

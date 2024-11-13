@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,13 +16,26 @@ import {
   ProductSubCategoryUpdateDto,
 } from '@carmensoftware/shared-dtos';
 
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProductSubCategory } from '@prisma-carmen-client-tenant';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import QueryParams from 'lib/types';
 import { ProductSubCategoryService } from './product-sub-category.service';
+import { QueryAdvance } from 'lib/types';
 
 @Controller('api/v1/product-sub-category')
 @ApiTags('Product Sub category')
+@ApiBearerAuth()
+@ApiHeader({
+  name: 'x-tenant-id',
+  description: 'tenant id',
+})
 @UseGuards(JwtAuthGuard)
 export class ProductSubCategoryController {
   constructor(
@@ -29,6 +43,12 @@ export class ProductSubCategoryController {
   ) {}
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async fineOne(
     @Param('id') id: string,
     @Req() req: Request,
@@ -37,11 +57,36 @@ export class ProductSubCategoryController {
   }
 
   @Get()
-  async findAll(@Req() req: Request) {
-    return this.productSubCategoryService.findAll(req);
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page: number,
+    @Query('perpage') perpage: number,
+    @Query('search') search: string = '',
+    @Query('searchfields') searchfields: string = '',
+    @Query('filter') filter: Record<string, string> = {},
+    @Query('sort') sort: string = '',
+    @Query('advance') advance: QueryAdvance = null,
+  ) {
+    const defaultSearchFields: string[] = [];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+    return this.productSubCategoryService.findAll(req, q);
   }
 
   @Post()
+  @ApiBody({
+    type: ProductSubCategoryCreateDto,
+    description: 'ProductSubCategoryCreateDto',
+  })
   async create(
     @Body() createDto: ProductSubCategoryCreateDto,
     @Req() req: Request,
@@ -50,6 +95,16 @@ export class ProductSubCategoryController {
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: ProductSubCategoryUpdateDto,
+    description: 'ProductSubCategoryUpdateDto',
+  })
   async update(
     @Param('id') id: string,
     @Body() updateDto: ProductSubCategoryUpdateDto,
@@ -59,6 +114,12 @@ export class ProductSubCategoryController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async delete(@Param('id') id: string, @Req() req: Request) {
     return this.productSubCategoryService.delete(req, id);
   }
