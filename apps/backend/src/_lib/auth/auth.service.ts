@@ -28,16 +28,26 @@ export class AuthService {
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
     const payload = this.jwtService.decode(token);
-    const isValid = payload.exp;
 
     if (!payload) {
       throw new NotFoundException('Invalid token');
     }
 
+    const isTokenValid = this.jwtService.verify(token);
+    let isValid = true;
+
+    if (!isTokenValid) {
+      isValid = false;
+    }
+
     const now = Math.floor(Date.now() / 1000);
 
     const res: any = {
-      data: { ...payload, isTokenValid: now <= payload.exp },
+      data: {
+        ...payload,
+        isTokenValid: isValid,
+        isExpired: now <= payload.exp,
+      },
     };
 
     return res;
