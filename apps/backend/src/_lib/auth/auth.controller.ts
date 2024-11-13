@@ -65,9 +65,9 @@ export class AuthController {
 
   @Post('forgotpassword/confirm')
   async forgotConfirm(
-    @Body() userRegisterDto: UserRegisterDto,
+    @Body() userForgotPassDto: UserForgotPassDto,
     @Request() req,
   ) {
-    return this.authService.forgotPasswordConfirm(userRegisterDto, req);
+    return this.authService.forgotPasswordConfirm(userForgotPassDto, req);
   }
 }

@@ -24,7 +24,7 @@ export class SendMailService {
       html: `
       <h1>Confirm your email</h1>
       <p>Please click the link below to confirm your email address:</p>
-      <a href="http://localhost:3000/confirm/${token}">Confirm email</a>
+      <a href="http://localhost:3000/register/${token}">Confirm email</a>
       <p>this link will expire in 1 hour</p>
       `,
     };

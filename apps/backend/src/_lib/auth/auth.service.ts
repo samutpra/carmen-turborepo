@@ -52,33 +52,33 @@ export class AuthService {
       expiresIn: process.env.EMAIL_FORGOT_PASSWORD_EXPIRES_IN || '1h',
     });
 
-    this.sendEmail.sendMailForgotPassword(user.username, token);
+    // this.sendEmail.sendMailForgotPassword(user.username, token);
 
     const res: ResponseSingle<string> = {
-      data: 'please check your email',
+      data: token,
     };
 
     return res;
   }
 
   async forgotPasswordConfirm(
-    userregistrDto: UserRegisterDto,
+    userForgotPassDto: UserForgotPassDto,
     req: any,
   ): Promise<ResponseId<string>> {
-    const payload = this.jwtService.verify(userregistrDto.emailToken);
+    const payload = this.jwtService.verify(userForgotPassDto.emailToken);
 
     if (!payload) {
       throw new NotFoundException('Invalid token');
     }
 
-    if (payload.username !== userregistrDto.username) {
+    if (payload.username !== userForgotPassDto.username) {
       throw new NotFoundException('Invalid token');
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
     const user = await this.usersService.findByUsername(
       this.db_System,
-      userregistrDto.username,
+      userForgotPassDto.username,
     );
 
     if (!user) {
@@ -88,7 +88,7 @@ export class AuthService {
     const passObj = await this.db_System.password.create({
       data: {
         userId: user.id,
-        hash: hashPassword(userregistrDto.password),
+        hash: hashPassword(userForgotPassDto.password),
       },
     });
 
@@ -122,10 +122,10 @@ export class AuthService {
       expiresIn: process.env.EMAIL_REGISTER_CONFIRM_EXPIRES_IN || '1h',
     });
 
-    this.sendEmail.sendMailRegister(userRegisterEmailDto.email, token);
+    // this.sendEmail.sendMailRegister(userRegisterEmailDto.email, token);
 
     const res: ResponseSingle<string> = {
-      data: 'please check your email',
+      data: token,
     };
     return res;
   }
@@ -157,7 +157,7 @@ export class AuthService {
     const createUserObj = await this.db_System.user.create({
       data: {
         username: userRegisterDto.username,
-        email: userRegisterDto.username,
+        email: userRegisterDto.email,
       },
     });
 

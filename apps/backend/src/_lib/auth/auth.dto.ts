@@ -1,7 +1,9 @@
 export interface UserRegisterDto {
   username: string;
+  email: string;
   password: string;
   emailToken: string;
+  consent: boolean;
 
   userInfo: {
     firstname: string;
@@ -17,4 +19,6 @@ export interface UserRegisterEmailDto {
 
 export interface UserForgotPassDto {
   username: string;
+  password: string;
+  emailToken: string;
 }
