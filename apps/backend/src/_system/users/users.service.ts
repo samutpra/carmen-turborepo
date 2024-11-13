@@ -30,7 +30,7 @@ export class UsersService {
   }
 
   async findByUsername(db_System: dbSystem, username: string): Promise<User> {
-    const res = await db_System.user.findUnique({
+    const res = await db_System.user.findFirst({
       where: {
         username: username,
       },

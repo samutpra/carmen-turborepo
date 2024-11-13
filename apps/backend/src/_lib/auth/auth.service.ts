@@ -1,15 +1,13 @@
+import 'dotenv/config';
+
 import {
   AuthLoginResponseDto,
   AuthPayloadDto,
 } from '@carmensoftware/shared-dtos';
+import { EmailDto, UserForgotPassDto, UserRegisterDto } from './auth.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
-import {
-  UserForgotPassDto,
-  UserRegisterDto,
-  UserRegisterEmailDto,
-} from './auth.dto';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { DuplicateException } from 'lib/utils/exceptions';
@@ -24,10 +22,26 @@ export class AuthService {
     private prismaClientMamager: PrismaClientManagerService,
     private jwtService: JwtService,
     private usersService: UsersService,
-    private sendEmail: SendMailService,
   ) {}
 
   private db_System: dbSystem;
+
+  async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
+    const payload = this.jwtService.decode(token);
+    const isValid = payload.exp;
+
+    if (!payload) {
+      throw new NotFoundException('Invalid token');
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+
+    const res: any = {
+      data: { ...payload, isTokenValid: now <= payload.exp },
+    };
+
+    return res;
+  }
 
   async forgotPasswordEmail(
     userForgotPassDto: UserForgotPassDto,
@@ -43,7 +57,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const payload = {
+    const { ...payload } = {
       username: user.username,
       email: user.email,
     };
@@ -100,9 +114,11 @@ export class AuthService {
   }
 
   async registerEmail(
-    userRegisterEmailDto: UserRegisterEmailDto,
+    userRegisterEmailDto: EmailDto,
     req: Request,
   ): Promise<ResponseSingle<string>> {
+    console.log(userRegisterEmailDto);
+
     this.db_System = this.prismaClientMamager.getSystemDB();
     const found = await this.usersService.findByUsername(
       this.db_System,
@@ -113,10 +129,12 @@ export class AuthService {
       throw new DuplicateException('User already exists');
     }
 
-    const payload = {
+    const { ...payload }: object = {
       username: userRegisterEmailDto.email,
       email: userRegisterEmailDto.email,
     };
+
+    console.log(payload);
 
     const token = this.jwtService.sign(payload, {
       expiresIn: process.env.EMAIL_REGISTER_CONFIRM_EXPIRES_IN || '1h',

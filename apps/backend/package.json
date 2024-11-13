@@ -26,7 +26,8 @@
     "prisma:seed": "prisma db seed",
     "prisma:db-pull": "prisma db pull --schema prisma/schema/system/system.prisma &&prisma db pull --schema prisma/schema/tenant/tenant.prisma",
     "prisma:migrate": "prisma migrate dev --name 000 --schema prisma/schema/system/system.prisma && prisma migrate dev --name 000 --schema prisma/schema/tenant/tenant.prisma",
-    "prisma:generate:migrate": "npm run prisma:generate && npm run prisma:migrate"
+    "prisma:generate:migrate": "npm run prisma:generate && npm run prisma:migrate",
+    "prisma:deploy": "npx prisma migrate deploy --schema prisma/schema/system/system.prisma && npx prisma migrate deploy --schema prisma/schema/tenant/tenant.prisma"
   },
   "dependencies": {
     "@carmensoftware/shared-dtos": "*",
