@@ -80,10 +80,7 @@ export class AuthController {
   @ApiBody({
     type: EmailDto,
   })
-  async forgot_email_token(
-    @Body() userForgotPassDto: UserForgotPassDto,
-    @Request() req,
-  ) {
+  async forgot_email_token(@Body() userForgotPassDto: any, @Request() req) {
     return this.authService.forgotPasswordEmail(userForgotPassDto, req);
   }
 

@@ -34,6 +34,8 @@ export class UsersService {
   }
 
   async findByUsername(db_System: dbSystem, username: string): Promise<User> {
+    this.logger.debug(username);
+
     const res = await db_System.user.findFirst({
       where: {
         username: username,

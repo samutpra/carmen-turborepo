@@ -60,25 +60,6 @@ export class DepartmentsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    // const where: any = {};
-
-    // if (filter && Object.keys(filter).length > 0) {
-    //   where.AND = Object.entries(filter).map(([key, value]) => ({
-    //     [key]: { contains: value, mode: 'insensitive' },
-    //   }));
-    // }
-
-    // if (search !== '') {
-    //   where.AND = {
-    //     ...where,
-    //     OR: [
-    //       { name: { contains: search, mode: 'insensitive' } },
-    //       { code: { contains: search, mode: 'insensitive' } },
-    //       { description: { contains: search, mode: 'insensitive' } },
-    //     ],
-    //   };
-    // }
-
     const max = await this.db_tenant.department.count({
       where: q.where(),
     });
@@ -105,7 +86,9 @@ export class DepartmentsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.department.findUnique({
+    console.log(createDto);
+
+    const found = await this.db_tenant.department.findFirst({
       where: {
         name: createDto.name,
       },

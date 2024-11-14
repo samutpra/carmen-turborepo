@@ -15,7 +15,7 @@ import {
   UserForgotPassDto,
   UserRegisterDto,
 } from '@carmensoftware/shared-dtos';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { User, PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 import { comparePassword, hashPassword } from 'lib/utils/password';
@@ -34,6 +34,8 @@ export class AuthService {
   ) {}
 
   private db_System: dbSystem;
+
+  private readonly logger = new Logger(AuthService.name);
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
     const isWelformJWT_ = isWelformJWT(token);
@@ -73,19 +75,19 @@ export class AuthService {
     req: any,
   ): Promise<ResponseSingle<string>> {
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const user = await this.usersService.findByUsername(
+    const u = await this.usersService.findByUsername(
       this.db_System,
       userForgotPassDto.username,
     );
 
-    if (!user) {
+    if (!u) {
       throw new NotFoundException('User not found');
     }
 
     const { ...payload } = {
       type: 'forgotpassword',
-      username: user.username,
-      email: user.email,
+      username: u.username,
+      email: u.email,
     };
 
     const token = this.jwtService.sign(payload, {
@@ -167,11 +169,15 @@ export class AuthService {
       throw new NullException();
     }
 
+    this.logger.debug(userRegisterEmailDto);
+
     this.db_System = this.prismaClientMamager.getSystemDB();
     const found = await this.usersService.findByUsername(
       this.db_System,
       userRegisterEmailDto.email,
     );
+
+    this.logger.debug(found);
 
     if (found) {
       throw new DuplicateException('User already exists');

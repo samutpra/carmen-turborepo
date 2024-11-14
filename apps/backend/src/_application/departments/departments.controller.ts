@@ -83,7 +83,7 @@ export class DepartmentsController {
     type: DepartmentCreateDto,
     description: 'DepartmentCreateDto',
   })
-  async create(@Body() createDto: DepartmentCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.departmentsService.create(req, createDto);
   }
 
