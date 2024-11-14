@@ -60,7 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         accessToken,
         handleLogin,
         handleLogout,
-        updateAccessToken
+        updateAccessToken,
+        authState
     };
 
     return (
@@ -70,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
-// Custom hook สำหรับใช้งาน AuthContext
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

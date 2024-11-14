@@ -553,7 +553,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     return (
         <>
-            <div className="z-50 flex-col gap-4 relative">
+            <div className="z-50 flex-col gap-4 relative bg-background">
                 {isOpen && !isLargeScreen && (
                     <div
                         className="fixed md:sticky inset-0 z-40"

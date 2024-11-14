@@ -1362,6 +1362,7 @@ export interface AuthContextType extends AuthState {
   handleLogin: (data: AuthState, token: string) => void;
   handleLogout: () => void;
   updateAccessToken: (token: string) => void;
+  authState: AuthState;
 }
 
 
