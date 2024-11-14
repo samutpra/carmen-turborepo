@@ -88,5 +88,7 @@
     "edit_profile": "Edit Profile",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "username_zod_error": "Username must be at least 2 characters.",
+    "password_zod_error": "Password must be at least 6 characters."
 }

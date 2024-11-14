@@ -2,6 +2,7 @@
 
 import { JwtPayload } from "jwt-decode";
 import { z } from "zod";
+import * as m from '@/paraglide/messages.js';
 
 // Common Types and Enums
 
@@ -1339,10 +1340,10 @@ export type PaginationType = {
 
 export const SignInSchema = z.object({
   username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: `${m.username_zod_error()}`,
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: `${m.password_zod_error()}`,
   }),
 });
 
