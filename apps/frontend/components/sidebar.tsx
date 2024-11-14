@@ -78,7 +78,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                 <aside
                     className={cn(
-                        "fixed top-0 left-0 z-50 h-full bg-[var(--cm-sidebar)]  border-r border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 ease-in-out",
+                        "fixed top-0 left-0 z-50 h-full bg-[var(--cm-sidebar)] border-r border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 ease-in-out",
                         isOpen || isLargeScreen
                             ? "translate-x-0 md:sticky"
                             : "-translate-x-full",
@@ -87,7 +87,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <div className="px-5 pt-6 w-full flex items-center justify-between">
+                    <div className="px-4 pt-4 w-full flex items-center justify-between">
                         <Link
                             href="/"
                             className="flex items-center justify-center"
