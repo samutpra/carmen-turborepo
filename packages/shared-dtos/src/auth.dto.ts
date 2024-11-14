@@ -42,3 +42,4 @@ export class UserForgotPassDto {
 	password!: string;
 	emailToken!: string;
 }
+
