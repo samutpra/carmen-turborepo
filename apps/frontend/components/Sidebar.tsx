@@ -1,39 +1,40 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Link } from "@/lib/i18n";
-import { usePathname } from "@/lib/i18n";
+import React, { useEffect, useState } from 'react'
+import { Link, usePathname, useRouter } from '@/lib/i18n';
+import { menuItems } from '@/lib/util/menuItems';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import * as LucideIcons from "lucide-react";
-import { useRouter } from "@/lib/i18n";
-import { menuItems } from "@/lib/util/menuItems";
-export interface SidebarProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-    const pathname = usePathname();
+const Sidebar = () => {
     const router = useRouter();
-    const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLargeScreen, setIsLargeScreen] = useState(false);
+    const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPinned, setIsPinned] = useState(false);
-
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleResize = () => {
-            setIsLargeScreen(window.innerWidth >= 1024);
+            const largeScreen = window.innerWidth >= 1024;
+            setIsLargeScreen(largeScreen);
+            setIsSidebarOpen(largeScreen);
         };
 
-        handleResize();
         window.addEventListener("resize", handleResize);
+        handleResize();
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    useEffect(() => {
+        if (!isLargeScreen) {
+            setIsSidebarOpen(false);
+        }
+    }, [pathname, isLargeScreen]);
 
     const toggleExpand = (title: string, path?: string) => {
         const menuItem = menuItems.find((item) => item.title === title);
@@ -65,11 +66,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         setIsExpanded(!isPinned);
     };
 
+    const onClose = () => {
+        setIsSidebarOpen(false)
+    }
 
     return (
         <>
             <div className="z-50 flex-col gap-4 relative bg-background">
-                {isOpen && !isLargeScreen && (
+                {isSidebarOpen && !isLargeScreen && (
                     <div
                         className="fixed md:sticky inset-0 z-40"
                         onClick={onClose}
@@ -79,7 +83,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <aside
                     className={cn(
                         "fixed top-0 left-0 z-50 h-full bg-[var(--cm-sidebar)] border-r border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 ease-in-out",
-                        isOpen || isLargeScreen
+                        isSidebarOpen || isLargeScreen
                             ? "translate-x-0 md:sticky"
                             : "-translate-x-full",
                         isExpanded ? "w-[280px]" : "w-[64px]"
@@ -177,7 +181,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </aside>
             </div>
         </>
-    );
+    )
 }
 
-export default Sidebar;
+export default Sidebar
