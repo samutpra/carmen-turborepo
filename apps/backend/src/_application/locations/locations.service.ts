@@ -81,7 +81,9 @@ export class LocationsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.location.findUnique({
+    this.logger.debug(createDto);
+
+    const found = await this.db_tenant.location.findFirst({
       where: {
         name: createDto.name,
       },

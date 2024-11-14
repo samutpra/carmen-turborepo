@@ -74,13 +74,14 @@ model DeliveryPoint {
 }
 
 model Department {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @unique @db.VarChar
-  isActive   Boolean?  @default(true)
-  createdAt  DateTime? @default(now()) @db.Timestamp(6)
-  createById String?   @db.Uuid
-  updateAt   DateTime? @default(now()) @db.Timestamp(6)
-  updateById String?   @db.Uuid
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?
+  isActive    Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createById  String?   @db.Uuid
+  updateAt    DateTime? @default(now()) @db.Timestamp(6)
+  updateById  String?   @db.Uuid
 
   @@index([name], map: "department_name_u")
 }

@@ -271,6 +271,7 @@ CREATE TABLE "TENANT_DUMMY"."UnitConversion" (
 CREATE TABLE "TENANT_DUMMY"."Department" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
+  "description" text,
   "isActive" bool DEFAULT true,
   "createdAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "createById" uuid,

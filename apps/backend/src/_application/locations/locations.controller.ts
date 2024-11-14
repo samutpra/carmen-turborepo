@@ -84,7 +84,7 @@ export class LocationsController {
     type: LocationCreateDto,
     description: 'LocationCreateDto',
   })
-  async create(@Body() createDto: LocationCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.locationsService.create(req, createDto);
   }
 
