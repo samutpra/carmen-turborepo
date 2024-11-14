@@ -3,7 +3,7 @@
 import * as React from "react"
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons"
 import { useTheme } from "next-themes"
-
+import * as m from '@/paraglide/messages.js';
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -26,13 +26,13 @@ export function SwitchTheme() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setTheme("light")}>
-                    Light
+                    {m.light()}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme("dark")}>
-                    Dark
+                    {m.dark()}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme("system")}>
-                    System
+                    {m.system()}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

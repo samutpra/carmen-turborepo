@@ -82,5 +82,11 @@
     "video_tutorials": "Video Tutorials",
     "faqs": "FAQs",
     "support_ticket_system": "Support Ticket System",
-    "system_updates_and_release_notes": "System Updates and Release Notes"
+    "system_updates_and_release_notes": "System Updates and Release Notes",
+    "logout": "Log out",
+    "settings": "Settings",
+    "edit_profile": "Edit Profile",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
 }

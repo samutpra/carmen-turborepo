@@ -28,6 +28,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
 import CurrencyForm from './form/CurrencyForm';
+import { useAuth } from '@/app/context/AuthContext';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -35,10 +36,9 @@ const statusOptions = [
 	{ value: 'false', label: 'Not Active' },
 ];
 
-const accessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzhmZjQ0LTc1NGYtNDJiZC05NWI1LTUzYWFlMjBkZWMzZSIsInVzZXJuYW1lIjoidGVzdDEiLCJpYXQiOjE3MzEzMTAzMDEsImV4cCI6MTczMTMxMzkwMX0.2VR7UQuqwtVPDeKAQ3KkHFWKZ2IiEHg2YPrshUX1Lns';
 
 const CurrencyList = () => {
+	const { accessToken } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 	const [editingItem, setEditingItem] = useState<CurrencyType | null>(null);
 	const [dialogForm, setDialogForm] = useState(false);
@@ -46,6 +46,8 @@ const CurrencyList = () => {
 	const [dialogDelete, setDialogDelete] = useState(false);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState('');
+
+	const token = accessToken || ''
 
 	const {
 		currencies,
@@ -60,7 +62,7 @@ const CurrencyList = () => {
 		setPerPage,
 		handleSearch,
 		fetchData
-	} = useCurrencies(accessToken);
+	} = useCurrencies(token);
 
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
@@ -111,7 +113,7 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 			if (idToDelete) {
-				await deleteCurrency(accessToken, idToDelete);
+				await deleteCurrency(token, idToDelete);
 				setCurrencies(prev => prev.filter(currency => currency.id !== idToDelete));
 				fetchData();
 				setDialogDelete(false);
@@ -130,10 +132,10 @@ const CurrencyList = () => {
 
 			if (editingItem?.id) {
 				const updatedFields: CurrencyType = { ...data };
-				const updatedCurrency = await updateCurrency(accessToken, editingItem.id, updatedFields);
+				const updatedCurrency = await updateCurrency(token, editingItem.id, updatedFields);
 				setCurrencies(prev => prev.map(currency => (currency.id === editingItem.id ? updatedCurrency : currency)));
 			} else {
-				const newCurrency = await createCurrency(accessToken, data);
+				const newCurrency = await createCurrency(token, data);
 				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
 			}
 			handleCloseDialog();
@@ -321,135 +323,6 @@ const CurrencyList = () => {
 				onOpenChange={setDialogForm}
 				onSubmit={handleSave}
 			/>
-
-
-			{/* <Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
-				<DialogContent className="sm:max-w-[700px]">
-					<DialogHeader>
-						<DialogTitle>{editingItem ? `Edit ${title}` : `Add New ${title}`}</DialogTitle>
-					</DialogHeader>
-					{/* <Form {...form}>
-						<form onSubmit={form.handleSubmit(handleSave)} className='space-y-4'>
-							<div className="grid grid-cols-2 gap-4">
-								<FormField
-									control={form.control}
-									name='code'
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Code</FormLabel>
-											<FormControl>
-												<InputCustom
-													placeholder='Enter Code name'
-													error={!!form.formState.errors.code}
-													{...field}
-													maxLength={3}
-												/>
-											</FormControl>
-										</FormItem>
-									)}
-									required
-								/>
-
-								<FormField
-									control={form.control}
-									name='name'
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Name</FormLabel>
-											<FormControl>
-												<InputCustom
-													placeholder='Enter Name'
-													error={!!form.formState.errors.name}
-													{...field}
-												/>
-											</FormControl>
-										</FormItem>
-									)}
-									required
-								/>
-							</div>
-
-							<div className="grid grid-cols-2 gap-4">
-								<FormField
-									control={form.control}
-									name='symbol'
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Symbol</FormLabel>
-											<FormControl>
-												<InputCustom
-													placeholder='Enter Symbol'
-													error={!!form.formState.errors.symbol}
-													{...field}
-													maxLength={3}
-												/>
-											</FormControl>
-										</FormItem>
-									)}
-									required
-								/>
-
-								<FormField
-									control={form.control}
-									name='rate'
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Rate</FormLabel>
-											<FormControl>
-												<InputCustom placeholder='Enter Rate'
-													error={!!form.formState.errors.rate}
-													{...field}
-													onChange={(e) => field.onChange(parseFloat(e.target.value) || '')}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-									required
-								/>
-							</div>
-
-							<FormField
-								control={form.control}
-								name='description'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Description</FormLabel>
-										<FormControl>
-											<InputCustom
-												placeholder='Enter unit description'
-												error={!!form.formState.errors.description}
-												{...field}
-											/>
-										</FormControl>
-									</FormItem>
-								)}
-								required
-							/>
-
-							<FormField
-								control={form.control}
-								name='isActive'
-								render={({ field }) => (
-									<FormItem className='flex items-center space-x-2'>
-										<FormControl>
-											<Switch checked={field.value} onCheckedChange={field.onChange} />
-										</FormControl>
-										<FormLabel>Active</FormLabel>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<DialogFooter>
-								<Button type='button' variant='secondary' onClick={handleCloseDialog} disabled={isLoading}>
-									Cancel
-								</Button>
-								<LoaderButton type='submit' disabled={isLoading} isLoading={isLoading}>
-									{isLoading ? 'Saving...' : editingItem ? 'Save Changes' : 'Add'}
-								</LoaderButton>
-							</DialogFooter>
-						</form>
-					</Form> */}
 		</>
 	);
 

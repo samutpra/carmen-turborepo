@@ -18,6 +18,7 @@ import { TenantList } from '@/components/tenantList';
 import { useRouter } from '@/lib/i18n';
 import { SwitchTheme } from './SwitchTheme';
 import { useAuth } from '@/app/context/AuthContext';
+import * as m from '@/paraglide/messages.js';
 
 const Navbar = () => {
     const router = useRouter();
@@ -63,16 +64,16 @@ const Navbar = () => {
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className='cursor-pointer' onSelect={handleEditProfile}>
                                         <User className='mr-2 h-4 w-4' />
-                                        <span>Edit Profile</span>
+                                        <span>{m.edit_profile()}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className='cursor-pointer'>
                                         <Settings className='mr-2 h-4 w-4' />
-                                        <span>Settings</span>
+                                        <span>{m.settings()}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className='cursor-pointer' onClick={handleLogout}>
                                         <LogOut className='mr-2 h-4 w-4' />
-                                        <span>Log out</span>
+                                        <span>{m.logout()}</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

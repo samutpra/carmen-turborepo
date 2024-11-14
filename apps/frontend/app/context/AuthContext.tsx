@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     useEffect(() => {
-        if (accessToken) {
+        if (accessToken !== null) {
             localStorage.setItem(ACCESS_TOKEN, accessToken);
         } else {
             localStorage.removeItem(ACCESS_TOKEN);
@@ -43,11 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleLogin = (data: AuthState, token: string) => {
         setAuthState(data);
         setAccessToken(token);
+        localStorage.setItem(USER_DATA, JSON.stringify(data));
+        localStorage.setItem(ACCESS_TOKEN, token);
     };
 
     const handleLogout = () => {
         setAuthState({ user: null, refresh_token: '' });
         setAccessToken(null);
+        localStorage.removeItem(USER_DATA);
+        localStorage.removeItem(ACCESS_TOKEN);
     };
 
     const updateAccessToken = (token: string) => {

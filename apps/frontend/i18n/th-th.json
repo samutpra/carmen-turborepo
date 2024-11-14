@@ -82,5 +82,11 @@
     "video_tutorials": "วิดีโอการสอน",
     "faqs": "คำถามที่พบบ่อย",
     "support_ticket_system": "ระบบสนับสนุนตั๋ว",
-    "system_updates_and_release_notes": "การอัปเดตระบบและหมายเหตุการเผยแพร่"
+    "system_updates_and_release_notes": "การอัปเดตระบบและหมายเหตุการเผยแพร่",
+    "logout": "ออกจากระบบ",
+    "settings": "การตั้งค่า",
+    "edit_profile": "แก้ไขโปรไฟล์",
+    "light": "แสงสว่าง",
+    "dark": "มืด",
+    "system": "ระบบ"
 }
