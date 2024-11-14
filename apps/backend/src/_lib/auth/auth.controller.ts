@@ -79,9 +79,16 @@ export class AuthController {
   @ApiTags('forgotpassword')
   @ApiBody({
     type: EmailDto,
+    description: 'UserForgotPasswordEmailDto',
   })
-  async forgot_email_token(@Body() userForgotPassDto: any, @Request() req) {
-    return this.authService.forgotPasswordEmail(userForgotPassDto, req);
+  async forgot_email_token(
+    @Body() userForgotPasswordEmailDto: any,
+    @Request() req,
+  ) {
+    return this.authService.forgotPasswordEmail(
+      userForgotPasswordEmailDto,
+      req,
+    );
   }
 
   @Post('forgotpassword/confirm')
