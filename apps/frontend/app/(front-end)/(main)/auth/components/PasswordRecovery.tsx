@@ -41,7 +41,6 @@ const PasswordRecovery: React.FC<Props> = ({ token }) => {
                 email: data.email,
                 password: data.password,
                 emailToken: token,
-
             };
 
             const { success, message } = await submitForgotPassword(payload);
