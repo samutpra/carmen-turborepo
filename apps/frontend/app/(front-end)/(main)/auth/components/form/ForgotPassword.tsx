@@ -1,12 +1,13 @@
-import { AuthFormType } from '@/lib/types';
+import { AuthFormType, EmailType } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
-import React from 'react';
+import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { sendRecoverPasswordEmail } from '../../actions/actions';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -17,17 +18,43 @@ const ForgotPasswordSchema = z.object({
 });
 
 const ForgotPassword: React.FC<Props> = ({ handleForm }) => {
-    const form = useForm<z.infer<typeof ForgotPasswordSchema>>({
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEmailSent, setIsEmailSent] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+
+    const form = useForm<EmailType>({
         resolver: zodResolver(ForgotPasswordSchema),
         defaultValues: {
             email: "",
         },
     });
 
-    const onSubmit = (data: z.infer<typeof ForgotPasswordSchema>) => {
-        console.log("Forgot Password data:", data);
-        // Add the forgot password handling logic here
+
+    const handleResendEmail = async () => {
+
+    };
+
+    const onSubmit = async (data: EmailType) => {
+        setIsLoading(true);
+
+        try {
+            const emailResult = await sendRecoverPasswordEmail(data.email);
+            if (emailResult.error) {
+                console.log(emailResult.error);
+                return;
+            }
+            setUserEmail(data.email);
+            setIsEmailSent(true);
+            console.log('Verification email sent successfully!');
+
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : 'An unexpected error occurred');
+        } finally {
+            setIsLoading(false)
+        }
     }
+
+
 
     const onSignIn = () => {
         handleForm(AuthFormType.SignIn)
