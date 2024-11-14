@@ -36,7 +36,7 @@ export class AuthController {
   @Get('status')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  status(@Request() req): AuthLoginResponseDto {
+  status(@Request() req) {
     return req.user;
   }
 

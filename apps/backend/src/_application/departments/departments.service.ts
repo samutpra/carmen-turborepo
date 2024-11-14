@@ -6,13 +6,18 @@ import {
   DepartmentCreateDto,
   DepartmentUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class DepartmentsService {
@@ -22,6 +27,8 @@ export class DepartmentsService {
     private prismaClientMamager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
+
+  logger = new Logger(DepartmentsService.name);
 
   async _getById(db_tenant: dbTenant, id: string): Promise<Department> {
     const res = await db_tenant.department.findUnique({
@@ -48,49 +55,43 @@ export class DepartmentsService {
 
   async findAll(
     req: Request,
-    page: number,
-    perPage: number,
-    search: string,
-    filter: Record<string, string>,
+    q: QueryParams,
   ): Promise<ResponseList<Department>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const where: any = {};
+    // const where: any = {};
 
-    if (filter && Object.keys(filter).length > 0) {
-      where.AND = Object.entries(filter).map(([key, value]) => ({
-        [key]: { contains: value, mode: 'insensitive' },
-      }));
-    }
+    // if (filter && Object.keys(filter).length > 0) {
+    //   where.AND = Object.entries(filter).map(([key, value]) => ({
+    //     [key]: { contains: value, mode: 'insensitive' },
+    //   }));
+    // }
 
-    if (search !== '') {
-      where.AND = {
-        ...where,
-        OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { code: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
-        ],
-      };
-    }
+    // if (search !== '') {
+    //   where.AND = {
+    //     ...where,
+    //     OR: [
+    //       { name: { contains: search, mode: 'insensitive' } },
+    //       { code: { contains: search, mode: 'insensitive' } },
+    //       { description: { contains: search, mode: 'insensitive' } },
+    //     ],
+    //   };
+    // }
 
     const max = await this.db_tenant.department.count({
-      where: where,
+      where: q.where(),
     });
-    const listObj = await this.db_tenant.department.findMany({
-      where: where,
-      skip: (page - 1) * perPage,
-      take: perPage,
-    });
+
+    const listObj = await this.db_tenant.department.findMany(q.findMany());
 
     const res: ResponseList<Department> = {
       data: listObj,
       pagination: {
         total: max,
-        page: page,
-        perPage: perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / perPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
 
@@ -119,7 +120,13 @@ export class DepartmentsService {
     }
 
     const createObj = await this.db_tenant.department.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
+      },
     });
 
     const res: ResponseId<string> = { id: createObj.id };
@@ -139,7 +146,7 @@ export class DepartmentsService {
       where: {
         id,
       },
-      data: updateDto,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {

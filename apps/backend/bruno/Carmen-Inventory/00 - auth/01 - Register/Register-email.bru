@@ -1,0 +1,21 @@
+meta {
+  name: Register-email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/auth/register/email-token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test2@carmensoftware.com"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('email_register_token',res.body.data)
+}

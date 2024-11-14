@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ProductSubCategory,
   PrismaClient as dbTenant,
@@ -9,10 +14,10 @@ import {
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class ProductSubCategoryService {
@@ -23,10 +28,9 @@ export class ProductSubCategoryService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.DepartmentCreateInput = { name: '' };
-  // _prisma_update: Prisma.DepartmentUpdateInput = {};
+  logger = new Logger(ProductSubCategoryService.name);
 
-  async _getOne(db_tenant: dbTenant, id: string): Promise<ProductSubCategory> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<ProductSubCategory> {
     const res = await db_tenant.productSubCategory.findUnique({
       where: {
         id: id,
@@ -41,7 +45,7 @@ export class ProductSubCategoryService {
   ): Promise<ResponseSingle<ProductSubCategory>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('ProductSubCategory not found');
@@ -52,19 +56,27 @@ export class ProductSubCategoryService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<ProductSubCategory>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<ProductSubCategory>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.productSubCategory.count({});
-    const listObj = await this.db_tenant.productSubCategory.findMany();
+
+    const max = await this.db_tenant.productSubCategory.count({
+      where: q.where(),
+    });
+    const listObj = await this.db_tenant.productSubCategory.findMany(
+      q.findMany(),
+    );
 
     const res: ResponseList<ProductSubCategory> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
 
@@ -93,7 +105,13 @@ export class ProductSubCategoryService {
     }
 
     const createObj = await this.db_tenant.productSubCategory.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
+      },
     });
 
     const res: ResponseId<string> = { id: createObj.id };
@@ -107,7 +125,7 @@ export class ProductSubCategoryService {
   ) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('ProductSubCategory not found');
@@ -117,7 +135,7 @@ export class ProductSubCategoryService {
       where: {
         id,
       },
-      data: updateDto,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -130,7 +148,7 @@ export class ProductSubCategoryService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('ProductSubCategory not found');

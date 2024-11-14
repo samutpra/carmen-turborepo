@@ -89,7 +89,7 @@ export class CurrenciesService {
 
     const found = await this.db_tenant.currency.findUnique({
       where: {
-        code: createDto.code ?? '',
+        code: createDto.code,
       },
     });
 
@@ -104,11 +104,11 @@ export class CurrenciesService {
     const createObj = await this.db_tenant.currency.create({
       data: {
         ...createDto,
-        code: createDto.code ?? '',
-        name: createDto.name ?? '',
-        symbol: createDto.symbol ?? '',
-        description: createDto.description ?? '',
-        isActive: createDto.isActive ?? false,
+        // code: createDto.code ?? '',
+        // name: createDto.name ?? '',
+        // symbol: createDto.symbol ?? '',
+        // description: createDto.description ?? '',
+        // isActive: createDto.isActive ?? false,
         createById: userId,
         createdAt: new Date(),
         updateById: userId,

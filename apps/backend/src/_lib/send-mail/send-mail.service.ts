@@ -16,31 +16,31 @@ export class SendMailService {
     });
   }
 
-  async sendMailRegister(email: string, token: string) {
-    const mailObj: SendMailDto = {
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject: 'Confirm your email',
-      html: `
-      <h1>Confirm your email</h1>
-      <p>Please click the link below to confirm your email address:</p>
-      <a href="http://localhost:3000/register/${token}">Confirm email</a>
-      <p>this link will expire in 1 hour</p>
-      `,
-    };
-  }
+  // async sendMailRegister(email: string, token: string) {
+  //   const mailObj: SendMailDto = {
+  //     from: process.env.EMAIL_FROM,
+  //     to: email,
+  //     subject: 'Confirm your email',
+  //     html: `
+  //     <h1>Confirm your email</h1>
+  //     <p>Please click the link below to confirm your email address:</p>
+  //     <a href="http://localhost:3000/register/${token}">Confirm email</a>
+  //     <p>this link will expire in 1 hour</p>
+  //     `,
+  //   };
+  // }
 
-  async sendMailForgotPassword(email: string, token: string) {
-    const mailObj: SendMailDto = {
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject: 'Reset your password',
-      html: `
-      <h1>Reset your password</h1>
-      <p>Please click the link below to reset your password:</p>
-      <a href="http://localhost:3000/reset-password/${token}">Reset password</a>
-      <p>this link will expire in 1 hour</p>
-      `,
-    };
-  }
+  // async sendMailForgotPassword(email: string, token: string) {
+  //   const mailObj: SendMailDto = {
+  //     from: process.env.EMAIL_FROM,
+  //     to: email,
+  //     subject: 'Reset your password',
+  //     html: `
+  //     <h1>Reset your password</h1>
+  //     <p>Please click the link below to reset your password:</p>
+  //     <a href="http://localhost:3000/reset-password/${token}">Reset password</a>
+  //     <p>this link will expire in 1 hour</p>
+  //     `,
+  //   };
+  // }
 }

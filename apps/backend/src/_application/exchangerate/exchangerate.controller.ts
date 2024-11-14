@@ -9,30 +9,45 @@ import {
   UseGuards,
   Req,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ExchangerateService } from './exchangerate.service';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiHeader,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { ExchangeRate } from '@prisma-carmen-client-tenant';
 import {
   ExchangeRateCreateDto,
   ExchangeRateUpdateDto,
 } from '@carmensoftware/shared-dtos';
+import QueryParams, { QueryAdvance } from 'lib/types';
 
 @Controller('api/v1/exchangerate')
 @ApiTags('exchangerate')
 @ApiBearerAuth()
+@ApiHeader({
+  name: 'x-tenant-id',
+  description: 'tenant id',
+})
 @UseGuards(JwtAuthGuard)
 export class ExchangerateController {
   constructor(private readonly exchangerateService: ExchangerateService) {}
 
+  private readonly logger = new Logger(ExchangerateController.name);
+
   //#region GET ONE
   @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<ResponseSingle<ExchangeRate>> {
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     return this.exchangerateService.findOne(req, id);
   }
   //#endregion GET ONE
@@ -41,29 +56,56 @@ export class ExchangerateController {
   @Get()
   async findAll(
     @Req() req: Request,
-    @Query('page') page: number = 1,
-    @Query('perPage') perPage: number = 10,
+    @Query('page') page: number,
+    @Query('perpage') perpage: number,
     @Query('search') search: string = '',
-  ): Promise<ResponseList<ExchangeRate>> {
-    return this.exchangerateService.findAll(req, page, perPage, search);
+    @Query('searchfields') searchfields: string = '',
+    @Query('filter') filter: Record<string, string> = {},
+    @Query('sort') sort: string = '',
+    @Query('advance') advance: QueryAdvance = null,
+  ) {
+    const defaultSearchFields: string[] = [];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+    return this.exchangerateService.findAll(req, q);
   }
   //#endregion GET ALL
 
   //#region CREATE
   @Post()
-  async create(
-    @Body() createDto: ExchangeRateCreateDto,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  @ApiBody({
+    type: ExchangeRateCreateDto,
+    description: 'ExchangeRateCreateDto',
+  })
+  async create(@Body() createDto: ExchangeRateCreateDto, @Req() req: Request) {
     return this.exchangerateService.create(req, createDto);
   }
   //#endregion Create
 
   //#region UPDATE
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: ExchangeRateUpdateDto,
+    description: 'ExchangeRateUpdateDto',
+  })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: ExchangeRateUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
     return this.exchangerateService.update(req, id, updateDto);
@@ -72,6 +114,12 @@ export class ExchangerateController {
 
   //#region DELETE
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async delete(@Param('id') id: string, @Req() req: Request) {
     return this.exchangerateService.delete(req, id);
   }

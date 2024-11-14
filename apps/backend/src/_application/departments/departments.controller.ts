@@ -9,28 +9,44 @@ import {
   Req,
   UseGuards,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
-import { Department } from '@prisma-carmen-client-tenant';
-import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   DepartmentCreateDto,
   DepartmentUpdateDto,
 } from '@carmensoftware/shared-dtos';
+import QueryParams, { QueryAdvance } from 'lib/types';
 
 @Controller('api/v1/departments')
 @ApiTags('department')
+@ApiBearerAuth()
+@ApiHeader({
+  name: 'x-tenant-id',
+  description: 'tenant id',
+})
 @UseGuards(JwtAuthGuard)
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 
+  private readonly logger = new Logger(DepartmentsController.name);
+
   @Get(':id')
-  async fineOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<ResponseSingle<Department>> {
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  async fineOne(@Param('id') id: string, @Req() req: Request) {
     return this.departmentsService.findOne(req, id);
   }
 
@@ -40,29 +56,61 @@ export class DepartmentsController {
     @Query('page') page: number,
     @Query('perpage') perpage: number,
     @Query('search') search: string = '',
+    @Query('searchfields') searchfields: string = '',
     @Query('filter') filter: Record<string, string> = {},
+    @Query('sort') sort: string = '',
+    @Query('advance') advance: QueryAdvance = null,
   ) {
-    return this.departmentsService.findAll(req, page, perpage, search, filter);
+    const defaultSearchFields: string[] = ['code', 'name', 'description'];
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+    return this.departmentsService.findAll(req, q);
   }
 
   @Post()
-  async create(
-    @Body() createDto: DepartmentCreateDto,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  @ApiBody({
+    type: DepartmentCreateDto,
+    description: 'DepartmentCreateDto',
+  })
+  async create(@Body() createDto: DepartmentCreateDto, @Req() req: Request) {
     return this.departmentsService.create(req, createDto);
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: DepartmentUpdateDto,
+    description: 'DepartmentUpdateDto',
+  })
   async update(
     @Param('id') id: string,
     @Body() updateDto: DepartmentUpdateDto,
     @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  ) {
     return this.departmentsService.update(req, id, updateDto);
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
   async delete(@Param('id') id: string, @Req() req: Request) {
     return this.departmentsService.delete(req, id);
   }

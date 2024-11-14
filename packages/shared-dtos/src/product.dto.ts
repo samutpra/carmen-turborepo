@@ -4,9 +4,11 @@ export class ProductCreateDto {
 	name!: string;
 	description?: string | null;
 	isActive?: boolean | null;
-	ProductInfo?: ProductInfoCreateDto;
-	ProductVendor?: ProductVendorCreateDto[];
-	UnitConversion?: undefined;
+	// ProductInfo?: ProductInfoCreateDto;
+	// ProductVendor?: ProductVendorCreateDto[];
+	// UnitConversion?: undefined;
+
+	primaryUnit?: string;
 }
 
 export class ProductUpdateDto extends ProductCreateDto {

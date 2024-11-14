@@ -19,7 +19,7 @@ model Password {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String    @db.Uuid
   hash      String
-  expiredOn DateTime  @default(dbgenerated("(now() + '1 day'::interval)")) @db.Date
+  isActive  Boolean?  @default(false)
   createdAt DateTime? @default(now()) @db.Timestamp(6)
   User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -85,6 +85,7 @@ model User {
   id                                                             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username                                                       String                   @unique @db.VarChar(30)
   email                                                          String                   @db.VarChar(255)
+  consent                                                        DateTime?                @db.Timestamp(6)
   createdAt                                                      DateTime?                @default(now()) @db.Timestamp(6)
   createById                                                     String?                  @db.Uuid
   updateAt                                                       DateTime?                @default(now()) @db.Timestamp(6)
@@ -268,18 +269,18 @@ model NotificationPreference {
 }
 
 model Subscription {
-  id                                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clusterId                          String               @db.Uuid
-  startDate                          DateTime             @db.Date
-  endDate                            DateTime             @db.Date
-  status                             SubscriptionStatus
-  createdAt                          DateTime?            @default(now()) @db.Timestamp(6)
-  createById                         String?              @db.Uuid
-  updateAt                           DateTime?            @default(now()) @db.Timestamp(6)
-  updateById                         String?              @db.Uuid
-  Cluster                            Cluster              @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Subscription_createByIdToUser User?                @relation("Subscription_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Subscription_updateByIdToUser User?                @relation("Subscription_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clusterId                          String                 @db.Uuid
+  startDate                          DateTime               @db.Date
+  endDate                            DateTime               @db.Date
+  status                             EnumSubscriptionStatus
+  createdAt                          DateTime?              @default(now()) @db.Timestamp(6)
+  createById                         String?                @db.Uuid
+  updateAt                           DateTime?              @default(now()) @db.Timestamp(6)
+  updateById                         String?                @db.Uuid
+  Cluster                            Cluster                @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User_Subscription_createByIdToUser User?                  @relation("Subscription_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User_Subscription_updateByIdToUser User?                  @relation("Subscription_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
   SubscriptionDetail                 SubscriptionDetail[]
 }
 
@@ -317,7 +318,7 @@ model UserBusinessUnit {
   @@unique([userId, businessunitId], map: "usertenant_userid_bussinessunitid_u")
 }
 
-enum SubscriptionStatus {
+enum EnumSubscriptionStatus {
   Active
   Inactive
   expired

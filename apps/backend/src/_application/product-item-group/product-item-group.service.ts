@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ProductItemGroup,
   PrismaClient as dbTenant,
@@ -9,10 +14,10 @@ import {
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class ProductItemGroupService {
@@ -23,10 +28,9 @@ export class ProductItemGroupService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.DepartmentCreateInput = { name: '' };
-  // _prisma_update: Prisma.DepartmentUpdateInput = {};
+  logger = new Logger(ProductItemGroupService.name);
 
-  async _getOne(db_tenant: dbTenant, id: string): Promise<ProductItemGroup> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<ProductItemGroup> {
     const res = await db_tenant.productItemGroup.findUnique({
       where: {
         id: id,
@@ -41,7 +45,7 @@ export class ProductItemGroupService {
   ): Promise<ResponseSingle<ProductItemGroup>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
@@ -52,19 +56,26 @@ export class ProductItemGroupService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<ProductItemGroup>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<ProductItemGroup>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.productItemGroup.count({});
-    const listObj = await this.db_tenant.productItemGroup.findMany();
+    const max = await this.db_tenant.productItemGroup.count({
+      where: q.where(),
+    });
+    const listObj = await this.db_tenant.productItemGroup.findMany(
+      q.findMany(),
+    );
 
     const res: ResponseList<ProductItemGroup> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
 
@@ -93,7 +104,13 @@ export class ProductItemGroupService {
     }
 
     const createObj = await this.db_tenant.productItemGroup.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
+      },
     });
 
     const res: ResponseId<string> = { id: createObj.id };
@@ -103,7 +120,7 @@ export class ProductItemGroupService {
   async update(req: Request, id: string, updateDto: ProductItemGroupUpdateDto) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
@@ -113,7 +130,7 @@ export class ProductItemGroupService {
       where: {
         id,
       },
-      data: updateDto,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -126,7 +143,7 @@ export class ProductItemGroupService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
