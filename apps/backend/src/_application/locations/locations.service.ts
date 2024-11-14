@@ -98,7 +98,7 @@ export class LocationsService {
     const createObj = await this.db_tenant.location.create({
       data: {
         ...createDto,
-        inventoryType: createDto.inventoryType,
+        locationType: createDto.locationType,
         createById: userId,
         createdAt: new Date(),
         updateById: userId,
@@ -131,7 +131,7 @@ export class LocationsService {
       },
       data: {
         ...updateDto,
-        inventoryType: updateDto.inventoryType,
+        locationType: updateDto.locationType,
         updateById: userId,
         updateAt: new Date(),
       },

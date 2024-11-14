@@ -1,20 +1,20 @@
 -- CreateEnum
-CREATE TYPE "UnitType" AS ENUM ('OrderUnit', 'InventoryUnit', 'RecipeUnit');
+CREATE TYPE "EnumInvDocType" AS ENUM ('GRN', 'CN', 'SR', 'ISSUE', 'ADJ', 'SI', 'SO');
 
 -- CreateEnum
-CREATE TYPE "InvDocType" AS ENUM ('GRN', 'CN', 'SR', 'ISSUE', 'ADJ', 'SI', 'SO');
+CREATE TYPE "EnumLocationType" AS ENUM ('Inventory', 'Direct');
 
 -- CreateEnum
-CREATE TYPE "LocationType" AS ENUM ('Inventory', 'Direct');
+CREATE TYPE "EnumPOStatus" AS ENUM ('Open', 'Voided', 'Closed', 'Draft', 'Sent', 'Partial', 'FullyReceived', 'Cancelled', 'Deleted');
 
 -- CreateEnum
-CREATE TYPE "POStatus" AS ENUM ('Open', 'Voided', 'Closed', 'Draft', 'Sent', 'Partial', 'FullyReceived', 'Cancelled', 'Deleted');
+CREATE TYPE "EnumPRDocStatus" AS ENUM ('Draft', 'WIP', 'Complete');
 
 -- CreateEnum
-CREATE TYPE "PRDocStatus" AS ENUM ('Draft', 'WIP', 'Complete');
+CREATE TYPE "EnumPRWorkflowStatus" AS ENUM ('Draft', 'Pending', 'Review', 'Accept');
 
 -- CreateEnum
-CREATE TYPE "PRWorkflowStatus" AS ENUM ('Draft', 'Pending', 'Review', 'Accept');
+CREATE TYPE "EnumUnitType" AS ENUM ('OrderUnit', 'InventoryUnit', 'RecipeUnit');
 
 -- CreateTable
 CREATE TABLE "AddressType" (
@@ -105,7 +105,7 @@ CREATE TABLE "ExchangeRate" (
 CREATE TABLE "Location" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR NOT NULL,
-    "inventoryType" "LocationType" NOT NULL,
+    "locationType" "EnumLocationType" NOT NULL,
     "description" TEXT,
     "isActive" BOOLEAN DEFAULT true,
     "deliveryPointId" UUID,
@@ -224,7 +224,7 @@ CREATE TABLE "Unit" (
 CREATE TABLE "UnitConversion" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "productId" UUID,
-    "unitType" "UnitType" NOT NULL,
+    "unitType" "EnumUnitType" NOT NULL,
     "fromUnitId" UUID,
     "toUnitId" UUID,
     "rate" DOUBLE PRECISION DEFAULT 1,
@@ -313,39 +313,6 @@ CREATE TABLE "GRN1" (
     "name" VARCHAR,
 
     CONSTRAINT "GRN1_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Inv0" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" VARCHAR NOT NULL,
-    "invDocType" "InvDocType",
-
-    CONSTRAINT "Inv0_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Inv1" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "inv0Id" UUID NOT NULL,
-    "fromLot" UUID,
-    "currentLotName" VARCHAR,
-    "qty" DECIMAL,
-    "cost" DECIMAL(15,5),
-
-    CONSTRAINT "Inv1_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Inv2" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "inv1Id" UUID NOT NULL,
-    "lotName" VARCHAR,
-    "lotIndex" INTEGER NOT NULL DEFAULT 1,
-    "qty" DECIMAL,
-    "cost" DECIMAL(15,5),
-
-    CONSTRAINT "Inv2_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -494,6 +461,39 @@ CREATE TABLE "PO1" (
     CONSTRAINT "PO1_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "INV0" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "invDocType" "EnumInvDocType",
+
+    CONSTRAINT "INV0_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "INV1" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv0Id" UUID NOT NULL,
+    "fromLot" UUID,
+    "currentLotName" VARCHAR,
+    "qty" DECIMAL,
+    "cost" DECIMAL(15,5),
+
+    CONSTRAINT "INV1_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "INV2" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inv1Id" UUID NOT NULL,
+    "lotName" VARCHAR,
+    "lotIndex" INTEGER NOT NULL DEFAULT 1,
+    "qty" DECIMAL,
+    "cost" DECIMAL(15,5),
+
+    CONSTRAINT "INV2_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "AddressType_name_key" ON "AddressType"("name");
 
@@ -600,12 +600,6 @@ CREATE UNIQUE INDEX "Menu_name_key" ON "Menu"("name");
 CREATE INDEX "menu_name_u" ON "Menu"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Inv0_name_key" ON "Inv0"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "Inv2"("lotName", "lotIndex");
-
--- CreateIndex
 CREATE UNIQUE INDEX "PR0_refName_key" ON "PR0"("refName");
 
 -- CreateIndex
@@ -628,6 +622,12 @@ CREATE UNIQUE INDEX "PO1_name_key" ON "PO1"("name");
 
 -- CreateIndex
 CREATE INDEX "PO1_name_u" ON "PO1"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "INV0_name_key" ON "INV0"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "INV2"("lotName", "lotIndex");
 
 -- AddForeignKey
 ALTER TABLE "ExchangeRate" ADD CONSTRAINT "ExchangeRate_currencyId_fkey" FOREIGN KEY ("currencyId") REFERENCES "Currency"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -675,16 +675,10 @@ ALTER TABLE "VendorContact" ADD CONSTRAINT "VendorContact_contactTypeId_fkey" FO
 ALTER TABLE "VendorContact" ADD CONSTRAINT "VendorContact_vendorId_fkey" FOREIGN KEY ("vendorId") REFERENCES "Vendor"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "GRN0" ADD CONSTRAINT "GRN0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "GRN0" ADD CONSTRAINT "GRN0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "INV0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "GRN1" ADD CONSTRAINT "GRN1_GRN0Id_fkey" FOREIGN KEY ("GRN0Id") REFERENCES "GRN0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "Inv1" ADD CONSTRAINT "Inv1_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "Inv2" ADD CONSTRAINT "Inv2_inv1Id_fkey" FOREIGN KEY ("inv1Id") REFERENCES "Inv1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "PR0" ADD CONSTRAINT "PR0_prTypeId_fkey" FOREIGN KEY ("prTypeId") REFERENCES "PRType"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -696,22 +690,28 @@ ALTER TABLE "PR1" ADD CONSTRAINT "PR1_PR0Id_fkey" FOREIGN KEY ("PR0Id") REFERENC
 ALTER TABLE "PR1Workflow" ADD CONSTRAINT "PR1Workflow_PR1Id_fkey" FOREIGN KEY ("PR1Id") REFERENCES "PR1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "SI0" ADD CONSTRAINT "SI0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "SI0" ADD CONSTRAINT "SI0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "INV0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "SI1" ADD CONSTRAINT "SI1_SI0Id_fkey" FOREIGN KEY ("SI0Id") REFERENCES "SI0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "SO0" ADD CONSTRAINT "SO0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "SO0" ADD CONSTRAINT "SO0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "INV0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "SO1" ADD CONSTRAINT "SO1_SO0Id_fkey" FOREIGN KEY ("SO0Id") REFERENCES "SO0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "SR0" ADD CONSTRAINT "SR0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "Inv0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "SR0" ADD CONSTRAINT "SR0_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "INV0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "SR1" ADD CONSTRAINT "SR1_SR0Id_fkey" FOREIGN KEY ("SR0Id") REFERENCES "SR0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "PO1" ADD CONSTRAINT "PO1_PO0Id_fkey" FOREIGN KEY ("PO0Id") REFERENCES "PO0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "INV1" ADD CONSTRAINT "INV1_inv0Id_fkey" FOREIGN KEY ("inv0Id") REFERENCES "INV0"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "INV2" ADD CONSTRAINT "INV2_inv1Id_fkey" FOREIGN KEY ("inv1Id") REFERENCES "INV1"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

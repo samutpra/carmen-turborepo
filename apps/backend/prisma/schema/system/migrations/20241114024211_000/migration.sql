@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('Active', 'Inactive', 'expired');
+CREATE TYPE "EnumSubscriptionStatus" AS ENUM ('Active', 'Inactive', 'expired');
 
 -- CreateTable
 CREATE TABLE "Password" (
@@ -189,7 +189,7 @@ CREATE TABLE "Subscription" (
     "clusterId" UUID NOT NULL,
     "startDate" DATE NOT NULL,
     "endDate" DATE NOT NULL,
-    "status" "SubscriptionStatus" NOT NULL,
+    "status" "EnumSubscriptionStatus" NOT NULL,
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "createById" UUID,
     "updateAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,

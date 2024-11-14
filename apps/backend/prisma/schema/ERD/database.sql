@@ -1,15 +1,15 @@
 CREATE SCHEMA "CARMEN_SYSTEM";
 CREATE SCHEMA "TENANT_DUMMY";
-CREATE TYPE "CARMEN_SYSTEM"."SubscriptionStatus" AS ENUM ('Active', 'Inactive', 'expired');
-CREATE TYPE "TENANT_DUMMY"."LocationType" AS ENUM ('Inventory', 'Direct');
-CREATE TYPE "TENANT_DUMMY"."UnitType" AS ENUM (
+CREATE TYPE "CARMEN_SYSTEM"."EnumSubscriptionStatus" AS ENUM ('Active', 'Inactive', 'expired');
+CREATE TYPE "TENANT_DUMMY"."EnumLocationType" AS ENUM ('Inventory', 'Direct');
+CREATE TYPE "TENANT_DUMMY"."EnumUnitType" AS ENUM (
   'OrderUnit',
   'InventoryUnit',
   'RecipeUnit'
 );
-CREATE TYPE "TENANT_DUMMY"."PRDocStatus" AS ENUM ('Draft', 'WIP', 'Complete');
-CREATE TYPE "TENANT_DUMMY"."PRWorkflowStatus" AS ENUM ('Draft', 'Pending', 'Review', 'Accept');
-CREATE TYPE "TENANT_DUMMY"."POStatus" AS ENUM (
+CREATE TYPE "TENANT_DUMMY"."EnumPRDocStatus" AS ENUM ('Draft', 'WIP', 'Complete');
+CREATE TYPE "TENANT_DUMMY"."EnumPRWorkflowStatus" AS ENUM ('Draft', 'Pending', 'Review', 'Accept');
+CREATE TYPE "TENANT_DUMMY"."EnumPOStatus" AS ENUM (
   'Open',
   'Voided',
   'Closed',
@@ -20,7 +20,7 @@ CREATE TYPE "TENANT_DUMMY"."POStatus" AS ENUM (
   'Cancelled',
   'Deleted'
 );
-CREATE TYPE "TENANT_DUMMY"."InvDocType" AS ENUM (
+CREATE TYPE "TENANT_DUMMY"."EnumInvDocType" AS ENUM (
   'GRN',
   'CN',
   'SR',
@@ -81,7 +81,7 @@ CREATE TABLE "CARMEN_SYSTEM"."Subscription" (
   "clusterId" uuid NOT NULL,
   "startDate" date NOT NULL,
   "endDate" date NOT NULL,
-  "status" "CARMEN_SYSTEM"."SubscriptionStatus" NOT NULL,
+  "status" "CARMEN_SYSTEM"."EnumSubscriptionStatus" NOT NULL,
   "createdAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "createById" uuid,
   "updateAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -226,7 +226,7 @@ CREATE TABLE "TENANT_DUMMY"."ExchangeRate" (
 CREATE TABLE "TENANT_DUMMY"."Location" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "inventoryType" "TENANT_DUMMY"."LocationType" NOT NULL,
+  "locationType" "TENANT_DUMMY"."EnumLocationType" NOT NULL,
   "description" text,
   "isActive" bool DEFAULT true,
   "deliveryPointId" uuid,
@@ -257,7 +257,7 @@ CREATE TABLE "TENANT_DUMMY"."Unit" (
 CREATE TABLE "TENANT_DUMMY"."UnitConversion" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "productId" uuid,
-  "unitType" "TENANT_DUMMY"."UnitType" NOT NULL,
+  "unitType" "TENANT_DUMMY"."EnumUnitType" NOT NULL,
   "fromUnitId" uuid,
   "toUnitId" uuid,
   "rate" float DEFAULT 1,
@@ -462,12 +462,12 @@ CREATE TABLE "TENANT_DUMMY"."ProductVendor" (
   "updateAt" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updateById" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."Inv0" (
+CREATE TABLE "TENANT_DUMMY"."INV0" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "invDocType" "TENANT_DUMMY"."InvDocType"
+  "invDocType" "TENANT_DUMMY"."EnumInvDocType"
 );
-CREATE TABLE "TENANT_DUMMY"."Inv1" (
+CREATE TABLE "TENANT_DUMMY"."INV1" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inv0Id" uuid NOT NULL,
   "fromLot" uuid,
@@ -475,7 +475,7 @@ CREATE TABLE "TENANT_DUMMY"."Inv1" (
   "qty" decimal,
   "cost" numeric(15, 5)
 );
-CREATE TABLE "TENANT_DUMMY"."Inv2" (
+CREATE TABLE "TENANT_DUMMY"."INV2" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inv1Id" uuid NOT NULL,
   "lotName" varchar,
@@ -531,8 +531,8 @@ CREATE INDEX "userprofile_firstname_lastname_idx" ON "CARMEN_SYSTEM"."UserProfil
 CREATE INDEX "module_name_idx" ON "CARMEN_SYSTEM"."Module" ("name");
 CREATE INDEX "businessunitmodule_businessunitid_moduleid_u" ON "CARMEN_SYSTEM"."BusinessUnitModule" ("businessUnitId", "moduleId");
 CREATE UNIQUE INDEX "subscriptiondetail_subscriptionid_businessunitid_moduleid_u" ON "CARMEN_SYSTEM"."SubscriptionDetail" ("subscriptionId", "bussinessUnitId", "moduleId");
-CREATE UNIQUE INDEX "company_code_u" ON "CARMEN_SYSTEM"."Cluster" ("code");
-CREATE UNIQUE INDEX "company_name_u" ON "CARMEN_SYSTEM"."Cluster" ("name");
+CREATE UNIQUE INDEX "cluster_code_u" ON "CARMEN_SYSTEM"."Cluster" ("code");
+CREATE UNIQUE INDEX "cluster_name_u" ON "CARMEN_SYSTEM"."Cluster" ("name");
 CREATE INDEX "tenant_clusertid_idx" ON "CARMEN_SYSTEM"."BusinessUnit" ("clusterId");
 CREATE INDEX "businessunit_code_idx" ON "CARMEN_SYSTEM"."BusinessUnit" ("code");
 CREATE UNIQUE INDEX "businessunit_clusertid_code_u" ON "CARMEN_SYSTEM"."BusinessUnit" ("clusterId", "code");
@@ -567,7 +567,7 @@ CREATE UNIQUE INDEX "vendorcontact_vendorid_contacttypeid_u" ON "TENANT_DUMMY"."
 CREATE INDEX "addresstype_name_u" ON "TENANT_DUMMY"."AddressType" ("name");
 CREATE UNIQUE INDEX "vendorcontact_vendorid_addresstypeid_u" ON "TENANT_DUMMY"."VendorAddress" ("vendorId", "addressTypeId");
 CREATE UNIQUE INDEX "productvendor_vendorid_productid_u" ON "TENANT_DUMMY"."ProductVendor" ("vendorId", "productId");
-CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "TENANT_DUMMY"."Inv2" ("lotName", "lotIndex");
+CREATE UNIQUE INDEX "inv2_lotname_lotindex_u" ON "TENANT_DUMMY"."INV2" ("lotName", "lotIndex");
 ALTER TABLE "CARMEN_SYSTEM"."User"
 ADD FOREIGN KEY ("createById") REFERENCES "CARMEN_SYSTEM"."User" ("id");
 ALTER TABLE "CARMEN_SYSTEM"."User"
@@ -702,23 +702,23 @@ ALTER TABLE "TENANT_DUMMY"."ProductVendor"
 ADD FOREIGN KEY ("vendorId") REFERENCES "TENANT_DUMMY"."Vendor" ("id");
 ALTER TABLE "TENANT_DUMMY"."ProductVendor"
 ADD FOREIGN KEY ("productId") REFERENCES "TENANT_DUMMY"."Product" ("id");
-ALTER TABLE "TENANT_DUMMY"."Inv1"
-ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."Inv0" ("id");
-ALTER TABLE "TENANT_DUMMY"."Inv2"
-ADD FOREIGN KEY ("inv1Id") REFERENCES "TENANT_DUMMY"."Inv1" ("id");
+ALTER TABLE "TENANT_DUMMY"."INV1"
+ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."INV0" ("id");
+ALTER TABLE "TENANT_DUMMY"."INV2"
+ADD FOREIGN KEY ("inv1Id") REFERENCES "TENANT_DUMMY"."INV1" ("id");
 ALTER TABLE "TENANT_DUMMY"."GRN0"
-ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."Inv0" ("id");
+ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."INV0" ("id");
 ALTER TABLE "TENANT_DUMMY"."GRN1"
 ADD FOREIGN KEY ("GRN0Id") REFERENCES "TENANT_DUMMY"."GRN0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SR0"
-ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."Inv0" ("id");
+ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."INV0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SR1"
 ADD FOREIGN KEY ("SR0Id") REFERENCES "TENANT_DUMMY"."SR0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SI0"
-ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."Inv0" ("id");
+ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."INV0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SI1"
 ADD FOREIGN KEY ("SI0Id") REFERENCES "TENANT_DUMMY"."SI0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SO0"
-ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."Inv0" ("id");
+ADD FOREIGN KEY ("inv0Id") REFERENCES "TENANT_DUMMY"."INV0" ("id");
 ALTER TABLE "TENANT_DUMMY"."SO1"
 ADD FOREIGN KEY ("SO0Id") REFERENCES "TENANT_DUMMY"."SO0" ("id");

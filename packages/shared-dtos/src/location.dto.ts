@@ -3,7 +3,7 @@ export class LocationCreateDto {
 	name!: string;
 	description?: string | null;
 	isActive?: boolean | null;
-	inventoryType!: LocationType;
+	locationType!: EnumLocationType;
 	deliveryPointId?: string | null;
 }
 
@@ -11,7 +11,7 @@ export class LocationUpdateDto extends LocationCreateDto {
 	override id!: string;
 }
 
-export enum LocationType {
+export enum EnumLocationType {
 	Inventory = 'Inventory',
 	Direct = 'Direct',
 }

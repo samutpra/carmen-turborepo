@@ -141,7 +141,7 @@ erDiagram
   String clusterId FK
   DateTime startDate
   DateTime endDate
-  SubscriptionStatus status
+  EnumSubscriptionStatus status
   DateTime createdAt "nullable"
   String createById FK "nullable"
   DateTime updateAt "nullable"
