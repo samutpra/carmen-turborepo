@@ -27,5 +27,17 @@ export function ApiUserFilterQueries() {
       required: false,
       type: 'Record<string, string>',
     }),
+    ApiQuery({
+      name: 'searchfields',
+      description: 'searchfields',
+      required: false,
+      type: 'string',
+    }),
+    ApiQuery({
+      name: 'sort',
+      description: 'sort',
+      required: false,
+      type: 'string',
+    }),
   );
 }

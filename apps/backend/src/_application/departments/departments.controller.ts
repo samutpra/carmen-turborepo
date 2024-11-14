@@ -25,6 +25,7 @@ import {
   DepartmentUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/departments')
 @ApiTags('department')
@@ -51,15 +52,16 @@ export class DepartmentsController {
   }
 
   @Get()
+  @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page: number,
-    @Query('perpage') perpage: number,
-    @Query('search') search: string = '',
-    @Query('searchfields') searchfields: string = '',
-    @Query('filter') filter: Record<string, string> = {},
-    @Query('sort') sort: string = '',
-    @Query('advance') advance: QueryAdvance = null,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = ['code', 'name', 'description'];
 

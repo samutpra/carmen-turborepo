@@ -28,6 +28,7 @@ import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import QueryParams from 'lib/types';
 import { ProductSubCategoryService } from './product-sub-category.service';
 import { QueryAdvance } from 'lib/types';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/product-sub-category')
 @ApiTags('Product Sub category')
@@ -57,15 +58,16 @@ export class ProductSubCategoryController {
   }
 
   @Get()
+  @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page: number,
-    @Query('perpage') perpage: number,
-    @Query('search') search: string = '',
-    @Query('searchfields') searchfields: string = '',
-    @Query('filter') filter: Record<string, string> = {},
-    @Query('sort') sort: string = '',
-    @Query('advance') advance: QueryAdvance = null,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
 
