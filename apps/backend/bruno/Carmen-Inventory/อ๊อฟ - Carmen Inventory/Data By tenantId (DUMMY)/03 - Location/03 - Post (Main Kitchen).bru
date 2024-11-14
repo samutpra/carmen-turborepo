@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (Main Kitchen)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/locations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Main kitchen",
+    "description": "Main kitchen",
+    "isActive": true,
+    "locationType": "Inventory",
+    "deliveryPointId": null
+  }
+}

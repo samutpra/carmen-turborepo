@@ -446,6 +446,7 @@ TABLE TENANT_DUMMY.UnitConversion {
 TABLE TENANT_DUMMY.Department {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
+  description text
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]

@@ -60,13 +60,13 @@ export class CurrenciesController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page: number,
-    @Query('perpage') perpage: number,
-    @Query('search') search: string = '',
-    @Query('searchfields') searchfields: string = '',
-    @Query('filter') filter: Record<string, string> = {},
-    @Query('sort') sort: string = '',
-    @Query('advance') advance: QueryAdvance = null,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [
       'name',
