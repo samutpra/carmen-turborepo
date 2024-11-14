@@ -583,7 +583,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 )}
                             </div>
                             {isExpanded && (
-                                <span className="ml-2 text-2xl font-bold">Carmen</span>
+                                <div className="ml-2">
+                                    <span className="text-2xl font-bold block">CARMEN</span>
+                                    <span className="text-xs block">Hospitality Supply Chain</span>
+                                </div>
+
                             )}
                         </Link>
                         {isExpanded && (

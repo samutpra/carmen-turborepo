@@ -14,7 +14,7 @@ import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from '@/lib/i18n';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-
+import * as m from '@/paraglide/messages.js';
 interface Props {
     handleForm: (form: AuthFormType) => void;
 }
@@ -85,8 +85,8 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
     return (
 
         <>
-            <p className="text-[32px] font-bold">Sign In</p>
-            <p className="mb-2.5 mt-2.5 font-normal">Enter your email and password to sign in!</p>
+            <p className="text-[32px] font-bold">{m.signIn_title()}</p>
+            <p className="mb-2.5 mt-2.5 font-normal">{m.des_signIn()}</p>
             {/* 
             <CustomButton
                 className='w-full'
@@ -103,10 +103,10 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         name="username"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Username</FormLabel>
+                                <FormLabel>{m.username()}</FormLabel>
                                 <FormControl>
                                     <InputCustom
-                                        placeholder="Username"
+                                        placeholder={m.username()}
                                         error={!!form.formState.errors.username}
                                         {...field}
                                     />
@@ -121,10 +121,10 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel>{m.password()}</FormLabel>
                                 <FormControl>
                                     <PasswordInput
-                                        placeholder="Password"
+                                        placeholder={m.password()}
                                         error={!!form.formState.errors.password}
                                         {...field}
                                     />
@@ -135,12 +135,12 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         required
                     />
                     <CustomButton type="submit" className="w-full mt-4" loading={loading}>
-                        Sign in
+                        {m.signIn_title()}
                     </CustomButton>
                     <Separator className="my-4" />
-                    <p className='font-medium text-xs cursor-pointer' onClick={onForgotPassword}>Forgot your password?</p>
-                    <p className='font-medium text-xs cursor-pointer' onClick={onResetPassword}>Reset your password</p>
-                    <p className='font-medium text-xs cursor-pointer' onClick={onSignUp}>Don&apos;t have an account? Sign up</p>
+                    <p className='font-medium text-xs cursor-pointer' onClick={onForgotPassword}>{m.forgotPassword()}</p>
+                    <p className='font-medium text-xs cursor-pointer' onClick={onResetPassword}>{m.resetPassword()}</p>
+                    <p className='font-medium text-xs cursor-pointer' onClick={onSignUp}>{m.dont_signUp_msg()}</p>
                 </form>
             </Form>
         </>

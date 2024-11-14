@@ -2,5 +2,12 @@
     "$schema": "https://inlang.com/schema/inlang-message-format",
     "home_title": "ยินดีต้อนรับสู่คาร์เมน",
     "home_subtitle": "กรุณาลงชื่อเข้าใช้เพื่อเข้าสู่ระบบ",
-    "sidebar_carmen": "CARMEN"
+    "sidebar_carmen": "CARMEN",
+    "signIn_title": "เข้าสู่ระบบ",
+    "des_signIn": "กรอกอีเมล์และรหัสผ่านของคุณเพื่อเข้าสู่ระบบ!",
+    "username": "ชื่อผู้ใช้",
+    "password": "รหัสผ่าน",
+    "forgotPassword": "ลืมรหัสผ่านใช่ไหม?",
+    "resetPassword": "รีเซ็ตรหัสผ่านของคุณ",
+    "dont_signUp_msg": "ยังไม่มีบัญชี? สมัครสมาชิก"
 }
