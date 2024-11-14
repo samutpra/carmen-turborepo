@@ -19,6 +19,7 @@ interface Props {
 
 interface CustomJwtPayload extends JwtPayload {
     email?: string;
+    username?: string
 }
 
 const VerifyComponent: React.FC<Props> = ({ token }) => {
@@ -29,7 +30,7 @@ const VerifyComponent: React.FC<Props> = ({ token }) => {
     const form = useForm<VerifyType>({
         resolver: zodResolver(VerifySchema),
         defaultValues: {
-            username: decoded?.email,
+            username: decoded?.username,
             email: decoded?.email,
             password: "",
             confirmPassword: "",
@@ -87,7 +88,6 @@ const VerifyComponent: React.FC<Props> = ({ token }) => {
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
                         <FormField
                             control={form.control}
                             name="email"
@@ -230,10 +230,8 @@ const VerifyComponent: React.FC<Props> = ({ token }) => {
                             Sign up
                         </CustomButton>
                     </form>
-
                 </Form>
             </div>
-
         </div>
     )
 }

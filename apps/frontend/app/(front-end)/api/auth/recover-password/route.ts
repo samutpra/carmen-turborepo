@@ -26,9 +26,6 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({ email: email }),
         });
 
-        console.log('forgot nest api', response);
-
-
         const resultToken = await response.json();
 
         if (!response.ok) {

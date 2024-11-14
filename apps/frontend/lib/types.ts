@@ -1,5 +1,6 @@
 // File: types/inventory.ts
 
+import { JwtPayload } from "jwt-decode";
 import { z } from "zod";
 
 // Common Types and Enums
@@ -1389,11 +1390,32 @@ export const VerifySchema = z.object({
 export type VerifyType = z.infer<typeof VerifySchema>;
 export type PayloadVerifyType = Omit<VerifyType, 'confirmPassword'>;
 
+export const RecoverPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string().min(6, { message: "Confirm password must be at least 6 characters." }),
+  emailToken: z.string(),
+}).superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      code: "custom",
+      message: "The passwords did not match",
+      path: ["confirmPassword"],
+    });
+  }
+});
+export type RecoverPasswordType = z.infer<typeof RecoverPasswordSchema>;
+export type PayloadRecoverPasswordType = Omit<RecoverPasswordType, 'confirmPassword'>;
+
 export const EmailSchema = z.object({
   email: z.string().email()
 });
 
 export type EmailType = z.infer<typeof EmailSchema>;
 
-
+export interface CustomJwtPayload extends JwtPayload {
+  email?: string;
+  username?: string
+}
 

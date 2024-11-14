@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { sendRecoverPasswordEmail } from '../../actions/actions';
+import SendEmailSuccess from '../SendEmailSucess';
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
@@ -31,7 +32,19 @@ const ForgotPassword: React.FC<Props> = ({ handleForm }) => {
 
 
     const handleResendEmail = async () => {
+        if (!userEmail || isLoading) return;
+        setIsLoading(true);
 
+        try {
+            const result = await sendRecoverPasswordEmail(userEmail);
+            if (result.error) {
+                console.log(result.error);
+            }
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : 'Failed to resend email');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const onSubmit = async (data: EmailType) => {
@@ -54,46 +67,64 @@ const ForgotPassword: React.FC<Props> = ({ handleForm }) => {
         }
     }
 
-
-
     const onSignIn = () => {
         handleForm(AuthFormType.SignIn)
     }
+
     return (
         <>
-            <p className="text-[32px] font-bold">Forgot Password</p>
-            <p className="mb-2.5 mt-2.5 font-normal">Enter your email to receive reset instructions</p>
-            <Separator className="my-4" />
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <InputCustom
-                                        type='email'
-                                        placeholder="Email"
-                                        error={!!form.formState.errors.email}
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                        required
+            {isEmailSent ? (
+                <div className="w-full">
+                    <SendEmailSuccess
+                        email={userEmail}
+                        onResend={handleResendEmail}
+                        isResending={isLoading}
                     />
-                    <Button type="submit" className="w-full mt-4">
-                        Send Reset Instructions
-                    </Button>
+                    <p className='font-medium text-xs cursor-pointer mt-4 text-center' onClick={onSignIn}>
+                        Back to Sign in
+                    </p>
+                </div>
+            ) : (
+
+                <>
+                    <p className="text-[32px] font-bold">Forgot Password</p>
+                    <p className="mb-2.5 mt-2.5 font-normal">Enter your email to receive reset instructions</p>
                     <Separator className="my-4" />
-                    <p className='font-medium text-xs cursor-pointer' onClick={onSignIn}>Back to Sign in</p>
-                </form>
-            </Form>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <InputCustom
+                                                type='email'
+                                                placeholder="Email"
+                                                error={!!form.formState.errors.email}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                                required
+                            />
+                            <Button type="submit" className="w-full mt-4">
+                                Send Reset Instructions
+                            </Button>
+                            <Separator className="my-4" />
+                            <p className='font-medium text-xs cursor-pointer' onClick={onSignIn}>Back to Sign in</p>
+                        </form>
+                    </Form>
+                </>
+            )}
         </>
     );
 }
 
 export default ForgotPassword;
+
+
+

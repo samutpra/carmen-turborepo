@@ -1,4 +1,4 @@
-import { PayloadVerifyType } from "@/lib/types";
+import { PayloadRecoverPasswordType, PayloadVerifyType } from "@/lib/types";
 
 export const sendVerificationEmail = async (email: string) => {
     try {
@@ -76,5 +76,28 @@ export const sendRecoverPasswordEmail = async (email: string) => {
         return {
             error: error instanceof Error ? error.message : 'Failed to send verification email'
         };
+    }
+};
+
+
+export const submitForgotPassword = async (payload: PayloadRecoverPasswordType) => {
+    try {
+        const response = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            return { success: true, data: result };
+        } else {
+            return { success: false, message: result.message || 'Unknown error' };
+        }
+    } catch (error) {
+        console.error('Error during signup:', error);
+        return { success: false, message: 'An error occurred while processing your request' };
     }
 };
