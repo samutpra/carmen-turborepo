@@ -71,13 +71,15 @@ export class AuthService {
   }
 
   async forgotPasswordEmail(
-    userForgotPassDto: UserForgotPassDto,
+    userForgotPassDto: EmailDto,
     req: any,
   ): Promise<ResponseSingle<string>> {
     this.db_System = this.prismaClientMamager.getSystemDB();
+
+    this.logger.debug(userForgotPassDto);
     const u = await this.usersService.findByUsername(
       this.db_System,
-      userForgotPassDto.username,
+      userForgotPassDto.email,
     );
 
     if (!u) {
