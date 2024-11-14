@@ -91,7 +91,6 @@ const PasswordRecovery: React.FC<Props> = ({ token }) => {
                             required
                         />
 
-
                         <FormField
                             control={form.control}
                             name="password"
