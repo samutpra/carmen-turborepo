@@ -3,8 +3,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
+import Navbar from "@/components/Navbar";
 
 export default function MainLayout({
   children,
@@ -14,10 +14,6 @@ export default function MainLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const pathname = usePathname();
-
-  const handleSidebarToggle = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -46,10 +42,7 @@ export default function MainLayout({
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header
-          onSidebarToggle={handleSidebarToggle}
-          isSidebarOpen={isSidebarOpen}
-        />
+        <Navbar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto pt-16">
           {children}
         </main>

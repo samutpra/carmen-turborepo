@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bell, Globe, LogOut, Settings, User } from 'lucide-react';
+import { Bell, LogOut, Settings, User } from 'lucide-react';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,16 +11,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu, X } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '@/components/languageSwitcher';
-import { Link } from '@/lib/i18n';
 import React from 'react';
 import { TenantList } from '@/components/tenantList';
 import { useRouter } from '@/lib/i18n';
-import { useState } from 'react';
 import { SwitchTheme } from './SwitchTheme';
 
 export interface HeaderProps {
@@ -29,10 +26,6 @@ export interface HeaderProps {
 
 export default function Header({ onSidebarToggle, isSidebarOpen }: HeaderProps) {
 	const router = useRouter();
-
-	const toggleSidebar = () => {
-		const newState = !isSidebarOpen;
-	};
 
 	const handleEditProfile = () => {
 		console.log('Navigating to edit profile');
