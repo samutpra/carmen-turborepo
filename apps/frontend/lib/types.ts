@@ -1420,16 +1420,20 @@ export interface CustomJwtPayload extends JwtPayload {
   email?: string;
   username?: string
 }
+
 export const LocationSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().uuid().optional(),
   name: z.string(),
   locationType: z.enum(["Inventory", "Direct"]),
   description: z.string(),
   isActive: z.boolean(),
-  deliveryPointId: z.string().nullable(),
+  deliveryPointId: z.string().nullable().optional(),
 });;
 
 export type LocationType = z.infer<typeof LocationSchema>;
+
+export type PayloadLocationType = Omit<LocationType, 'id'>;
+
 export interface LocationLabel {
   key: keyof LocationType;
   label: string;

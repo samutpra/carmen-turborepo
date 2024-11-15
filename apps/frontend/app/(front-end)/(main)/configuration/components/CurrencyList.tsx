@@ -176,7 +176,11 @@ const CurrencyList = () => {
 
 	const actionButtons = (
 		<div className='flex flex-col gap-4 md:flex-row'>
-			<CustomButton className='w-full md:w-20' prefixIcon={<PlusCircle />} onClick={() => setDialogForm(true)}>
+			<CustomButton
+				className='w-full md:w-20'
+				prefixIcon={<PlusCircle />}
+				onClick={() => setDialogForm(true)}
+			>
 				Add
 			</CustomButton>
 			<div className='flex flex-row md:flex-row gap-4'>

@@ -9,17 +9,24 @@ import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
 import { useRouter } from '@/lib/i18n';
-import { deleteLocation, useLocations } from '../actions/location';
+import { createLocation, deleteLocation, updateLocation, useLocations } from '../actions/location';
 import { useAuth } from '@/app/context/AuthContext';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import { LocationLabel, LocationType } from '@/lib/types';
+import { LocationLabel, LocationSchema, LocationType, PayloadLocationType } from '@/lib/types';
+import LocationForm from './form/LocationForm';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const StoreLocationList = () => {
     const { accessToken } = useAuth();
     const router = useRouter();
     const [dialogDelete, setDialogDelete] = useState(false);
     const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
+    const [editingItem, setEditingItem] = useState<LocationType | null>(null);
+    const [dialogForm, setDialogForm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
     const token = accessToken || ''
 
     const {
@@ -37,9 +44,49 @@ const StoreLocationList = () => {
         fetchData
     } = useLocations(token);
 
+    const form = useForm<PayloadLocationType>({
+        resolver: zodResolver(LocationSchema),
+        defaultValues: {
+            description: '',
+            name: '',
+            deliveryPointId: null,
+            locationType: 'Inventory',
+            isActive: true,
+        },
+    });
 
     const handleView = (item: LocationType) => {
         router.push(`/configuration/store-location/${item.id}`)
+    };
+
+    const handleSave = async (data: LocationType) => {
+        console.log('Submitting data:', data);
+        try {
+            setIsLoading(true);
+
+            if (editingItem?.id) {
+                const updatedFields: LocationType = {
+                    ...data,
+                    id: editingItem.id // make sure id is included
+                };
+                console.log('Updating with:', updatedFields);
+                const updatedLocation = await updateLocation(token, editingItem.id, updatedFields);
+                setLocations(prev => prev.map(loc =>
+                    loc.id === editingItem.id ? updatedLocation : loc
+                ));
+            } else {
+                console.log('Creating new location with:', data);
+                const newLocation = await createLocation(token, data);
+                setLocations(prev => [...prev, newLocation]);
+            }
+
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Save error:', error);
+            // อาจจะเพิ่ม toast หรือ alert แจ้ง error
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDelete = (item: LocationType) => {
@@ -62,12 +109,25 @@ const StoreLocationList = () => {
         }
     };
 
+    const handleCloseDialog = () => {
+        form.reset({
+            description: '',
+            name: '',
+            deliveryPointId: null,
+            locationType: 'Inventory',
+            isActive: true,
+        });
+        setDialogForm(false);
+        setEditingItem(null);
+    };
+
 
     const actionButtons = (
         <div className="flex flex-col gap-4 md:flex-row">
             <CustomButton
                 className='w-full md:w-20'
                 prefixIcon={<PlusCircle />}
+                onClick={() => setDialogForm(true)}
             >
                 Add
             </CustomButton>
@@ -147,6 +207,14 @@ const StoreLocationList = () => {
                     />
                 )}
             </div>
+            <LocationForm
+                open={dialogForm}
+                editingItem={editingItem}
+                isLoading={isLoading}
+                onOpenChange={setDialogForm}
+                onSubmit={handleSave}
+            />
+
             <DialogDelete
                 open={dialogDelete}
                 onOpenChange={setDialogDelete}

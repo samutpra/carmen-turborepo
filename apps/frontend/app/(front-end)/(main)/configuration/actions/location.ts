@@ -1,6 +1,6 @@
 "use client";
 
-import { LocationSchema, LocationType, PaginationType } from "@/lib/types";
+import { LocationSchema, LocationType, PaginationType, PayloadLocationType } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod"
 
@@ -17,7 +17,7 @@ class APIError extends Error {
     }
 }
 
-export const fetchStores = async (
+export const fetchLocation = async (
     accessToken: string,
     params: ParamsType = {}
 ): Promise<{ stores: LocationType[]; pagination: PaginationType }> => {
@@ -70,7 +70,7 @@ export const fetchStores = async (
     }
 };
 
-export const updateStore = async (
+export const updateLocation = async (
     accessToken: string,
     id: string,
     data: LocationType
@@ -117,9 +117,9 @@ export const updateStore = async (
 
 export const createLocation = async (
     accessToken: string,
-    data: LocationType
+    data: PayloadLocationType
 ) => {
-
+    data.deliveryPointId = null;
     try {
         const response = await fetch(`/api/configuration/locations`, {
             method: 'POST',
@@ -175,7 +175,7 @@ export const useLocations = (token: string) => {
         setError(null);
         try {
             const { stores: fetchedStores, pagination: fetchedPagination } =
-                await fetchStores(token, {
+                await fetchLocation(token, {
                     page: pagination.page,
                     perpage: pagination.perPage,
                     search,
