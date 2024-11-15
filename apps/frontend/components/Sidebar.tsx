@@ -131,7 +131,7 @@ const Sidebar = () => {
                                         <Button
                                             variant="ghost"
                                             className={cn(
-                                                "w-full flex justify-between font-bold text-base",
+                                                "w-full flex justify-between font-bold",
                                             )}
                                             onClick={() => toggleExpand(item.title, item.path)}
                                         >
