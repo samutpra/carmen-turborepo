@@ -90,5 +90,6 @@
     "dark": "Dark",
     "system": "System",
     "username_zod_error": "Username must be at least 2 characters.",
-    "password_zod_error": "Password must be at least 6 characters."
+    "password_zod_error": "Password must be at least 6 characters.",
+    "department": "Department"
 }

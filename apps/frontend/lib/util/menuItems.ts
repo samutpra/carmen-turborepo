@@ -145,6 +145,12 @@ export const menuItems = [
                 visible: true,
                 enabled: true,
             },
+            {
+                name: `${m.department()}`,
+                path: "/configuration/department",
+                visible: true,
+                enabled: true,
+            },
         ],
     },
     {
