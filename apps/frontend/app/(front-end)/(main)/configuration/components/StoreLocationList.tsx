@@ -17,6 +17,7 @@ import { LocationLabel, LocationSchema, LocationType, PayloadLocationType } from
 import LocationForm from './form/LocationForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as m from '@/paraglide/messages.js';
 
 const StoreLocationList = () => {
     const { accessToken } = useAuth();
@@ -139,7 +140,7 @@ const StoreLocationList = () => {
         </div>
     );
 
-    const title = 'Store Locations';
+    const title = `${m.store_location()}`;
 
     const filter = (
         <div className='flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4'>
