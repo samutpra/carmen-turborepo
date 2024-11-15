@@ -96,17 +96,19 @@ const Sidebar = () => {
                             href="/"
                             className="flex items-center justify-center"
                         >
-                            <div className="bg-blue-900 h-8 w-8 rounded-full flex items-center justify-center">
-                                {isExpanded && (
-                                    <span className="text-xl font-bold"></span>
-                                )}
-                            </div>
-                            {isExpanded && (
+
+                            {isExpanded ? (
                                 <div className="ml-2">
                                     <span className="text-2xl font-bold block">CARMEN</span>
-                                    <span className="text-xs block">Hospitality Supply Chain</span>
+                                    <span className="text-sm block text-gray-500 dark:text-gray-200">Hospitality Supply Chain</span>
                                 </div>
 
+                            ) : (
+                                <div className="bg-blue-900 h-8 w-8 rounded-full flex items-center justify-center">
+                                    {isExpanded && (
+                                        <span className="text-xl font-bold"></span>
+                                    )}
+                                </div>
                             )}
                         </Link>
                         {isExpanded && (
@@ -131,13 +133,13 @@ const Sidebar = () => {
                                         <Button
                                             variant="ghost"
                                             className={cn(
-                                                "w-full flex justify-between font-bold",
+                                                "w-full flex justify-between font-bold text-gray-700 dark:text-gray-200",
                                             )}
                                             onClick={() => toggleExpand(item.title, item.path)}
                                         >
                                             <span className="flex items-center justify-between">
                                                 <IconComponent className="h-5 w-5" />
-                                                {isExpanded && <span className="ml-2 text-xs">{item.title}</span>}
+                                                {isExpanded && <span className="ml-2">{item.title}</span>}
                                             </span>
                                             {isExpanded && item.subItems && item.subItems.length > 0 && (
                                                 expandedItems.includes(item.title) ? (
@@ -158,7 +160,7 @@ const Sidebar = () => {
                                                             variant="ghost"
                                                             asChild
                                                             className={cn(
-                                                                "w-full justify-start font-thin",
+                                                                "w-full justify-start text-sm text-foreground dark:text-gray-100",
                                                                 pathname === subItem.path
                                                                     ? "bg-primary text-white "
                                                                     : ""
