@@ -99,8 +99,8 @@ const Sidebar = () => {
 
                             {isExpanded ? (
                                 <div className="ml-2">
-                                    <span className="text-2xl font-bold block">CARMEN</span>
-                                    <span className="text-sm block text-gray-500 dark:text-gray-200">Hospitality Supply Chain</span>
+                                    <span className="text-2xl font-bold block tracking-wide">CARMEN</span>
+                                    <span className="text-sm block text-gray-500 dark:text-gray-200 tracking-wide">Hospitality Supply Chain</span>
                                 </div>
 
                             ) : (
@@ -133,7 +133,7 @@ const Sidebar = () => {
                                         <Button
                                             variant="ghost"
                                             className={cn(
-                                                "w-full flex justify-between font-semibold text-gray-700 dark:text-gray-200",
+                                                "w-full flex justify-between font-semibold text-gray-700 dark:text-gray-200 tracking-wide",
                                             )}
                                             onClick={() => toggleExpand(item.title, item.path)}
                                         >
@@ -160,7 +160,7 @@ const Sidebar = () => {
                                                             variant="ghost"
                                                             asChild
                                                             className={cn(
-                                                                "w-full justify-start text-sm text-foreground dark:text-gray-100",
+                                                                "w-full justify-start text-sm text-foreground dark:text-gray-100 tracking-wide",
                                                                 pathname === subItem.path
                                                                     ? "bg-primary text-white "
                                                                     : ""

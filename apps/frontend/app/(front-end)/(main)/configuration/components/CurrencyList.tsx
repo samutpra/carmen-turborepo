@@ -29,6 +29,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
 import CurrencyForm from './form/CurrencyForm';
 import { useAuth } from '@/app/context/AuthContext';
+import EmptyData from '@/components/EmptyData';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -331,12 +332,20 @@ const CurrencyList = () => {
 	);
 
 	return (
-		<DataDisplayTemplate
-			title={title}
-			actionButtons={actionButtons}
-			filters={filter}
-			content={content}
-		/>
+		<>
+			{currencies.length > 0 ? (
+				<DataDisplayTemplate
+					title={title}
+					actionButtons={actionButtons}
+					filters={filter}
+					content={content}
+				/>
+			) : (
+				<EmptyData />
+			)}
+		</>
+
+
 	);
 };
 
