@@ -133,7 +133,7 @@ const Sidebar = () => {
                                         <Button
                                             variant="ghost"
                                             className={cn(
-                                                "w-full flex justify-between font-bold text-gray-700 dark:text-gray-200",
+                                                "w-full flex justify-between font-semibold text-gray-700 dark:text-gray-200",
                                             )}
                                             onClick={() => toggleExpand(item.title, item.path)}
                                         >
