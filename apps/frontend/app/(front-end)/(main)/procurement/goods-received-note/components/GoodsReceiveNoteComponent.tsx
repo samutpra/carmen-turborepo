@@ -250,92 +250,90 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
                 </div>
                 <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
                     <div className={`flex-grow space-y-4 ${isSidebarVisible ? 'lg:w-3/4' : 'w-full'}`}>
-                        <Card>
+                        <Card className='p-6'>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(handleSaveClick)}>
-                                    <CardHeader className="flex flex-col space-y-4 pb-6">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                                            <div className="flex items-center">
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={onBack}
-                                                    disabled={isSubmitting}
-                                                >
-                                                    <ArrowLeft className="h-4 w-4" />
-                                                </Button>
-                                                <CardTitle className="text-lg">
-                                                    Goods Receive Note
-                                                </CardTitle>
-                                            </div>
-                                            {/* <StatusBadge status="Pending" /> */}
-                                            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
-                                                {!isEditable ? (
-                                                    <>
-                                                        <Button
-                                                            type="button"
-                                                            variant="default"
-                                                            size="sm"
-                                                            onClick={handleEdit}
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                            Edit
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            Delete
-                                                        </Button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Button
-                                                            type="submit"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            disabled={!form.formState.isValid || isSubmitting}
-                                                        >
-                                                            <Save className="h-4 w-4" />
-                                                            {isSubmitting ? 'Saving...' : 'Save'}
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={handleCancel}
-                                                            disabled={isSubmitting}
-                                                        >
-                                                            <X className="h-4 w-4" />
-                                                            Cancel
-                                                        </Button>
-                                                    </>
-                                                )}
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    disabled={isSubmitting}
-                                                >
-                                                    <Printer className="h-4 w-4" />
-                                                    Print
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    disabled={isSubmitting}
-                                                >
-                                                    <CheckSquare className="h-4 w-4" />
-                                                    Commit
-                                                </Button>
-                                            </div>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                                        <div className="flex items-center">
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={onBack}
+                                                disabled={isSubmitting}
+                                            >
+                                                <ArrowLeft className="h-4 w-4" />
+                                            </Button>
+                                            <CardTitle className="text-lg">
+                                                Goods Receive Note
+                                            </CardTitle>
                                         </div>
-                                    </CardHeader>
-                                    <CardContent>
+                                        {/* <StatusBadge status="Pending" /> */}
+                                        <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+                                            {!isEditable ? (
+                                                <>
+                                                    <Button
+                                                        type="button"
+                                                        variant="default"
+                                                        size="sm"
+                                                        onClick={handleEdit}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        Delete
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        type="submit"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        disabled={!form.formState.isValid || isSubmitting}
+                                                    >
+                                                        <Save className="h-4 w-4" />
+                                                        {isSubmitting ? 'Saving...' : 'Save'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={handleCancel}
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                        Cancel
+                                                    </Button>
+                                                </>
+                                            )}
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={isSubmitting}
+                                            >
+                                                <Printer className="h-4 w-4" />
+                                                Print
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={isSubmitting}
+                                            >
+                                                <CheckSquare className="h-4 w-4" />
+                                                Commit
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className='px-2'>
                                         {error && (
                                             <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md">
                                                 {error}
@@ -358,8 +356,26 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
                                                     </FormItem>
                                                 )}
                                             />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="vendor"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className='font-semibold text-xs'>Vendor</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                disabled={!isEditable || isSubmitting}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </div>
-                                    </CardContent>
+                                    </div>
+
                                 </form>
                             </Form>
                         </Card>
