@@ -23,6 +23,8 @@ import { formSchema, FormValues } from '../../type/type';
 import { submitForm } from '../../lib/action';
 import ItemDetailForm from './tabs/ItemDetailForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui-custom/CustomTabs';
+import CommentsAttachmentsTab from './CommentsAttachmentsTab';
+import ActivityLogTab from './ActivityLogTab';
 
 const initialData = {
     id: '0',
@@ -450,20 +452,15 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
                             </CardHeader>
                             <CardContent>
                                 <SummaryTotal poData={formData} />
-
                             </CardContent>
                         </Card>
                     </div>
-                    <div className={`space-y-4 ${isSidebarVisible ? 'lg:w-1/4' : 'w-0 opacity-0 overflow-hidden'} transition-all duration-300`}>
+                    <div className={`${isSidebarVisible ? 'lg:w-1/4' : 'w-0 opacity-0 overflow-hidden'} transition-all duration-300 space-y-4`}>
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Comments & Attachments</CardTitle>
-                            </CardHeader>
+                            <CommentsAttachmentsTab />
                         </Card>
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Activity Log</CardTitle>
-                            </CardHeader>
+                            <ActivityLogTab activityLog={formData.activityLog} />
                         </Card>
                     </div>
                 </div>
