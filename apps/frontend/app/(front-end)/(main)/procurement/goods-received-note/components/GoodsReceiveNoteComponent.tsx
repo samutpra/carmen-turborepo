@@ -25,6 +25,10 @@ import ItemDetailForm from './tabs/ItemDetailForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui-custom/CustomTabs';
 import CommentsAttachmentsTab from './CommentsAttachmentsTab';
 import ActivityLogTab from './ActivityLogTab';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import GoodsReceiveNoteForm from './form/GoodsReceiveNoteForm';
 
 const initialData = {
     id: '0',
@@ -63,7 +67,6 @@ const initialData = {
     taxAmount: 0,
     baseTotalAmount: 0,
     totalAmount: 0,
-
 }
 
 const emptyGoodsReceiveNote: GoodsReceiveNote = {
@@ -121,10 +124,14 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
     const [formData, setFormData] = useState<GoodsReceiveNote>(initialData || emptyGoodsReceiveNote);
     const [formDataToSubmit, setFormDataToSubmit] = useState<FormValues | null>(null);
 
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            ref: '',
+            ref: "",
+            date: new Date(),
+            vendor: "",
+            invoiceNumber: "",
         },
     });
 
@@ -268,7 +275,6 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
                                                 Goods Receive Note
                                             </CardTitle>
                                         </div>
-                                        {/* <StatusBadge status="Pending" /> */}
                                         <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
                                             {!isEditable ? (
                                                 <>
@@ -359,10 +365,54 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
 
                                             <FormField
                                                 control={form.control}
+                                                name="date"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="font-semibold text-xs">Date</FormLabel>
+                                                        <FormControl>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button variant="outline" className="w-full text-left h-7">
+                                                                        {field.value ? format(field.value, "dd/MM/yyyy") : "Pick a date"}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent>
+                                                                    <Calendar
+                                                                        selected={field.value}
+                                                                        onSelect={(date) => field.onChange(date)}
+                                                                        mode="single"
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
                                                 name="vendor"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className='font-semibold text-xs'>Vendor</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                disabled={!isEditable || isSubmitting}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="invoiceNumber"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className='font-semibold text-xs'>Invoice #</FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 {...field}
@@ -378,6 +428,17 @@ const GoodsReceiveNoteComponent: React.FC<Props> = ({ id, grnMode = FormAction.V
 
                                 </form>
                             </Form>
+
+                            {/* <GoodsReceiveNoteForm
+                                form={form}
+                                onBack={() => console.log("Go Back")}
+                                handleSaveClick={handleSaveClick}
+                                isSubmitting={false}
+                                isEditable={true}
+                                handleEdit={() => console.log("Edit Clicked")}
+                                handleCancel={() => console.log("Cancel Clicked")}
+                                error={null}
+                            /> */}
                         </Card>
 
                         <Card>
