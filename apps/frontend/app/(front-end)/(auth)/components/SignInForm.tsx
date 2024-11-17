@@ -76,6 +76,7 @@ const SignInForm = () => {
                                     placeholder={m.username()}
                                     error={!!form.formState.errors.username}
                                     {...field}
+                                    className='h-9'
                                 />
                             </FormControl>
                             <FormMessage />
@@ -94,6 +95,7 @@ const SignInForm = () => {
                                     placeholder={m.password()}
                                     error={!!form.formState.errors.password}
                                     {...field}
+                                    className='h-9'
                                 />
                             </FormControl>
                             <FormMessage />
