@@ -1356,7 +1356,10 @@ export interface AuthState {
   user: User | null;
   refresh_token: string;
 }
-
+export interface AuthenticatedRequestOptions extends RequestInit {
+  skipAuthRefresh?: boolean;
+  requireAuth?: boolean;
+}
 export interface AuthContextType extends AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
@@ -1364,6 +1367,11 @@ export interface AuthContextType extends AuthState {
   handleLogout: () => void;
   updateAccessToken: (token: string) => void;
   authState: AuthState;
+  isLoading: boolean;
+  authenticatedRequest: <T>(
+    url: string,
+    options?: AuthenticatedRequestOptions
+  ) => Promise<T>;
 }
 
 
