@@ -1352,6 +1352,19 @@ export interface User {
   username: string;
 }
 
+
+
+// export interface AuthContextType extends AuthState {
+//   isAuthenticated: boolean;
+//   accessToken: string | null;
+//   handleLogin: (data: AuthState, token: string) => void;
+//   handleLogout: () => void;
+//   updateAccessToken: (token: string) => void;
+//   authState: AuthState;
+//   isLoading: boolean
+// }
+
+
 export interface AuthState {
   user: User | null;
   refresh_token: string;
@@ -1373,6 +1386,7 @@ export interface AuthContextType extends AuthState {
     options?: AuthenticatedRequestOptions
   ) => Promise<T>;
 }
+
 
 
 export const VerifySchema = z.object({
