@@ -1352,8 +1352,6 @@ export interface User {
   username: string;
 }
 
-
-
 // export interface AuthContextType extends AuthState {
 //   isAuthenticated: boolean;
 //   accessToken: string | null;
@@ -1361,8 +1359,21 @@ export interface User {
 //   handleLogout: () => void;
 //   updateAccessToken: (token: string) => void;
 //   authState: AuthState;
-//   isLoading: boolean
+//   isLoading: boolean;
+//   authenticatedRequest: <T>(
+//     url: string,
+//     options?: AuthenticatedRequestOptions
+//   ) => Promise<T>;
 // }
+
+export interface AuthContextType extends AuthState {
+  isAuthenticated: boolean;
+  accessToken: string | null;
+  handleLogin: (data: AuthState, token: string) => void;
+  handleLogout: () => void;
+  updateAccessToken: (token: string) => void;
+  authState: AuthState;
+}
 
 
 export interface AuthState {
@@ -1374,19 +1385,7 @@ export interface AuthenticatedRequestOptions extends RequestInit {
   skipAuthRefresh?: boolean;
   requireAuth?: boolean;
 }
-export interface AuthContextType extends AuthState {
-  isAuthenticated: boolean;
-  accessToken: string | null;
-  handleLogin: (data: AuthState, token: string) => void;
-  handleLogout: () => void;
-  updateAccessToken: (token: string) => void;
-  authState: AuthState;
-  isLoading: boolean;
-  authenticatedRequest: <T>(
-    url: string,
-    options?: AuthenticatedRequestOptions
-  ) => Promise<T>;
-}
+
 
 export const VerifySchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
