@@ -1,14 +1,12 @@
 "use client";
-
-import { APIError, LocationSchema, LocationType, PaginationType, ParamsType, PayloadLocationType } from "@/lib/types";
+import { APIError, DepartmentSchema, DepartmentType, PaginationType, ParamsType, PayloaDepartmentType } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
-import { z } from "zod"
+import { z } from "zod";
 
-export const fetchLocation = async (
+export const fetchDepartment = async (
     accessToken: string,
     params: ParamsType = {}
-): Promise<{ stores: LocationType[]; pagination: PaginationType }> => {
-
+): Promise<{ departments: DepartmentType[]; pagination: PaginationType }> => {
     if (!accessToken) {
         throw new Error('Access token is required');
     }
@@ -19,7 +17,7 @@ export const fetchLocation = async (
     });
 
     try {
-        const response = await fetch(`/api/configuration/locations?${query}`, {
+        const response = await fetch(`/api/configuration/department?${query}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -31,114 +29,137 @@ export const fetchLocation = async (
         if (!response.ok) {
             throw new APIError(
                 response.status,
-                `Failed to fetch stores: ${response.status} ${response.statusText}`
+                `Failed to fetch departments: ${response.status} ${response.statusText}`
             );
         }
 
         const data = await response.json();
 
-        const storesResult = data.data.map((unit: unknown) =>
-            LocationSchema.parse(unit)
+        const departmentsResult = data.data.map((unit: unknown) =>
+            DepartmentSchema.parse(unit)
         );
 
         return {
-            stores: storesResult,
+            departments: departmentsResult,
             pagination: data.pagination,
         };
     } catch (error) {
-        console.error('Fetch Stores Error:', error);
+        console.error('Fetch Departments Error:', error);
         if (error instanceof APIError) {
             throw error;
         }
         if (error instanceof z.ZodError) {
-            throw new Error('Invalid store data received from server');
+            throw new Error('Invalid department data received from server');
         }
-        throw new Error('Failed to fetch stores');
+        throw new Error('Failed to fetch departments');
     }
 };
 
-export const updateLocation = async (
+export const createDepartment = async (
     accessToken: string,
-    id: string,
-    data: LocationType
-) => {
-
-    if (!accessToken) {
-        throw new Error('Access token is required');
-    }
+    payload: PayloaDepartmentType
+): Promise<DepartmentType> => {
     try {
-        const response = await fetch(`/api/configuration/locations/${id}`, {
-            method: 'PATCH',
+        const response = await fetch('/api/configuration/department', {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
                 'x-tenant-id': 'DUMMY',
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             throw new APIError(
                 response.status,
-                `Failed to update store: ${response.status} ${response.statusText}`
+                `Failed to create department: ${response.status} ${response.statusText}`
             );
         }
-        return data;
-    } catch (error) {
-        console.error('Update Store Error Details:', {
-            error,
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined
-        });
 
+        const data = await response.json();
+        return DepartmentSchema.parse(data.data);
+    } catch (error) {
+        console.error('Create Department Error:', error);
         if (error instanceof APIError) {
             throw error;
         }
         if (error instanceof z.ZodError) {
-            console.error('Zod validation error:', error.errors);
-            throw new Error('Invalid store data received from server');
+            throw new Error('Invalid department data received from server');
         }
-
-        throw new Error(error instanceof Error ? error.message : 'Failed to update store');
+        throw new Error('Failed to create department');
     }
 };
 
-export const createLocation = async (
+export const updateDepartment = async (
     accessToken: string,
-    data: PayloadLocationType
-) => {
-    data.deliveryPointId = null;
+    id: string,
+    payload: PayloaDepartmentType
+): Promise<DepartmentType> => {
     try {
-        const response = await fetch(`/api/configuration/locations`, {
-            method: 'POST',
+        const response = await fetch(`/api/configuration/department/${id}`, {
+            method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
+                'x-tenant-id': 'DUMMY',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to create store');
+            throw new APIError(
+                response.status,
+                `Failed to update department: ${response.status} ${response.statusText}`
+            );
         }
 
-        const idReturn = await response.json();
-
-        return {
-            id: idReturn,
-            ...data
-        }
+        const data = await response.json();
+        return DepartmentSchema.parse(data.data);
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Failed to create store: ${error.message}`);
+        console.error('Update Department Error:', error);
+        if (error instanceof APIError) {
+            throw error;
         }
-        throw new Error('Failed to create store: Unknown error occurred');
+        if (error instanceof z.ZodError) {
+            throw new Error('Invalid department data received from server');
+        }
+        throw new Error('Failed to update department');
     }
 };
 
-export const useLocations = (token: string) => {
+export const deleteDepartment = async (
+    accessToken: string,
+    id: string
+): Promise<void> => {
+    try {
+        const response = await fetch(`/api/configuration/department/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'x-tenant-id': 'DUMMY',
+            },
+        });
+
+        if (!response.ok) {
+            throw new APIError(
+                response.status,
+                `Failed to delete department: ${response.status} ${response.statusText}`
+            );
+        }
+    } catch (error) {
+        console.error('Delete Department Error:', error);
+        if (error instanceof APIError) {
+            throw error;
+        }
+        throw new Error('Failed to delete department');
+    }
+};
+
+export const useDepartments = (token: string) => {
     const [search, setSearch] = useState('');
-    const [locations, setLocations] = useState<LocationType[]>([]);
+    const [departments, setDepartments] = useState<DepartmentType[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const [pagination, setPagination] = useState<PaginationType>({
@@ -161,14 +182,14 @@ export const useLocations = (token: string) => {
         setLoading(true);
         setError(null);
         try {
-            const { stores: fetchedStores, pagination: fetchedPagination } =
-                await fetchLocation(token, {
+            const { departments: fetchedDepartments, pagination: fetchedPagination } =
+                await fetchDepartment(token, {
                     page: pagination.page,
                     perpage: pagination.perPage,
                     search,
                 });
 
-            setLocations(fetchedStores);
+            setDepartments(fetchedDepartments);
             setPagination(fetchedPagination);
         } catch (err) {
             setError(err instanceof Error ? err : new Error('An unknown error occurred'));
@@ -229,8 +250,8 @@ export const useLocations = (token: string) => {
     }, [fetchData]);
 
     return {
-        locations,
-        setLocations,
+        departments,
+        setDepartments,
         loading,
         error,
         pagination,
@@ -242,38 +263,4 @@ export const useLocations = (token: string) => {
         setPerPage,
         fetchData,
     };
-};
-
-export const deleteLocation = async (
-    accessToken: string,
-    id: string
-): Promise<void> => {
-    if (!accessToken) {
-        throw new Error('Access token is required');
-    }
-
-    try {
-        const response = await fetch(`/api/configuration/locations/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-                'x-tenant-id': 'DUMMY',
-            },
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new APIError(
-                response.status,
-                errorData?.message || `Failed to delete store: ${response.status} ${response.statusText}`
-            );
-        }
-    } catch (error) {
-        console.error('Delete Store Error:', error);
-        if (error instanceof APIError) {
-            throw error;
-        }
-        throw new Error('Failed to delete store');
-    }
 };
