@@ -117,7 +117,9 @@ export class CurrenciesController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.currenciesService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.currenciesService.update(req, id, updatedto);
   }
   //#endregion UPDATE
 

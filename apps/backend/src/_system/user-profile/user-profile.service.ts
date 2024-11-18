@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
-  UserProfile,
-  PrismaClient as dbSystem,
-} from '@prisma-carmen-client-system';
-import {
   UserProfileCreateDto,
   UserProfileUpdateDto,
 } from '@carmensoftware/shared-dtos';
+import {
+  PrismaClient as dbSystem,
+  user_profile_table,
+} from '@prisma-carmen-client-system';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -30,8 +30,8 @@ export class UserProfileService {
 
   logger = new Logger(UserProfileService.name);
 
-  async _getById(db_System: dbSystem, id: string): Promise<UserProfile> {
-    const res = await db_System.userProfile.findUnique({
+  async _getById(db_System: dbSystem, id: string): Promise<user_profile_table> {
+    const res = await db_System.user_profile_table.findUnique({
       where: {
         id: id,
       },
@@ -42,7 +42,7 @@ export class UserProfileService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<UserProfile>> {
+  ): Promise<ResponseSingle<user_profile_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
@@ -50,7 +50,7 @@ export class UserProfileService {
     if (!oneObj) {
       throw new NotFoundException('UserProfile not found');
     }
-    const res: ResponseSingle<UserProfile> = {
+    const res: ResponseSingle<user_profile_table> = {
       data: oneObj,
     };
 
@@ -60,16 +60,18 @@ export class UserProfileService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<UserProfile>> {
+  ): Promise<ResponseList<user_profile_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const max = await this.db_System.userProfile.count({
+    const max = await this.db_System.user_profile_table.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_System.userProfile.findMany(q.findMany());
+    const listObj = await this.db_System.user_profile_table.findMany(
+      q.findMany(),
+    );
 
-    const res: ResponseList<UserProfile> = {
+    const res: ResponseList<user_profile_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -88,7 +90,7 @@ export class UserProfileService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
 
-    const found = await this.db_System.userProfile.findFirst({
+    const found = await this.db_System.user_profile_table.findFirst({
       where: {
         userId: createDto.userId,
       },
@@ -102,7 +104,7 @@ export class UserProfileService {
       });
     }
 
-    const createObj = await this.db_System.userProfile.create({
+    const createObj = await this.db_System.user_profile_table.create({
       data: {
         firstname: createDto.firstname,
         lastname: createDto.lastname,
@@ -136,7 +138,7 @@ export class UserProfileService {
       throw new NotFoundException('UserProfile not found');
     }
 
-    const updateObj = await this.db_System.userProfile.update({
+    const updateObj = await this.db_System.user_profile_table.update({
       where: {
         id: id,
       },
@@ -167,7 +169,7 @@ export class UserProfileService {
       throw new NotFoundException('UserProfile not found');
     }
 
-    await this.db_System.userProfile.delete({
+    await this.db_System.user_profile_table.delete({
       where: {
         id: id,
       },

@@ -1,8 +1,7 @@
 import {
-  Currency,
-  Prisma,
-  PrismaClient as dbTenant,
-} from '@prisma-carmen-client-tenant';
+  CurrencyCreateDto,
+  CurrencyUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import {
   HttpStatus,
   Injectable,
@@ -11,8 +10,11 @@ import {
   Request,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  currency_table,
+  PrismaClient as dbTenant,
+} from '@prisma-carmen-client-tenant';
 
-import { CurrencyCreateDto } from '@carmensoftware/shared-dtos';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
@@ -29,8 +31,44 @@ export class CurrenciesService {
 
   logger = new Logger(CurrenciesService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<Currency> {
-    const res = await db_tenant.currency.findUnique({
+  // async advanceSearch(searchParams: {
+  //   searchTerm?: string;
+  //   startDate?: Date;
+  //   endDate?: Date;
+  // }) {
+  //   const { searchTerm, startDate, endDate } = searchParams;
+
+  //   const where: any = {
+  //     AND: [] as any[],
+  //   };
+
+  //   // Add search term condition if provided
+  //   if (searchTerm) {
+  //     where.AND.push({
+  //       OR: [
+  //         { name: { contains: searchTerm, mode: 'insensitive' } },
+  //         { code: { contains: searchTerm, mode: 'insensitive' } },
+  //         { symbol: { contains: searchTerm, mode: 'insensitive' } },
+  //         { description: { contains: searchTerm, mode: 'insensitive' } },
+  //       ],
+  //     });
+  //   }
+
+  //   // Add date range if provided
+  //   if (startDate || endDate) {
+  //     where.AND.push({
+  //       createdAt: {
+  //         ...(startDate && { gte: startDate }),
+  //         ...(endDate && { lte: endDate }),
+  //       },
+  //     });
+  //   }
+
+  //   return where;
+  // }
+
+  async _getById(db_tenant: dbTenant, id: string): Promise<currency_table> {
+    const res = await db_tenant.currency_table.findUnique({
       where: {
         id: id,
       },
@@ -39,7 +77,10 @@ export class CurrenciesService {
   }
 
   //#region GET ONE
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Currency>> {
+  async findOne(
+    req: Request,
+    id: string,
+  ): Promise<ResponseSingle<currency_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -47,7 +88,7 @@ export class CurrenciesService {
     if (!oneObj) {
       throw new NotFoundException('Currency not found');
     }
-    const res: ResponseSingle<Currency> = {
+    const res: ResponseSingle<currency_table> = {
       data: oneObj,
     };
     return res;
@@ -55,17 +96,20 @@ export class CurrenciesService {
   //#endregion GET ONE
 
   //#region GET ALL
-  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Currency>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<currency_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const max = await this.db_tenant.currency.count({
+    const max = await this.db_tenant.currency_table.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_tenant.currency.findMany(q.findMany());
+    const listObj = await this.db_tenant.currency_table.findMany(q.findMany());
 
-    const res: ResponseList<Currency> = {
+    const res: ResponseList<currency_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -87,7 +131,7 @@ export class CurrenciesService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.currency.findUnique({
+    const found = await this.db_tenant.currency_table.findUnique({
       where: {
         code: createDto.code,
       },
@@ -101,7 +145,7 @@ export class CurrenciesService {
       });
     }
 
-    const createObj = await this.db_tenant.currency.create({
+    const createObj = await this.db_tenant.currency_table.create({
       data: {
         ...createDto,
         // code: createDto.code ?? '',
@@ -126,7 +170,7 @@ export class CurrenciesService {
   async update(
     req: Request,
     id: string,
-    updateDto: Prisma.CurrencyUpdateInput,
+    updateDto: CurrencyUpdateDto,
   ): Promise<ResponseId<string>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
@@ -136,7 +180,7 @@ export class CurrenciesService {
       throw new NotFoundException('Currency not found');
     }
 
-    const updateObj = await this.db_tenant.currency.update({
+    const updateObj = await this.db_tenant.currency_table.update({
       where: {
         id,
       },
@@ -161,7 +205,7 @@ export class CurrenciesService {
       throw new NotFoundException('Currency not found');
     }
 
-    await this.db_tenant.currency.delete({
+    await this.db_tenant.currency_table.delete({
       where: {
         id,
       },

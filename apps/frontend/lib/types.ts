@@ -1475,3 +1475,15 @@ export interface DepartmentLabel {
 
 export type PayloaDepartmentType = Omit<LocationType, 'id'>;
 
+export interface ParamsType {
+  page?: number;
+  perpage?: number;
+  search?: string;
+}
+
+export class APIError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+    this.name = 'APIError';
+  }
+}

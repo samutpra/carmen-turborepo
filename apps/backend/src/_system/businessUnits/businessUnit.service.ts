@@ -1,8 +1,4 @@
 import {
-  BusinessUnit,
-  PrismaClient as dbSystem,
-} from '@prisma-carmen-client-system';
-import {
   BusinessUnitCreateDto,
   BusinessUnitUpdateDto,
 } from '@carmensoftware/shared-dtos';
@@ -13,6 +9,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  business_unit_table,
+  PrismaClient as dbSystem,
+} from '@prisma-carmen-client-system';
 
 import { BusinessUnitsController } from './businessUnit.controller';
 import { DuplicateException } from 'lib/utils';
@@ -31,8 +31,11 @@ export class BusinessUnitsService {
 
   logger = new Logger(BusinessUnitsController.name);
 
-  async _getById(db_System: dbSystem, id: string): Promise<BusinessUnit> {
-    const res = await db_System.businessUnit.findUnique({
+  async _getById(
+    db_System: dbSystem,
+    id: string,
+  ): Promise<business_unit_table> {
+    const res = await db_System.business_unit_table.findUnique({
       where: {
         id: id,
       },
@@ -43,7 +46,7 @@ export class BusinessUnitsService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<BusinessUnit>> {
+  ): Promise<ResponseSingle<business_unit_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
@@ -51,7 +54,7 @@ export class BusinessUnitsService {
     if (!oneObj) {
       throw new NotFoundException('BusinessUnit not found');
     }
-    const res: ResponseSingle<BusinessUnit> = {
+    const res: ResponseSingle<business_unit_table> = {
       data: oneObj,
     };
 
@@ -61,16 +64,18 @@ export class BusinessUnitsService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<BusinessUnit>> {
+  ): Promise<ResponseList<business_unit_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const max = await this.db_System.businessUnit.count({
+    const max = await this.db_System.business_unit_table.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_System.businessUnit.findMany(q.findMany());
+    const listObj = await this.db_System.business_unit_table.findMany(
+      q.findMany(),
+    );
 
-    const res: ResponseList<BusinessUnit> = {
+    const res: ResponseList<business_unit_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -89,7 +94,7 @@ export class BusinessUnitsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
 
-    const found = await this.db_System.businessUnit.findUnique({
+    const found = await this.db_System.business_unit_table.findUnique({
       where: {
         clusterId_code: {
           clusterId: createDto.clusterId,
@@ -106,7 +111,7 @@ export class BusinessUnitsService {
       });
     }
 
-    const createObj = await this.db_System.businessUnit.create({
+    const createObj = await this.db_System.business_unit_table.create({
       data: {
         ...createDto,
         createById: userId,
@@ -136,7 +141,7 @@ export class BusinessUnitsService {
       throw new NotFoundException('BusinessUnit not found');
     }
 
-    const updateObj = await this.db_System.businessUnit.update({
+    const updateObj = await this.db_System.business_unit_table.update({
       where: {
         id: id,
       },
@@ -159,7 +164,7 @@ export class BusinessUnitsService {
       throw new NotFoundException('BusinessUnit not found');
     }
 
-    await this.db_System.businessUnit.delete({
+    await this.db_System.business_unit_table.delete({
       where: {
         id: id,
       },

@@ -64,7 +64,12 @@ export class LocationsController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = [];
+    const defaultSearchFields: string[] = [
+      'name',
+      'description',
+      'locationType',
+      'deliveryPointId',
+    ];
 
     const q = new QueryParams(
       page,
@@ -101,10 +106,12 @@ export class LocationsController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: LocationUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.locationsService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.locationsService.update(req, id, updatedto);
   }
 
   @Delete(':id')

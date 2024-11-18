@@ -20,8 +20,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { Product } from '@prisma-carmen-client-tenant';
+import { ResponseId } from 'lib/helper/iResponse';
 import {
   ProductCreateDto,
   ProductUpdateDto,
@@ -85,10 +84,7 @@ export class ProductsController {
     type: ProductCreateDto,
     description: 'ProductCreateDto',
   })
-  async create(
-    @Body() createDto: ProductCreateDto,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.productsService.create(req, createDto);
   }
 
@@ -105,10 +101,12 @@ export class ProductsController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: ProductUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.productsService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.productsService.update(req, id, updatedto);
   }
 
   @Delete(':id')

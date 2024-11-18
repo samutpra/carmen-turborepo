@@ -81,7 +81,7 @@ export class UserProfileController {
     type: UserProfileCreateDto,
     description: 'UserProfileCreateDto',
   })
-  async create(@Body() createDto: UserProfileCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.userProfileService.create(req, createDto);
   }
 
@@ -101,7 +101,9 @@ export class UserProfileController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.userProfileService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.userProfileService.update(req, id, updatedto);
   }
 
   @Delete(':id')

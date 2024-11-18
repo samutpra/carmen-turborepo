@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (mini bar)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/v1/locations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "mini bar",
+    "description": "mini bar",
+    "isActive": true,
+    "locationType": "Direct",
+    "deliveryPointId": null
+  }
+}

@@ -1,8 +1,4 @@
 import {
-  Cluster,
-  PrismaClient as dbSystem,
-} from '@prisma-carmen-client-system';
-import {
   ClusterCreateDto,
   ClusterUpdateDto,
 } from '@carmensoftware/shared-dtos';
@@ -13,6 +9,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  cluster_table,
+  PrismaClient as dbSystem,
+} from '@prisma-carmen-client-system';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -30,8 +30,8 @@ export class ClusterService {
 
   logger = new Logger(ClusterService.name);
 
-  async _getById(db_System: dbSystem, id: string): Promise<Cluster> {
-    const res = await db_System.cluster.findUnique({
+  async _getById(db_System: dbSystem, id: string): Promise<cluster_table> {
+    const res = await db_System.cluster_table.findUnique({
       where: {
         id: id,
       },
@@ -39,7 +39,10 @@ export class ClusterService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Cluster>> {
+  async findOne(
+    req: Request,
+    id: string,
+  ): Promise<ResponseSingle<cluster_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
@@ -47,23 +50,26 @@ export class ClusterService {
     if (!oneObj) {
       throw new NotFoundException('Cluster not found');
     }
-    const res: ResponseSingle<Cluster> = {
+    const res: ResponseSingle<cluster_table> = {
       data: oneObj,
     };
 
     return res;
   }
 
-  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Cluster>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<cluster_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const max = await this.db_System.cluster.count({
+    const max = await this.db_System.cluster_table.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_System.businessUnit.findMany(q.findMany());
+    const listObj = await this.db_System.cluster_table.findMany(q.findMany());
 
-    const res: ResponseList<Cluster> = {
+    const res: ResponseList<cluster_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -82,7 +88,7 @@ export class ClusterService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
 
-    const found = await this.db_System.cluster.findUnique({
+    const found = await this.db_System.cluster_table.findUnique({
       where: {
         code: createDto.code,
       },
@@ -96,7 +102,7 @@ export class ClusterService {
       });
     }
 
-    const createObj = await this.db_System.cluster.create({
+    const createObj = await this.db_System.cluster_table.create({
       data: {
         ...createDto,
         createById: userId,
@@ -126,7 +132,7 @@ export class ClusterService {
       throw new NotFoundException('Cluster not found');
     }
 
-    const updateObj = await this.db_System.cluster.update({
+    const updateObj = await this.db_System.cluster_table.update({
       where: {
         id: id,
       },
@@ -149,7 +155,7 @@ export class ClusterService {
       throw new NotFoundException('Cluster not found');
     }
 
-    await this.db_System.cluster.delete({
+    await this.db_System.cluster_table.delete({
       where: {
         id: id,
       },

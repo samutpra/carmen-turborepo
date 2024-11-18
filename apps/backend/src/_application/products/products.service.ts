@@ -3,18 +3,16 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  NotImplementedException,
 } from '@nestjs/common';
-import {
-  Prisma,
-  Product,
-  PrismaClient as dbTenant,
-} from '@prisma-carmen-client-tenant';
 import {
   ProductCreateDto,
   ProductUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  PrismaClient as dbTenant,
+  product_table,
+} from '@prisma-carmen-client-tenant';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -32,8 +30,8 @@ export class ProductsService {
 
   logger = new Logger(ProductsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<Product> {
-    const res = await db_tenant.product.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<product_table> {
+    const res = await db_tenant.product_table.findUnique({
       where: {
         id: id,
       },
@@ -41,7 +39,10 @@ export class ProductsService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Product>> {
+  async findOne(
+    req: Request,
+    id: string,
+  ): Promise<ResponseSingle<product_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -50,21 +51,24 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    const res: ResponseSingle<Product> = {
+    const res: ResponseSingle<product_table> = {
       data: oneObj,
     };
     return res;
   }
 
-  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Product>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<product_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.product.count({
+    const max = await this.db_tenant.product_table.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.product.findMany(q.findMany());
+    const listObj = await this.db_tenant.product_table.findMany(q.findMany());
 
-    const res: ResponseList<Product> = {
+    const res: ResponseList<product_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -83,7 +87,7 @@ export class ProductsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.product.findUnique({
+    const found = await this.db_tenant.product_table.findUnique({
       where: {
         name: createDto.name,
       },
@@ -96,7 +100,7 @@ export class ProductsService {
         id: found.id,
       });
     }
-    const createObj = await this.db_tenant.product.create({
+    const createObj = await this.db_tenant.product_table.create({
       data: {
         ...createDto,
         primaryUnit: createDto.primaryUnit || null,
@@ -131,7 +135,7 @@ export class ProductsService {
     //   // UnitConversion: updateDto.UnitConversion,
     // };
 
-    const updateObj = await this.db_tenant.product.update({
+    const updateObj = await this.db_tenant.product_table.update({
       where: {
         id,
       },
@@ -154,7 +158,7 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    await this.db_tenant.product.delete({
+    await this.db_tenant.product_table.delete({
       where: {
         id,
       },

@@ -80,7 +80,7 @@ export class UnitsController {
     type: UnitCreateDto,
     description: 'UnitCreateDto',
   })
-  async create(@Body() createDto: UnitCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.unitsService.create(req, createDto);
   }
 
@@ -97,10 +97,12 @@ export class UnitsController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: UnitUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.unitsService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.unitsService.update(req, id, updatedto);
   }
 
   @Delete(':id')

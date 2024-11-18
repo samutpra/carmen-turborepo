@@ -88,7 +88,7 @@ export class BusinessUnitsController {
     type: BusinessUnitCreateDto,
     description: 'BusinessUnitCreateDto',
   })
-  async create(@Body() createDto: BusinessUnitCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.tenantsService.create(req, createDto);
   }
 
@@ -108,7 +108,9 @@ export class BusinessUnitsController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.tenantsService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.tenantsService.update(req, id, updatedto);
   }
 
   @Delete(':id')

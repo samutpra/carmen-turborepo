@@ -63,7 +63,7 @@ export class DepartmentsController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ['code', 'name', 'description'];
+    const defaultSearchFields: string[] = ['name', 'description'];
 
     const q = new QueryParams(
       page,
@@ -100,10 +100,12 @@ export class DepartmentsController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: DepartmentUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.departmentsService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.departmentsService.update(req, id, updatedto);
   }
 
   @Delete(':id')
