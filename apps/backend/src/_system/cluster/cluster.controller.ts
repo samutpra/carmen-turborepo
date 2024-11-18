@@ -80,7 +80,7 @@ export class ClusterController {
     type: ClusterCreateDto,
     description: 'ClusterCreateDto',
   })
-  async create(@Body() createDto: ClusterCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.clusterService.create(req, createDto);
   }
 
@@ -100,7 +100,9 @@ export class ClusterController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.clusterService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.clusterService.update(req, id, updatedto);
   }
 
   @Delete(':id')

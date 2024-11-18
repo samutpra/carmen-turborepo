@@ -5,14 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  Location,
-  PrismaClient as dbTenant,
-} from '@prisma-carmen-client-tenant';
-import {
   LocationCreateDto,
   LocationUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  PrismaClient as dbTenant,
+  location_table,
+} from '@prisma-carmen-client-tenant';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -30,8 +30,8 @@ export class LocationsService {
 
   logger = new Logger(LocationsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<Location> {
-    const res = await db_tenant.location.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<location_table> {
+    const res = await db_tenant.location_table.findUnique({
       where: {
         id: id,
       },
@@ -39,7 +39,10 @@ export class LocationsService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Location>> {
+  async findOne(
+    req: Request,
+    id: string,
+  ): Promise<ResponseSingle<location_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -48,21 +51,46 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
-    const res: ResponseSingle<Location> = {
+    const res: ResponseSingle<location_table> = {
       data: oneObj,
     };
 
     return res;
   }
 
-  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Location>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<location_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const max = await this.db_tenant.location.count({ where: q.where() });
-    const listObj = await this.db_tenant.location.findMany(q.findMany());
+    const max = await this.db_tenant.location_table.count({ where: q.where() });
 
-    const res: ResponseList<Location> = {
+    const q_include = {
+      ...q.findMany(),
+      // relationLoadStrategy: 'query',
+      // include: {
+      //   DeliveryPoint: {
+      //     select: {
+      //       name: true,
+      //       isActive: true,
+      //     },
+      //     // where: {
+      //     //   name: { contains: 'sampl', mode: 'insensitive' },
+      //     // },
+      //   },
+      // },
+    };
+
+    // this.logger.debug(q_include);
+
+    // const typedSql = await this.db_tenant.$queryRaw`select name from Location`;
+    // this.logger.debug(typedSql);
+
+    const listObj = await this.db_tenant.location_table.findMany(q_include);
+
+    const res: ResponseList<location_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -83,7 +111,7 @@ export class LocationsService {
 
     this.logger.debug(createDto);
 
-    const found = await this.db_tenant.location.findFirst({
+    const found = await this.db_tenant.location_table.findFirst({
       where: {
         name: createDto.name,
       },
@@ -97,7 +125,7 @@ export class LocationsService {
       });
     }
 
-    const createObj = await this.db_tenant.location.create({
+    const createObj = await this.db_tenant.location_table.create({
       data: {
         ...createDto,
         locationType: createDto.locationType,
@@ -127,7 +155,7 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
-    const updateObj = await this.db_tenant.location.update({
+    const updateObj = await this.db_tenant.location_table.update({
       where: {
         id,
       },
@@ -155,7 +183,7 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
-    await this.db_tenant.location.delete({
+    await this.db_tenant.location_table.delete({
       where: {
         id,
       },

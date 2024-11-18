@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Post (admin)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/v1/departments
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "admin",
+    "description": "admin Description",
+    "isActive": true
+  }
+}

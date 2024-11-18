@@ -1,8 +1,4 @@
 import {
-  Department,
-  PrismaClient as dbTenant,
-} from '@prisma-carmen-client-tenant';
-import {
   DepartmentCreateDto,
   DepartmentUpdateDto,
 } from '@carmensoftware/shared-dtos';
@@ -13,6 +9,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  PrismaClient as dbTenant,
+  department_table,
+} from '@prisma-carmen-client-tenant';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -30,8 +30,8 @@ export class DepartmentsService {
 
   logger = new Logger(DepartmentsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<Department> {
-    const res = await db_tenant.department.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<department_table> {
+    const res = await db_tenant.department_table.findUnique({
       where: {
         id: id,
       },
@@ -39,7 +39,10 @@ export class DepartmentsService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Department>> {
+  async findOne(
+    req: Request,
+    id: string,
+  ): Promise<ResponseSingle<department_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -47,7 +50,7 @@ export class DepartmentsService {
     if (!oneObj) {
       throw new NotFoundException('Department not found');
     }
-    const res: ResponseSingle<Department> = {
+    const res: ResponseSingle<department_table> = {
       data: oneObj,
     };
     return res;
@@ -56,17 +59,19 @@ export class DepartmentsService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<Department>> {
+  ): Promise<ResponseList<department_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const max = await this.db_tenant.department.count({
+    const max = await this.db_tenant.department_table.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_tenant.department.findMany(q.findMany());
+    const listObj = await this.db_tenant.department_table.findMany(
+      q.findMany(),
+    );
 
-    const res: ResponseList<Department> = {
+    const res: ResponseList<department_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -88,7 +93,7 @@ export class DepartmentsService {
 
     console.log(createDto);
 
-    const found = await this.db_tenant.department.findFirst({
+    const found = await this.db_tenant.department_table.findFirst({
       where: {
         name: createDto.name,
       },
@@ -102,7 +107,7 @@ export class DepartmentsService {
       });
     }
 
-    const createObj = await this.db_tenant.department.create({
+    const createObj = await this.db_tenant.department_table.create({
       data: {
         ...createDto,
         createById: userId,
@@ -125,7 +130,7 @@ export class DepartmentsService {
       throw new NotFoundException('Department not found');
     }
 
-    const updateObj = await this.db_tenant.department.update({
+    const updateObj = await this.db_tenant.department_table.update({
       where: {
         id,
       },
@@ -148,7 +153,7 @@ export class DepartmentsService {
       throw new NotFoundException('Department not found');
     }
 
-    await this.db_tenant.department.delete({
+    await this.db_tenant.department_table.delete({
       where: {
         id,
       },

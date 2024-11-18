@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
+import { ResponseId } from 'lib/helper/iResponse';
 import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
@@ -23,7 +23,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { ProductSubCategory } from '@prisma-carmen-client-tenant';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import QueryParams from 'lib/types';
 import { ProductSubCategoryService } from './product-sub-category.service';
@@ -50,10 +49,7 @@ export class ProductSubCategoryController {
     required: true,
     type: 'uuid',
   })
-  async fineOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<ResponseSingle<ProductSubCategory>> {
+  async fineOne(@Param('id') id: string, @Req() req: Request) {
     return this.productSubCategoryService.findOne(req, id);
   }
 
@@ -89,10 +85,7 @@ export class ProductSubCategoryController {
     type: ProductSubCategoryCreateDto,
     description: 'ProductSubCategoryCreateDto',
   })
-  async create(
-    @Body() createDto: ProductSubCategoryCreateDto,
-    @Req() req: Request,
-  ): Promise<ResponseId<string>> {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.productSubCategoryService.create(req, createDto);
   }
 
@@ -111,8 +104,10 @@ export class ProductSubCategoryController {
     @Param('id') id: string,
     @Body() updateDto: ProductSubCategoryUpdateDto,
     @Req() req: Request,
-  ): Promise<ResponseId<string>> {
-    return this.productSubCategoryService.update(req, id, updateDto);
+  ) {
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.productSubCategoryService.update(req, id, updatedto);
   }
 
   @Delete(':id')

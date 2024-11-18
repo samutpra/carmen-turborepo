@@ -87,10 +87,7 @@ export class ProductCategoryController {
     type: ProductCategoryCreateDto,
     description: 'ProductCategoryCreateDto',
   })
-  async create(
-    @Body() createDto: ProductCategoryCreateDto,
-    @Req() req: Request,
-  ) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.productCategoryService.create(req, createDto);
   }
 
@@ -107,10 +104,12 @@ export class ProductCategoryController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: ProductCategoryUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.productCategoryService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.productCategoryService.update(req, id, updatedto);
   }
 
   @Delete(':id')

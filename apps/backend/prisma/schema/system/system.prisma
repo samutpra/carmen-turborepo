@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "../../../node_modules/@prisma-carmen-client-system"
-  previewFeatures = ["fullTextIndex", "fullTextSearch", "multiSchema", "postgresqlExtensions"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "multiSchema", "postgresqlExtensions", "relationJoins"]
 }
 
 generator markdown {
@@ -15,310 +15,310 @@ datasource db {
   url      = env("DATABASE_URL_SYSTEM")
 }
 
-model Password {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String    @db.Uuid
-  hash      String
-  isActive  Boolean?  @default(false)
-  createdAt DateTime? @default(now()) @db.Timestamp(6)
-  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model business_unit_module_table {
+  id                                                           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessUnitId                                               String              @db.Uuid
+  moduleId                                                     String              @db.Uuid
+  createdAt                                                    DateTime?           @default(now()) @db.Timestamp(6)
+  createById                                                   String?             @db.Uuid
+  updateAt                                                     DateTime?           @default(now()) @db.Timestamp(6)
+  updateById                                                   String?             @db.Uuid
+  business_unit_table                                          business_unit_table @relation(fields: [businessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_business_unit_module_table_createByIdTouser_table user_table?         @relation("business_unit_module_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  module_table                                                 module_table        @relation(fields: [moduleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_business_unit_module_table_updateByIdTouser_table user_table?         @relation("business_unit_module_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([userId], map: "password_userid_idx")
+  @@index([businessUnitId, moduleId], map: "businessunitmodule_businessunitid_moduleid_u")
 }
 
-model Permission {
-  id                               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                             String           @unique @db.VarChar
-  description                      String?
-  canGet                           Boolean          @default(true)
-  canCreate                        Boolean          @default(true)
-  canUpdate                        Boolean          @default(true)
-  canDelete                        Boolean          @default(true)
-  canPrint                         Boolean          @default(true)
-  createdAt                        DateTime?        @default(now()) @db.Timestamp(6)
-  createById                       String?          @db.Uuid
-  updateAt                         DateTime?        @default(now()) @db.Timestamp(6)
-  updateById                       String?          @db.Uuid
-  User_Permission_createByIdToUser User?            @relation("Permission_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Permission_updateByIdToUser User?            @relation("Permission_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  RolePermission                   RolePermission[]
-
-  @@index([name], map: "permission_name_u")
-}
-
-model Role {
-  id                         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  bussinessUnitId            String           @db.Uuid
-  name                       String           @unique @db.VarChar
-  description                String?
-  createdAt                  DateTime?        @default(now()) @db.Timestamp(6)
-  createById                 String?          @db.Uuid
-  updateAt                   DateTime?        @default(now()) @db.Timestamp(6)
-  updateById                 String?          @db.Uuid
-  BusinessUnit               BusinessUnit     @relation(fields: [bussinessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Role_createByIdToUser User?            @relation("Role_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Role_updateByIdToUser User?            @relation("Role_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  RolePermission             RolePermission[]
-  UserRole                   UserRole[]
-
-  @@unique([bussinessUnitId, name], map: "role_bussinessunitid_name_u")
-  @@index([name], map: "role_name_idx")
-}
-
-model RolePermission {
-  id                                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roleId                               String     @db.Uuid
-  permissionId                         String     @db.Uuid
-  createdAt                            DateTime?  @default(now()) @db.Timestamp(6)
-  createById                           String?    @db.Uuid
-  updateAt                             DateTime?  @default(now()) @db.Timestamp(6)
-  updateById                           String?    @db.Uuid
-  User_RolePermission_createByIdToUser User?      @relation("RolePermission_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Permission                           Permission @relation(fields: [permissionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Role                                 Role       @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_RolePermission_updateByIdToUser User?      @relation("RolePermission_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([roleId, permissionId], map: "rolepermission_roleid_permissionid_u")
-}
-
-model User {
-  id                                                             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username                                                       String                   @unique @db.VarChar(30)
-  email                                                          String                   @db.VarChar(255)
-  consent                                                        DateTime?                @db.Timestamp(6)
-  createdAt                                                      DateTime?                @default(now()) @db.Timestamp(6)
-  createById                                                     String?                  @db.Uuid
-  updateAt                                                       DateTime?                @default(now()) @db.Timestamp(6)
-  updateById                                                     String?                  @db.Uuid
-  BusinessUnit_BusinessUnit_createByIdToUser                     BusinessUnit[]           @relation("BusinessUnit_createByIdToUser")
-  BusinessUnit_BusinessUnit_updateByIdToUser                     BusinessUnit[]           @relation("BusinessUnit_updateByIdToUser")
-  BusinessUnitModule_BusinessUnitModule_createByIdToUser         BusinessUnitModule[]     @relation("BusinessUnitModule_createByIdToUser")
-  BusinessUnitModule_BusinessUnitModule_updateByIdToUser         BusinessUnitModule[]     @relation("BusinessUnitModule_updateByIdToUser")
-  Cluster_Cluster_createByIdToUser                               Cluster[]                @relation("Cluster_createByIdToUser")
-  Cluster_Cluster_updateByIdToUser                               Cluster[]                @relation("Cluster_updateByIdToUser")
-  Module_Module_createByIdToUser                                 Module[]                 @relation("Module_createByIdToUser")
-  Module_Module_updateByIdToUser                                 Module[]                 @relation("Module_updateByIdToUser")
-  Notification_Notification_createByIdToUser                     Notification[]           @relation("Notification_createByIdToUser")
-  Notification_Notification_updateByIdToUser                     Notification[]           @relation("Notification_updateByIdToUser")
-  Notification_Notification_userIdToUser                         Notification[]           @relation("Notification_userIdToUser")
-  NotificationPreference_NotificationPreference_createByIdToUser NotificationPreference[] @relation("NotificationPreference_createByIdToUser")
-  NotificationPreference_NotificationPreference_updateByIdToUser NotificationPreference[] @relation("NotificationPreference_updateByIdToUser")
-  NotificationPreference_NotificationPreference_userIdToUser     NotificationPreference?  @relation("NotificationPreference_userIdToUser")
-  Password                                                       Password[]
-  Permission_Permission_createByIdToUser                         Permission[]             @relation("Permission_createByIdToUser")
-  Permission_Permission_updateByIdToUser                         Permission[]             @relation("Permission_updateByIdToUser")
-  Role_Role_createByIdToUser                                     Role[]                   @relation("Role_createByIdToUser")
-  Role_Role_updateByIdToUser                                     Role[]                   @relation("Role_updateByIdToUser")
-  RolePermission_RolePermission_createByIdToUser                 RolePermission[]         @relation("RolePermission_createByIdToUser")
-  RolePermission_RolePermission_updateByIdToUser                 RolePermission[]         @relation("RolePermission_updateByIdToUser")
-  Subscription_Subscription_createByIdToUser                     Subscription[]           @relation("Subscription_createByIdToUser")
-  Subscription_Subscription_updateByIdToUser                     Subscription[]           @relation("Subscription_updateByIdToUser")
-  SubscriptionDetail_SubscriptionDetail_createByIdToUser         SubscriptionDetail[]     @relation("SubscriptionDetail_createByIdToUser")
-  SubscriptionDetail_SubscriptionDetail_updateByIdToUser         SubscriptionDetail[]     @relation("SubscriptionDetail_updateByIdToUser")
-  User_User_createByIdToUser                                     User?                    @relation("User_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_User_User_createByIdToUser                               User[]                   @relation("User_createByIdToUser")
-  User_User_updateByIdToUser                                     User?                    @relation("User_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_User_User_updateByIdToUser                               User[]                   @relation("User_updateByIdToUser")
-  UserBusinessUnit_UserBusinessUnit_createByIdToUser             UserBusinessUnit[]       @relation("UserBusinessUnit_createByIdToUser")
-  UserBusinessUnit_UserBusinessUnit_updateByIdToUser             UserBusinessUnit[]       @relation("UserBusinessUnit_updateByIdToUser")
-  UserBusinessUnit_UserBusinessUnit_userIdToUser                 UserBusinessUnit[]       @relation("UserBusinessUnit_userIdToUser")
-  UserProfile_UserProfile_createByIdToUser                       UserProfile[]            @relation("UserProfile_createByIdToUser")
-  UserProfile_UserProfile_updateByIdToUser                       UserProfile[]            @relation("UserProfile_updateByIdToUser")
-  UserProfile_UserProfile_userIdToUser                           UserProfile[]            @relation("UserProfile_userIdToUser")
-  UserRole_UserRole_createByIdToUser                             UserRole[]               @relation("UserRole_createByIdToUser")
-  UserRole_UserRole_updateByIdToUser                             UserRole[]               @relation("UserRole_updateByIdToUser")
-  UserRole                                                       UserRole[]
-
-  @@index([username], map: "user_username_idx")
-  @@index([email], map: "user_email_idx")
-}
-
-model UserProfile {
-  id                                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                            String?   @db.Uuid
-  firstname                         String?   @db.VarChar(100)
-  middlename                        String?   @db.VarChar(100)
-  lastname                          String?   @db.VarChar(100)
-  bio                               Json?     @db.Json
-  createdAt                         DateTime? @default(now()) @db.Timestamp(6)
-  createById                        String?   @db.Uuid
-  updateAt                          DateTime? @default(now()) @db.Timestamp(6)
-  updateById                        String?   @db.Uuid
-  User_UserProfile_createByIdToUser User?     @relation("UserProfile_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserProfile_updateByIdToUser User?     @relation("UserProfile_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserProfile_userIdToUser     User?     @relation("UserProfile_userIdToUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([firstname, lastname], map: "userprofile_firstname_lastname_idx")
-  @@index([userId], map: "userprofile_userid_idx")
-}
-
-model UserRole {
-  id                             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                         String    @db.Uuid
-  roleId                         String    @db.Uuid
-  createdAt                      DateTime? @default(now()) @db.Timestamp(6)
-  createById                     String?   @db.Uuid
-  updateAt                       DateTime? @default(now()) @db.Timestamp(6)
-  updateById                     String?   @db.Uuid
-  User_UserRole_createByIdToUser User?     @relation("UserRole_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Role                           Role      @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserRole_updateByIdToUser User?     @relation("UserRole_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User                           User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([userId, roleId], map: "userrole_userid_roleid_u")
-}
-
-model BusinessUnit {
-  id                                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clusterId                          String               @db.Uuid
-  code                               String               @db.VarChar(30)
-  name                               String
-  isHq                               Boolean?             @default(true)
-  createdAt                          DateTime?            @default(now()) @db.Timestamp(6)
-  createById                         String?              @db.Uuid
-  updateAt                           DateTime?            @default(now()) @db.Timestamp(6)
-  updateById                         String?              @db.Uuid
-  Cluster                            Cluster              @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_BusinessUnit_createByIdToUser User?                @relation("BusinessUnit_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_BusinessUnit_updateByIdToUser User?                @relation("BusinessUnit_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  BusinessUnitModule                 BusinessUnitModule[]
-  Role                               Role[]
-  SubscriptionDetail                 SubscriptionDetail[]
-  UserBusinessUnit                   UserBusinessUnit[]
+model business_unit_table {
+  id                                                    String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clusterId                                             String                       @db.Uuid
+  code                                                  String                       @db.VarChar(30)
+  name                                                  String
+  isHq                                                  Boolean?                     @default(true)
+  createdAt                                             DateTime?                    @default(now()) @db.Timestamp(6)
+  createById                                            String?                      @db.Uuid
+  updateAt                                              DateTime?                    @default(now()) @db.Timestamp(6)
+  updateById                                            String?                      @db.Uuid
+  business_unit_module_table                            business_unit_module_table[]
+  cluster_table                                         cluster_table                @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_business_unit_table_createByIdTouser_table user_table?                  @relation("business_unit_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_business_unit_table_updateByIdTouser_table user_table?                  @relation("business_unit_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_table                                            role_table[]
+  subscription_detail_table                             subscription_detail_table[]
+  user_business_unit_table                              user_business_unit_table[]
 
   @@unique([clusterId, code], map: "businessunit_clusertid_code_u")
   @@index([code], map: "businessunit_code_idx")
   @@index([clusterId], map: "tenant_clusertid_idx")
 }
 
-model BusinessUnitModule {
-  id                                       String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  businessUnitId                           String       @db.Uuid
-  moduleId                                 String       @db.Uuid
-  createdAt                                DateTime?    @default(now()) @db.Timestamp(6)
-  createById                               String?      @db.Uuid
-  updateAt                                 DateTime?    @default(now()) @db.Timestamp(6)
-  updateById                               String?      @db.Uuid
-  BusinessUnit                             BusinessUnit @relation(fields: [businessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_BusinessUnitModule_createByIdToUser User?        @relation("BusinessUnitModule_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Module                                   Module       @relation(fields: [moduleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_BusinessUnitModule_updateByIdToUser User?        @relation("BusinessUnitModule_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([businessUnitId, moduleId], map: "businessunitmodule_businessunitid_moduleid_u")
+model cluster_table {
+  id                                              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                                            String                @unique(map: "cluster_code_u") @db.VarChar(30)
+  name                                            String                @unique(map: "cluster_name_u")
+  createdAt                                       DateTime?             @default(now()) @db.Timestamp(6)
+  createById                                      String?               @db.Uuid
+  updateAt                                        DateTime?             @default(now()) @db.Timestamp(6)
+  updateById                                      String?               @db.Uuid
+  business_unit_table                             business_unit_table[]
+  user_table_cluster_table_createByIdTouser_table user_table?           @relation("cluster_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_cluster_table_updateByIdTouser_table user_table?           @relation("cluster_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscription_table                              subscription_table[]
 }
 
-model Cluster {
-  id                            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                          String         @unique @db.VarChar(30)
-  name                          String         @unique
-  createdAt                     DateTime?      @default(now()) @db.Timestamp(6)
-  createById                    String?        @db.Uuid
-  updateAt                      DateTime?      @default(now()) @db.Timestamp(6)
-  updateById                    String?        @db.Uuid
-  BusinessUnit                  BusinessUnit[]
-  User_Cluster_createByIdToUser User?          @relation("Cluster_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Cluster_updateByIdToUser User?          @relation("Cluster_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Subscription                  Subscription[]
-}
-
-model Module {
-  id                           String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                         String               @unique @db.VarChar
-  description                  String?
-  createdAt                    DateTime?            @default(now()) @db.Timestamp(6)
-  createById                   String?              @db.Uuid
-  updateAt                     DateTime?            @default(now()) @db.Timestamp(6)
-  updateById                   String?              @db.Uuid
-  BusinessUnitModule           BusinessUnitModule[]
-  User_Module_createByIdToUser User?                @relation("Module_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Module_updateByIdToUser User?                @relation("Module_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  SubscriptionDetail           SubscriptionDetail[]
+model module_table {
+  id                                             String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                                           String                       @unique @db.VarChar
+  description                                    String?
+  createdAt                                      DateTime?                    @default(now()) @db.Timestamp(6)
+  createById                                     String?                      @db.Uuid
+  updateAt                                       DateTime?                    @default(now()) @db.Timestamp(6)
+  updateById                                     String?                      @db.Uuid
+  business_unit_module_table                     business_unit_module_table[]
+  user_table_module_table_createByIdTouser_table user_table?                  @relation("module_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_module_table_updateByIdTouser_table user_table?                  @relation("module_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscription_detail_table                      subscription_detail_table[]
 
   @@index([name], map: "module_name_idx")
 }
 
-model Notification {
-  id                                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                             String    @db.Uuid
-  message                            String?
-  isRead                             Boolean?  @default(false)
-  createdAt                          DateTime? @default(now()) @db.Timestamp(6)
-  createById                         String?   @db.Uuid
-  updateAt                           DateTime? @default(now()) @db.Timestamp(6)
-  updateById                         String?   @db.Uuid
-  User_Notification_createByIdToUser User?     @relation("Notification_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Notification_updateByIdToUser User?     @relation("Notification_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Notification_userIdToUser     User      @relation("Notification_userIdToUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model NotificationPreference {
-  id                                           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                                       String    @unique @db.Uuid
-  isEmail                                      Boolean   @default(false)
-  isSMS                                        Boolean?  @default(false)
-  isInApp                                      Boolean?  @default(true)
-  createdAt                                    DateTime? @default(now()) @db.Timestamp(6)
-  createById                                   String?   @db.Uuid
-  updateAt                                     DateTime? @default(now()) @db.Timestamp(6)
-  updateById                                   String?   @db.Uuid
-  User_NotificationPreference_createByIdToUser User?     @relation("NotificationPreference_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_NotificationPreference_updateByIdToUser User?     @relation("NotificationPreference_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_NotificationPreference_userIdToUser     User      @relation("NotificationPreference_userIdToUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model notification_preference_table {
+  id                                                              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                                          String      @unique @db.Uuid
+  isEmail                                                         Boolean     @default(false)
+  isSMS                                                           Boolean?    @default(false)
+  isInApp                                                         Boolean?    @default(true)
+  createdAt                                                       DateTime?   @default(now()) @db.Timestamp(6)
+  createById                                                      String?     @db.Uuid
+  updateAt                                                        DateTime?   @default(now()) @db.Timestamp(6)
+  updateById                                                      String?     @db.Uuid
+  user_table_notification_preference_table_createByIdTouser_table user_table? @relation("notification_preference_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_notification_preference_table_updateByIdTouser_table user_table? @relation("notification_preference_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_notification_preference_table_userIdTouser_table     user_table  @relation("notification_preference_table_userIdTouser_table", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([userId], map: "notificationpreference_userid_u")
 }
 
-model Subscription {
-  id                                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clusterId                          String                 @db.Uuid
-  startDate                          DateTime               @db.Date
-  endDate                            DateTime               @db.Date
-  status                             EnumSubscriptionStatus
-  createdAt                          DateTime?              @default(now()) @db.Timestamp(6)
-  createById                         String?                @db.Uuid
-  updateAt                           DateTime?              @default(now()) @db.Timestamp(6)
-  updateById                         String?                @db.Uuid
-  Cluster                            Cluster                @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Subscription_createByIdToUser User?                  @relation("Subscription_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_Subscription_updateByIdToUser User?                  @relation("Subscription_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  SubscriptionDetail                 SubscriptionDetail[]
+model notification_table {
+  id                                                   String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                               String      @db.Uuid
+  message                                              String?
+  isRead                                               Boolean?    @default(false)
+  createdAt                                            DateTime?   @default(now()) @db.Timestamp(6)
+  createById                                           String?     @db.Uuid
+  updateAt                                             DateTime?   @default(now()) @db.Timestamp(6)
+  updateById                                           String?     @db.Uuid
+  user_table_notification_table_createByIdTouser_table user_table? @relation("notification_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_notification_table_updateByIdTouser_table user_table? @relation("notification_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_notification_table_userIdTouser_table     user_table  @relation("notification_table_userIdTouser_table", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model SubscriptionDetail {
-  id                                       String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  subscriptionId                           String       @db.Uuid
-  bussinessUnitId                          String       @db.Uuid
-  moduleId                                 String       @db.Uuid
-  createdAt                                DateTime?    @default(now()) @db.Timestamp(6)
-  createById                               String?      @db.Uuid
-  updateAt                                 DateTime?    @default(now()) @db.Timestamp(6)
-  updateById                               String?      @db.Uuid
-  BusinessUnit                             BusinessUnit @relation(fields: [bussinessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_SubscriptionDetail_createByIdToUser User?        @relation("SubscriptionDetail_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Module                                   Module       @relation(fields: [moduleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Subscription                             Subscription @relation(fields: [subscriptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_SubscriptionDetail_updateByIdToUser User?        @relation("SubscriptionDetail_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model password_table {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String     @db.Uuid
+  hash       String
+  isActive   Boolean?   @default(false)
+  createdAt  DateTime?  @default(now()) @db.Timestamp(6)
+  user_table user_table @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId], map: "password_userid_idx")
+}
+
+model permission_table {
+  id                                                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                                               String                  @unique @db.VarChar
+  description                                        String?
+  canGet                                             Boolean                 @default(true)
+  canCreate                                          Boolean                 @default(true)
+  canUpdate                                          Boolean                 @default(true)
+  canDelete                                          Boolean                 @default(true)
+  canPrint                                           Boolean                 @default(true)
+  createdAt                                          DateTime?               @default(now()) @db.Timestamp(6)
+  createById                                         String?                 @db.Uuid
+  updateAt                                           DateTime?               @default(now()) @db.Timestamp(6)
+  updateById                                         String?                 @db.Uuid
+  user_table_permission_table_createByIdTouser_table user_table?             @relation("permission_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_permission_table_updateByIdTouser_table user_table?             @relation("permission_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_permission_table                              role_permission_table[]
+
+  @@index([name], map: "permission_name_u")
+}
+
+model role_permission_table {
+  id                                                      String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roleId                                                  String           @db.Uuid
+  permissionId                                            String           @db.Uuid
+  createdAt                                               DateTime?        @default(now()) @db.Timestamp(6)
+  createById                                              String?          @db.Uuid
+  updateAt                                                DateTime?        @default(now()) @db.Timestamp(6)
+  updateById                                              String?          @db.Uuid
+  user_table_role_permission_table_createByIdTouser_table user_table?      @relation("role_permission_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  permission_table                                        permission_table @relation(fields: [permissionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_table                                              role_table       @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_role_permission_table_updateByIdTouser_table user_table?      @relation("role_permission_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([roleId, permissionId], map: "rolepermission_roleid_permissionid_u")
+}
+
+model role_table {
+  id                                           String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bussinessUnitId                              String                  @db.Uuid
+  name                                         String                  @unique @db.VarChar
+  description                                  String?
+  createdAt                                    DateTime?               @default(now()) @db.Timestamp(6)
+  createById                                   String?                 @db.Uuid
+  updateAt                                     DateTime?               @default(now()) @db.Timestamp(6)
+  updateById                                   String?                 @db.Uuid
+  role_permission_table                        role_permission_table[]
+  business_unit_table                          business_unit_table     @relation(fields: [bussinessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_role_table_createByIdTouser_table user_table?             @relation("role_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_role_table_updateByIdTouser_table user_table?             @relation("role_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_role_table                              user_role_table[]
+
+  @@unique([bussinessUnitId, name], map: "role_bussinessunitid_name_u")
+  @@index([name], map: "role_name_idx")
+}
+
+model subscription_detail_table {
+  id                                                          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscriptionId                                              String              @db.Uuid
+  bussinessUnitId                                             String              @db.Uuid
+  moduleId                                                    String              @db.Uuid
+  createdAt                                                   DateTime?           @default(now()) @db.Timestamp(6)
+  createById                                                  String?             @db.Uuid
+  updateAt                                                    DateTime?           @default(now()) @db.Timestamp(6)
+  updateById                                                  String?             @db.Uuid
+  business_unit_table                                         business_unit_table @relation(fields: [bussinessUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_subscription_detail_table_createByIdTouser_table user_table?         @relation("subscription_detail_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  module_table                                                module_table        @relation(fields: [moduleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscription_table                                          subscription_table  @relation(fields: [subscriptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_subscription_detail_table_updateByIdTouser_table user_table?         @relation("subscription_detail_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([subscriptionId, bussinessUnitId, moduleId], map: "subscriptiondetail_subscriptionid_businessunitid_moduleid_u")
 }
 
-model UserBusinessUnit {
-  id                                     String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                                 String?       @db.Uuid
-  businessunitId                         String?       @db.Uuid
-  createdAt                              DateTime?     @default(now()) @db.Timestamp(6)
-  createById                             String?       @db.Uuid
-  updateAt                               DateTime?     @default(now()) @db.Timestamp(6)
-  updateById                             String?       @db.Uuid
-  BusinessUnit                           BusinessUnit? @relation(fields: [businessunitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserBusinessUnit_createByIdToUser User?         @relation("UserBusinessUnit_createByIdToUser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserBusinessUnit_updateByIdToUser User?         @relation("UserBusinessUnit_updateByIdToUser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User_UserBusinessUnit_userIdToUser     User?         @relation("UserBusinessUnit_userIdToUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model subscription_table {
+  id                                                   String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clusterId                                            String                      @db.Uuid
+  startDate                                            DateTime                    @db.Date
+  endDate                                              DateTime                    @db.Date
+  status                                               enum_subscription_status
+  createdAt                                            DateTime?                   @default(now()) @db.Timestamp(6)
+  createById                                           String?                     @db.Uuid
+  updateAt                                             DateTime?                   @default(now()) @db.Timestamp(6)
+  updateById                                           String?                     @db.Uuid
+  subscription_detail_table                            subscription_detail_table[]
+  cluster_table                                        cluster_table               @relation(fields: [clusterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_subscription_table_createByIdTouser_table user_table?                 @relation("subscription_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_subscription_table_updateByIdTouser_table user_table?                 @relation("subscription_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user_business_unit_table {
+  id                                                         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                                     String?              @db.Uuid
+  businessunitId                                             String?              @db.Uuid
+  createdAt                                                  DateTime?            @default(now()) @db.Timestamp(6)
+  createById                                                 String?              @db.Uuid
+  updateAt                                                   DateTime?            @default(now()) @db.Timestamp(6)
+  updateById                                                 String?              @db.Uuid
+  business_unit_table                                        business_unit_table? @relation(fields: [businessunitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_business_unit_table_createByIdTouser_table user_table?          @relation("user_business_unit_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_business_unit_table_updateByIdTouser_table user_table?          @relation("user_business_unit_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_business_unit_table_userIdTouser_table     user_table?          @relation("user_business_unit_table_userIdTouser_table", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([userId, businessunitId], map: "usertenant_userid_bussinessunitid_u")
 }
 
-enum EnumSubscriptionStatus {
+model user_profile_table {
+  id                                                   String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                               String?     @db.Uuid
+  firstname                                            String?     @db.VarChar(100)
+  middlename                                           String?     @db.VarChar(100)
+  lastname                                             String?     @db.VarChar(100)
+  bio                                                  Json?       @db.Json
+  createdAt                                            DateTime?   @default(now()) @db.Timestamp(6)
+  createById                                           String?     @db.Uuid
+  updateAt                                             DateTime?   @default(now()) @db.Timestamp(6)
+  updateById                                           String?     @db.Uuid
+  user_table_user_profile_table_createByIdTouser_table user_table? @relation("user_profile_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_profile_table_updateByIdTouser_table user_table? @relation("user_profile_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_profile_table_userIdTouser_table     user_table? @relation("user_profile_table_userIdTouser_table", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([firstname, lastname], map: "userprofile_firstname_lastname_idx")
+  @@index([userId], map: "userprofile_userid_idx")
+}
+
+model user_role_table {
+  id                                                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                            String      @db.Uuid
+  roleId                                            String      @db.Uuid
+  createdAt                                         DateTime?   @default(now()) @db.Timestamp(6)
+  createById                                        String?     @db.Uuid
+  updateAt                                          DateTime?   @default(now()) @db.Timestamp(6)
+  updateById                                        String?     @db.Uuid
+  user_table_user_role_table_createByIdTouser_table user_table? @relation("user_role_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_table                                        role_table  @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_role_table_updateByIdTouser_table user_table? @relation("user_role_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table_user_role_table_userIdTouser_table     user_table  @relation("user_role_table_userIdTouser_table", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([userId, roleId], map: "userrole_userid_roleid_u")
+}
+
+model user_table {
+  id                                                                                 String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                                                                           String                          @unique @db.VarChar(30)
+  email                                                                              String                          @db.VarChar(255)
+  consent                                                                            DateTime?                       @db.Timestamp(6)
+  createdAt                                                                          DateTime?                       @default(now()) @db.Timestamp(6)
+  createById                                                                         String?                         @db.Uuid
+  updateAt                                                                           DateTime?                       @default(now()) @db.Timestamp(6)
+  updateById                                                                         String?                         @db.Uuid
+  business_unit_module_table_business_unit_module_table_createByIdTouser_table       business_unit_module_table[]    @relation("business_unit_module_table_createByIdTouser_table")
+  business_unit_module_table_business_unit_module_table_updateByIdTouser_table       business_unit_module_table[]    @relation("business_unit_module_table_updateByIdTouser_table")
+  business_unit_table_business_unit_table_createByIdTouser_table                     business_unit_table[]           @relation("business_unit_table_createByIdTouser_table")
+  business_unit_table_business_unit_table_updateByIdTouser_table                     business_unit_table[]           @relation("business_unit_table_updateByIdTouser_table")
+  cluster_table_cluster_table_createByIdTouser_table                                 cluster_table[]                 @relation("cluster_table_createByIdTouser_table")
+  cluster_table_cluster_table_updateByIdTouser_table                                 cluster_table[]                 @relation("cluster_table_updateByIdTouser_table")
+  module_table_module_table_createByIdTouser_table                                   module_table[]                  @relation("module_table_createByIdTouser_table")
+  module_table_module_table_updateByIdTouser_table                                   module_table[]                  @relation("module_table_updateByIdTouser_table")
+  notification_preference_table_notification_preference_table_createByIdTouser_table notification_preference_table[] @relation("notification_preference_table_createByIdTouser_table")
+  notification_preference_table_notification_preference_table_updateByIdTouser_table notification_preference_table[] @relation("notification_preference_table_updateByIdTouser_table")
+  notification_preference_table_notification_preference_table_userIdTouser_table     notification_preference_table?  @relation("notification_preference_table_userIdTouser_table")
+  notification_table_notification_table_createByIdTouser_table                       notification_table[]            @relation("notification_table_createByIdTouser_table")
+  notification_table_notification_table_updateByIdTouser_table                       notification_table[]            @relation("notification_table_updateByIdTouser_table")
+  notification_table_notification_table_userIdTouser_table                           notification_table[]            @relation("notification_table_userIdTouser_table")
+  password_table                                                                     password_table[]
+  permission_table_permission_table_createByIdTouser_table                           permission_table[]              @relation("permission_table_createByIdTouser_table")
+  permission_table_permission_table_updateByIdTouser_table                           permission_table[]              @relation("permission_table_updateByIdTouser_table")
+  role_permission_table_role_permission_table_createByIdTouser_table                 role_permission_table[]         @relation("role_permission_table_createByIdTouser_table")
+  role_permission_table_role_permission_table_updateByIdTouser_table                 role_permission_table[]         @relation("role_permission_table_updateByIdTouser_table")
+  role_table_role_table_createByIdTouser_table                                       role_table[]                    @relation("role_table_createByIdTouser_table")
+  role_table_role_table_updateByIdTouser_table                                       role_table[]                    @relation("role_table_updateByIdTouser_table")
+  subscription_detail_table_subscription_detail_table_createByIdTouser_table         subscription_detail_table[]     @relation("subscription_detail_table_createByIdTouser_table")
+  subscription_detail_table_subscription_detail_table_updateByIdTouser_table         subscription_detail_table[]     @relation("subscription_detail_table_updateByIdTouser_table")
+  subscription_table_subscription_table_createByIdTouser_table                       subscription_table[]            @relation("subscription_table_createByIdTouser_table")
+  subscription_table_subscription_table_updateByIdTouser_table                       subscription_table[]            @relation("subscription_table_updateByIdTouser_table")
+  user_business_unit_table_user_business_unit_table_createByIdTouser_table           user_business_unit_table[]      @relation("user_business_unit_table_createByIdTouser_table")
+  user_business_unit_table_user_business_unit_table_updateByIdTouser_table           user_business_unit_table[]      @relation("user_business_unit_table_updateByIdTouser_table")
+  user_business_unit_table_user_business_unit_table_userIdTouser_table               user_business_unit_table[]      @relation("user_business_unit_table_userIdTouser_table")
+  user_profile_table_user_profile_table_createByIdTouser_table                       user_profile_table[]            @relation("user_profile_table_createByIdTouser_table")
+  user_profile_table_user_profile_table_updateByIdTouser_table                       user_profile_table[]            @relation("user_profile_table_updateByIdTouser_table")
+  user_profile_table_user_profile_table_userIdTouser_table                           user_profile_table[]            @relation("user_profile_table_userIdTouser_table")
+  user_role_table_user_role_table_createByIdTouser_table                             user_role_table[]               @relation("user_role_table_createByIdTouser_table")
+  user_role_table_user_role_table_updateByIdTouser_table                             user_role_table[]               @relation("user_role_table_updateByIdTouser_table")
+  user_role_table_user_role_table_userIdTouser_table                                 user_role_table[]               @relation("user_role_table_userIdTouser_table")
+  user_table_user_table_createByIdTouser_table                                       user_table?                     @relation("user_table_createByIdTouser_table", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_user_table_user_table_createByIdTouser_table                                 user_table[]                    @relation("user_table_createByIdTouser_table")
+  user_table_user_table_updateByIdTouser_table                                       user_table?                     @relation("user_table_updateByIdTouser_table", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_user_table_user_table_updateByIdTouser_table                                 user_table[]                    @relation("user_table_updateByIdTouser_table")
+
+  @@index([email], map: "user_email_idx")
+  @@index([username], map: "user_username_idx")
+}
+
+enum enum_subscription_status {
   Active
   Inactive
   expired

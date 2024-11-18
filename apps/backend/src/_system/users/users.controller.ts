@@ -86,7 +86,7 @@ export class UsersController {
     type: UserCreateDto,
     description: 'UserCreateDto',
   })
-  async create(@Body() createDto: UserCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.usersService.create(req, createDto);
   }
 
@@ -106,7 +106,9 @@ export class UsersController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.usersService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.usersService.update(req, id, updatedto);
   }
 
   @Delete(':id')

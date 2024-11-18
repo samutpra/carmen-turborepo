@@ -5,14 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ProductSubCategory,
-  PrismaClient as dbTenant,
-} from '@prisma-carmen-client-tenant';
-import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  PrismaClient as dbTenant,
+  product_sub_category_table,
+} from '@prisma-carmen-client-tenant';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -30,8 +30,11 @@ export class ProductSubCategoryService {
 
   logger = new Logger(ProductSubCategoryService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<ProductSubCategory> {
-    const res = await db_tenant.productSubCategory.findUnique({
+  async _getById(
+    db_tenant: dbTenant,
+    id: string,
+  ): Promise<product_sub_category_table> {
+    const res = await db_tenant.product_sub_category_table.findUnique({
       where: {
         id: id,
       },
@@ -42,7 +45,7 @@ export class ProductSubCategoryService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<ProductSubCategory>> {
+  ): Promise<ResponseSingle<product_sub_category_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -50,7 +53,7 @@ export class ProductSubCategoryService {
     if (!oneObj) {
       throw new NotFoundException('ProductSubCategory not found');
     }
-    const res: ResponseSingle<ProductSubCategory> = {
+    const res: ResponseSingle<product_sub_category_table> = {
       data: oneObj,
     };
     return res;
@@ -59,18 +62,18 @@ export class ProductSubCategoryService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<ProductSubCategory>> {
+  ): Promise<ResponseList<product_sub_category_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const max = await this.db_tenant.productSubCategory.count({
+    const max = await this.db_tenant.product_sub_category_table.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.productSubCategory.findMany(
+    const listObj = await this.db_tenant.product_sub_category_table.findMany(
       q.findMany(),
     );
 
-    const res: ResponseList<ProductSubCategory> = {
+    const res: ResponseList<product_sub_category_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -90,7 +93,7 @@ export class ProductSubCategoryService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.productSubCategory.findUnique({
+    const found = await this.db_tenant.product_sub_category_table.findUnique({
       where: {
         name: createDto.name,
       },
@@ -104,7 +107,7 @@ export class ProductSubCategoryService {
       });
     }
 
-    const createObj = await this.db_tenant.productSubCategory.create({
+    const createObj = await this.db_tenant.product_sub_category_table.create({
       data: {
         ...createDto,
         createById: userId,
@@ -131,7 +134,7 @@ export class ProductSubCategoryService {
       throw new NotFoundException('ProductSubCategory not found');
     }
 
-    const updateObj = await this.db_tenant.productSubCategory.update({
+    const updateObj = await this.db_tenant.product_sub_category_table.update({
       where: {
         id,
       },
@@ -154,7 +157,7 @@ export class ProductSubCategoryService {
       throw new NotFoundException('ProductSubCategory not found');
     }
 
-    await this.db_tenant.productSubCategory.delete({
+    await this.db_tenant.product_sub_category_table.delete({
       where: {
         id,
       },

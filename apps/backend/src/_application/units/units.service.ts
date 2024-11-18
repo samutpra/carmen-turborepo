@@ -5,8 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { Unit, PrismaClient as dbTenant } from '@prisma-carmen-client-tenant';
 import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
+import {
+  PrismaClient as dbTenant,
+  unit_table,
+} from '@prisma-carmen-client-tenant';
 
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
@@ -24,8 +27,8 @@ export class UnitsService {
 
   logger = new Logger(UnitsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<Unit> {
-    const res = await db_tenant.unit.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<unit_table> {
+    const res = await db_tenant.unit_table.findUnique({
       where: {
         id: id,
       },
@@ -33,7 +36,7 @@ export class UnitsService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<Unit>> {
+  async findOne(req: Request, id: string): Promise<ResponseSingle<unit_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -41,21 +44,24 @@ export class UnitsService {
     if (!oneObj) {
       throw new NotFoundException('Unit not found');
     }
-    const res: ResponseSingle<Unit> = {
+    const res: ResponseSingle<unit_table> = {
       data: oneObj,
     };
     return res;
   }
 
-  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Unit>> {
+  async findAll(
+    req: Request,
+    q: QueryParams,
+  ): Promise<ResponseList<unit_table>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.unit.count({
+    const max = await this.db_tenant.unit_table.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.unit.findMany(q.findMany());
+    const listObj = await this.db_tenant.unit_table.findMany(q.findMany());
 
-    const res: ResponseList<Unit> = {
+    const res: ResponseList<unit_table> = {
       data: listObj,
       pagination: {
         total: max,
@@ -74,7 +80,7 @@ export class UnitsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.unit.findUnique({
+    const found = await this.db_tenant.unit_table.findUnique({
       where: {
         name: createDto.name,
       },
@@ -88,7 +94,7 @@ export class UnitsService {
       });
     }
 
-    const createObj = await this.db_tenant.unit.create({
+    const createObj = await this.db_tenant.unit_table.create({
       data: {
         ...createDto,
         createById: userId,
@@ -116,7 +122,7 @@ export class UnitsService {
       throw new NotFoundException('Unit not found');
     }
 
-    const updateObj = await this.db_tenant.unit.update({
+    const updateObj = await this.db_tenant.unit_table.update({
       where: {
         id,
       },
@@ -139,7 +145,7 @@ export class UnitsService {
       throw new NotFoundException('Unit not found');
     }
 
-    await this.db_tenant.unit.delete({
+    await this.db_tenant.unit_table.delete({
       where: {
         id,
       },

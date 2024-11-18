@@ -88,7 +88,7 @@ export class ExchangerateController {
     type: ExchangeRateCreateDto,
     description: 'ExchangeRateCreateDto',
   })
-  async create(@Body() createDto: ExchangeRateCreateDto, @Req() req: Request) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.exchangerateService.create(req, createDto);
   }
   //#endregion Create
@@ -110,7 +110,9 @@ export class ExchangerateController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
-    return this.exchangerateService.update(req, id, updateDto);
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.exchangerateService.update(req, id, updatedto);
   }
   //#endregion UPDATE
 

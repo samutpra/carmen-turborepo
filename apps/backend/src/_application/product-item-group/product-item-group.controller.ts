@@ -89,10 +89,7 @@ export class ProductItemGroupController {
     type: ProductItemGroupCreateDto,
     description: 'ProductItemGroupCreateDto',
   })
-  async create(
-    @Body() createDto: ProductItemGroupCreateDto,
-    @Req() req: Request,
-  ) {
+  async create(@Body() createDto: any, @Req() req: Request) {
     return this.productItemGroupService.create(req, createDto);
   }
 
@@ -109,10 +106,12 @@ export class ProductItemGroupController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: ProductItemGroupUpdateDto,
+    @Body() updateDto: any,
     @Req() req: Request,
-  ): Promise<ResponseId<string>> {
-    return this.productItemGroupService.update(req, id, updateDto);
+  ) {
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    return this.productItemGroupService.update(req, id, updatedto);
   }
 
   @Delete(':id')
