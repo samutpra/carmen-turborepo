@@ -26,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
 
-    // Initialize state
     const [authState, setAuthState] = useState<AuthState>(() => {
         if (typeof window !== 'undefined') {
             try {
@@ -97,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             details: error
         };
     };
-    // Token check effect
+
     useEffect(() => {
         let refreshTimer: NodeJS.Timeout;
 
@@ -122,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
     }, [accessToken, handleTokenRefresh]);
 
-    // Auth handlers
+
     const handleLogin = async (data: AuthState, token: string) => {
         try {
             setIsLoading(true);
@@ -134,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAuthState(data);
             updateAccessToken(token);
 
-            localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refresh_token);
+            localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.access_token);
             localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(data));
         } catch (error) {
             const authError = handleError(error);
@@ -146,7 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const handleLogout = useCallback(() => {
         try {
-            setAuthState({ user: null, refresh_token: '' });
+            setAuthState({ user: null, access_token: '', refresh_token: '' });
             setAccessToken(null);
             Object.values(STORAGE_KEYS).forEach(key => {
                 localStorage.removeItem(key);
@@ -158,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [router]);
 
-    // API request with token
+
     const authenticatedRequest = useCallback(async <T,>(
         url: string,
         options: AuthenticatedRequestOptions = {}

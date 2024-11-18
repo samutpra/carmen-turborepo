@@ -2,7 +2,6 @@
 
 import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-// import { CurrencyLabel, CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
 	DropdownMenu,
