@@ -1,6 +1,7 @@
 import {
   HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
@@ -15,10 +16,10 @@ import {
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class ProductsService {
@@ -29,11 +30,9 @@ export class ProductsService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.ProductCreateInput = { code: '', name: '' };
-  // _prisma_update: Prisma.ProductUpdateInput = {};
-  // _prisma_info: Prisma.ProductInfoCreateWithoutProductInput = {};
+  logger = new Logger(ProductsService.name);
 
-  async _getOne(db_tenant: dbTenant, id: string): Promise<Product> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<Product> {
     const res = await db_tenant.product.findUnique({
       where: {
         id: id,
@@ -45,7 +44,7 @@ export class ProductsService {
   async findOne(req: Request, id: string): Promise<ResponseSingle<Product>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Product not found');
@@ -57,19 +56,21 @@ export class ProductsService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<Product>> {
+  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Product>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.product.count({});
-    const listObj = await this.db_tenant.product.findMany();
+    const max = await this.db_tenant.product.count({
+      where: q.where(),
+    });
+    const listObj = await this.db_tenant.product.findMany(q.findMany());
 
     const res: ResponseList<Product> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
     return res;
@@ -95,61 +96,46 @@ export class ProductsService {
         id: found.id,
       });
     }
+    const createObj = await this.db_tenant.product.create({
+      data: {
+        ...createDto,
+        primaryUnit: createDto.primaryUnit || null,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
+      },
+    });
 
-    throw new NotImplementedException();
-
-    // const obj: Prisma.ProductCreateInput = {
-    //   id: createDto.id,
-    //   code: createDto.code,
-    //   name: createDto.name,
-    //   description: createDto.description,
-    //   isActive: createDto.isActive,
-    //   Unit: {
-    //     create: undefined,
-    //     connectOrCreate: {
-    //       where: undefined,
-    //       create: undefined
-    //     },
-    //     connect: undefined
-    //   }
-    // };
-
-    // const createObj = await this.db_tenant.product.create({
-    //   data: obj,
-    // });
-
-    // const res: ResponseId<string> = {
-    //   id: createObj.id,
-    // };
-
-    // return res;
+    const res: ResponseId<string> = { id: createObj.id };
+    return res;
   }
 
   async update(req: Request, id: string, updateDto: ProductUpdateDto) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Product not found');
     }
 
-    const obj: Prisma.ProductUpdateInput = {
-      id: updateDto.id,
-      code: updateDto.code,
-      name: updateDto.name,
-      description: updateDto.description,
-      isActive: updateDto.isActive,
-      // ProductInfo: null,
-      // ProductVendor: null,
-      // UnitConversion: updateDto.UnitConversion,
-    };
+    // const obj: Prisma.ProductUpdateInput = {
+    //   id: updateDto.id,
+    //   code: updateDto.code,
+    //   name: updateDto.name,
+    //   description: updateDto.description,
+    //   isActive: updateDto.isActive,
+    //   // ProductInfo: null,
+    //   // ProductVendor: null,
+    //   // UnitConversion: updateDto.UnitConversion,
+    // };
 
     const updateObj = await this.db_tenant.product.update({
       where: {
         id,
       },
-      data: obj,
+      data: { ...updateDto, updateById: userId, updateAt: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -162,7 +148,7 @@ export class ProductsService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Product not found');

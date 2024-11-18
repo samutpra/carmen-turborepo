@@ -7,9 +7,8 @@ const VerifyPage = () => {
     const searchParams = useSearchParams();
 
     const token = searchParams.get('token');
-    const email = searchParams.get('email');
 
-    if (!token || !email) {
+    if (!token) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center p-8 bg-red-50 rounded-lg">
@@ -24,7 +23,7 @@ const VerifyPage = () => {
         );
     }
 
-    return <VerifyComponent token={token} email={email} />;
+    return <VerifyComponent token={token} />;
 }
 
 export default VerifyPage;

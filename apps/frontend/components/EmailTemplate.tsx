@@ -9,12 +9,16 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     email,
     token,
 }) => {
-    const verificationLink = `http://localhost:3500/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+    const verificationLink = `http://localhost:3500/auth/verify?token=${token}`;
 
     return (
         <div style={{
             fontFamily: 'sans-serif',
-            color: '#1a202c'
+            color: '#1a202c',
+            maxWidth: '600px',
+            margin: '0 auto',
+            padding: '20px',
+            lineHeight: '1.6'
         }}>
             <h1 style={{
                 fontSize: '24px',
@@ -61,7 +65,12 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
                 The Team
             </p>
 
-            <p>support@carmen.com</p>
+            <p style={{
+                fontSize: '12px',
+                color: '#4b5563',
+                marginTop: '8px'
+            }}>support@carmen.com</p>
         </div>
+
     );
 };

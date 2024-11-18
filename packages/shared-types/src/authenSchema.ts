@@ -7,4 +7,7 @@ export const login_user = z.object({
 
 export type LoginUserInput = z.infer<typeof login_user>;
 
-
+export enum RecoveryPasswordForm {
+  RESET = 1,
+  FORGOT
+}

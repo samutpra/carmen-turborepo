@@ -1,26 +1,20 @@
 "use client"
 
-import { AuthFormType, SignInSchema } from '@/lib/types';
+import { SignInSchema } from '@/lib/types';
 import React, { useState } from 'react'
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
-// import { CustomButton } from '@/components/ui-custom/CustomButton';
-// import GoogleIcon from '@/components/icons/GoogleIcon';
 import { Separator } from '@/components/ui/separator';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from '@/lib/i18n';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
+import * as m from '@/paraglide/messages.js';
 
-interface Props {
-    handleForm: (form: AuthFormType) => void;
-}
-
-
-const SignIn: React.FC<Props> = ({ handleForm }) => {
+const SignIn = () => {
     const { handleLogin } = useAuth();
     const router = useRouter();
 
@@ -70,31 +64,11 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
         }
     }
 
-    const onForgotPassword = () => {
-        handleForm(AuthFormType.ForgotPassword)
-    }
-
-    const onResetPassword = () => {
-        handleForm(AuthFormType.ResetPassword)
-    }
-
-    const onSignUp = () => {
-        handleForm(AuthFormType.SignUp)
-    }
-
     return (
 
         <>
-            <p className="text-[32px] font-bold">Sign In</p>
-            <p className="mb-2.5 mt-2.5 font-normal">Enter your email and password to sign in!</p>
-            {/* 
-            <CustomButton
-                className='w-full'
-                prefixIcon={<GoogleIcon />}
-                variant='outline'
-            >
-                Google
-            </CustomButton>*/}
+            <p className="text-[32px] font-bold">{m.signIn_title()}</p>
+            <p className="mb-2.5 mt-2.5 font-normal">{m.des_signIn()}</p>
             <Separator className="my-4" />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -103,10 +77,10 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         name="username"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Username</FormLabel>
+                                <FormLabel>{m.username()}</FormLabel>
                                 <FormControl>
                                     <InputCustom
-                                        placeholder="Username"
+                                        placeholder={m.username()}
                                         error={!!form.formState.errors.username}
                                         {...field}
                                     />
@@ -121,10 +95,10 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel>{m.password()}</FormLabel>
                                 <FormControl>
                                     <PasswordInput
-                                        placeholder="Password"
+                                        placeholder={m.password()}
                                         error={!!form.formState.errors.password}
                                         {...field}
                                     />
@@ -134,15 +108,12 @@ const SignIn: React.FC<Props> = ({ handleForm }) => {
                         )}
                         required
                     />
-                    <CustomButton type="submit" className="w-full mt-4" loading={loading}>
-                        Sign in
+                    <CustomButton type="submit" className="w-full mt-4 h-10" loading={loading}>
+                        {m.signIn_title()}
                     </CustomButton>
-                    <Separator className="my-4" />
-                    <p className='font-medium text-xs cursor-pointer' onClick={onForgotPassword}>Forgot your password?</p>
-                    <p className='font-medium text-xs cursor-pointer' onClick={onResetPassword}>Reset your password</p>
-                    <p className='font-medium text-xs cursor-pointer' onClick={onSignUp}>Don&apos;t have an account? Sign up</p>
                 </form>
             </Form>
+            <Separator className="my-6" />
         </>
 
     )

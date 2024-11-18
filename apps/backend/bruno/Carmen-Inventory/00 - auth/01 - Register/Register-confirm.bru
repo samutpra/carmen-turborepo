@@ -1,0 +1,25 @@
+meta {
+  name: Register-confirm
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/v1/auth/register/confirm
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "test2@carmensoftware.com",
+    "email": "test2@carmensoftware.com",
+    "emailToken": "{{email_register_token}}",
+    "password": "1234",
+    "userInfo": {
+      "firstName" : "TEST",
+      "middleName" : "(DEVELOPER)",
+      "lastName": "CARMEN SOFTWARE"
+    }
+  }
+}

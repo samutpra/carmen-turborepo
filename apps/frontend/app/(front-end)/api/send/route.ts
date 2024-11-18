@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { Resend } from 'resend';
-import { nanoid } from 'nanoid';
+import { API_URL } from '@/lib/util/api';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,7 +10,24 @@ export async function POST(request: NextRequest) {
 
         const { subject, email } = await request.json();
 
-        const token = nanoid();
+        const response = await fetch(API_URL + '/auth/register/email-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email }),
+        });
+
+        const resultToken = await response.json();
+
+        if (!response.ok) {
+            return NextResponse.json(
+                { error: resultToken.error || 'email token failed' },
+                { status: response.status }
+            );
+        }
+
+        const token = resultToken.data
 
         const { data, error } = await resend.emails.send({
             from: 'test@mail.semapru.com',

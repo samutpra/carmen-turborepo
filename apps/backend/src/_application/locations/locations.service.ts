@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   Location,
   PrismaClient as dbTenant,
@@ -9,10 +14,10 @@ import {
 } from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 
-import { Default_PerPage } from 'lib/helper/perpage.default';
 import { DuplicateException } from 'lib/utils/exceptions';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import QueryParams from 'lib/types';
 
 @Injectable()
 export class LocationsService {
@@ -23,10 +28,9 @@ export class LocationsService {
     private extractReqService: ExtractReqService,
   ) {}
 
-  // _prisma_create: Prisma.LocationCreateInput = { name: '' };
-  // _prisma_update: Prisma.LocationUpdateInput = {};
+  logger = new Logger(LocationsService.name);
 
-  async _getOne(db_tenant: dbTenant, id: string): Promise<Location> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<Location> {
     const res = await db_tenant.location.findUnique({
       where: {
         id: id,
@@ -38,10 +42,10 @@ export class LocationsService {
   async findOne(req: Request, id: string): Promise<ResponseSingle<Location>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new Error('Location not found');
+      throw new NotFoundException('Location not found');
     }
 
     const res: ResponseSingle<Location> = {
@@ -51,19 +55,20 @@ export class LocationsService {
     return res;
   }
 
-  async findAll(req: Request): Promise<ResponseList<Location>> {
+  async findAll(req: Request, q: QueryParams): Promise<ResponseList<Location>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.location.count({});
-    const listObj = await this.db_tenant.location.findMany();
+
+    const max = await this.db_tenant.location.count({ where: q.where() });
+    const listObj = await this.db_tenant.location.findMany(q.findMany());
 
     const res: ResponseList<Location> = {
       data: listObj,
       pagination: {
         total: max,
-        page: 1,
-        perPage: Default_PerPage,
-        pages: Math.ceil(max / Default_PerPage),
+        page: q.page,
+        perPage: q.perPage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
       },
     };
     return res;
@@ -76,7 +81,9 @@ export class LocationsService {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
 
-    const found = await this.db_tenant.location.findUnique({
+    this.logger.debug(createDto);
+
+    const found = await this.db_tenant.location.findFirst({
       where: {
         name: createDto.name,
       },
@@ -90,12 +97,16 @@ export class LocationsService {
       });
     }
 
-    const createObj = await this.db_tenant.location.findUnique({
-      where: {
-        name: createDto.name,
+    const createObj = await this.db_tenant.location.create({
+      data: {
+        ...createDto,
+        locationType: createDto.locationType,
+        createById: userId,
+        createdAt: new Date(),
+        updateById: userId,
+        updateAt: new Date(),
       },
     });
-
     const res: ResponseId<string> = {
       id: createObj.id,
     };
@@ -110,17 +121,22 @@ export class LocationsService {
   ): Promise<ResponseId<string>> {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new Error('Location not found');
+      throw new NotFoundException('Location not found');
     }
 
     const updateObj = await this.db_tenant.location.update({
       where: {
         id,
       },
-      data: updateDto,
+      data: {
+        ...updateDto,
+        locationType: updateDto.locationType,
+        updateById: userId,
+        updateAt: new Date(),
+      },
     });
 
     const res: ResponseId<string> = {
@@ -133,10 +149,10 @@ export class LocationsService {
   async delete(req: Request, id: string) {
     const { userId, tenantId } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getOne(this.db_tenant, id);
+    const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new Error('Location not found');
+      throw new NotFoundException('Location not found');
     }
 
     await this.db_tenant.location.delete({

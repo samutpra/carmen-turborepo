@@ -10,6 +10,8 @@ TABLE CARMEN_SYSTEM.User {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   username varchar(30) [unique, not null]
   email varchar(255) [not null]
+  
+  consent timestamp
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid [ref: > CARMEN_SYSTEM.User.id]
@@ -27,7 +29,10 @@ TABLE CARMEN_SYSTEM.Password {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   userId uuid [not null, ref: > CARMEN_SYSTEM.User.id]
   hash text [not null]
-  expiredOn date [not null, default: `now() + '1 day'::interval`]
+
+  isActive bool [default: false]
+
+  //expiredOn date [not null, default: `now() + '1 day'::interval`]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
 
@@ -43,7 +48,6 @@ TABLE CARMEN_SYSTEM.UserProfile {
   middlename varchar(100)
   lastname varchar(100)
 
-
   bio json
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -58,7 +62,7 @@ TABLE CARMEN_SYSTEM.UserProfile {
   }
 }
 
-Enum CARMEN_SYSTEM.SubscriptionStatus {
+Enum CARMEN_SYSTEM.EnumSubscriptionStatus {
   Active
   Inactive
   expired
@@ -103,7 +107,7 @@ TABLE CARMEN_SYSTEM.Subscription {
    startDate date [not null]
    endDate date [not null]
 
-   status CARMEN_SYSTEM.SubscriptionStatus [not null]
+   status CARMEN_SYSTEM.EnumSubscriptionStatus [not null]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid [ref: > CARMEN_SYSTEM.User.id]
@@ -146,8 +150,8 @@ TABLE CARMEN_SYSTEM.Cluster {
   updateById uuid [ref: > CARMEN_SYSTEM.User.id]
 
   indexes {
-    code [unique, name: "company_code_u"]
-    name [unique, name: "company_name_u"]
+    code [unique, name: "cluster_code_u"]
+    name [unique, name: "cluster_name_u"]
   }
 }
 
@@ -352,7 +356,7 @@ TABLE TENANT_DUMMY.ExchangeRate {
   }
 }
 
-enum TENANT_DUMMY.LocationType {
+enum TENANT_DUMMY.EnumLocationType {
   Inventory
   Direct
 }
@@ -361,7 +365,7 @@ TABLE TENANT_DUMMY.Location {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
 
-  inventoryType TENANT_DUMMY.LocationType [not null]
+  locationType TENANT_DUMMY.EnumLocationType [not null]
 
   description text
   isActive bool [default: true]
@@ -412,7 +416,7 @@ TABLE TENANT_DUMMY.Unit {
   }
 }
 
-Enum TENANT_DUMMY.UnitType {
+Enum TENANT_DUMMY.EnumUnitType {
   OrderUnit
   InventoryUnit
   RecipeUnit
@@ -421,7 +425,7 @@ Enum TENANT_DUMMY.UnitType {
 TABLE TENANT_DUMMY.UnitConversion {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   productId uuid [ref: > TENANT_DUMMY.Product.id]
-  unitType TENANT_DUMMY.UnitType [not null]
+  unitType TENANT_DUMMY.EnumUnitType [not null]
   fromUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
   toUnitId uuid [ref: > TENANT_DUMMY.Unit.id]
   rate float [default: 1]
@@ -442,6 +446,7 @@ TABLE TENANT_DUMMY.UnitConversion {
 TABLE TENANT_DUMMY.Department {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
+  description text
   isActive bool [default: true]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -630,7 +635,7 @@ TABLE TENANT_DUMMY.PR1Workflow {
   
 }
 
-TABLE TENANT_DUMMY.PO {
+TABLE TENANT_DUMMY.PO0 {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -647,12 +652,13 @@ TABLE TENANT_DUMMY.PO {
   }
 }
 
-TABLE TENANT_DUMMY.POItem {
+TABLE TENANT_DUMMY.PO1 {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique]
   description text
   isActive bool [default: true]
-  POId uuid [ref: > TENANT_DUMMY.PO.id]
+
+  PO0Id uuid [ref: > TENANT_DUMMY.PO0.id]
 
   createdAt timestamp [default: `CURRENT_TIMESTAMP` ]
   createById uuid 
@@ -661,7 +667,7 @@ TABLE TENANT_DUMMY.POItem {
   updateById uuid
 
   indexes {
-    name [name: "POitem_name_u"]
+    name [name: "PO1_name_u"]
   }
 }
 
@@ -775,20 +781,20 @@ TABLE TENANT_DUMMY.ProductVendor {
   }
 }
 
-enum TENANT_DUMMY.PRDocStatus {
+enum TENANT_DUMMY.EnumPRDocStatus {
   Draft
   WIP
   Complete
 }
 
-enum TENANT_DUMMY.PRWorkflowStatus {
+enum TENANT_DUMMY.EnumPRWorkflowStatus {
   Draft
   Pending
   Review
   Accept
 }
 
-enum TENANT_DUMMY.POStatus {
+enum TENANT_DUMMY.EnumPOStatus {
   Open 
   Voided 
   Closed 
@@ -800,7 +806,7 @@ enum TENANT_DUMMY.POStatus {
   Deleted 
 }
 
-enum TENANT_DUMMY.InvDocType {
+enum TENANT_DUMMY.EnumInvDocType {
   GRN
   CN
   SR
@@ -810,17 +816,17 @@ enum TENANT_DUMMY.InvDocType {
   SO
 }
 
-TABLE TENANT_DUMMY.Inv0 {
+TABLE TENANT_DUMMY.INV0 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
-  invDocType TENANT_DUMMY.InvDocType
+  invDocType TENANT_DUMMY.EnumInvDocType
 }
 
-TABLE TENANT_DUMMY.Inv1 {
+TABLE TENANT_DUMMY.INV1 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv0Id uuid [not null, ref: > TENANT_DUMMY.Inv0.id]
+  inv0Id uuid [not null, ref: > TENANT_DUMMY.INV0.id]
 
   fromLot uuid
   currentLotName varchar
@@ -830,11 +836,10 @@ TABLE TENANT_DUMMY.Inv1 {
 
 }
 
-
-TABLE TENANT_DUMMY.Inv2 {
+TABLE TENANT_DUMMY.INV2 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv1Id uuid [ not null, ref: > TENANT_DUMMY.Inv1.id]
+  inv1Id uuid [ not null, ref: > TENANT_DUMMY.INV1.id]
   
   lotName varchar
   lotIndex integer [not null, default: 1]
@@ -850,10 +855,9 @@ TABLE TENANT_DUMMY.Inv2 {
 TABLE TENANT_DUMMY.GRN0 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv0Id uuid [not null, ref: - TENANT_DUMMY.Inv0.id]
+  inv0Id uuid [not null, ref: - TENANT_DUMMY.INV0.id]
   
   name varchar
-
 
 }
 
@@ -869,7 +873,7 @@ TABLE TENANT_DUMMY.GRN1 {
 TABLE TENANT_DUMMY.SR0 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv0Id uuid [not null, ref: - TENANT_DUMMY.Inv0.id]
+  inv0Id uuid [not null, ref: - TENANT_DUMMY.INV0.id]
   
   name varchar
 
@@ -888,7 +892,7 @@ TABLE TENANT_DUMMY.SR1 {
 TABLE TENANT_DUMMY.SI0 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv0Id uuid [not null, ref: - TENANT_DUMMY.Inv0.id]
+  inv0Id uuid [not null, ref: - TENANT_DUMMY.INV0.id]
   
   name varchar
 
@@ -907,7 +911,7 @@ TABLE TENANT_DUMMY.SI1 {
 TABLE TENANT_DUMMY.SO0 {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inv0Id uuid [not null, ref: - TENANT_DUMMY.Inv0.id]
+  inv0Id uuid [not null, ref: - TENANT_DUMMY.INV0.id]
   
   name varchar
 

@@ -1,5 +1,5 @@
 import { StoreLocationType } from "@/lib/types";
-import { CategoryType, currencyType, deliveryPointType, unitType } from "../type";
+import { currencyType, deliveryPointType, unitType } from "../type";
 
 
 export const storeLocationData: StoreLocationType[] = [

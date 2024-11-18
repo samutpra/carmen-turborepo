@@ -70,7 +70,7 @@ erDiagram
 "Location" {
   String id PK
   String name UK
-  LocationType inventoryType
+  EnumLocationType locationType
   String description "nullable"
   Boolean isActive "nullable"
   String deliveryPointId FK "nullable"
@@ -157,7 +157,7 @@ erDiagram
 "UnitConversion" {
   String id PK
   String productId FK "nullable"
-  UnitType unitType
+  EnumUnitType unitType
   String fromUnitId FK "nullable"
   String toUnitId FK "nullable"
   Float rate "nullable"
@@ -220,48 +220,6 @@ erDiagram
   String id PK
   String GRN0Id FK
   String name "nullable"
-}
-"Inv0" {
-  String id PK
-  String name UK
-  InvDocType invDocType "nullable"
-}
-"Inv1" {
-  String id PK
-  String inv0Id FK
-  String fromLot "nullable"
-  String currentLotName "nullable"
-  Decimal qty "nullable"
-  Decimal cost "nullable"
-}
-"Inv2" {
-  String id PK
-  String inv1Id FK
-  String lotName "nullable"
-  Int lotIndex
-  Decimal qty "nullable"
-  Decimal cost "nullable"
-}
-"PO" {
-  String id PK
-  String name UK
-  String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
-}
-"POItem" {
-  String id PK
-  String name UK "nullable"
-  String description "nullable"
-  Boolean isActive "nullable"
-  String POId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
 }
 "PR0" {
   String id PK
@@ -340,6 +298,48 @@ erDiagram
   String SR0Id FK
   String name "nullable"
 }
+"PO0" {
+  String id PK
+  String name UK
+  String description "nullable"
+  Boolean isActive "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
+"PO1" {
+  String id PK
+  String name UK "nullable"
+  String description "nullable"
+  Boolean isActive "nullable"
+  String PO0Id FK "nullable"
+  DateTime createdAt "nullable"
+  String createById "nullable"
+  DateTime updateAt "nullable"
+  String updateById "nullable"
+}
+"INV0" {
+  String id PK
+  String name UK
+  EnumInvDocType invDocType "nullable"
+}
+"INV1" {
+  String id PK
+  String inv0Id FK
+  String fromLot "nullable"
+  String currentLotName "nullable"
+  Decimal qty "nullable"
+  Decimal cost "nullable"
+}
+"INV2" {
+  String id PK
+  String inv1Id FK
+  String lotName "nullable"
+  Int lotIndex
+  Decimal qty "nullable"
+  Decimal cost "nullable"
+}
 "ExchangeRate" }o--o| "Currency" : Currency
 "Location" }o--o| "DeliveryPoint" : DeliveryPoint
 "Product" }o--|| "Unit" : Unit
@@ -355,20 +355,20 @@ erDiagram
 "VendorAddress" }o--o| "Vendor" : Vendor
 "VendorContact" }o--|| "ContactType" : ContactType
 "VendorContact" }o--o| "Vendor" : Vendor
-"GRN0" }o--|| "Inv0" : Inv0
+"GRN0" }o--|| "INV0" : Inv0
 "GRN1" }o--|| "GRN0" : GRN0
-"Inv1" }o--|| "Inv0" : Inv0
-"Inv2" }o--|| "Inv1" : Inv1
-"POItem" }o--o| "PO" : PO
 "PR0" }o--o| "PRType" : PRType
 "PR1" }o--o| "PR0" : PR0
 "PR1Workflow" }o--o| "PR1" : PR1
-"SI0" }o--|| "Inv0" : Inv0
+"SI0" }o--|| "INV0" : Inv0
 "SI1" }o--|| "SI0" : SI0
-"SO0" }o--|| "Inv0" : Inv0
+"SO0" }o--|| "INV0" : Inv0
 "SO1" }o--|| "SO0" : SO0
-"SR0" }o--|| "Inv0" : Inv0
+"SR0" }o--|| "INV0" : Inv0
 "SR1" }o--|| "SR0" : SR0
+"PO1" }o--o| "PO0" : PO0
+"INV1" }o--|| "INV0" : INV0
+"INV2" }o--|| "INV1" : INV1
 ```
 
 ### `AddressType`
@@ -449,7 +449,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `name`: 
-  - `inventoryType`: 
+  - `locationType`: 
   - `description`: 
   - `isActive`: 
   - `deliveryPointId`: 
@@ -628,58 +628,6 @@ erDiagram
   - `GRN0Id`: 
   - `name`: 
 
-### `Inv0`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `invDocType`: 
-
-### `Inv1`
-
-**Properties**
-  - `id`: 
-  - `inv0Id`: 
-  - `fromLot`: 
-  - `currentLotName`: 
-  - `qty`: 
-  - `cost`: 
-
-### `Inv2`
-
-**Properties**
-  - `id`: 
-  - `inv1Id`: 
-  - `lotName`: 
-  - `lotIndex`: 
-  - `qty`: 
-  - `cost`: 
-
-### `PO`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
-### `POItem`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `isActive`: 
-  - `POId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
-
 ### `PR0`
 
 **Properties**
@@ -776,3 +724,55 @@ erDiagram
   - `id`: 
   - `SR0Id`: 
   - `name`: 
+
+### `PO0`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `isActive`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `PO1`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `isActive`: 
+  - `PO0Id`: 
+  - `createdAt`: 
+  - `createById`: 
+  - `updateAt`: 
+  - `updateById`: 
+
+### `INV0`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `invDocType`: 
+
+### `INV1`
+
+**Properties**
+  - `id`: 
+  - `inv0Id`: 
+  - `fromLot`: 
+  - `currentLotName`: 
+  - `qty`: 
+  - `cost`: 
+
+### `INV2`
+
+**Properties**
+  - `id`: 
+  - `inv1Id`: 
+  - `lotName`: 
+  - `lotIndex`: 
+  - `qty`: 
+  - `cost`: 

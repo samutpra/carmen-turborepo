@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = searchParams.get('page') || '1';
-    const perPage = searchParams.get('perpage') || '10';
     const search = searchParams.get('search') || '';
 
     const options = {
@@ -25,12 +23,10 @@ export async function GET(request: NextRequest) {
         }
     };
 
-    const url = `${apiUrl}?page=${page}&perpage=${perPage}&search=${search}`;
+    const url = `${apiUrl}?search=${search}`;
 
     try {
         const response = await fetch(url, options);
-
-        console.log(response);
 
         if (!response.ok) {
             return NextResponse.json(
@@ -40,9 +36,6 @@ export async function GET(request: NextRequest) {
         }
 
         const data = await response.json();
-
-        console.log(data);
-
 
         return NextResponse.json(data);
     } catch (error) {

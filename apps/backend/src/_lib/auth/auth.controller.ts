@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,8 +19,8 @@ import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
 import {
   UserForgotPassDto,
   UserRegisterDto,
-  UserRegisterEmailDto,
-} from './auth.dto';
+  EmailDto,
+} from '@carmensoftware/shared-dtos';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
@@ -35,7 +36,7 @@ export class AuthController {
   @Get('status')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  status(@Request() req): AuthLoginResponseDto {
+  status(@Request() req) {
     return req.user;
   }
 
@@ -45,29 +46,58 @@ export class AuthController {
     return this.authService.refreshToken(req.user);
   }
 
-  @Post('register/sendemail')
-  async register(
-    @Body() userRegisterEmailDto: UserRegisterEmailDto,
+  @Get('check-token')
+  async checkToken(@Query('token') token: string, @Request() req) {
+    return this.authService.checkToken(token, req);
+  }
+
+  @Post('register/email-token')
+  @ApiTags('register')
+  @ApiBody({
+    type: EmailDto,
+    description: 'UserRegisterEmailDto',
+  })
+  async register_email_token(
+    @Body() userRegisterEmailDto: any,
     @Request() req,
   ) {
+    console.log(userRegisterEmailDto);
     return this.authService.registerEmail(userRegisterEmailDto, req);
   }
 
   @Post('register/confirm')
-  async confirm(@Body() userRegisterDto: UserRegisterDto, @Request() req) {
+  @ApiTags('register')
+  @ApiBody({
+    type: UserRegisterDto,
+    description: 'UserRegisterDto',
+  })
+  async register_confirm(@Body() userRegisterDto: any, @Request() req) {
     return this.authService.registerConfirm(userRegisterDto, req);
   }
 
-  @Post('forgotpassword/sendemail')
-  async forgot(@Body() userForgotPassDto: UserForgotPassDto, @Request() req) {
-    return this.authService.forgotPasswordEmail(userForgotPassDto, req);
+  @Post('forgotpassword/email-token')
+  @ApiTags('forgotpassword')
+  @ApiBody({
+    type: EmailDto,
+    description: 'UserForgotPasswordEmailDto',
+  })
+  async forgot_email_token(
+    @Body() userForgotPasswordEmailDto: any,
+    @Request() req,
+  ) {
+    return this.authService.forgotPasswordEmail(
+      userForgotPasswordEmailDto,
+      req,
+    );
   }
 
   @Post('forgotpassword/confirm')
-  async forgotConfirm(
-    @Body() userRegisterDto: UserRegisterDto,
-    @Request() req,
-  ) {
-    return this.authService.forgotPasswordConfirm(userRegisterDto, req);
+  @ApiTags('forgotpassword')
+  @ApiBody({
+    type: UserForgotPassDto,
+    description: 'UserForgotPassDto',
+  })
+  async forgot_confirm(@Body() userForgotPassDto: any, @Request() req) {
+    return this.authService.forgotPasswordConfirm(userForgotPassDto, req);
   }
 }

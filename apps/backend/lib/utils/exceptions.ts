@@ -20,9 +20,25 @@ export class DuplicateException extends HttpException {
     });
   }
 }
+export class InvalidTokenException extends HttpException {
+  constructor(
+    objectOrError?: string | object | any,
+    descriptionOrOptions?: string | HttpExceptionOptions,
+  ) {
+    super(objectOrError, HttpStatus.CONFLICT, {
+      cause: descriptionOrOptions,
+    });
+  }
+}
 
-export class NotImplementYet extends HttpException {
+export class NotImplementException extends HttpException {
   constructor() {
     super('Not Implement Yet', HttpStatus.NOT_IMPLEMENTED);
+  }
+}
+
+export class NullException extends HttpException {
+  constructor() {
+    super('Null data', HttpStatus.BAD_REQUEST);
   }
 }

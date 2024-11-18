@@ -3,27 +3,39 @@ import { AlertCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
-interface InputCustomProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputCustomProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {
     error?: boolean;
     errorMessage?: string;
     icon?: React.ReactNode;
     iconPosition?: 'start' | 'end';
+    value?: string | null;
 }
 
 const InputCustom = React.forwardRef<HTMLInputElement, InputCustomProps>(
-    ({ className, error, icon, iconPosition = 'end', ...props }, ref) => {
+    ({ className, error, icon, iconPosition = 'end', value, onChange, ...props }, ref) => {
+
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (onChange) {
+                onChange(e);
+            }
+        };
+
+        const inputProps = {
+            ...props,
+            value: value ?? '', // แปลง null เป็น empty string
+            onChange: handleChange,
+            className: cn(
+                "text-xs",
+                iconPosition === 'end' ? "pr-10" : "pl-10",
+                error && "border-red-500 focus-visible:ring-red-500",
+                className
+            ),
+            ref
+        };
+
         return (
             <div className="relative">
-                <Input
-                    className={cn(
-                        "text-xs",
-                        iconPosition === 'end' ? "pr-10" : "pl-10",
-                        error && "border-red-500 focus-visible:ring-red-500",
-                        className
-                    )}
-                    ref={ref}
-                    {...props}
-                />
+                <Input {...inputProps} />
                 <div
                     className={cn(
                         "absolute top-1/2 transform -translate-y-1/2",

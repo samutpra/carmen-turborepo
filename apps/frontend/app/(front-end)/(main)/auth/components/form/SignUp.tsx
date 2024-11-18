@@ -1,23 +1,17 @@
 import { Separator } from '@/components/ui/separator'
 import React, { useState } from 'react'
-import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
-import { AuthFormType } from '@/lib/types';
+import { AuthFormType, EmailSchema, EmailType } from '@/lib/types';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { sendVerificationEmail } from '../../actions/sendVerifyEmail';
 import SendEmailSuccess from '../SendEmailSucess';
+import { sendVerificationEmail } from '../../actions/actions'
 
 interface Props {
     handleForm: (form: AuthFormType) => void;
 }
-
-const SignUpSchema = z.object({
-    email: z.string().email()
-});
-
 
 const SignUp: React.FC<Props> = ({ handleForm }) => {
 
@@ -25,8 +19,8 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
     const [isEmailSent, setIsEmailSent] = useState(false);
     const [userEmail, setUserEmail] = useState('');
 
-    const form = useForm<z.infer<typeof SignUpSchema>>({
-        resolver: zodResolver(SignUpSchema),
+    const form = useForm<EmailType>({
+        resolver: zodResolver(EmailSchema),
         defaultValues: {
             email: "",
         },
@@ -53,10 +47,8 @@ const SignUp: React.FC<Props> = ({ handleForm }) => {
         handleForm(AuthFormType.SignIn)
     }
 
-    const onSubmit = async (data: z.infer<typeof SignUpSchema>) => {
+    const onSubmit = async (data: EmailType) => {
         setIsLoading(true);
-        console.log(null);
-
         try {
             const emailResult = await sendVerificationEmail(data.email);
 

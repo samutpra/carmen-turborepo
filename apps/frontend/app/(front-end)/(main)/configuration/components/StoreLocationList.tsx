@@ -1,65 +1,125 @@
 "use client";
-import { StoreLocationLabel, StoreLocationSchema, StoreLocationType } from '@/lib/types';
-import React, { useEffect, useState } from 'react'
-import { storeLocationData } from '../data/data';
-import { InputCustom } from '@/components/ui-custom/InputCustom';
+import React, { useState } from 'react'
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import DataTable from '@/components/templates/DataTable';
 import DataCard from '@/components/templates/DataCard';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { PlusCircle, Printer, Sheet } from 'lucide-react';
+import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
 import { useRouter } from '@/lib/i18n';
+import { createLocation, deleteLocation, updateLocation, useLocations } from '../actions/location';
+import { useAuth } from '@/app/context/AuthContext';
+import SearchInput from '@/components/ui-custom/SearchInput';
+import ErrorDisplay from '@/components/ErrorDisplay';
+import { LocationLabel, LocationSchema, LocationType, PayloadLocationType } from '@/lib/types';
+import LocationForm from './form/LocationForm';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as m from '@/paraglide/messages.js';
 
 const StoreLocationList = () => {
+    const { accessToken } = useAuth();
     const router = useRouter();
-    const [storeLocations, setStoreLocation] = useState<StoreLocationType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [dialogDelete, setDialogDelete] = useState(false);
     const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
+    const [editingItem, setEditingItem] = useState<LocationType | null>(null);
+    const [dialogForm, setDialogForm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        setIsLoading(true)
-        const fetchData = async () => {
-            try {
-                const data = storeLocationData.map((data) => StoreLocationSchema.parse(data));
-                setStoreLocation(data);
-            } catch (error) {
-                console.error('Error fetching:', error);
-            }
-        };
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000);
+    const token = accessToken || ''
 
-        fetchData();
-    }, []);
+    const {
+        locations,
+        setLocations,
+        loading,
+        error,
+        pagination,
+        search,
+        goToPage,
+        nextPage,
+        previousPage,
+        setPerPage,
+        handleSearch,
+        fetchData
+    } = useLocations(token);
 
-    const handleView = (item: StoreLocationType) => {
+    const form = useForm<PayloadLocationType>({
+        resolver: zodResolver(LocationSchema),
+        defaultValues: {
+            description: '',
+            name: '',
+            deliveryPointId: null,
+            locationType: 'Inventory',
+            isActive: true,
+        },
+    });
+
+    const handleView = (item: LocationType) => {
         router.push(`/configuration/store-location/${item.id}`)
     };
 
+    const handleSave = async (data: LocationType) => {
+        console.log('Submitting data:', data);
+        try {
+            setIsLoading(true);
 
-    const handleDelete = (item: StoreLocationType) => {
-        console.log(item);
+            if (editingItem?.id) {
+                const updatedFields: LocationType = {
+                    ...data,
+                    id: editingItem.id // make sure id is included
+                };
+                console.log('Updating with:', updatedFields);
+                const updatedLocation = await updateLocation(token, editingItem.id, updatedFields);
+                setLocations(prev => prev.map(loc =>
+                    loc.id === editingItem.id ? updatedLocation : loc
+                ));
+            } else {
+                console.log('Creating new location with:', data);
+                const newLocation = await createLocation(token, data);
+                setLocations(prev => [...prev, newLocation]);
+            }
 
-        // setStoreLocation(item.id);
-        // setDialogDelete(true);
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Save error:', error);
+            // อาจจะเพิ่ม toast หรือ alert แจ้ง error
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = (item: LocationType) => {
+        setIdToDelete(item.id);
+        setDialogDelete(true);
     };
 
     const confirmDelete = async () => {
         try {
-            setIsLoading(true);
-            setStoreLocation((prev) => prev.filter((unit) => unit.id !== idToDelete));
-            setDialogDelete(false);
+            if (idToDelete) {
+                await deleteLocation(token, idToDelete);
+                setLocations(prev => prev.filter(location => location.id !== idToDelete));
+                fetchData();
+                setDialogDelete(false);
+            }
         } catch (error) {
-            console.error('Error deleting unit:', error);
+            console.error('Error deleting currency:', error);
         } finally {
-            setIsLoading(false);
             setIdToDelete(null);
         }
+    };
+
+    const handleCloseDialog = () => {
+        form.reset({
+            description: '',
+            name: '',
+            deliveryPointId: null,
+            locationType: 'Inventory',
+            isActive: true,
+        });
+        setDialogForm(false);
+        setEditingItem(null);
     };
 
 
@@ -68,6 +128,7 @@ const StoreLocationList = () => {
             <CustomButton
                 className='w-full md:w-20'
                 prefixIcon={<PlusCircle />}
+                onClick={() => setDialogForm(true)}
             >
                 Add
             </CustomButton>
@@ -79,54 +140,82 @@ const StoreLocationList = () => {
         </div>
     );
 
-    const title = 'Store Locations';
+    const title = `${m.store_location()}`;
 
     const filter = (
-        <div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-            <div className="w-full sm:w-auto flex-grow">
-                <InputCustom
-                    placeholder="Search Units..."
+        <div className='flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4'>
+            <div className='w-full sm:w-auto flex-grow'>
+                <SearchInput
+                    placeholder='Search Currency...'
+                    value={search}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleSearch(e.target.value, false);
+                    }}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSearch(e.currentTarget.value, true);
+                        }
+                    }}
+                    Icon={Search}
                 />
             </div>
+
         </div>
     );
 
-    const columns: StoreLocationLabel[] = [
-        { key: 'storeCode', label: 'Code' },
-        { key: 'storeName', label: 'Name' },
-        { key: 'departmentName', label: 'Department Name' },
-        { key: 'type', label: 'Type' },
-        { key: 'status', label: 'Status' },
-        { key: 'isActive', label: 'Active' }
+    const columns: LocationLabel[] = [
+        { key: 'name', label: 'Name' },
+        { key: 'locationType', label: 'Location Type' },
+        { key: 'description', label: 'Description' },
+        { key: 'isActive', label: 'Active Status' },
+        { key: 'deliveryPointId', label: 'Delivery Point ID' },
     ];
 
     const content = (
         <>
-            <div className="block lg:hidden">
-                {isLoading ? (
+            <div className='block lg:hidden'>
+                {loading ? (
                     <SkeltonCardLoading />
+                ) : error ? (
+                    <div className='text-red-500'>{error.message}</div>
                 ) : (
                     <DataCard
-                        data={storeLocations}
+                        data={locations}
                         columns={columns}
                         onView={handleView}
                         onDelete={handleDelete}
-                    />
-                )}
+                    />)}
             </div>
 
             <div className="hidden lg:block">
-                {isLoading ? (
+
+                {loading ? (
                     <SkeletonTableLoading />
+                ) : error ? (
+                    <ErrorDisplay errMessage={error.message} />
                 ) : (
                     <DataTable
-                        data={storeLocations}
+                        data={locations}
                         columns={columns}
                         onView={handleView}
                         onDelete={handleDelete}
+                        pagination={pagination}
+                        goToPage={goToPage}
+                        nextPage={nextPage}
+                        previousPage={previousPage}
+                        setPerPage={setPerPage}
                     />
                 )}
             </div>
+            <LocationForm
+                open={dialogForm}
+                editingItem={editingItem}
+                isLoading={isLoading}
+                onOpenChange={setDialogForm}
+                onSubmit={handleSave}
+            />
+
             <DialogDelete
                 open={dialogDelete}
                 onOpenChange={setDialogDelete}

@@ -3,39 +3,71 @@
 import React, { useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { VerifySchema, VerifyType } from '@/lib/types';
+import { PayloadVerifyType, VerifySchema, VerifyType } from '@/lib/types';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { Checkbox } from '@/components/ui/checkbox';
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useRouter } from '@/lib/i18n';
+import { submitSignup } from '../actions/actions';
 
 interface Props {
     token: string;
-    email: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const VerifyComponent: React.FC<Props> = ({ token, email }) => {
+interface CustomJwtPayload extends JwtPayload {
+    email?: string;
+    username?: string
+}
+
+const VerifyComponent: React.FC<Props> = ({ token }) => {
     const [loading, setLoading] = useState(false);
+    const decoded = jwtDecode<CustomJwtPayload>(token);
+    const router = useRouter();
 
     const form = useForm<VerifyType>({
         resolver: zodResolver(VerifySchema),
         defaultValues: {
-            userName: "",
-            firstName: "",
-            lastName: "",
-            middleName: "",
+            username: decoded?.username,
+            email: decoded?.email,
             password: "",
             confirmPassword: "",
-            terms: false
+            emailToken: token,
+            consent: false,
+            userInfo: {
+                firstName: "",
+                middleName: "",
+                lastName: ""
+            }
         },
     });
 
     const onSubmit = async (data: VerifyType) => {
         setLoading(true)
+
         try {
-            console.log(data);
+            const payload: PayloadVerifyType = {
+                username: data.email,
+                email: data.email,
+                password: data.password,
+                emailToken: token,
+                consent: data.consent,
+                userInfo: {
+                    firstName: data.userInfo.firstName,
+                    middleName: data.userInfo.middleName,
+                    lastName: data.userInfo.lastName
+                }
+            };
+
+            const { success, message } = await submitSignup(payload);
+
+            if (success) {
+                router.push("/dashboard");
+            } else {
+                console.error('Signup failed:', message);
+            }
 
         } catch (error) {
             console.error('Error during signin:', error);
@@ -55,17 +87,38 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
                 </div>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="userName"
+                            name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <InputCustom
-                                            placeholder="Username"
-                                            error={!!form.formState.errors.userName}
+                                            placeholder="Email"
+                                            type="email"
+                                            error={!!form.formState.errors.email}
+                                            {...field}
+                                            disabled
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                            required
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="userInfo.firstName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>First name</FormLabel>
+                                    <FormControl>
+                                        <InputCustom
+                                            placeholder="First Name"
+                                            error={!!form.formState.errors.userInfo?.firstName}
                                             {...field}
                                         />
                                     </FormControl>
@@ -77,32 +130,14 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
 
                         <FormField
                             control={form.control}
-                            name="firstName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>First name</FormLabel>
-                                    <FormControl>
-                                        <InputCustom
-                                            placeholder="First Name"
-                                            error={!!form.formState.errors.firstName}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                            required
-                        />
-                        <FormField
-                            control={form.control}
-                            name="middleName"
+                            name="userInfo.middleName"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Middle Name</FormLabel>
                                     <FormControl>
                                         <InputCustom
-                                            placeholder="Last Name"
-                                            error={!!form.formState.errors.middleName}
+                                            placeholder="Middle Name"
+                                            error={!!form.formState.errors.userInfo?.middleName}
                                             {...field}
                                         />
                                     </FormControl>
@@ -110,16 +145,17 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
-                            name="lastName"
+                            name="userInfo.lastName"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Last name</FormLabel>
                                     <FormControl>
                                         <InputCustom
                                             placeholder="Last Name"
-                                            error={!!form.formState.errors.lastName}
+                                            error={!!form.formState.errors.userInfo?.lastName}
                                             {...field}
                                         />
                                     </FormControl>
@@ -128,6 +164,7 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
                             )}
                             required
                         />
+
                         <FormField
                             control={form.control}
                             name="password"
@@ -168,17 +205,17 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
 
                         <FormField
                             control={form.control}
-                            name="terms"
+                            name="consent"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
                                         <div className="flex items-start">
                                             <Checkbox
-                                                id="terms"
+                                                id="consent"
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
                                             />
-                                            <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
+                                            <label htmlFor="consent" className="ml-2 text-sm text-gray-600">
                                                 I agree to the <a href="#" className="text-blue-500 underline">terms and conditions</a>.
                                             </label>
                                         </div>
@@ -186,6 +223,7 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
                                     <FormMessage />
                                 </FormItem>
                             )}
+                            required
                         />
 
                         <CustomButton type="submit" className="w-full mt-4" loading={loading}>
@@ -194,7 +232,6 @@ const VerifyComponent: React.FC<Props> = ({ token, email }) => {
                     </form>
                 </Form>
             </div>
-
         </div>
     )
 }

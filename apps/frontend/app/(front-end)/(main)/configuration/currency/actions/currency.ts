@@ -152,6 +152,7 @@ export const createCurrency = async (
 };
 
 export const useCurrencies = (token: string) => {
+
     const [search, setSearch] = useState('');
     const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -163,6 +164,10 @@ export const useCurrencies = (token: string) => {
         pages: 1,
     });
     const [shouldFetch, setShouldFetch] = useState(true);
+
+    if (!token) {
+        console.log('not have token');
+    }
 
     const fetchData = useCallback(async () => {
         if (!token || !shouldFetch) {

@@ -11,3 +11,5 @@ export * from './user-businessUnit.dto';
 export * from './ProductCategoryCreateDto';
 export * from './ProductItemGroupCreateDto';
 export * from './ProductSubCategoryCreateDto';
+export * from './cluster.dto';
+export * from './userProfile.dto';

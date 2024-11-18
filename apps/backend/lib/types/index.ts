@@ -45,51 +45,13 @@ export default class QueryParams {
 
     this.defaultSearchFields = defaultSearchFields;
 
-    // console.log({ searchFields: this.searchFields });
-    // console.log({ searchFields_length: this.searchFields.length });
-
     if (this.searchFields.length <= 0) {
       this.searchFields = this.defaultSearchFields;
     }
     this.filter = filter;
     this.sort = sort.split(',');
     this.advance = advance;
-
-    // console.log({
-    //   title: 'constructor',
-    //   page: this.page,
-    //   perPage: this.perPage,
-    //   search: this.search,
-    //   searchFields: this.searchFields,
-    //   filter: this.filter,
-    //   sort: this.sort,
-    //   advance: this.advance,
-    // });
   }
-
-  // public searchTypeIs(): enumSearchStrType {
-  //   if (this.searchFields.length <= 0) {
-  //     this.searchFields = this.defaultSearchFields;
-  //   }
-
-  //   if (this.searchFields.length <= 0) {
-  //     return enumSearchStrType.String;
-  //   }
-
-  //   const searchType = this.searchFields[0].split(':')[1];
-
-  //   if (searchType == 'number') {
-  //     return enumSearchStrType.Number;
-  //   } else if (searchType == 'string') {
-  //     return enumSearchStrType.String;
-  //   } else if (searchType == 'date') {
-  //     return enumSearchStrType.Date;
-  //   } else if (searchType == 'boolean') {
-  //     return enumSearchStrType.Boolean;
-  //   } else {
-  //     return enumSearchStrType.String;
-  //   }
-  // }
 
   public where(): any {
     const _where: any = {};
@@ -126,10 +88,6 @@ export default class QueryParams {
                 [k]: { contains: value, mode: 'insensitive' },
               };
           }
-
-          // return {
-          //   [k.trim()]: { contains: value, mode: 'insensitive' },
-          // };
         });
       }
 
@@ -137,10 +95,6 @@ export default class QueryParams {
         this.searchFields = this.defaultSearchFields;
       }
 
-      // console.log({ defaultSearchFields: this.defaultSearchFields });
-      // console.log({ searchfield: this.searchFields });
-
-      // if (this.search != ''
       let searchCol: KeyValueString[] = [];
 
       if (this.search != '') {
@@ -148,8 +102,6 @@ export default class QueryParams {
           const [k, t] = f.split(':');
           return new KeyValueString(k.trim(), t ?? 'string');
         });
-
-        // console.log({ searchCol: searchCol });
 
         _where.OR = searchCol.map((o) => {
           const k = o.Key;
@@ -179,16 +131,9 @@ export default class QueryParams {
               };
           }
         });
-
-        // console.log({
-        //   title: 'searchCol',
-        //   searchCol: searchCol,
-        //   where_or: _where.OR,
-        // });
       }
     }
 
-    // console.log({ title: 'where', where: _where });
     return _where;
   }
 
@@ -213,24 +158,20 @@ export default class QueryParams {
       result = {};
     }
 
-    // console.log({ title: 'orderBy', orderBy: this.orderBy });
     return result;
   }
 
   public findMany(): any {
-    const w: any = this.where();
-    const order: any = this.orderBy();
-    const o: any = order;
-    const s: any = (this.page - 1) * this.perPage;
-    const t: any = this.perPage;
-
-    // console.log({ title: 'findMany', where: w, orderBy: o, skip: s, take: t });
+    const _where: any = this.where();
+    const _order: any = this.orderBy();
+    const _skip: any = (this.page - 1) * this.perPage;
+    const _take: any = this.perPage;
 
     return {
-      where: w,
-      orderBy: o,
-      skip: s,
-      take: t,
+      where: _where,
+      orderBy: _order,
+      skip: _skip,
+      take: _take,
     };
   }
 }

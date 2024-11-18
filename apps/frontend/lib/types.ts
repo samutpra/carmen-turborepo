@@ -1,6 +1,8 @@
 // File: types/inventory.ts
 
+import { JwtPayload } from "jwt-decode";
 import { z } from "zod";
+import * as m from '@/paraglide/messages.js';
 
 // Common Types and Enums
 
@@ -1338,10 +1340,10 @@ export type PaginationType = {
 
 export const SignInSchema = z.object({
   username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: `${m.username_zod_error()}`,
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: `${m.password_zod_error()}`,
   }),
 });
 
@@ -1350,51 +1352,111 @@ export interface User {
   username: string;
 }
 
+
+
+// export interface AuthContextType extends AuthState {
+//   isAuthenticated: boolean;
+//   accessToken: string | null;
+//   handleLogin: (data: AuthState, token: string) => void;
+//   handleLogout: () => void;
+//   updateAccessToken: (token: string) => void;
+//   authState: AuthState;
+//   isLoading: boolean
+// }
+
+
 export interface AuthState {
   user: User | null;
   refresh_token: string;
 }
-
+export interface AuthenticatedRequestOptions extends RequestInit {
+  skipAuthRefresh?: boolean;
+  requireAuth?: boolean;
+}
 export interface AuthContextType extends AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
   handleLogin: (data: AuthState, token: string) => void;
   handleLogout: () => void;
   updateAccessToken: (token: string) => void;
+  authState: AuthState;
+  isLoading: boolean;
+  authenticatedRequest: <T>(
+    url: string,
+    options?: AuthenticatedRequestOptions
+  ) => Promise<T>;
 }
 
 
+
 export const VerifySchema = z.object({
-  userName: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  middleName: z.string().optional(),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-  confirmPassword: z.string().min(6, {
-    message: "Confirm password must be at least 6 characters.",
-  }),
-  terms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the terms and conditions.",
+  email: z.string().email({ message: "Invalid email address." }),
+  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string().min(6, { message: "Confirm password must be at least 6 characters." }),
+  consent: z.boolean(),
+  emailToken: z.string(),
+  userInfo: z.object({
+    firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
+    middleName: z.string().optional(),
+    lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
   }),
 }).superRefine(({ confirmPassword, password }, ctx) => {
   if (confirmPassword !== password) {
     ctx.addIssue({
       code: "custom",
       message: "The passwords did not match",
-      path: ['confirmPassword'],
+      path: ["confirmPassword"],
     });
   }
 });
 
-
 export type VerifyType = z.infer<typeof VerifySchema>;
+export type PayloadVerifyType = Omit<VerifyType, 'confirmPassword'>;
 
+export const RecoverPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string().min(6, { message: "Confirm password must be at least 6 characters." }),
+  emailToken: z.string(),
+}).superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      code: "custom",
+      message: "The passwords did not match",
+      path: ["confirmPassword"],
+    });
+  }
+});
+export type RecoverPasswordType = z.infer<typeof RecoverPasswordSchema>;
+export type PayloadRecoverPasswordType = Omit<RecoverPasswordType, 'confirmPassword'>;
 
+export const EmailSchema = z.object({
+  email: z.string().email()
+});
+
+export type EmailType = z.infer<typeof EmailSchema>;
+
+export interface CustomJwtPayload extends JwtPayload {
+  email?: string;
+  username?: string
+}
+
+export const LocationSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  locationType: z.enum(["Inventory", "Direct"]),
+  description: z.string(),
+  isActive: z.boolean(),
+  deliveryPointId: z.string().nullable().optional(),
+});;
+
+export type LocationType = z.infer<typeof LocationSchema>;
+
+export type PayloadLocationType = Omit<LocationType, 'id'>;
+
+export interface LocationLabel {
+  key: keyof LocationType;
+  label: string;
+}
