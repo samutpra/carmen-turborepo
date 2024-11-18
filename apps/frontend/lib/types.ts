@@ -1473,7 +1473,7 @@ export interface DepartmentLabel {
   label: string;
 }
 
-export type PayloaDepartmentType = Omit<LocationType, 'id'>;
+export type PayloaDepartmentType = Omit<DepartmentType, 'id'>;
 
 export interface ParamsType {
   page?: number;

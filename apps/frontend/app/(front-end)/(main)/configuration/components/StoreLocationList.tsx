@@ -70,7 +70,6 @@ const StoreLocationList = () => {
                     ...data,
                     id: editingItem.id // make sure id is included
                 };
-                console.log('Updating with:', updatedFields);
                 const updatedLocation = await updateLocation(token, editingItem.id, updatedFields);
                 setLocations(prev => prev.map(loc =>
                     loc.id === editingItem.id ? updatedLocation : loc
