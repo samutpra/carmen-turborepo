@@ -53,6 +53,7 @@ const SignIn = () => {
                         username: result.username
                     },
                     refresh_token: result.refresh_token,
+                    access_token: result.access_token
                 },
                 result.access_token
             );

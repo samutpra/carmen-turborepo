@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     try {
         const payload: PayloadVerifyType = await request.json();
 
-        const response = await fetch(API_URL + '/auth/register/confirm', {
+        const response = await fetch(API_URL + '/v1/auth/register/confirm', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

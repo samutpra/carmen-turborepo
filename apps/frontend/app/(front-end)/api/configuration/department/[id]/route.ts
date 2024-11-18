@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL + '/departments';
+const API_URL = process.env.NEXT_PUBLIC_API_URL + '/v1/departments';
 
 
 export async function PATCH(

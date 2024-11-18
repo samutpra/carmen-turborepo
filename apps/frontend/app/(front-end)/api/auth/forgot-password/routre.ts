@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     try {
         const payload: PayloadRecoverPasswordType = await request.json();
 
-        const response = await fetch(API_URL + '/auth/forgotpassword/confirm', {
+        const response = await fetch(API_URL + '/v1/auth/forgotpassword/confirm', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
+import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
 
-const apiUrl = 'http://localhost:4000/api/v1';
 
 export async function PATCH(
     request: NextRequest,
@@ -19,7 +19,7 @@ export async function PATCH(
 
         const data = await request.json();
 
-        const URL = `${apiUrl}/currencies/${params.id}`;
+        const URL = `${API_URL}/v1/currencies/${params.id}`;
 
         const response = await fetch(URL, {
             method: 'PATCH',
@@ -72,7 +72,7 @@ export async function DELETE(
                 { status: 402 }
             );
         }
-        const URL = `${apiUrl}/currencies/${params.id}`;
+        const URL = `${API_URL}/v1/currencies/${params.id}`;
         const response = await fetch(URL, {
             method: 'DELETE',
             headers: {
