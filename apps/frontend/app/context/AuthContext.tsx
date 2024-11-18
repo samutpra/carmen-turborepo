@@ -4,7 +4,6 @@ import { AuthContextType, AuthenticatedRequestOptions, AuthState } from '@/lib/t
 import { fetchWithToken, isTokenExpired, isTokenExpiringSoon, refreshAccessToken } from '@/lib/util/auth';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-// Constants
 const STORAGE_KEYS = {
     ACCESS_TOKEN: 'access_token',
     REFRESH_TOKEN: 'refresh_token',
@@ -38,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return { user: null, refresh_token: '' };
             }
         }
-        return { user: null, refresh_token: '' };
+        return { user: null, refresh_token: '', access_token: null };
     });
 
     const [accessToken, setAccessToken] = useState<string | null>(() => {
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 ...prev,
                 refresh_token: tokens.refresh_token
             }));
-
+            localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.access_token);
             localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refresh_token);
         } catch (error) {
             console.error('Token refresh error:', error);
@@ -73,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } finally {
             setIsLoading(false);
         }
-    }, [authState.refresh_token]);
+    }, [authState.refresh_token, updateAccessToken]);
 
     const handleError = (error: unknown): AuthError => {
         if (error instanceof Response) {
@@ -98,7 +97,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             details: error
         };
     };
-
     // Token check effect
     useEffect(() => {
         let refreshTimer: NodeJS.Timeout;
@@ -154,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 localStorage.removeItem(key);
             });
 
-            router.push('/sign-in');
+            router.push('/');
         } catch (error) {
             console.error('Logout error:', error);
         }

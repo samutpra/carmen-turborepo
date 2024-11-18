@@ -9,11 +9,8 @@ export default function HomePage() {
 			<h1 className='text-4xl font-bold mb-4'>{m.home_title()}</h1>
 			<p className='text-xl mb-8'>{m.home_subtitle()}</p>
 			<div className='space-x-4'>
-				<Link href='/auth' className='bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded'>
+				<Link href='/sign-in' className='py-2 px-4 rounded-xl  border'>
 					Sign In
-				</Link>
-				<Link href='/dashboard' className='bg-green-500 hover:bg-green-700 font-bold py-2 px-4 rounded'>
-					Go to Menu
 				</Link>
 			</div>
 

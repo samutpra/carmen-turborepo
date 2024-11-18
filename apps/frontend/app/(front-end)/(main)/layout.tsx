@@ -1,12 +1,23 @@
-import React from "react";
+"use client"
+import React, { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar"
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "@/lib/i18n";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const { accessToken } = useAuth();
+
+  useEffect(() => {
+    if (!accessToken) {
+      router.push("/");
+    }
+  }, [accessToken, router]);
 
   return (
     <div className="flex h-screen overflow-hidden">
