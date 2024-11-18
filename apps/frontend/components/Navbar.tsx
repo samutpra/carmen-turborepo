@@ -29,7 +29,7 @@ const Navbar = () => {
     };
 
     const onSignIn = () => {
-        router.push('/auth')
+        router.push('/sign-in')
     }
 
     const firstChar = authState.user?.username?.charAt(0).toUpperCase();
