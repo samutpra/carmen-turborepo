@@ -1,8 +1,9 @@
 import React from 'react'
+import DepartmentList from '../components/DepartmentList'
 
 const DepartmentPage = () => {
     return (
-        <div>DepartmentPage</div>
+        <DepartmentList />
     )
 }
 

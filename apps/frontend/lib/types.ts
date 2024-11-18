@@ -1352,8 +1352,6 @@ export interface User {
   username: string;
 }
 
-
-
 // export interface AuthContextType extends AuthState {
 //   isAuthenticated: boolean;
 //   accessToken: string | null;
@@ -1361,18 +1359,13 @@ export interface User {
 //   handleLogout: () => void;
 //   updateAccessToken: (token: string) => void;
 //   authState: AuthState;
-//   isLoading: boolean
+//   isLoading: boolean;
+//   authenticatedRequest: <T>(
+//     url: string,
+//     options?: AuthenticatedRequestOptions
+//   ) => Promise<T>;
 // }
 
-
-export interface AuthState {
-  user: User | null;
-  refresh_token: string;
-}
-export interface AuthenticatedRequestOptions extends RequestInit {
-  skipAuthRefresh?: boolean;
-  requireAuth?: boolean;
-}
 export interface AuthContextType extends AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
@@ -1380,12 +1373,19 @@ export interface AuthContextType extends AuthState {
   handleLogout: () => void;
   updateAccessToken: (token: string) => void;
   authState: AuthState;
-  isLoading: boolean;
-  authenticatedRequest: <T>(
-    url: string,
-    options?: AuthenticatedRequestOptions
-  ) => Promise<T>;
 }
+
+
+export interface AuthState {
+  user: User | null;
+  access_token: string
+  refresh_token: string;
+}
+export interface AuthenticatedRequestOptions extends RequestInit {
+  skipAuthRefresh?: boolean;
+  requireAuth?: boolean;
+}
+
 
 export const VerifySchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -1427,6 +1427,7 @@ export const RecoverPasswordSchema = z.object({
     });
   }
 });
+
 export type RecoverPasswordType = z.infer<typeof RecoverPasswordSchema>;
 export type PayloadRecoverPasswordType = Omit<RecoverPasswordType, 'confirmPassword'>;
 
@@ -1458,3 +1459,19 @@ export interface LocationLabel {
   key: keyof LocationType;
   label: string;
 }
+
+export const DepartmentSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  description: z.string(),
+  isActive: z.boolean(),
+})
+
+export type DepartmentType = z.infer<typeof DepartmentSchema>;
+export interface DepartmentLabel {
+  key: keyof DepartmentType;
+  label: string;
+}
+
+export type PayloaDepartmentType = Omit<LocationType, 'id'>;
+
