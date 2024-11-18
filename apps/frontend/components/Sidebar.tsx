@@ -72,7 +72,7 @@ const Sidebar = () => {
 
     return (
         <>
-            <div className="z-50 flex-col gap-4 relative bg-background">
+            <div className="top-1 z-50 flex-col gap-4 relative bg-background">
                 {isSidebarOpen && !isLargeScreen && (
                     <div
                         className="fixed md:sticky inset-0 z-40"
@@ -82,7 +82,7 @@ const Sidebar = () => {
 
                 <aside
                     className={cn(
-                        "fixed top-0 left-0 z-50 h-full bg-[var(--cm-sidebar)] border-r border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 ease-in-out",
+                        "fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 ease-in-out",
                         isSidebarOpen || isLargeScreen
                             ? "translate-x-0 md:sticky"
                             : "-translate-x-full",
