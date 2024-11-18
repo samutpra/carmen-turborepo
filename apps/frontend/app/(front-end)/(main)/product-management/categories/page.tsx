@@ -1,5 +1,5 @@
 import React from 'react'
-import CategorieList from '../components/CategorieList'
+import CategorieList from './components/CategorieList'
 
 const CategoriePage = () => {
     return (
