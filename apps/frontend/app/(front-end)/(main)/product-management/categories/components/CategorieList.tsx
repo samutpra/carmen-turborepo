@@ -1,173 +1,223 @@
-"use client";
-import React, { useState } from 'react';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+"use client"
+import React, { useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { nanoid } from 'nanoid';
-import CategorieSection from './CategorieSection';
-import SubCategorieSection from './SubCategorieSection';
-import ItemGroupSection from './ItemGroupSection';
+import AddSection from './AddSection';
+import ListSection from './ListSection';
+
+// Types
+interface Category {
+    id: string;
+    name: string;
+}
+
+interface SubCategory {
+    id: string;
+    name: string;
+    categoriesID: string;
+}
 
 interface ItemGroup {
     id: string;
     name: string;
+    subCategoriesId: string;
 }
 
-interface Subcategory {
-    id: string;
-    name: string;
-    itemGroups: ItemGroup[];
-}
-
-interface Category {
-    id: string;
-    name: string;
-    subcategories: Subcategory[];
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const logPayload = (action: string, payload: any) => {
+    console.group('📦 Payload Log');
+    console.log('Action:', action);
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Payload:', payload);
+    console.groupEnd();
+};
 
 
-const ProductCategoryUI = () => {
+const CategorieList: React.FC = () => {
+    // Initial state with type safety
     const [categories, setCategories] = useState<Category[]>([
-        {
-            id: "1",
-            name: 'อิเล็กทรอนิกส์',
-            subcategories: [
-                {
-                    id: "1",
-                    name: 'สมาร์ทโฟน',
-                    itemGroups: [
-                        { id: "1", name: 'แอนดรอยด์' },
-                        { id: "2", name: 'ไอโฟน' }
-                    ]
-                },
-                {
-                    id: "2",
-                    name: 'แล็ปท็อป',
-                    itemGroups: [
-                        { id: "3", name: 'โน้ตบุ๊กเกมมิ่ง' },
-                        { id: "4", name: 'โน้ตบุ๊กทั่วไป' }
-                    ]
-                }
-            ]
-        },
-        {
-            id: "2",
-            name: 'เสื้อผ้า',
-            subcategories: []
-        }
+        { id: "1", name: "อิเล็กทรอนิกส์" },
+        { id: "2", name: "เสื้อผ้า" },
     ]);
 
+    const [subCategories, setSubCategories] = useState<SubCategory[]>([
+        { id: "1", name: "สมาร์ทโฟน", categoriesID: "1" },
+        { id: "2", name: "แล็ปท็อป", categoriesID: "1" },
+    ]);
+
+    const [itemGroups, setItemGroups] = useState<ItemGroup[]>([
+        { id: "3", name: "โน้ตบุ๊กเกมมิ่ง", subCategoriesId: "1" },
+        { id: "4", name: "โน้ตบุ๊กทั่วไป", subCategoriesId: "1" },
+    ]);
+
+    // Selection states
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-    const [newCategoryName, setNewCategoryName] = useState('');
-    const [newSubcategoryName, setNewSubcategoryName] = useState('');
-    const [newItemGroupName, setNewItemGroupName] = useState('');
 
-    const handleAddCategory = () => {
-        if (newCategoryName.trim()) {
-            setCategories([...categories, {
+    // Input states
+    const [newCategoryName, setNewCategoryName] = useState("");
+    const [newSubcategoryName, setNewSubcategoryName] = useState("");
+    const [newItemGroupName, setNewItemGroupName] = useState("");
+
+    // Memoized handlers
+    const handleAddCategory = useCallback(() => {
+        if (!newCategoryName.trim()) return;
+
+        const payload = {
+            type: 'ADD_CATEGORY',
+            data: {
                 id: nanoid(),
-                name: newCategoryName,
-                subcategories: []
-            }]);
-            setNewCategoryName('');
-        }
-    };
-
-    const handleAddSubcategory = () => {
-        if (selectedCategory && newSubcategoryName.trim()) {
-            const updatedCategories = categories.map(cat => {
-                if (cat.id === selectedCategory) {
-                    return {
-                        ...cat,
-                        subcategories: [...cat.subcategories, {
-                            id: nanoid(),
-                            name: newSubcategoryName,
-                            itemGroups: []
-                        }]
-                    };
-                }
-                return cat;
-            });
-            setCategories(updatedCategories);
-            setNewSubcategoryName('');
-        }
-    };
-
-    const handleAddItemGroup = () => {
-        if (selectedCategory && selectedSubcategory && newItemGroupName.trim()) {
-            const updatedCategories = categories.map(cat => {
-                if (cat.id === selectedCategory) {
-                    return {
-                        ...cat,
-                        subcategories: cat.subcategories.map(sub => {
-                            if (sub.id === selectedSubcategory) {
-                                return {
-                                    ...sub,
-                                    itemGroups: [...sub.itemGroups || [], {
-                                        id: nanoid(),
-                                        name: newItemGroupName
-                                    }]
-                                };
-                            }
-                            return sub;
-                        })
-                    };
-                }
-                return cat;
-            });
-            setCategories(updatedCategories);
-            setNewItemGroupName('');
-        }
-    };
-
-    const handleDeleteCategory = (categoryId: string) => {
-        setCategories(categories.filter(cat => cat.id !== categoryId));
-        if (selectedCategory === categoryId) {
-            setSelectedCategory(null);
-            setSelectedSubcategory(null);
-        }
-    };
-
-    const handleDeleteSubcategory = (categoryId: string, subcategoryId: string) => {
-        const updatedCategories = categories.map(cat => {
-            if (cat.id === categoryId) {
-                return {
-                    ...cat,
-                    subcategories: cat.subcategories.filter(sub => sub.id !== subcategoryId)
-                };
+                name: newCategoryName.trim()
             }
-            return cat;
-        });
-        setCategories(updatedCategories);
-        if (selectedSubcategory === subcategoryId) {
-            setSelectedSubcategory(null);
-        }
-    };
+        };
 
-    const handleDeleteItemGroup = (categoryId: string, subcategoryId: string, itemGroupId: string) => {
-        const updatedCategories = categories.map(cat => {
-            if (cat.id === categoryId) {
-                return {
-                    ...cat,
-                    subcategories: cat.subcategories.map(sub => {
-                        if (sub.id === subcategoryId) {
-                            return {
-                                ...sub,
-                                itemGroups: sub.itemGroups.filter(item => item.id !== itemGroupId)
-                            };
+        logPayload('ADD_CATEGORY', payload);
+
+        setCategories(prev => [...prev, {
+            id: nanoid(),
+            name: newCategoryName.trim()
+        }]);
+        setNewCategoryName("");
+    }, [newCategoryName]);
+
+    const handleAddSubcategory = useCallback(() => {
+        if (!newSubcategoryName.trim() || !selectedCategory) return;
+
+        const payload = {
+            type: 'ADD_SUBCATEGORY',
+            data: {
+                id: nanoid(),
+                name: newSubcategoryName.trim(),
+                categoriesID: selectedCategory,
+                parentCategory: categories.find(c => c.id === selectedCategory)?.name
+            }
+        };
+        logPayload('ADD_SUBCATEGORY', payload);
+
+        setSubCategories(prev => [...prev, {
+            id: nanoid(),
+            name: newSubcategoryName.trim(),
+            categoriesID: selectedCategory
+        }]);
+        setNewSubcategoryName("");
+    }, [newSubcategoryName, selectedCategory]);
+
+    const handleAddItemGroup = useCallback(() => {
+        if (!newItemGroupName.trim() || !selectedSubcategory) return;
+
+        const payload = {
+            type: 'ADD_ITEM_GROUP',
+            data: {
+                id: nanoid(),
+                name: newItemGroupName.trim(),
+                subCategoriesId: selectedSubcategory,
+                parentSubcategory: subCategories.find(s => s.id === selectedSubcategory)?.name,
+                parentCategory: categories.find(
+                    c => c.id === subCategories.find(s => s.id === selectedSubcategory)?.categoriesID
+                )?.name
+            }
+        };
+
+        logPayload('ADD_ITEM_GROUP', payload);
+
+        setItemGroups(prev => [...prev, {
+            id: nanoid(),
+            name: newItemGroupName.trim(),
+            subCategoriesId: selectedSubcategory
+        }]);
+        setNewItemGroupName("");
+    }, [newItemGroupName, selectedSubcategory]);
+
+    const handleDelete = useCallback((level: 'category' | 'subcategory' | 'itemgroup', id: string) => {
+        switch (level) {
+            case 'category': {
+                const categoryToDelete = categories.find(cat => cat.id === id);
+                const affectedSubcategories = subCategories.filter(sub => sub.categoriesID === id);
+                const affectedItemGroups = itemGroups.filter(item =>
+                    affectedSubcategories.some(sub => sub.id === item.subCategoriesId)
+                );
+
+                const payload = {
+                    type: 'DELETE_CATEGORY',
+                    data: {
+                        categoryId: id,
+                        categoryName: categoryToDelete?.name,
+                        affectedItems: {
+                            subcategories: affectedSubcategories,
+                            itemGroups: affectedItemGroups
                         }
-                        return sub;
-                    })
+                    }
                 };
+
+                logPayload('DELETE_CATEGORY', payload);
+
+                setCategories(prev => prev.filter(cat => cat.id !== id));
+                setSubCategories(prev => prev.filter(sub => sub.categoriesID !== id));
+                setItemGroups(prev =>
+                    prev.filter(item =>
+                        !affectedSubcategories.some(sub => sub.id === item.subCategoriesId)
+                    )
+                );
+
+                if (selectedCategory === id) {
+                    setSelectedCategory(null);
+                    setSelectedSubcategory(null);
+                }
+                break;
             }
-            return cat;
-        });
-        setCategories(updatedCategories);
-    };
+
+            case 'subcategory': {
+                const subcategoryToDelete = subCategories.find(sub => sub.id === id);
+                const affectedItemGroups = itemGroups.filter(item => item.subCategoriesId === id);
+
+                const payload = {
+                    type: 'DELETE_SUBCATEGORY',
+                    data: {
+                        subcategoryId: id,
+                        subcategoryName: subcategoryToDelete?.name,
+                        parentCategory: categories.find(
+                            c => c.id === subcategoryToDelete?.categoriesID
+                        )?.name,
+                        affectedItemGroups
+                    }
+                };
+
+                logPayload('DELETE_SUBCATEGORY', payload);
+
+                setSubCategories(prev => prev.filter(sub => sub.id !== id));
+                setItemGroups(prev => prev.filter(item => item.subCategoriesId !== id));
+
+                if (selectedSubcategory === id) {
+                    setSelectedSubcategory(null);
+                }
+                break;
+            }
+
+            case 'itemgroup': {
+                const itemGroupToDelete = itemGroups.find(item => item.id === id);
+                const parentSubcategory = subCategories.find(
+                    sub => sub.id === itemGroupToDelete?.subCategoriesId
+                );
+
+                const payload = {
+                    type: 'DELETE_ITEM_GROUP',
+                    data: {
+                        itemGroupId: id,
+                        itemGroupName: itemGroupToDelete?.name,
+                        parentSubcategory: parentSubcategory?.name,
+                        parentCategory: categories.find(
+                            c => c.id === parentSubcategory?.categoriesID
+                        )?.name
+                    }
+                };
+
+                logPayload('DELETE_ITEM_GROUP', payload);
+                setItemGroups(prev => prev.filter(item => item.id !== id));
+                break;
+            }
+        }
+    }, [selectedCategory, selectedSubcategory, categories, subCategories, itemGroups]);
 
     return (
         <div className="p-4">
@@ -176,41 +226,80 @@ const ProductCategoryUI = () => {
                     <CardTitle>จัดการหมวดหมู่สินค้า</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Categories Column */}
-                        <CategorieSection
-                            categories={categories}
-                            newCategoryName={newCategoryName}
-                            setNewCategoryName={setNewCategoryName}
-                            selectedCategory={selectedCategory}
-                            setSelectedCategory={setSelectedCategory}
-                            handleAddCategory={handleAddCategory}
-                            handleDeleteCategory={handleDeleteCategory}
-                        />
+                        <div>
+                            <AddSection
+                                value={newCategoryName}
+                                onChange={setNewCategoryName}
+                                onAdd={handleAddCategory}
+                                placeholder="เพิ่มหมวดหมู่"
+                            />
+                            <h3 className="text-lg font-semibold mb-4">หมวดหมู่</h3>
+                            <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                                {categories.map(category => (
+                                    <ListSection
+                                        key={category.id}
+                                        name={category.name}
+                                        isSelected={selectedCategory === category.id}
+                                        onSelect={() => setSelectedCategory(category.id)}
+                                        onDelete={() => handleDelete('category', category.id)}
+                                    />
+                                ))}
+                            </ScrollArea>
+
+                        </div>
 
                         {/* Subcategories Column */}
-
-                        <SubCategorieSection
-                            categories={categories}
-                            selectedCategory={selectedCategory}
-                            newSubcategoryName={newSubcategoryName}
-                            setNewSubcategoryName={setNewSubcategoryName}
-                            handleAddSubcategory={handleAddSubcategory}
-                            setSelectedSubcategory={setSelectedSubcategory}
-                            handleDeleteSubcategory={handleDeleteSubcategory}
-                            selectedSubcategory={selectedSubcategory}
-                        />
+                        <div>
+                            <AddSection
+                                value={newSubcategoryName}
+                                onChange={setNewSubcategoryName}
+                                onAdd={handleAddSubcategory}
+                                placeholder="เพิ่มหมวดหมู่ย่อย"
+                                disabled={!selectedCategory}
+                            />
+                            <h3 className="text-lg font-semibold mb-4">หมวดหมู่ย่อย</h3>
+                            <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                                {subCategories
+                                    .filter(sub => sub.categoriesID === selectedCategory)
+                                    .map(subcategory => (
+                                        <ListSection
+                                            key={subcategory.id}
+                                            name={subcategory.name}
+                                            isSelected={selectedSubcategory === subcategory.id}
+                                            onSelect={() => setSelectedSubcategory(subcategory.id)}
+                                            onDelete={() => handleDelete('subcategory', subcategory.id)}
+                                        />
+                                    ))}
+                            </ScrollArea>
+                        </div>
 
                         {/* Item Groups Column */}
-                        <ItemGroupSection
-                            selectedSubcategory={selectedSubcategory}
-                            newItemGroupName={newItemGroupName}
-                            setNewItemGroupName={setNewItemGroupName}
-                            handleAddItemGroup={handleAddItemGroup}
-                            handleDeleteItemGroup={handleDeleteItemGroup}  // Pass the delete handler
-                            categories={categories}
-                            selectedCategory={selectedCategory}
-                        />
+                        <div>
+                            <AddSection
+                                value={newItemGroupName}
+                                onChange={setNewItemGroupName}
+                                onAdd={handleAddItemGroup}
+                                placeholder="เพิ่มกลุ่มสินค้า"
+                                disabled={!selectedSubcategory}
+                            />
+                            <h3 className="text-lg font-semibold mb-4">กลุ่มสินค้า</h3>
+                            <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                                {itemGroups
+                                    .filter(item => item.subCategoriesId === selectedSubcategory)
+                                    .map(itemGroup => (
+                                        <ListSection
+                                            key={itemGroup.id}
+                                            name={itemGroup.name}
+                                            isSelected={false}
+                                            onSelect={() => { }}
+                                            onDelete={() => handleDelete('itemgroup', itemGroup.id)}
+                                        />
+                                    ))}
+                            </ScrollArea>
+
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -218,4 +307,4 @@ const ProductCategoryUI = () => {
     );
 };
 
-export default ProductCategoryUI;
+export default CategorieList;
