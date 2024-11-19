@@ -1,8 +1,9 @@
 import React from 'react'
+import WastageReportingDashboard from '../components/WastageReportingDashboard'
 
 const WastageReportingPage = () => {
     return (
-        <div>WastageReportingPage</div>
+        <WastageReportingDashboard />
     )
 }
 
