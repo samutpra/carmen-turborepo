@@ -54,11 +54,19 @@ const CategorieList: React.FC = () => {
     // Selection states
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+    const [selectedItemGroup, setSelectedItemGroup] = useState<string | null>(null);
 
     // Input states
     const [newCategoryName, setNewCategoryName] = useState("");
     const [newSubcategoryName, setNewSubcategoryName] = useState("");
     const [newItemGroupName, setNewItemGroupName] = useState("");
+
+    const handleSubmit = () => {
+        console.log('Selected Values:');
+        console.log('Category:', categories);
+        console.log('Subcategory:', subCategories);
+        console.log('Item Group:', itemGroups);
+    };
 
     // Memoized handlers
     const handleAddCategory = useCallback(() => {
@@ -292,16 +300,25 @@ const CategorieList: React.FC = () => {
                                         <ListSection
                                             key={itemGroup.id}
                                             name={itemGroup.name}
-                                            isSelected={false}
-                                            onSelect={() => { }}
+                                            isSelected={selectedItemGroup === itemGroup.id}
+                                            onSelect={() => setSelectedItemGroup(itemGroup.id)}
                                             onDelete={() => handleDelete('itemgroup', itemGroup.id)}
                                         />
                                     ))}
                             </ScrollArea>
-
                         </div>
                     </div>
+                    <div className="mt-4">
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Submit
+                        </button>
+                    </div>
                 </CardContent>
+
             </Card>
         </div>
     );
