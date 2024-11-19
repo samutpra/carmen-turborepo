@@ -25,7 +25,7 @@ const AddSection: React.FC<Props> = ({
     };
 
     return (
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2">
             <Input
                 placeholder={placeholder}
                 value={value}
@@ -37,7 +37,7 @@ const AddSection: React.FC<Props> = ({
             <Button
                 onClick={onAdd}
                 disabled={disabled || !value.trim()}
-                className="whitespace-nowrap"
+                className="whitespace-nowrap h-7"
             >
                 <Plus />
                 เพิ่ม

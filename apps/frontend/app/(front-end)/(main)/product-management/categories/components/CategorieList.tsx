@@ -1,28 +1,12 @@
 "use client"
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { nanoid } from 'nanoid';
 import AddSection from './AddSection';
 import ListSection from './ListSection';
-
-// Types
-interface Category {
-    id: string;
-    name: string;
-}
-
-interface SubCategory {
-    id: string;
-    name: string;
-    categoriesID: string;
-}
-
-interface ItemGroup {
-    id: string;
-    name: string;
-    subCategoriesId: string;
-}
+import { Button } from '@/components/ui/button';
+import { categoriesData, Category, ItemGroup, itemGroupsData, subCategoriesData, SubCategory } from './categoriesData';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const logPayload = (action: string, payload: any) => {
@@ -36,20 +20,9 @@ const logPayload = (action: string, payload: any) => {
 
 const CategorieList: React.FC = () => {
     // Initial state with type safety
-    const [categories, setCategories] = useState<Category[]>([
-        { id: "1", name: "อิเล็กทรอนิกส์" },
-        { id: "2", name: "เสื้อผ้า" },
-    ]);
-
-    const [subCategories, setSubCategories] = useState<SubCategory[]>([
-        { id: "1", name: "สมาร์ทโฟน", categoriesID: "1" },
-        { id: "2", name: "แล็ปท็อป", categoriesID: "1" },
-    ]);
-
-    const [itemGroups, setItemGroups] = useState<ItemGroup[]>([
-        { id: "3", name: "โน้ตบุ๊กเกมมิ่ง", subCategoriesId: "1" },
-        { id: "4", name: "โน้ตบุ๊กทั่วไป", subCategoriesId: "1" },
-    ]);
+    const [categories, setCategories] = useState<Category[]>(categoriesData);
+    const [subCategories, setSubCategories] = useState<SubCategory[]>(subCategoriesData);
+    const [itemGroups, setItemGroups] = useState<ItemGroup[]>(itemGroupsData);
 
     // Selection states
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -67,6 +40,27 @@ const CategorieList: React.FC = () => {
         console.log('Subcategory:', subCategories);
         console.log('Item Group:', itemGroups);
     };
+
+    useEffect(() => {
+        if (selectedCategory && !categories.some(cat => cat.id === selectedCategory)) {
+            setSelectedCategory(null);
+            setSelectedSubcategory(null);
+            setSelectedItemGroup(null);
+        }
+    }, [categories, selectedCategory]);
+
+    useEffect(() => {
+        if (selectedSubcategory && !subCategories.some(sub => sub.id === selectedSubcategory)) {
+            setSelectedSubcategory(null);
+            setSelectedItemGroup(null);
+        }
+    }, [subCategories, selectedSubcategory]);
+
+    useEffect(() => {
+        if (selectedItemGroup && !itemGroups.some(item => item.id === selectedItemGroup)) {
+            setSelectedItemGroup(null);
+        }
+    }, [itemGroups, selectedItemGroup]);
 
     // Memoized handlers
     const handleAddCategory = useCallback(() => {
@@ -227,11 +221,28 @@ const CategorieList: React.FC = () => {
         }
     }, [selectedCategory, selectedSubcategory, categories, subCategories, itemGroups]);
 
+
+
     return (
         <div className="p-4">
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle>จัดการหมวดหมู่สินค้า</CardTitle>
+                    {/* <CardTitle>จัดการหมวดหมู่สินค้า</CardTitle> */}
+                    <CardTitle>
+                        {selectedCategory
+                            ? categories.find((category) => category.id === selectedCategory)?.name || "หมวดหมู่สินค้า"
+                            : "หมวดหมู่สินค้า"}
+                        {selectedSubcategory
+                            ? ` > ${subCategories.find((subcategory) => subcategory.id === selectedSubcategory)?.name ||
+                            "หมวดหมู่ย่อย"
+                            }`
+                            : ""}
+                        {selectedItemGroup
+                            ? ` > ${itemGroups.find((itemGroup) => itemGroup.id === selectedItemGroup)?.name ||
+                            "กลุ่มสินค้า"
+                            }`
+                            : ""}
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -243,7 +254,11 @@ const CategorieList: React.FC = () => {
                                 onAdd={handleAddCategory}
                                 placeholder="เพิ่มหมวดหมู่"
                             />
-                            <h3 className="text-lg font-semibold mb-4">หมวดหมู่</h3>
+                            <h3 className="text-lg font-semibold my-4">
+                                {selectedCategory
+                                    ? categories.find((category) => category.id === selectedCategory)?.name || "หมวดหมู่สินค้า"
+                                    : "หมวดหมู่สินค้า"}
+                            </h3>
                             <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                                 {categories.map(category => (
                                     <ListSection
@@ -267,7 +282,13 @@ const CategorieList: React.FC = () => {
                                 placeholder="เพิ่มหมวดหมู่ย่อย"
                                 disabled={!selectedCategory}
                             />
-                            <h3 className="text-lg font-semibold mb-4">หมวดหมู่ย่อย</h3>
+                            <h3 className="text-lg font-semibold my-4">
+                                {selectedSubcategory
+                                    ? `${subCategories.find((subcategory) => subcategory.id === selectedSubcategory)?.name ||
+                                    "หมวดหมู่ย่อย"
+                                    }`
+                                    : ""}
+                            </h3>
                             <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                                 {subCategories
                                     .filter(sub => sub.categoriesID === selectedCategory)
@@ -292,7 +313,13 @@ const CategorieList: React.FC = () => {
                                 placeholder="เพิ่มกลุ่มสินค้า"
                                 disabled={!selectedSubcategory}
                             />
-                            <h3 className="text-lg font-semibold mb-4">กลุ่มสินค้า</h3>
+                            <h3 className="text-lg font-semibold my-4">
+                                {selectedItemGroup
+                                    ? `${itemGroups.find((itemGroup) => itemGroup.id === selectedItemGroup)?.name ||
+                                    "กลุ่มสินค้า"
+                                    }`
+                                    : ""}
+                            </h3>
                             <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                                 {itemGroups
                                     .filter(item => item.subCategoriesId === selectedSubcategory)
@@ -309,13 +336,12 @@ const CategorieList: React.FC = () => {
                         </div>
                     </div>
                     <div className="mt-4">
-                        <button
-                            type="button"
+                        <Button
                             onClick={handleSubmit}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="px-4 py-2"
                         >
                             Submit
-                        </button>
+                        </Button>
                     </div>
                 </CardContent>
 
