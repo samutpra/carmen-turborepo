@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
         const { subject, email } = await request.json();
 
-        const response = await fetch(API_URL + '/auth/forgotpassword/email-token', {
+        const response = await fetch(API_URL + '/v1/auth/forgotpassword/email-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

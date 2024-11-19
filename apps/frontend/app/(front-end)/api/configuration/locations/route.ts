@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL + '/locations';
+const API_URL = process.env.NEXT_PUBLIC_API_URL + 'v1/locations';
 
 export async function GET(request: NextRequest) {
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
@@ -48,8 +48,6 @@ export async function POST(request: NextRequest) {
             );
         }
         const body = await request.json();
-
-        console.log('body', body);
 
         const response = await fetch(API_URL, {
             method: 'POST',

@@ -97,8 +97,9 @@ export const updateDepartment = async (
     payload: PayloaDepartmentType
 ): Promise<DepartmentType> => {
     try {
+
         const response = await fetch(`/api/configuration/department/${id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
@@ -113,7 +114,6 @@ export const updateDepartment = async (
                 `Failed to update department: ${response.status} ${response.statusText}`
             );
         }
-
         const data = await response.json();
         return DepartmentSchema.parse(data.data);
     } catch (error) {

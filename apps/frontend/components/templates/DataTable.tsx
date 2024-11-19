@@ -108,8 +108,8 @@ const DataTable = <T extends Record<string, any>>({
                                     {column.label}
                                 </TableCell>
                             ))}
-                            {(onEdit || onDelete) && (
-                                <TableCell className="font-medium text-right sticky right-0 bg-white shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                            {(onEdit || onDelete || onView) && (
+                                <TableCell className="bg-background font-medium text-right sticky right-0 shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)]">
                                     Actions
                                 </TableCell>
                             )}
@@ -141,7 +141,7 @@ const DataTable = <T extends Record<string, any>>({
                                 })}
 
                                 {(onEdit || onDelete || onView) && (
-                                    <TableCell className="text-right sticky right-0 bg-white shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                                    <TableCell className="bg-background text-right sticky right-0 shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)]">
                                         <div className="flex gap-2 justify-end">
                                             {onView && (
                                                 <CustomButton
