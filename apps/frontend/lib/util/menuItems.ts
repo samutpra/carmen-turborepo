@@ -166,12 +166,12 @@ export const menuItems = [
                 visible: true,
                 enabled: true,
             },
-            {
-                name: `${m.issues_management()}`,
-                path: "/store-operations/issues-management",
-                visible: true,
-                enabled: true,
-            },
+            // {
+            //     name: `${m.issues_management()}`,
+            //     path: "/store-operations/issues-management",
+            //     visible: true,
+            //     enabled: true,
+            // },
             {
                 name: `${m.stock_replenishment()}`,
                 path: "/store-operations/stock-replenishment",

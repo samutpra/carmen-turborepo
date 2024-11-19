@@ -29,7 +29,7 @@ export const stockLevels = [
     { month: 'Jun', level: 140 },
 ];
 
-export const stockReplenishmentData = [
+export const stockData = [
     {
         id: 1,
         name: 'Thai Milk Tea',

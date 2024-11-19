@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react'
-import { Item, stockReplenishmentData } from './mockData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Filter, Search } from 'lucide-react'
@@ -9,9 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from '@/components/ui/checkbox';
+import { Item, stockData } from '../mock_data/stockData';
 
 const StockTable = () => {
-    const [items, setItems] = useState<Item[]>(stockReplenishmentData)
+    const [items, setItems] = useState<Item[]>(stockData)
 
     return (
         <Card>

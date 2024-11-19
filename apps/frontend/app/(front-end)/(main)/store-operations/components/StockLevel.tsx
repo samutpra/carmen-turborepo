@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { stockLevels } from './mockData';
+import { stockLevels } from '../mock_data/stockData';
 
 const StockLevel = () => {
     return (
