@@ -15,6 +15,7 @@ import {
 import { COLORS, monthlyWastage, wastageByReason } from '../mock_data/wastageData';
 
 const WastageChartLevel = () => {
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
@@ -41,7 +42,7 @@ const WastageChartLevel = () => {
                     <CardTitle>Wastage by Reason</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="">
+                    <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
