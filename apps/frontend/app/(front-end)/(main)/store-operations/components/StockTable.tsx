@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react'
 import { Item, stockReplenishmentData } from './mockData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -5,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Filter, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from '@/components/ui/checkbox';
 
 const StockTable = () => {
     const [items, setItems] = useState<Item[]>(stockReplenishmentData)
@@ -36,58 +40,60 @@ const StockTable = () => {
             </CardHeader>
             <CardContent>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <input
-                                        type="checkbox"
-                                        className="rounded border-gray-300"
-                                        onChange={(e) => {
-                                            const checked = e.target.checked
-                                            setItems(items.map(item => ({
-                                                ...item,
-                                                selected: checked
-                                            })))
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>
+                                    <Checkbox
+                                        onCheckedChange={(checked) => {
+                                            setItems(
+                                                items.map(item => ({
+                                                    ...item,
+                                                    selected: !!checked,
+                                                }))
+                                            );
                                         }}
                                     />
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">PAR Level</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Reorder Point</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">On Order</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Order Amount</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Unit</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {items.map((item) => {
+                                </TableHead>
+                                <TableHead>Location</TableHead>
+                                <TableHead>Product</TableHead>
+                                <TableHead className="text-right">Current Stock</TableHead>
+                                <TableHead className="text-right">PAR Level</TableHead>
+                                <TableHead className="text-right">Reorder Point</TableHead>
+                                <TableHead className="text-right">On Order</TableHead>
+                                <TableHead className="text-right">Order Amount</TableHead>
+                                <TableHead>Order Unit</TableHead>
+                                <TableHead>Status</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {items.map(item => {
                                 const suggestedOrder = Math.max(0, item.parLevel - (item.currentStock + item.onOrder));
 
                                 return (
-                                    <tr key={item.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4">
-                                            <input
-                                                type="checkbox"
-                                                className="rounded border-gray-300"
+                                    <TableRow key={item.id}>
+                                        <TableCell>
+                                            <Checkbox
                                                 checked={item.selected}
-                                                onChange={(e) => {
-                                                    setItems(items.map(i =>
-                                                        i.id === item.id ? { ...i, selected: e.target.checked } : i
-                                                    ))
+                                                onCheckedChange={(checked) => {
+                                                    setItems(
+                                                        items.map((i) =>
+                                                            i.id === item.id
+                                                                ? { ...i, selected: checked === true }
+                                                                : i
+                                                        )
+                                                    );
                                                 }}
                                             />
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+
+                                        </TableCell>
+                                        <TableCell>
                                             <div className="space-y-1">
                                                 <div className="font-medium text-gray-900">{item.location}</div>
                                                 <div className="text-sm text-gray-500">{item.locationCode}</div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        </TableCell>
+                                        <TableCell>
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
                                                     <div className="font-medium text-gray-900">{item.name}</div>
@@ -95,32 +101,48 @@ const StockTable = () => {
                                                 </div>
                                                 <div className="text-sm text-gray-500">{item.description}</div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                                            <span className={`${item.currentStock < item.reorderPoint ? 'text-red-500 font-medium' : ''}`}>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <span
+                                                className={`${item.currentStock < item.reorderPoint
+                                                    ? "text-red-500 font-medium"
+                                                    : ""
+                                                    }`}
+                                            >
                                                 {item.currentStock}
                                             </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">{item.parLevel}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">{item.reorderPoint}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                                        </TableCell>
+                                        <TableCell className="text-right">{item.parLevel}</TableCell>
+                                        <TableCell className="text-right">{item.reorderPoint}</TableCell>
+                                        <TableCell className="text-right">
                                             <span className="text-gray-500">{item.onOrder}</span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                                        </TableCell>
+                                        <TableCell className="text-right">
                                             <Input
                                                 type="number"
-                                                defaultValue={suggestedOrder}
+                                                value={item.orderAmount || suggestedOrder}
                                                 className="w-20 text-right"
                                                 onChange={(e) => {
-                                                    const newItems = items.map(i =>
-                                                        i.id === item.id ? { ...i, orderAmount: parseInt(e.target.value) } : i
+                                                    const value = parseInt(e.target.value, 10);
+                                                    setItems(
+                                                        items.map(i =>
+                                                            i.id === item.id ? { ...i, orderAmount: value } : i
+                                                        )
                                                     );
-                                                    setItems(newItems);
                                                 }}
                                             />
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <Select defaultValue={item.unit}>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Select
+                                                defaultValue={item.unit}
+                                                onValueChange={(value) => {
+                                                    setItems(
+                                                        items.map(i =>
+                                                            i.id === item.id ? { ...i, unit: value } : i
+                                                        )
+                                                    );
+                                                }}
+                                            >
                                                 <SelectTrigger className="w-[100px]">
                                                     <SelectValue placeholder="Select unit" />
                                                 </SelectTrigger>
@@ -132,20 +154,22 @@ const StockTable = () => {
                                                     <SelectItem value="Kg">Kg</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 text-xs rounded-full ${item.status === 'low'
-                                                    ? 'bg-red-100 text-red-700'
-                                                    : 'bg-green-100 text-green-700'
-                                                }`}>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span
+                                                className={`px-2 py-1 text-xs rounded-full ${item.status === "low"
+                                                    ? "bg-red-100 text-red-700"
+                                                    : "bg-green-100 text-green-700"
+                                                    }`}
+                                            >
                                                 {item.status.toUpperCase()}
                                             </span>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 );
                             })}
-                        </tbody>
-                    </table>
+                        </TableBody>
+                    </Table>
                 </div>
             </CardContent>
         </Card>
