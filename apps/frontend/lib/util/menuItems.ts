@@ -200,6 +200,54 @@ export const menuItems = [
                 enabled: true,
             },
             {
+                name: "Physical Count",
+                path: "/inventory-management/physical-count",
+                icon: "ClipboardList",
+                subItems: [
+                    {
+                        name: "New Count",
+                        path: "/inventory-management/physical-count",
+                        icon: "Plus",
+                        description: "Start a new physical count"
+                    },
+                    {
+                        name: "History",
+                        path: "/inventory-management/physical-count/history",
+                        icon: "History",
+                        description: "View past physical counts"
+                    }
+                ]
+            },
+            {
+                name: "Spot Check",
+                path: "/inventory-management/spot-check",
+                icon: "ClipboardCheck",
+                subItems: [
+                    {
+                        name: "Dashboard",
+                        path: "/inventory-management/spot-check/dashboard",
+                        icon: "LayoutDashboard"
+                    },
+                    {
+                        name: "New Count",
+                        path: "/inventory-management/spot-check/new/zones",
+                        icon: "PlusCircle"
+                    },
+                    {
+                        name: "Active Counts",
+                        path: "/inventory-management/spot-check/active",
+                        icon: "Activity"
+                    },
+                    {
+                        name: "Completed Counts",
+                        path: "/inventory-management/spot-check/completed",
+                        icon: "CheckCircle"
+                    },
+                ],
+            },
+            { name: "Stock Take", path: "/inventory-management/stock-take" },
+            { name: "Inventory Valuation", path: "/inventory-management/inventory-valuation" },
+            {
                 name: `${m.stock_in()}`,
                 path: "/inventory-management/stock-in",
                 visible: true,
