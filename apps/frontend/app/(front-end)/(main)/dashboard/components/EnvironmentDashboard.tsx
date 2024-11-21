@@ -1,25 +1,11 @@
 import React from 'react'
-import { formatLargeNumber } from '../utils'
 import MetricCard from './MetricCard';
 import { energyData, scopeData } from '../mock_data/data';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import {
-    BarChart,
-    Bar,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell
-} from 'recharts';
 
-type TooltipValue = string | number;
+import EmissionsScope from './EmissionsScope';
+import EnergyUsageTrend from './EnergyUsageTrend';
+import EmissionsDistribution from './EmissionsDistribution';
+import ConsumptionBreakdown from './ConsumptionBreakdown';
 
 const EnvironmentDashboard = () => {
 
@@ -59,30 +45,14 @@ const EnvironmentDashboard = () => {
                     subtext="Value chain emissions"
                 />
             </div>
-            <div>
-
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <EmissionsScope />
+                <EnergyUsageTrend />
             </div>
-            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <Card className="h-[calc(100vh-800px)]">
-                    <CardHeader>
-                        <CardTitle>Emissions by Scope Over Time (tCO2e)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[calc(100%-80px)]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={scopeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="year" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="scope1" name="Scope 1" fill="#0ea5e9" />
-                                <Bar dataKey="scope2" name="Scope 2" fill="#6366f1" />
-                                <Bar dataKey="scope3" name="Scope 3" fill="#7dd3fc" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-            </div> */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <EmissionsDistribution />
+                <ConsumptionBreakdown />
+            </div>
         </div>
     )
 }

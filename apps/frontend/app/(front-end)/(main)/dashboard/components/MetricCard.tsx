@@ -7,6 +7,7 @@ interface Props {
     subtext: string
     unit: string
 }
+
 const MetricCard: React.FC<Props> = ({
     title,
     value,
