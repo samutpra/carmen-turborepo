@@ -22,7 +22,6 @@ const StockTable = () => {
                         <CardTitle>Inventory Status</CardTitle>
                         <Button>Create Requisition</Button>
                     </div>
-
                     {/* Second Row - Search and Filters with justify-between */}
                     <div className="flex items-center justify-between">
                         <div className="relative w-1/2">

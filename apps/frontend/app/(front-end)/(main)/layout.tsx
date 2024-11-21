@@ -1,9 +1,9 @@
 "use client"
 import React, { useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar"
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "@/lib/i18n";
+import Navbar from "@/components/Navbar/Navbar";
 
 export default function MainLayout({
   children,
