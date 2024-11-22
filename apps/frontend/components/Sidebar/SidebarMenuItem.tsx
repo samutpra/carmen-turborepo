@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import * as LucideIcons from "lucide-react";
 import SidebarSubItems from './SidebarSubItems';
 import { MenuItem } from '@/lib/types';
+
 interface Props {
     item: MenuItem;
     isExpanded: boolean;
