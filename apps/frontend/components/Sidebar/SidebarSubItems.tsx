@@ -3,17 +3,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from '@/lib/i18n';
 import * as LucideIcons from "lucide-react";
-
-type SubMenuItem = {
-    name: string;
-    path: string;
-    icon?: string;
-    description?: string;
-    subItems?: SubMenuItem[];
-    visible?: boolean;
-    enabled?: boolean;
-};
-
+import { SubMenuItem } from '@/lib/types';
 interface Props {
     subItems: SubMenuItem[];
     pathname: string;

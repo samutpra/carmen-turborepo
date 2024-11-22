@@ -2,27 +2,7 @@ import React from 'react'
 import { Button } from "@/components/ui/button";
 import * as LucideIcons from "lucide-react";
 import SidebarSubItems from './SidebarSubItems';
-
-type SubMenuItem = {
-    name: string;
-    path: string;
-    icon?: string;
-    description?: string;
-    subItems?: SubMenuItem[];
-    visible?: boolean;
-    enabled?: boolean;
-};
-
-type MenuItem = {
-    title: string;
-    icon: string;
-    path?: string;
-    visible?: boolean;
-    enabled?: boolean;
-    subItems?: SubMenuItem[];
-};
-
-
+import { MenuItem } from '@/lib/types';
 interface Props {
     item: MenuItem;
     isExpanded: boolean;
@@ -51,7 +31,7 @@ const SidebarMenuItem: React.FC<Props> = ({
         <div className="px-2">
             <Button
                 variant="ghost"
-                className="w-full flex justify-between font-semibold text-gray-700 text-xs"
+                className="w-full flex justify-between font-semibold text-gray-700text-xs"
                 onClick={() => onToggleExpand(item.title, item.path)}
             >
                 <span className="flex items-center justify-between">
