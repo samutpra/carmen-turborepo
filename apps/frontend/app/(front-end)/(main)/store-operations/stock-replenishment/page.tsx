@@ -1,8 +1,9 @@
 import React from 'react'
+import StockReplenishmentDashboard from '../components/StockReplenishmentDashboard'
 
 const StockReplenishmentPage = () => {
     return (
-        <div>StockReplenishmentPage</div>
+        <StockReplenishmentDashboard />
     )
 }
 

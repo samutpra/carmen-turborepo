@@ -1,27 +1,9 @@
 'use client';
-
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bell, Globe, LogOut, Settings, User } from 'lucide-react';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Menu, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TenantID, setTenantId } from '@/lib/currentUser';
-import { useEffect, useState } from 'react';
-
 import { ApiDomain } from '@/lib/apiDomain';
-import { Button } from '@/components/ui/button';
 import { ITenant } from '@/types/tenant';
-import LanguageSwitcher from '@/components/languageSwitcher';
-import { Link } from '@/lib/i18n';
-import React from 'react';
-import { useRouter } from '@/lib/i18n';
 
 export function TenantList() {
 	const [businessUnit, setBusinessUnit] = useState('');
