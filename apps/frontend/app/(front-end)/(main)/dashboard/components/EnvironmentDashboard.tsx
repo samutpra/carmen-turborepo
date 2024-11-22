@@ -9,8 +9,9 @@ import ConsumptionBreakdown from './ConsumptionBreakdown';
 
 const EnvironmentDashboard = () => {
 
-    const latestYear = energyData[energyData.length - 1];
-    const previousYear = energyData[energyData.length - 2];
+    const latestYear = energyData.length ? energyData[energyData.length - 1] : null;
+    const previousYear = energyData.length > 1 ? energyData[energyData.length - 2] : null;
+
     const energyChange = latestYear && previousYear
         ? ((latestYear.energy - previousYear.energy) / previousYear.energy * 100).toFixed(1)
         : '0.0';
@@ -45,14 +46,14 @@ const EnvironmentDashboard = () => {
                     subtext="Value chain emissions"
                 />
             </div>
-            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <EmissionsScope />
                 <EnergyUsageTrend />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <EmissionsDistribution />
                 <ConsumptionBreakdown />
-            </div> */}
+            </div>
         </div>
     )
 }

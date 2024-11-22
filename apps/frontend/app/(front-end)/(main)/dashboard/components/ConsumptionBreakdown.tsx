@@ -1,7 +1,9 @@
+"use client";
+
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatLargeNumber } from '../utils';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { consumptionData } from '../mock_data/data';
 
 const ConsumptionBreakdown = () => {

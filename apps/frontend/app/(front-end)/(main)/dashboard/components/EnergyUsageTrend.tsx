@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
@@ -6,7 +8,7 @@ import { energyWithChanges } from '../mock_data/data'
 
 const EnergyUsageTrend = () => {
     return (
-        <Card className="h-[calc(100vh-800px)]">
+        <Card>
             <CardHeader>
                 <CardTitle>Energy Usage Trend & YoY Change (kWh)</CardTitle>
             </CardHeader>
