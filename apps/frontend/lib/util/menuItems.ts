@@ -166,12 +166,6 @@ export const menuItems = [
                 visible: true,
                 enabled: true,
             },
-            // {
-            //     name: `${m.issues_management()}`,
-            //     path: "/store-operations/issues-management",
-            //     visible: true,
-            //     enabled: true,
-            // },
             {
                 name: `${m.stock_replenishment()}`,
                 path: "/store-operations/stock-replenishment",
@@ -262,18 +256,6 @@ export const menuItems = [
             {
                 name: `${m.transfer_between_locations()}`,
                 path: "/inventory-management/transfer-between-locations",
-                visible: true,
-                enabled: true,
-            },
-            {
-                name: `${m.physical_count()}`,
-                path: "/inventory-management/physical-count",
-                visible: true,
-                enabled: true,
-            },
-            {
-                name: `${m.stock_take()}`,
-                path: "/inventory-management/stock-take",
                 visible: true,
                 enabled: true,
             },

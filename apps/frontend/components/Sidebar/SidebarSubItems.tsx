@@ -44,12 +44,12 @@ const SidebarSubItems: React.FC<Props> = ({
                 const IconComponent = subItem.icon ? (LucideIcons as any)[subItem.icon] : null;
 
                 return (
-                    <div key={subItem.path}>
+                    <div key={subItem.path} className='px-6'>
                         <Button
                             variant="ghost"
                             asChild={!hasNestedItems}
                             className={cn(
-                                "w-full justify-start text-sm text-foreground dark:text-gray-100 tracking-wide",
+                                "w-full justify-start text-sm text-foreground tracking-wide",
                                 pathname === subItem.path ? "bg-primary text-white" : "",
                                 hasNestedItems ? "flex justify-between" : ""
                             )}
@@ -66,7 +66,7 @@ const SidebarSubItems: React.FC<Props> = ({
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-2">
                                         {IconComponent && <IconComponent className="h-4 w-4" />}
-                                        <span className="text-blue-950 dark:text-gray-200 text-xs">
+                                        <span className="text-xs">
                                             {subItem.name}
                                         </span>
                                     </div>
@@ -79,7 +79,7 @@ const SidebarSubItems: React.FC<Props> = ({
                             ) : (
                                 <Link
                                     href={subItem.path}
-                                    className="text-blue-950 dark:text-gray-200 no-underline text-xs flex items-center gap-2"
+                                    className="no-underline text-xs flex items-center gap-2"
                                 >
                                     {IconComponent && <IconComponent className="h-4 w-4" />}
                                     {subItem.name}
