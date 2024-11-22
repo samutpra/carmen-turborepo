@@ -44,12 +44,12 @@ const SidebarSubItems: React.FC<Props> = ({
                 const IconComponent = subItem.icon ? (LucideIcons as any)[subItem.icon] : null;
 
                 return (
-                    <div key={subItem.path} className='px-6'>
+                    <div key={subItem.path} className='px-3'>
                         <Button
                             variant="ghost"
                             asChild={!hasNestedItems}
                             className={cn(
-                                "w-full justify-start text-sm text-foreground tracking-wide",
+                                "w-full justify-start text-sm text-foreground tracking-wide h-8",
                                 pathname === subItem.path ? "bg-primary text-white" : "",
                                 hasNestedItems ? "flex justify-between" : ""
                             )}
