@@ -1487,3 +1487,22 @@ export class APIError extends Error {
     this.name = 'APIError';
   }
 }
+
+export type SubMenuItem = {
+  name: string;
+  path: string;
+  icon?: string;
+  description?: string;
+  subItems?: SubMenuItem[];
+  visible?: boolean;
+  enabled?: boolean;
+};
+
+export type MenuItem = {
+  title: string;
+  icon: string;
+  path?: string;
+  visible?: boolean;
+  enabled?: boolean;
+  subItems?: SubMenuItem[];
+};
