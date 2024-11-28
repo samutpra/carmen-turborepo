@@ -132,8 +132,8 @@ const DepartmentList = () => {
 						)
 					);
 				} else {
-					const newCurrency = await createDepartment(token, data);
-					setDepartments((prev: DepartmentType[]) => [...prev, newCurrency]);
+					const newDepartment = await createDepartment(token, data);
+					setDepartments((prev: DepartmentType[]) => [...prev, newDepartment]);
 				}
 				handleCloseDialog();
 			} catch (error) {
