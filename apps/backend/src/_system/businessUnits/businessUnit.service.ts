@@ -96,8 +96,8 @@ export class BusinessUnitsService {
 
     const found = await this.db_System.business_unit_table.findUnique({
       where: {
-        clusterId_code: {
-          clusterId: createDto.clusterId,
+        cluster_id_code: {
+          cluster_id: createDto.cluster_id,
           code: createDto.code,
         },
       },
@@ -114,10 +114,10 @@ export class BusinessUnitsService {
     const createObj = await this.db_System.business_unit_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -141,11 +141,40 @@ export class BusinessUnitsService {
       throw new NotFoundException('BusinessUnit not found');
     }
 
+    if (updateDto.cluster_id == null) {
+      updateDto.cluster_id = oneObj.cluster_id;
+    }
+    if (updateDto.code == null) {
+      updateDto.code = oneObj.code;
+    }
+
+    // check duplicate
+    if (
+      oneObj.cluster_id != updateDto.cluster_id ||
+      oneObj.code != updateDto.code
+    ) {
+      const found = await this.db_System.business_unit_table.findUnique({
+        where: {
+          cluster_id_code: {
+            cluster_id: updateDto.cluster_id,
+            code: updateDto.code,
+          },
+        },
+      });
+      if (found) {
+        throw new DuplicateException({
+          statusCode: HttpStatus.CONFLICT,
+          message: `BusinessUnit [cluster_id : ${updateDto.cluster_id} , code : ${updateDto.code}] already exists`,
+          id: found.id,
+        });
+      }
+    }
+
     const updateObj = await this.db_System.business_unit_table.update({
       where: {
         id: id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

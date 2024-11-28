@@ -1,8 +1,8 @@
 export class ExchangeRateCreateDto {
 	id?: string;
-	dateAt?: Date | string | null;
+	at_date?: Date | string | null;
 	rate?: number | null;
-	currencyId!: string;
+	currency_id!: string;
 }
 
 export class ExchangeRateUpdateDto extends ExchangeRateCreateDto {

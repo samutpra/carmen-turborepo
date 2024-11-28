@@ -15,12 +15,12 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // ลบฟิลด์ที่ไม่ได้กำหนดออก
-      forbidNonWhitelisted: false, // ฟ้อง error เมื่อมีฟิลด์ที่ไม่ได้กำหนด
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true, // ลบฟิลด์ที่ไม่ได้กำหนดออก
+  //     forbidNonWhitelisted: false, // ฟ้อง error เมื่อมีฟิลด์ที่ไม่ได้กำหนด
+  //   }),
+  // );
 
   const config = new DocumentBuilder()
     .setTitle('CARMEN INVENTORY API')

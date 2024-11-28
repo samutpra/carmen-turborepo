@@ -9,34 +9,3 @@ Content-Type: application/json
 
 ### get token
 @access_token={{login.response.body.access_token}}
-
-
-
-
-### หาว่ามี tenant ใหนเข้าได้บ้าง
-GET {{host}}/api/v1/user-tenant
-Authorization: Bearer {{access_token}}
-
-### ลงทะเบียน tenant
-POST {{host}}/api/v1/user-tenant
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-
-{
-
-}
-
-
-# ### Get Users
-# GET {{host}}/api/v1/users
-# Authorization: Bearer {{access_token}}
-
-# ### Create user
-# POST {{host}}/api/v1/users
-# Content-Type: application/json
-# Authorization: Bearer {{access_token}}
-
-# {
-#     "username": "test2",
-#     "password": "password2",
-# }

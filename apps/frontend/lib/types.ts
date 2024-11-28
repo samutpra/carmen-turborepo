@@ -56,7 +56,7 @@ export interface ExchangeRate {
 //   categoryId: number;
 //   baseUnitId: number;
 //   costingMethod: CostingMethod;
-//   isActive: boolean;
+//   is_active: boolean;
 //   isSerialized: boolean;
 //   minimumQuantity?: number;
 //   maximumQuantity?: number;
@@ -893,7 +893,7 @@ export interface Product {
   size: string;
   color: string;
   barcode: string;
-  isActive: boolean;
+  is_active: boolean;
   basePrice: number;
   currency: string;
   taxType: string;
@@ -932,7 +932,7 @@ export interface Vendor {
   taxId: string;
   establishmentDate: string;
   businessTypeId: string;
-  isActive: boolean;
+  is_active: boolean;
   addresses: Address[];
   contacts: Contact[];
   rating: number;
@@ -995,7 +995,7 @@ export const UnitSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Name is required").max(50, "Name must be less than 50 characters"),
   description: z.string().min(1, "Description is required").max(100, "Description must be less than 100 characters"),
-  isActive: z.boolean().default(true)
+  is_active: z.boolean().default(true)
 });
 
 export type UnitType = z.infer<typeof UnitSchema>;
@@ -1011,7 +1011,7 @@ export const StoreLocationSchema = z.object({
   departmentName: z.string(),
   type: z.string(),
   status: z.string(),
-  isActive: z.boolean().default(true),
+  is_active: z.boolean().default(true),
 });
 
 export type StoreLocationType = z.infer<typeof StoreLocationSchema>;
@@ -1022,13 +1022,13 @@ export interface StoreLocationLabel {
 }
 
 export const CurrencySchema = z.object({
-  id: z.string().optional(),
-  code: z.string(),
-  name: z.string(),
-  symbol: z.string().optional(),
-  description: z.string(),
-  rate: z.number(),
-  isActive: z.boolean().optional(),
+	id: z.string().optional(),
+	code: z.string(),
+	name: z.string(),
+	symbol: z.string().optional(),
+	description: z.string(),
+	rate: z.number(),
+	is_active: z.boolean().optional(),
 });
 
 export type CurrencyType = z.infer<typeof CurrencySchema>;
@@ -1295,7 +1295,7 @@ export const ProductSchema = z.object({
   size: z.string(),
   color: z.string(),
   barcode: z.string(),
-  isActive: z.boolean(),
+  is_active: z.boolean(),
   basePrice: z.number(),
   currency: z.string(),
   taxType: z.string(),
@@ -1443,12 +1443,12 @@ export interface CustomJwtPayload extends JwtPayload {
 }
 
 export const LocationSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string(),
-  locationType: z.enum(["Inventory", "Direct"]),
-  description: z.string(),
-  isActive: z.boolean(),
-  deliveryPointId: z.string().nullable().optional(),
+	id: z.string().uuid().optional(),
+	name: z.string(),
+	location_type: z.enum(['Inventory', 'Direct']),
+	description: z.string(),
+	is_active: z.boolean(),
+	delivery_point_id: z.string().optional(),
 });;
 
 export type LocationType = z.infer<typeof LocationSchema>;
@@ -1464,7 +1464,7 @@ export const DepartmentSchema = z.object({
   id: z.string().optional(),
   name: z.string(),
   description: z.string(),
-  isActive: z.boolean(),
+  is_active: z.boolean(),
 })
 
 export type DepartmentType = z.infer<typeof DepartmentSchema>;

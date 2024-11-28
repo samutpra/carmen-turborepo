@@ -1,13 +1,14 @@
 import {
-  ClusterCreateDto,
-  ClusterUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import {
+  ClusterCreateDto,
+  ClusterUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
   cluster_table,
@@ -105,10 +106,10 @@ export class ClusterService {
     const createObj = await this.db_System.cluster_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -132,11 +133,26 @@ export class ClusterService {
       throw new NotFoundException('Cluster not found');
     }
 
+    if (oneObj.code !== updateDto.code) {
+      const found = await this.db_System.cluster_table.findUnique({
+        where: {
+          code: updateDto.code,
+        },
+      });
+      if (found) {
+        throw new DuplicateException({
+          statusCode: HttpStatus.CONFLICT,
+          message: `cluster [code : ${updateDto.code}] already exists`,
+          id: found.id,
+        });
+      }
+    }
+
     const updateObj = await this.db_System.cluster_table.update({
       where: {
         id: id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -155,10 +171,25 @@ export class ClusterService {
       throw new NotFoundException('Cluster not found');
     }
 
-    await this.db_System.cluster_table.delete({
+    const isActiveBUs = await this.db_System.business_unit_table.count({
+      where: {
+        cluster_id: id,
+      },
+    });
+
+    if (isActiveBUs > 0) {
+      throw new BadRequestException('Cluster is in use');
+    }
+
+    const res = await this.db_System.cluster_table.delete({
       where: {
         id: id,
       },
     });
+
+    return {
+      message: 'Cluster deleted successfully',
+      id: res.id,
+    };
   }
 }

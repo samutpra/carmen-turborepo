@@ -1,6 +1,6 @@
 export class UserProfileCreateDto {
 	id?: string;
-	userId!: string;
+	user_id!: string;
 	firstname!: string;
 	middlename?: string;
 	lastname!: string;

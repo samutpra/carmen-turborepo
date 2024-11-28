@@ -1,0 +1,25 @@
+meta {
+  name: 03 - Post (DUMMY 2)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/system-api/v1/businessUnits
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "cluster_id": "{{cluster_id}}",
+    "code": "DUMMY_3",
+    "name": "DUMMY 002",
+    "is_hq": false,
+    "is_active": true
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('bu_id',res.body.id)
+}

@@ -19,11 +19,11 @@ model address_type_table {
   id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                 String                 @unique @db.Uuid
   description          String?
-  isActive             Boolean?               @default(true)
-  createdAt            DateTime?              @default(now()) @db.Timestamp(6)
-  createById           String?                @db.Uuid
-  updateAt             DateTime?              @default(now()) @db.Timestamp(6)
-  updateById           String?                @db.Uuid
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_by_id        String?                @db.Uuid
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_by_id        String?                @db.Uuid
   vendor_address_table vendor_address_table[]
 
   @@index([name], map: "addresstype_name_u")
@@ -33,11 +33,11 @@ model contact_type_table {
   id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                 String                 @unique @db.Uuid
   description          String?
-  isActive             Boolean?               @default(true)
-  createdAt            DateTime?              @default(now()) @db.Timestamp(6)
-  createById           String?                @db.Uuid
-  updateAt             DateTime?              @default(now()) @db.Timestamp(6)
-  updateById           String?                @db.Uuid
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_by_id        String?                @db.Uuid
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_by_id        String?                @db.Uuid
   vendor_contact_table vendor_contact_table[]
 
   @@index([name], map: "contacttype_name_u")
@@ -49,12 +49,12 @@ model currency_table {
   name                String                @db.VarChar(100)
   symbol              String?               @db.VarChar(5)
   description         String?               @default("")
-  isActive            Boolean?              @default(true)
+  is_active           Boolean?              @default(true)
   rate                Float?                @default(1)
-  createdAt           DateTime?             @default(now()) @db.Timestamp(6)
-  createById          String?               @db.Uuid
-  updateAt            DateTime?             @default(now()) @db.Timestamp(6)
-  updateById          String?               @db.Uuid
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  created_by_id       String?               @db.Uuid
+  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  updated_by_id       String?               @db.Uuid
   exchange_rate_table exchange_rate_table[]
 
   @@index([code], map: "currency_code_u")
@@ -63,83 +63,83 @@ model currency_table {
 model delivery_point_table {
   id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String           @unique @db.VarChar
-  isActive       Boolean?         @default(true)
-  createdAt      DateTime?        @default(now()) @db.Timestamp(6)
-  createById     String?          @db.Uuid
-  updateAt       DateTime?        @default(now()) @db.Timestamp(6)
-  updateById     String?          @db.Uuid
+  is_active      Boolean?         @default(true)
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
+  created_by_id  String?          @db.Uuid
+  updated_at     DateTime?        @default(now()) @db.Timestamp(6)
+  updated_by_id  String?          @db.Uuid
   location_table location_table[]
 
   @@index([name], map: "deliverypoint_name_u")
 }
 
 model department_table {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String    @unique @db.VarChar
-  description String?
-  isActive    Boolean?  @default(true)
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
-  createById  String?   @db.Uuid
-  updateAt    DateTime? @default(now()) @db.Timestamp(6)
-  updateById  String?   @db.Uuid
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @unique @db.VarChar
+  description   String?
+  is_active     Boolean?  @default(true)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_by_id String?   @db.Uuid
 
   @@index([name], map: "department_name_u")
 }
 
 model exchange_rate_table {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  dateAt         DateTime?       @default(now()) @db.Timestamp(6)
-  currencyId     String?         @db.Uuid
+  at_date        DateTime?       @default(now()) @db.Timestamp(6)
+  currency_id    String?         @db.Uuid
   rate           Float?          @default(1)
-  createdAt      DateTime?       @default(now()) @db.Timestamp(6)
-  createById     String?         @db.Uuid
-  updateAt       DateTime?       @default(now()) @db.Timestamp(6)
-  updateById     String?         @db.Uuid
-  currency_table currency_table? @relation(fields: [currencyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  created_at     DateTime?       @default(now()) @db.Timestamp(6)
+  created_by_id  String?         @db.Uuid
+  updated_at     DateTime?       @default(now()) @db.Timestamp(6)
+  updated_by_id  String?         @db.Uuid
+  currency_table currency_table? @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([dateAt, currencyId], map: "exchangerate_dateat_currencyid_u")
+  @@unique([at_date, currency_id], map: "exchangerate_at_date_currency_id_u")
 }
 
 model global_activity_table {
-  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  action      enum_activity_action?
-  entityType  String?               @db.VarChar(100)
-  entityId    String?               @db.Uuid
-  actorId     String?               @db.Uuid
-  metadata    Json?                 @db.Json
-  oldData     Json?                 @db.Json
-  newData     Json?                 @db.Json
-  ipAddress   String?
-  userAgent   String?
-  description String?
-  createdAt   DateTime?             @default(now()) @db.Timestamp(6)
-  createById  String?               @db.Uuid
+  id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action        enum_activity_action?
+  entity_type   String?               @db.VarChar(100)
+  entity_id     String?               @db.Uuid
+  actor_id      String?               @db.Uuid
+  meta_data     Json?                 @db.Json
+  old_data      Json?                 @db.Json
+  new_data      Json?                 @db.Json
+  ip_address    String?
+  user_agent    String?
+  description   String?
+  created_at    DateTime?             @default(now()) @db.Timestamp(6)
+  created_by_id String?               @db.Uuid
 
-  @@index([entityType, entityId], map: "global_activity_entitytype_entityid_idx")
+  @@index([entity_type, entity_id], map: "global_activity_entitytype_entityid_idx")
   @@index([action])
-  @@index([actorId])
-  @@index([createdAt])
+  @@index([actor_id])
+  @@index([created_at])
 }
 
 model good_receive_note_0_table {
   id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv0Id                        String                        @db.Uuid
+  inventory_transaction_0_id    String                        @db.Uuid
   name                          String?                       @db.VarChar
-  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inventory_transaction_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   good_receive_note_1_table     good_receive_note_1_table[]
 }
 
 model good_receive_note_1_table {
   id                        String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  GRN0Id                    String                    @db.Uuid
+  good_receive_note_0_id    String                    @db.Uuid
   name                      String?                   @db.VarChar
-  good_receive_note_0_table good_receive_note_0_table @relation(fields: [GRN0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  good_receive_note_0_table good_receive_note_0_table @relation(fields: [good_receive_note_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model inventory_transaction_0_table {
   id                            String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                          String                          @unique @db.VarChar
-  invDocType                    enum_inventory_doc_type?
+  inventory_doc_type            enum_inventory_doc_type?
   good_receive_note_0_table     good_receive_note_0_table[]
   inventory_transaction_1_table inventory_transaction_1_table[]
   stock_in_0_table              stock_in_0_table[]
@@ -149,53 +149,53 @@ model inventory_transaction_0_table {
 
 model inventory_transaction_1_table {
   id                            String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv0Id                        String                          @db.Uuid
-  fromLot                       String?                         @db.Uuid
-  currentLotName                String?                         @db.VarChar
+  inventory_transaction_0_id    String                          @db.Uuid
+  from_lot_name                 String?                         @db.Uuid
+  current_lot_name              String?                         @db.VarChar
   qty                           Decimal?                        @db.Decimal
   cost                          Decimal?                        @db.Decimal(15, 5)
-  inventory_transaction_0_table inventory_transaction_0_table   @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_0_table inventory_transaction_0_table   @relation(fields: [inventory_transaction_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   inventory_transaction_2_table inventory_transaction_2_table[]
 }
 
 model inventory_transaction_2_table {
   id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv1Id                        String                        @db.Uuid
-  lotName                       String?                       @db.VarChar
-  lotIndex                      Int                           @default(1)
+  inventory_transaction_1_id    String                        @db.Uuid
+  lot_name                      String?                       @db.VarChar
+  lot_index                     Int                           @default(1)
   qty                           Decimal?                      @db.Decimal
   cost                          Decimal?                      @db.Decimal(15, 5)
-  inventory_transaction_1_table inventory_transaction_1_table @relation(fields: [inv1Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_1_table inventory_transaction_1_table @relation(fields: [inventory_transaction_1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([lotName, lotIndex], map: "inv2_lotname_lotindex_u")
+  @@unique([lot_name, lot_index], map: "inv2_lotname_lot_index_u")
 }
 
 model location_table {
   id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                 String                @unique @db.VarChar
-  locationType         enum_location_type
+  location_type        enum_location_type
   description          String?
-  isActive             Boolean?              @default(true)
-  deliveryPointId      String?               @db.Uuid
-  createdAt            DateTime?             @default(now()) @db.Timestamp(6)
-  createById           String?               @db.Uuid
-  updateAt             DateTime?             @default(now()) @db.Timestamp(6)
-  updateById           String?               @db.Uuid
-  delivery_point_table delivery_point_table? @relation(fields: [deliveryPointId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active            Boolean?              @default(true)
+  delivery_point_id    String?               @db.Uuid
+  created_at           DateTime?             @default(now()) @db.Timestamp(6)
+  created_by_id        String?               @db.Uuid
+  updated_at           DateTime?             @default(now()) @db.Timestamp(6)
+  updated_by_id        String?               @db.Uuid
+  delivery_point_table delivery_point_table? @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([name], map: "location_name_u")
 }
 
 model menu_table {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String    @unique @db.VarChar(5)
-  description String?
-  isActive    Boolean?  @default(true)
-  isVisible   Boolean?  @default(true)
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
-  createById  String?   @db.Uuid
-  updateAt    DateTime? @default(now()) @db.Timestamp(6)
-  updateById  String?   @db.Uuid
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @unique @db.VarChar(5)
+  description   String?
+  is_active     Boolean?  @default(true)
+  isVisible     Boolean?  @default(true)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_by_id String?   @db.Uuid
 
   @@index([name], map: "menu_name_u")
 }
@@ -204,11 +204,11 @@ model product_category_table {
   id                         String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                       String                       @unique @db.VarChar
   description                String?
-  isActive                   Boolean?                     @default(true)
-  createdAt                  DateTime?                    @default(now()) @db.Timestamp(6)
-  createById                 String?                      @db.Uuid
-  updateAt                   DateTime?                    @default(now()) @db.Timestamp(6)
-  updateById                 String?                      @db.Uuid
+  is_active                  Boolean?                     @default(true)
+  created_at                 DateTime?                    @default(now()) @db.Timestamp(6)
+  created_by_id              String?                      @db.Uuid
+  updated_at                 DateTime?                    @default(now()) @db.Timestamp(6)
+  updated_by_id              String?                      @db.Uuid
   product_sub_category_table product_sub_category_table[]
 
   @@index([name], map: "productcategory_name_u")
@@ -216,29 +216,29 @@ model product_category_table {
 
 model product_info_table {
   id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId     String        @unique @db.Uuid
+  product_id    String        @unique @db.Uuid
   price         Float?
   info          Json?         @db.Json
-  createdAt     DateTime?     @default(now()) @db.Timestamp(6)
-  createById    String?       @db.Uuid
-  updateAt      DateTime?     @default(now()) @db.Timestamp(6)
-  updateById    String?       @db.Uuid
-  product_table product_table @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  created_at    DateTime?     @default(now()) @db.Timestamp(6)
+  created_by_id String?       @db.Uuid
+  updated_at    DateTime?     @default(now()) @db.Timestamp(6)
+  updated_by_id String?       @db.Uuid
+  product_table product_table @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([productId], map: "productinfo_productid_u")
+  @@index([product_id], map: "productinfo_product_id_u")
 }
 
 model product_item_group_table {
   id                         String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                       String                      @unique @db.VarChar
   description                String?
-  isActive                   Boolean?                    @default(true)
-  productSubCategoryId       String?                     @db.Uuid
-  createdAt                  DateTime?                   @default(now()) @db.Timestamp(6)
-  createById                 String?                     @db.Uuid
-  updateAt                   DateTime?                   @default(now()) @db.Timestamp(6)
-  updateById                 String?                     @db.Uuid
-  product_sub_category_table product_sub_category_table? @relation(fields: [productSubCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active                  Boolean?                    @default(true)
+  product_subcategory_id     String?                     @db.Uuid
+  created_at                 DateTime?                   @default(now()) @db.Timestamp(6)
+  created_by_id              String?                     @db.Uuid
+  updated_at                 DateTime?                   @default(now()) @db.Timestamp(6)
+  updated_by_id              String?                     @db.Uuid
+  product_sub_category_table product_sub_category_table? @relation(fields: [product_subcategory_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([name], map: "productitemgroup_name_u")
 }
@@ -247,14 +247,14 @@ model product_sub_category_table {
   id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                     String                     @unique @db.VarChar
   description              String?
-  isActive                 Boolean?                   @default(true)
-  productCategoryId        String?                    @db.Uuid
-  createdAt                DateTime?                  @default(now()) @db.Timestamp(6)
-  createById               String?                    @db.Uuid
-  updateAt                 DateTime?                  @default(now()) @db.Timestamp(6)
-  updateById               String?                    @db.Uuid
+  is_active                Boolean?                   @default(true)
+  product_category_id      String?                    @db.Uuid
+  created_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  created_by_id            String?                    @db.Uuid
+  updated_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                    @db.Uuid
   product_item_group_table product_item_group_table[]
-  product_category_table   product_category_table?    @relation(fields: [productCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  product_category_table   product_category_table?    @relation(fields: [product_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([name], map: "productsubcategory_name_u")
 }
@@ -264,14 +264,14 @@ model product_table {
   code                  String                  @unique @db.VarChar
   name                  String                  @unique @db.VarChar
   description           String?
-  primaryUnit           String                  @db.Uuid
-  isActive              Boolean?                @default(true)
-  createdAt             DateTime?               @default(now()) @db.Timestamp(6)
-  createById            String?                 @db.Uuid
-  updateAt              DateTime?               @default(now()) @db.Timestamp(6)
-  updateById            String?                 @db.Uuid
+  primary_unit          String                  @db.Uuid
+  is_active             Boolean?                @default(true)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  created_by_id         String?                 @db.Uuid
+  updated_at            DateTime?               @default(now()) @db.Timestamp(6)
+  updated_by_id         String?                 @db.Uuid
   product_info_table    product_info_table?
-  unit_table            unit_table              @relation(fields: [primaryUnit], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit_table            unit_table              @relation(fields: [primary_unit], references: [id], onDelete: NoAction, onUpdate: NoAction)
   product_vendor_table  product_vendor_table[]
   unit_conversion_table unit_conversion_table[]
 
@@ -281,29 +281,29 @@ model product_table {
 
 model product_vendor_table {
   id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vendorId      String?        @db.Uuid
-  productId     String?        @db.Uuid
+  vendor_id     String?        @db.Uuid
+  product_id    String?        @db.Uuid
   description   String?
-  isActive      Boolean?       @default(true)
-  createdAt     DateTime?      @default(now()) @db.Timestamp(6)
-  createById    String?        @db.Uuid
-  updateAt      DateTime?      @default(now()) @db.Timestamp(6)
-  updateById    String?        @db.Uuid
-  product_table product_table? @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vendor_table  vendor_table?  @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active     Boolean?       @default(true)
+  created_at    DateTime?      @default(now()) @db.Timestamp(6)
+  created_by_id String?        @db.Uuid
+  updated_at    DateTime?      @default(now()) @db.Timestamp(6)
+  updated_by_id String?        @db.Uuid
+  product_table product_table? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vendor_table  vendor_table?  @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([vendorId, productId], map: "productvendor_vendorid_productid_u")
+  @@unique([vendor_id, product_id], map: "productvendor_vendor_id_product_id_u")
 }
 
 model purchase_order_0_table {
   id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                   String                   @unique @db.VarChar
   description            String?
-  isActive               Boolean?                 @default(true)
-  createdAt              DateTime?                @default(now()) @db.Timestamp(6)
-  createById             String?                  @db.Uuid
-  updateAt               DateTime?                @default(now()) @db.Timestamp(6)
-  updateById             String?                  @db.Uuid
+  is_active              Boolean?                 @default(true)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id          String?                  @db.Uuid
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id          String?                  @db.Uuid
   purchase_order_1_table purchase_order_1_table[]
 
   @@index([name], map: "PO_name_u")
@@ -313,73 +313,73 @@ model purchase_order_1_table {
   id                     String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                   String?                 @unique @db.VarChar
   description            String?
-  isActive               Boolean?                @default(true)
-  PO0Id                  String?                 @db.Uuid
-  createdAt              DateTime?               @default(now()) @db.Timestamp(6)
-  createById             String?                 @db.Uuid
-  updateAt               DateTime?               @default(now()) @db.Timestamp(6)
-  updateById             String?                 @db.Uuid
-  purchase_order_0_table purchase_order_0_table? @relation(fields: [PO0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active              Boolean?                @default(true)
+  purchase_order_0_id    String?                 @db.Uuid
+  created_at             DateTime?               @default(now()) @db.Timestamp(6)
+  created_by_id          String?                 @db.Uuid
+  updated_at             DateTime?               @default(now()) @db.Timestamp(6)
+  updated_by_id          String?                 @db.Uuid
+  purchase_order_0_table purchase_order_0_table? @relation(fields: [purchase_order_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([name], map: "PO1_name_u")
 }
 
 model purchase_request_0_table {
   id                          String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  refName                     String                       @unique @db.VarChar
-  prDate                      DateTime?                    @db.Date
-  prTypeId                    String?                      @db.Uuid
-  requestorId                 String?                      @db.Uuid
-  departmentId                String?                      @db.Uuid
-  isActive                    Boolean?                     @default(true)
-  createdAt                   DateTime?                    @default(now()) @db.Timestamp(6)
-  createById                  String?                      @db.Uuid
-  updateAt                    DateTime?                    @default(now()) @db.Timestamp(6)
-  updateById                  String?                      @db.Uuid
-  purchase_request_type_table purchase_request_type_table? @relation(fields: [prTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reference_name              String                       @unique @db.VarChar
+  purchase_request_date       DateTime?                    @db.Date
+  purchase_request_type_id    String?                      @db.Uuid
+  requestor_id                String?                      @db.Uuid
+  department_id               String?                      @db.Uuid
+  is_active                   Boolean?                     @default(true)
+  created_at                  DateTime?                    @default(now()) @db.Timestamp(6)
+  created_by_id               String?                      @db.Uuid
+  updated_at                  DateTime?                    @default(now()) @db.Timestamp(6)
+  updated_by_id               String?                      @db.Uuid
+  purchase_request_type_table purchase_request_type_table? @relation(fields: [purchase_request_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   purchase_request_1_table    purchase_request_1_table[]
 
-  @@index([refName], map: "PR0_refname_u")
+  @@index([reference_name], map: "PR0_reference_name_u")
 }
 
 model purchase_request_1_table {
   id                                String                              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  PR0Id                             String?                             @db.Uuid
-  locationId                        String?                             @db.Uuid
-  productId                         String?                             @db.Uuid
-  unitId                            String?                             @db.Uuid
+  purchase_request_0_id             String?                             @db.Uuid
+  location_id                       String?                             @db.Uuid
+  product_id                        String?                             @db.Uuid
+  unit_id                           String?                             @db.Uuid
   description                       String?
-  requestQty                        Float?
-  approveQty                        Float?
-  currencyId                        String?                             @db.Uuid
-  currencyRate                      Float?
+  requested_qty                     Float?
+  approved_qty                      Float?
+  currency_id                       String?                             @db.Uuid
+  currency_rate                     Float?
   price                             Decimal?                            @db.Decimal(15, 5)
-  totalPrice                        Decimal?                            @db.Decimal(15, 5)
-  createdAt                         DateTime?                           @default(now()) @db.Timestamp(6)
-  createById                        String?                             @db.Uuid
-  updateAt                          DateTime?                           @default(now()) @db.Timestamp(6)
-  updateById                        String?                             @db.Uuid
-  purchase_request_0_table          purchase_request_0_table?           @relation(fields: [PR0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  total_price                       Decimal?                            @db.Decimal(15, 5)
+  created_at                        DateTime?                           @default(now()) @db.Timestamp(6)
+  created_by_id                     String?                             @db.Uuid
+  updated_at                        DateTime?                           @default(now()) @db.Timestamp(6)
+  updated_by_id                     String?                             @db.Uuid
+  purchase_request_0_table          purchase_request_0_table?           @relation(fields: [purchase_request_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   purchase_request_1_workflow_table purchase_request_1_workflow_table[]
 }
 
 model purchase_request_1_workflow_table {
   id                       String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  PR1Id                    String?                   @db.Uuid
-  createdAt                DateTime?                 @default(now()) @db.Timestamp(6)
-  createById               String?                   @db.Uuid
-  purchase_request_1_table purchase_request_1_table? @relation(fields: [PR1Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  purchase_request_1_id    String?                   @db.Uuid
+  created_at               DateTime?                 @default(now()) @db.Timestamp(6)
+  created_by_id            String?                   @db.Uuid
+  purchase_request_1_table purchase_request_1_table? @relation(fields: [purchase_request_1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model purchase_request_type_table {
   id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                     String                     @unique @db.VarChar
   description              String?
-  isActive                 Boolean?                   @default(true)
-  createdAt                DateTime?                  @default(now()) @db.Timestamp(6)
-  createById               String?                    @db.Uuid
-  updateAt                 DateTime?                  @default(now()) @db.Timestamp(6)
-  updateById               String?                    @db.Uuid
+  is_active                Boolean?                   @default(true)
+  created_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  created_by_id            String?                    @db.Uuid
+  updated_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                    @db.Uuid
   purchase_request_0_table purchase_request_0_table[]
 
   @@index([name], map: "PRtype_name_u")
@@ -387,126 +387,126 @@ model purchase_request_type_table {
 
 model stock_in_0_table {
   id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv0Id                        String                        @db.Uuid
+  inventory_transaction_0_id    String                        @db.Uuid
   name                          String?                       @db.VarChar
-  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inventory_transaction_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   stock_in_1_table              stock_in_1_table[]
 }
 
 model stock_in_1_table {
   id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  SI0Id            String           @db.Uuid
+  stock_in_0_id    String           @db.Uuid
   name             String?          @db.VarChar
-  stock_in_0_table stock_in_0_table @relation(fields: [SI0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  stock_in_0_table stock_in_0_table @relation(fields: [stock_in_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model stock_out_0_table {
   id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv0Id                        String                        @db.Uuid
+  inventory_transaction_0_id    String                        @db.Uuid
   name                          String?                       @db.VarChar
-  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inventory_transaction_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   stock_out_1_table             stock_out_1_table[]
 }
 
 model stock_out_1_table {
   id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  SO0Id             String            @db.Uuid
+  stock_in_0_id     String            @db.Uuid
   name              String?           @db.VarChar
-  stock_out_0_table stock_out_0_table @relation(fields: [SO0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  stock_out_0_table stock_out_0_table @relation(fields: [stock_in_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model store_requisition_0_table {
   id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inv0Id                        String                        @db.Uuid
+  inventory_transaction_0_id    String                        @db.Uuid
   name                          String?                       @db.VarChar
-  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inv0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory_transaction_0_table inventory_transaction_0_table @relation(fields: [inventory_transaction_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   store_requisition_1_table     store_requisition_1_table[]
 }
 
 model store_requisition_1_table {
   id                        String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  SR0Id                     String                    @db.Uuid
+  store_requisition_0_id    String                    @db.Uuid
   name                      String?                   @db.VarChar
-  store_requisition_0_table store_requisition_0_table @relation(fields: [SR0Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  store_requisition_0_table store_requisition_0_table @relation(fields: [store_requisition_0_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model unit_conversion_table {
-  id                                                      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId                                               String?        @db.Uuid
-  unitType                                                enum_unit_type
-  fromUnitId                                              String?        @db.Uuid
-  toUnitId                                                String?        @db.Uuid
-  rate                                                    Float?         @default(1)
-  description                                             String?
-  isActive                                                Boolean?       @default(true)
-  createdAt                                               DateTime?      @default(now()) @db.Timestamp(6)
-  createById                                              String?        @db.Uuid
-  updateAt                                                DateTime?      @default(now()) @db.Timestamp(6)
-  updateById                                              String?        @db.Uuid
-  unit_table_unit_conversion_table_fromUnitIdTounit_table unit_table?    @relation("unit_conversion_table_fromUnitIdTounit_table", fields: [fromUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product_table                                           product_table? @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  unit_table_unit_conversion_table_toUnitIdTounit_table   unit_table?    @relation("unit_conversion_table_toUnitIdTounit_table", fields: [toUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                                        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id                                                String?        @db.Uuid
+  unit_type                                                 enum_unit_type
+  from_unit_id                                              String?        @db.Uuid
+  to_unit_id                                                String?        @db.Uuid
+  rate                                                      Float?         @default(1)
+  description                                               String?
+  is_active                                                 Boolean?       @default(true)
+  created_at                                                DateTime?      @default(now()) @db.Timestamp(6)
+  created_by_id                                             String?        @db.Uuid
+  updated_at                                                DateTime?      @default(now()) @db.Timestamp(6)
+  updated_by_id                                             String?        @db.Uuid
+  unit_table_unit_conversion_table_from_unit_idTounit_table unit_table?    @relation("unit_conversion_table_from_unit_idTounit_table", fields: [from_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  product_table                                             product_table? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit_table_unit_conversion_table_to_unit_idTounit_table   unit_table?    @relation("unit_conversion_table_to_unit_idTounit_table", fields: [to_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([productId, unitType], map: "unitconversion_productid_unittype_u")
+  @@index([product_id, unit_type], map: "unitconversion_product_id_unit_type_u")
 }
 
 model unit_table {
-  id                                                                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                                                               String                  @unique @db.VarChar
-  description                                                        String?
-  isActive                                                           Boolean?                @default(true)
-  createdAt                                                          DateTime?               @default(now()) @db.Timestamp(6)
-  createById                                                         String?                 @db.Uuid
-  updateAt                                                           DateTime?               @default(now()) @db.Timestamp(6)
-  updateById                                                         String?                 @db.Uuid
-  product_table                                                      product_table[]
-  unit_conversion_table_unit_conversion_table_fromUnitIdTounit_table unit_conversion_table[] @relation("unit_conversion_table_fromUnitIdTounit_table")
-  unit_conversion_table_unit_conversion_table_toUnitIdTounit_table   unit_conversion_table[] @relation("unit_conversion_table_toUnitIdTounit_table")
+  id                                                                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                                                                 String                  @unique @db.VarChar
+  description                                                          String?
+  is_active                                                            Boolean?                @default(true)
+  created_at                                                           DateTime?               @default(now()) @db.Timestamp(6)
+  created_by_id                                                        String?                 @db.Uuid
+  updated_at                                                           DateTime?               @default(now()) @db.Timestamp(6)
+  updated_by_id                                                        String?                 @db.Uuid
+  product_table                                                        product_table[]
+  unit_conversion_table_unit_conversion_table_from_unit_idTounit_table unit_conversion_table[] @relation("unit_conversion_table_from_unit_idTounit_table")
+  unit_conversion_table_unit_conversion_table_to_unit_idTounit_table   unit_conversion_table[] @relation("unit_conversion_table_to_unit_idTounit_table")
 
   @@index([name], map: "unit_name_u")
 }
 
 model vendor_address_table {
   id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vendorId           String?            @db.Uuid
-  addressTypeId      String             @db.Uuid
+  vendor_id          String?            @db.Uuid
+  address_type_id    String             @db.Uuid
   address            Json?              @db.Json
-  isActive           Boolean?           @default(true)
-  createdAt          DateTime?          @default(now()) @db.Timestamp(6)
-  createById         String?            @db.Uuid
-  updateAt           DateTime?          @default(now()) @db.Timestamp(6)
-  updateById         String?            @db.Uuid
-  address_type_table address_type_table @relation(fields: [addressTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vendor_table       vendor_table?      @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active          Boolean?           @default(true)
+  created_at         DateTime?          @default(now()) @db.Timestamp(6)
+  created_by_id      String?            @db.Uuid
+  updated_at         DateTime?          @default(now()) @db.Timestamp(6)
+  updated_by_id      String?            @db.Uuid
+  address_type_table address_type_table @relation(fields: [address_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vendor_table       vendor_table?      @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([vendorId, addressTypeId], map: "vendorcontact_vendorid_addresstypeid_u")
+  @@unique([vendor_id, address_type_id], map: "vendorcontact_vendor_id_address_type_id_u")
 }
 
 model vendor_contact_table {
   id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vendorId           String?            @db.Uuid
-  contactTypeId      String             @db.Uuid
+  vendor_id          String?            @db.Uuid
+  contact_type_id    String             @db.Uuid
   description        String?
-  isActive           Boolean?           @default(true)
-  createdAt          DateTime?          @default(now()) @db.Timestamp(6)
-  createById         String?            @db.Uuid
-  updateAt           DateTime?          @default(now()) @db.Timestamp(6)
-  updateById         String?            @db.Uuid
-  contact_type_table contact_type_table @relation(fields: [contactTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vendor_table       vendor_table?      @relation(fields: [vendorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  is_active          Boolean?           @default(true)
+  created_at         DateTime?          @default(now()) @db.Timestamp(6)
+  created_by_id      String?            @db.Uuid
+  updated_at         DateTime?          @default(now()) @db.Timestamp(6)
+  updated_by_id      String?            @db.Uuid
+  contact_type_table contact_type_table @relation(fields: [contact_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vendor_table       vendor_table?      @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([vendorId, contactTypeId], map: "vendorcontact_vendorid_contacttypeid_u")
+  @@unique([vendor_id, contact_type_id], map: "vendorcontact_vendor_id_contact_type_id_u")
 }
 
 model vendor_table {
   id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                 String                 @unique @db.VarChar
   description          String?
-  isActive             Boolean?               @default(true)
-  createdAt            DateTime?              @default(now()) @db.Timestamp(6)
-  createById           String?                @db.Uuid
-  updateAt             DateTime?              @default(now()) @db.Timestamp(6)
-  updateById           String?                @db.Uuid
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_by_id        String?                @db.Uuid
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_by_id        String?                @db.Uuid
   product_vendor_table product_vendor_table[]
   vendor_address_table vendor_address_table[]
   vendor_contact_table vendor_contact_table[]
@@ -524,48 +524,48 @@ enum enum_activity_action {
 }
 
 enum enum_inventory_doc_type {
-  GRN
-  CN
-  SR
-  ISSUE
-  ADJ
-  SI
-  SO
+  good_receive_note
+  credit_note
+  store_requisition
+  issue
+  adjust
+  stock_in
+  stock_out
 }
 
 enum enum_location_type {
-  Inventory
-  Direct
-  Consignment
+  inventory
+  direct
+  consignment
 }
 
 enum enum_purchase_order_status {
-  Open
-  Voided
-  Closed
-  Draft
-  Sent
-  Partial
-  FullyReceived
-  Cancelled
-  Deleted
+  open
+  voided
+  closed
+  draft
+  sent
+  partial
+  fully_received
+  cancelled
+  deleted
 }
 
 enum enum_purchase_request_doc_status {
-  Draft
-  WIP
-  Complete
+  draft
+  work_in_process
+  complete
 }
 
 enum enum_purchase_request_workflow_status {
-  Draft
-  Pending
-  Review
-  Accept
+  draft
+  pending
+  review
+  accept
 }
 
 enum enum_unit_type {
-  OrderUnit
-  InventoryUnit
-  RecipeUnit
+  order_unit
+  inventory_unit
+  recipe_unit
 }

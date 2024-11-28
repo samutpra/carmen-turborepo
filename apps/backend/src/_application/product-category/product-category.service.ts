@@ -110,10 +110,10 @@ export class ProductCategoryService {
     const createObj = await this.db_tenant.product_category_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -134,7 +134,7 @@ export class ProductCategoryService {
       where: {
         id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

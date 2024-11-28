@@ -1,7 +1,7 @@
 export class DepartmentCreateDto {
 	id?: string;
 	name!: string;
-	isActive?: boolean | null;
+	is_active?: boolean | null;
 }
 
 export class DepartmentUpdateDto extends DepartmentCreateDto {

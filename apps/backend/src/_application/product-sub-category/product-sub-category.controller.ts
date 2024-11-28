@@ -30,7 +30,7 @@ import { QueryAdvance } from 'lib/types';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/product-sub-category')
-@ApiTags('Product Sub category')
+@ApiTags('Product-sub-category')
 @ApiBearerAuth()
 @ApiHeader({
   name: 'x-tenant-id',

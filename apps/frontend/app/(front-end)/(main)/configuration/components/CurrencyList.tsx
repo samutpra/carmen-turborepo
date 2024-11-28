@@ -67,12 +67,12 @@ const CurrencyList = () => {
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
 		defaultValues: {
-			code: "",
-			name: "",
-			symbol: "",
-			description: "",
+			code: '',
+			name: '',
+			symbol: '',
+			description: '',
 			rate: 0,
-			isActive: true,
+			is_active: true,
 		},
 	});
 
@@ -84,11 +84,10 @@ const CurrencyList = () => {
 				symbol: editingItem.symbol,
 				description: editingItem.description,
 				rate: editingItem.rate,
-				isActive: editingItem.isActive,
+				is_active: editingItem.is_active,
 			});
 		}
 	}, [editingItem, form]);
-
 
 	const handleEdit = (item: CurrencyType) => {
 		setEditingItem(item);
@@ -99,7 +98,7 @@ const CurrencyList = () => {
 			symbol: item.symbol,
 			description: item.description,
 			rate: item.rate,
-			isActive: item.isActive,
+			is_active: item.is_active,
 		});
 		setDialogForm(true);
 	};
@@ -114,7 +113,9 @@ const CurrencyList = () => {
 			setIsLoading(true);
 			if (idToDelete) {
 				await deleteCurrency(token, idToDelete);
-				setCurrencies(prev => prev.filter(currency => currency.id !== idToDelete));
+				setCurrencies((prev) =>
+					prev.filter((currency) => currency.id !== idToDelete)
+				);
 				fetchData();
 				setDialogDelete(false);
 			}
@@ -132,8 +133,16 @@ const CurrencyList = () => {
 
 			if (editingItem?.id) {
 				const updatedFields: CurrencyType = { ...data };
-				const updatedCurrency = await updateCurrency(token, editingItem.id, updatedFields);
-				setCurrencies(prev => prev.map(currency => (currency.id === editingItem.id ? updatedCurrency : currency)));
+				const updatedCurrency = await updateCurrency(
+					token,
+					editingItem.id,
+					updatedFields
+				);
+				setCurrencies((prev) =>
+					prev.map((currency) =>
+						currency.id === editingItem.id ? updatedCurrency : currency
+					)
+				);
 			} else {
 				const newCurrency = await createCurrency(token, data);
 				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
@@ -143,7 +152,7 @@ const CurrencyList = () => {
 			console.error('Save error details:', {
 				error,
 				message: error instanceof Error ? error.message : 'Unknown error',
-				stack: error instanceof Error ? error.stack : undefined
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		} finally {
 			setIsLoading(false);
@@ -157,7 +166,7 @@ const CurrencyList = () => {
 			name: '',
 			symbol: '',
 			rate: 0,
-			isActive: true,
+			is_active: true,
 		});
 		setDialogForm(false);
 		setEditingItem(null);
@@ -171,23 +180,31 @@ const CurrencyList = () => {
 		{ key: 'symbol', label: 'Symbol' },
 		{ key: 'description', label: 'Description' },
 		{ key: 'rate', label: 'Rate' },
-		{ key: 'isActive', label: 'Active' },
+		{ key: 'is_active', label: 'Active' },
 	];
 
 	const actionButtons = (
-		<div className='flex flex-col gap-4 md:flex-row'>
+		<div className="flex flex-col gap-4 md:flex-row">
 			<CustomButton
-				className='w-full md:w-20'
+				className="w-full md:w-20"
 				prefixIcon={<PlusCircle />}
 				onClick={() => setDialogForm(true)}
 			>
 				Add
 			</CustomButton>
-			<div className='flex flex-row md:flex-row gap-4'>
-				<CustomButton className='w-full md:w-20' variant='outline' prefixIcon={<Sheet />}>
+			<div className="flex flex-row md:flex-row gap-4">
+				<CustomButton
+					className="w-full md:w-20"
+					variant="outline"
+					prefixIcon={<Sheet />}
+				>
 					Export
 				</CustomButton>
-				<CustomButton className='w-full md:w-20' variant='outline' prefixIcon={<Printer />}>
+				<CustomButton
+					className="w-full md:w-20"
+					variant="outline"
+					prefixIcon={<Printer />}
+				>
 					Print
 				</CustomButton>
 			</div>
@@ -195,10 +212,10 @@ const CurrencyList = () => {
 	);
 
 	const filter = (
-		<div className='flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4'>
-			<div className='w-full sm:w-auto flex-grow'>
+		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+			<div className="w-full sm:w-auto flex-grow">
 				<SearchInput
-					placeholder='Search Currency...'
+					placeholder="Search Currency..."
 					value={search}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 						handleSearch(e.target.value, false);
@@ -212,18 +229,25 @@ const CurrencyList = () => {
 					Icon={Search}
 				/>
 			</div>
-			<div className='flex items-center space-x-4'>
+			<div className="flex items-center space-x-4">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
-						<Button variant='outline' role='combobox' aria-expanded={statusOpen} className='w-[200px] justify-between'>
+						<Button
+							variant="outline"
+							role="combobox"
+							aria-expanded={statusOpen}
+							className="w-[200px] justify-between"
+						>
 							{selectedStatus
-								? statusOptions.find((status) => status.value === selectedStatus)?.label
+								? statusOptions.find(
+										(status) => status.value === selectedStatus
+									)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className='w-[200px] p-0'>
+					<PopoverContent className="w-[200px] p-0">
 						<Command>
-							<CommandInput placeholder='Search status...' className='h-9' />
+							<CommandInput placeholder="Search status..." className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
@@ -231,9 +255,12 @@ const CurrencyList = () => {
 										<CommandItem
 											key={status.value}
 											onSelect={() => {
-												setSelectedStatus(status.value === selectedStatus ? '' : status.value);
+												setSelectedStatus(
+													status.value === selectedStatus ? '' : status.value
+												);
 												setStatusOpen(false);
-											}}>
+											}}
+										>
 											{status.label}
 										</CommandItem>
 									))}
@@ -245,17 +272,17 @@ const CurrencyList = () => {
 
 				<Dialog>
 					<DialogTrigger asChild>
-						<Button variant='outline'>
-							<Filter className='h-4 w-4' />
+						<Button variant="outline">
+							<Filter className="h-4 w-4" />
 							More Filters
 						</Button>
 					</DialogTrigger>
-					<DialogContent className='sm:w-[70vw] max-w-[60vw]'>
+					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
 						<FilterBuilder
 							fields={[
 								{ value: 'name', label: 'Name' },
 								{ value: 'description', label: 'Description' },
-								{ value: 'isActive', label: 'Status' },
+								{ value: 'is_active', label: 'Status' },
 							]}
 							onFilterChange={(filters) => {
 								console.log('Applied filters:', filters);
@@ -266,8 +293,8 @@ const CurrencyList = () => {
 
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant='outline'>
-							<ArrowUpDown className='h-4 w-4' />
+						<Button variant="outline">
+							<ArrowUpDown className="h-4 w-4" />
 							Sort
 						</Button>
 					</DropdownMenuTrigger>

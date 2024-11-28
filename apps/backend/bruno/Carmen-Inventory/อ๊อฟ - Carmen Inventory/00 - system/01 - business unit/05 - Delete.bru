@@ -1,0 +1,15 @@
+meta {
+  name: 05 - Delete
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/system-api/v1/businessUnits/{{bu_id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {"name" : "Tenant 2"}
+}

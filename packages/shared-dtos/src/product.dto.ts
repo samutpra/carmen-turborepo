@@ -3,7 +3,7 @@ export class ProductCreateDto {
 	code!: string;
 	name!: string;
 	description?: string | null;
-	isActive?: boolean | null;
+	is_active?: boolean | null;
 	// ProductInfo?: ProductInfoCreateDto;
 	// ProductVendor?: ProductVendorCreateDto[];
 	// UnitConversion?: undefined;
@@ -26,7 +26,7 @@ export class ProductInfoUpdateDto extends ProductInfoCreateDto {
 
 export class ProductVendorCreateDto {
 	id?: string;
-	vendorId?: string | null;
+	vendor_id?: string | null;
 	description?: string | null;
-	isActive?: boolean | null;
+	is_active?: boolean | null;
 }

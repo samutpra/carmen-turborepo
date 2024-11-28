@@ -1,7 +1,7 @@
 export class UserBusinessUnitCreateDto {
 	id?: string;
-	userId?: string | null;
-	businessUnitId?: string | null;
+	user_id?: string | null;
+	business_unit_id?: string | null;
 }
 
 export class UserBusinessUnitUpdateDto extends UserBusinessUnitCreateDto {

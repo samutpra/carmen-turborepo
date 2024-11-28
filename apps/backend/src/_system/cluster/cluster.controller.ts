@@ -11,6 +11,8 @@ import {
   UseGuards,
   Body,
   Patch,
+  UsePipes,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -21,10 +23,13 @@ import { QueryAdvance } from 'lib/types';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import {
   ClusterCreateDto,
+  ClusterCreateSchema,
   ClusterUpdateDto,
+  ClusterUpdateSchema,
 } from '@carmensoftware/shared-dtos';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
 
-@Controller('api/v1/system/clusters')
+@Controller('system-api/v1/clusters')
 @ApiTags('system/cluster')
 @ApiBearerAuth()
 @ApiHeader({
@@ -60,7 +65,7 @@ export class ClusterController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = [];
+    const defaultSearchFields: string[] = ['code', 'name'];
 
     const q = new QueryParams(
       page,
@@ -80,7 +85,12 @@ export class ClusterController {
     type: ClusterCreateDto,
     description: 'ClusterCreateDto',
   })
-  async create(@Body() createDto: any, @Req() req: Request) {
+  @UsePipes(new ZodValidationPipe(ClusterCreateSchema))
+  async create(
+    @Body()
+    createDto: ClusterCreateDto,
+    @Req() req: Request,
+  ) {
     return this.clusterService.create(req, createDto);
   }
 
@@ -97,10 +107,16 @@ export class ClusterController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: any,
+    @Body() updateDto: ClusterUpdateDto,
     @Req() req: Request,
   ) {
-    const { ...updatedto } = updateDto;
+    const parseObj = ClusterUpdateSchema.safeParse(updateDto);
+
+    if (!parseObj.success) {
+      throw new BadRequestException(parseObj.error.format());
+    }
+
+    const updatedto = parseObj.data;
     updatedto.id = id;
     return this.clusterService.update(req, id, updatedto);
   }

@@ -11,6 +11,7 @@ import {
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
   PrismaClient as dbTenant,
+  enum_location_type,
   location_table,
 } from '@prisma-carmen-client-tenant';
 
@@ -125,14 +126,21 @@ export class LocationsService {
       });
     }
 
+    if (!createDto.location_type) {
+      throw new NotFoundException('Location type not found');
+    }
+
+    const location_type =
+      createDto.location_type as unknown as enum_location_type;
+
     const createObj = await this.db_tenant.location_table.create({
       data: {
         ...createDto,
-        locationType: createDto.locationType,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        location_type: location_type,
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
     const res: ResponseId<string> = {
@@ -155,15 +163,18 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
+    const location_type =
+      updateDto.location_type as unknown as enum_location_type;
+
     const updateObj = await this.db_tenant.location_table.update({
       where: {
         id,
       },
       data: {
         ...updateDto,
-        locationType: updateDto.locationType,
-        updateById: userId,
-        updateAt: new Date(),
+        location_type: location_type,
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
