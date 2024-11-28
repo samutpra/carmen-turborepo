@@ -153,10 +153,10 @@ export class CurrenciesService {
         // symbol: createDto.symbol ?? '',
         // description: createDto.description ?? '',
         // isActive: createDto.isActive ?? false,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -184,7 +184,7 @@ export class CurrenciesService {
       where: {
         id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

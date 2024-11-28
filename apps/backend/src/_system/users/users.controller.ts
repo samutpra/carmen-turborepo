@@ -10,6 +10,8 @@ import {
   Req,
   Logger,
   Query,
+  UsePipes,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -21,11 +23,17 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import { QueryAdvance } from 'lib/types';
-import { UserCreateDto, UserUpdateDto } from '@carmensoftware/shared-dtos';
+import {
+  UserCreateDto,
+  UserCreateSchema,
+  UserUpdateDto,
+  UserUpdateSchema,
+} from '@carmensoftware/shared-dtos';
 import QueryParams from 'lib/types';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
 
-@Controller('api/v1/users')
+@Controller('system-api/v1/users')
 @ApiTags('system/users')
 @ApiBearerAuth()
 @ApiHeader({
@@ -86,7 +94,8 @@ export class UsersController {
     type: UserCreateDto,
     description: 'UserCreateDto',
   })
-  async create(@Body() createDto: any, @Req() req: Request) {
+  @UsePipes(new ZodValidationPipe(UserCreateSchema))
+  async create(@Body() createDto: UserCreateDto, @Req() req: Request) {
     return this.usersService.create(req, createDto);
   }
 
@@ -103,10 +112,16 @@ export class UsersController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: any,
+    @Body() updateDto: UserUpdateDto,
     @Req() req: Request,
   ) {
-    const { ...updatedto } = updateDto;
+    const parseObj = UserUpdateSchema.safeParse(updateDto);
+
+    if (!parseObj.success) {
+      throw new BadRequestException(parseObj.error.format());
+    }
+
+    const updatedto = updateDto;
     updatedto.id = id;
     return this.usersService.update(req, id, updatedto);
   }

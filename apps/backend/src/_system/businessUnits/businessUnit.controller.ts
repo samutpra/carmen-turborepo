@@ -10,6 +10,7 @@ import {
   Req,
   Logger,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { BusinessUnitsService } from './businessUnit.service';
 import {
@@ -21,13 +22,16 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import {
+  BusinessUnitCreateSchema,
   BusinessUnitCreateDto,
+  BusinessUnitUpdateSchema,
   BusinessUnitUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
 
-@Controller('api/v1/system/businessUnits')
+@Controller('system-api/v1/businessUnits')
 @ApiTags('system/businessUnit')
 @ApiBearerAuth()
 @ApiHeader({
@@ -63,12 +67,7 @@ export class BusinessUnitsController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = [
-      'name',
-      'code',
-      'symbol',
-      'description',
-    ];
+    const defaultSearchFields: string[] = ['code', 'name'];
 
     const q = new QueryParams(
       page,
@@ -88,7 +87,8 @@ export class BusinessUnitsController {
     type: BusinessUnitCreateDto,
     description: 'BusinessUnitCreateDto',
   })
-  async create(@Body() createDto: any, @Req() req: Request) {
+  @UsePipes(new ZodValidationPipe(BusinessUnitCreateSchema))
+  async create(@Body() createDto: BusinessUnitCreateDto, @Req() req: Request) {
     return this.tenantsService.create(req, createDto);
   }
 
@@ -101,14 +101,18 @@ export class BusinessUnitsController {
   })
   @ApiBody({
     type: BusinessUnitUpdateDto,
-    description: 'CurrencyUpdateDto',
+    description: 'BusinessUnitUpdateDto',
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: any,
+    @Body() updateDto: BusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
-    const { ...updatedto } = updateDto;
+    const parseObj = BusinessUnitUpdateSchema.safeParse(updateDto);
+    if (!parseObj.success) {
+      throw new Error(parseObj.error.message);
+    }
+    const updatedto = parseObj.data;
     updatedto.id = id;
     return this.tenantsService.update(req, id, updatedto);
   }

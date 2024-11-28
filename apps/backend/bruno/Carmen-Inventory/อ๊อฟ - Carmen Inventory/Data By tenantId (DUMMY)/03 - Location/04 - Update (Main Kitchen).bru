@@ -1,0 +1,21 @@
+meta {
+  name: 04 - Update (Main Kitchen)
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/v1/locations/b0080341-da20-4d07-9a03-79ce125ba2c8
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Main kitchen",
+    "description": "Main kitchen UPDATE",
+    "is_active": true,
+    "location_type": "direct",
+    "delivery_point_id": null
+  }
+}

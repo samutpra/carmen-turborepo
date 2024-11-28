@@ -4,7 +4,7 @@ export class CurrencyCreateDto {
 	name!: string;
 	symbol?: string | null;
 	description?: string | null;
-	isActive?: boolean | null;
+	is_active?: boolean | null;
 	rate?: number | null;
 }
 

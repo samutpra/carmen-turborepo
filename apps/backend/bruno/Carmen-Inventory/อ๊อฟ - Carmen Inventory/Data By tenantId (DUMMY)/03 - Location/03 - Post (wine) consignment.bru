@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (wine) consignment
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/v1/locations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "wine bar (2)",
+    "description": "wine bar (2)",
+    "is_active": false,
+    "location_type": "consignment",
+    "delivery_point_id": null
+  }
+}

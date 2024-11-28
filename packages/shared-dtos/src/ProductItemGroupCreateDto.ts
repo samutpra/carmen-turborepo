@@ -2,8 +2,8 @@ export class ProductItemGroupCreateDto {
 	id?: string;
 	name!: string;
 	description?: string | null;
-	isActive?: boolean | null;
-	productSubCategoryId!: string;
+	is_active?: boolean | null;
+	product_subcategory_id!: string;
 }
 
 export class ProductItemGroupUpdateDto extends ProductItemGroupCreateDto {

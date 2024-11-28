@@ -6,7 +6,6 @@ import {
 } from '@carmensoftware/shared-dtos';
 import {
   DuplicateException,
-  ForbiddenException,
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
@@ -18,14 +17,11 @@ import {
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import { comparePassword, hashPassword } from 'lib/utils/password';
-import {
-  PrismaClient as dbSystem,
-  user_table,
-} from '@prisma-carmen-client-system';
 
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
 import { UsersService } from 'src/_system/users/users.service';
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 import { isWelformJWT } from '../../../lib/utils/functions';
 
 @Injectable()
@@ -140,18 +136,18 @@ export class AuthService {
 
     await this.db_System.password_table.updateMany({
       where: {
-        userId: user.id,
+        user_id: user.id,
       },
       data: {
-        isActive: false,
+        is_active: false,
       },
     });
 
     const passObj = await this.db_System.password_table.create({
       data: {
-        userId: user.id,
+        user_id: user.id,
         hash: hashPassword(userForgotPassDto.password),
-        isActive: true,
+        is_active: true,
       },
     });
 
@@ -250,15 +246,15 @@ export class AuthService {
 
     const passObj = await this.db_System.password_table.create({
       data: {
-        userId: createUserObj.id,
+        user_id: createUserObj.id,
         hash: hashPassword(userRegisterDto.password),
-        isActive: true,
+        is_active: true,
       },
     });
 
     const userInfoObj = await this.db_System.user_profile_table.create({
       data: {
-        userId: createUserObj.id,
+        user_id: createUserObj.id,
         firstname: userRegisterDto.userInfo.firstName || '',
         middlename: userRegisterDto.userInfo.middleName || '',
         lastname: userRegisterDto.userInfo.lastName || '',
@@ -284,19 +280,25 @@ export class AuthService {
 
     const lastPassword = await this.db_System.password_table.findFirst({
       where: {
-        userId: findUser.id,
-        isActive: true,
+        user_id: findUser.id,
+        is_active: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        created_at: 'desc',
       },
     });
 
     const isMatch = comparePassword(password, lastPassword.hash);
 
     if (isMatch) {
-      const { consent, createdAt, createById, updateAt, updateById, ...user } =
-        findUser;
+      const {
+        consent,
+        created_at,
+        created_by_id,
+        updated_at,
+        updated_by_id,
+        ...user
+      } = findUser;
 
       const res = {
         id: findUser.id,

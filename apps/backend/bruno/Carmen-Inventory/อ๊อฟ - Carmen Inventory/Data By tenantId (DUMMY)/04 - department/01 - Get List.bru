@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/departments?search=fin
+  url: {{host}}/api/v1/departments
   body: none
   auth: none
 }
 
 params:query {
-  search: fin
+  ~search: fin
 }

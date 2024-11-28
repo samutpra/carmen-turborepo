@@ -10,21 +10,21 @@ erDiagram
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "contact_type_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "currency_table" {
   String id PK
@@ -32,329 +32,329 @@ erDiagram
   String name
   String symbol "nullable"
   String description "nullable"
-  Boolean isActive "nullable"
+  Boolean is_active "nullable"
   Float rate "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "delivery_point_table" {
   String id PK
   String name UK
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "department_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "exchange_rate_table" {
   String id PK
-  DateTime dateAt "nullable"
-  String currencyId FK "nullable"
+  DateTime at_date "nullable"
+  String currency_id FK "nullable"
   Float rate "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "global_activity_table" {
   String id PK
   enum_activity_action action "nullable"
-  String entityType "nullable"
-  String entityId "nullable"
-  String actorId "nullable"
-  Json metadata "nullable"
-  Json oldData "nullable"
-  Json newData "nullable"
-  String ipAddress "nullable"
-  String userAgent "nullable"
+  String entity_type "nullable"
+  String entity_id "nullable"
+  String actor_id "nullable"
+  Json meta_data "nullable"
+  Json old_data "nullable"
+  Json new_data "nullable"
+  String ip_address "nullable"
+  String user_agent "nullable"
   String description "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
 }
 "good_receive_note_0_table" {
   String id PK
-  String inv0Id FK
+  String inventory_transaction_0_id FK
   String name "nullable"
 }
 "good_receive_note_1_table" {
   String id PK
-  String GRN0Id FK
+  String good_receive_note_0_id FK
   String name "nullable"
 }
 "inventory_transaction_0_table" {
   String id PK
   String name UK
-  enum_inventory_doc_type invDocType "nullable"
+  enum_inventory_doc_type inventory_doc_type "nullable"
 }
 "inventory_transaction_1_table" {
   String id PK
-  String inv0Id FK
-  String fromLot "nullable"
-  String currentLotName "nullable"
+  String inventory_transaction_0_id FK
+  String from_lot_name "nullable"
+  String current_lot_name "nullable"
   Decimal qty "nullable"
   Decimal cost "nullable"
 }
 "inventory_transaction_2_table" {
   String id PK
-  String inv1Id FK
-  String lotName "nullable"
-  Int lotIndex
+  String inventory_transaction_1_id FK
+  String lot_name "nullable"
+  Int lot_index
   Decimal qty "nullable"
   Decimal cost "nullable"
 }
 "location_table" {
   String id PK
   String name UK
-  enum_location_type locationType
+  enum_location_type location_type
   String description "nullable"
-  Boolean isActive "nullable"
-  String deliveryPointId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  String delivery_point_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "menu_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
+  Boolean is_active "nullable"
   Boolean isVisible "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_category_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_info_table" {
   String id PK
-  String productId FK
+  String product_id FK
   Float price "nullable"
   Json info "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_item_group_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  String productSubCategoryId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  String product_subcategory_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_sub_category_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  String productCategoryId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  String product_category_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_table" {
   String id PK
   String code UK
   String name UK
   String description "nullable"
-  String primaryUnit FK
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  String primary_unit FK
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "product_vendor_table" {
   String id PK
-  String vendorId FK "nullable"
-  String productId FK "nullable"
+  String vendor_id FK "nullable"
+  String product_id FK "nullable"
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "purchase_order_0_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "purchase_order_1_table" {
   String id PK
   String name UK "nullable"
   String description "nullable"
-  Boolean isActive "nullable"
-  String PO0Id FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  String purchase_order_0_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "purchase_request_0_table" {
   String id PK
-  String refName UK
-  DateTime prDate "nullable"
-  String prTypeId FK "nullable"
-  String requestorId "nullable"
-  String departmentId "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  String reference_name UK
+  DateTime purchase_request_date "nullable"
+  String purchase_request_type_id FK "nullable"
+  String requestor_id "nullable"
+  String department_id "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "purchase_request_1_table" {
   String id PK
-  String PR0Id FK "nullable"
-  String locationId "nullable"
-  String productId "nullable"
-  String unitId "nullable"
+  String purchase_request_0_id FK "nullable"
+  String location_id "nullable"
+  String product_id "nullable"
+  String unit_id "nullable"
   String description "nullable"
-  Float requestQty "nullable"
-  Float approveQty "nullable"
-  String currencyId "nullable"
-  Float currencyRate "nullable"
+  Float requested_qty "nullable"
+  Float approved_qty "nullable"
+  String currency_id "nullable"
+  Float currency_rate "nullable"
   Decimal price "nullable"
-  Decimal totalPrice "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Decimal total_price "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "purchase_request_1_workflow_table" {
   String id PK
-  String PR1Id FK "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
+  String purchase_request_1_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
 }
 "purchase_request_type_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "stock_in_0_table" {
   String id PK
-  String inv0Id FK
+  String inventory_transaction_0_id FK
   String name "nullable"
 }
 "stock_in_1_table" {
   String id PK
-  String SI0Id FK
+  String stock_in_0_id FK
   String name "nullable"
 }
 "stock_out_0_table" {
   String id PK
-  String inv0Id FK
+  String inventory_transaction_0_id FK
   String name "nullable"
 }
 "stock_out_1_table" {
   String id PK
-  String SO0Id FK
+  String stock_in_0_id FK
   String name "nullable"
 }
 "store_requisition_0_table" {
   String id PK
-  String inv0Id FK
+  String inventory_transaction_0_id FK
   String name "nullable"
 }
 "store_requisition_1_table" {
   String id PK
-  String SR0Id FK
+  String store_requisition_0_id FK
   String name "nullable"
 }
 "unit_conversion_table" {
   String id PK
-  String productId FK "nullable"
-  enum_unit_type unitType
-  String fromUnitId FK "nullable"
-  String toUnitId FK "nullable"
+  String product_id FK "nullable"
+  enum_unit_type unit_type
+  String from_unit_id FK "nullable"
+  String to_unit_id FK "nullable"
   Float rate "nullable"
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "unit_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "vendor_address_table" {
   String id PK
-  String vendorId FK "nullable"
-  String addressTypeId FK
+  String vendor_id FK "nullable"
+  String address_type_id FK
   Json address "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "vendor_contact_table" {
   String id PK
-  String vendorId FK "nullable"
-  String contactTypeId FK
+  String vendor_id FK "nullable"
+  String contact_type_id FK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "vendor_table" {
   String id PK
   String name UK
   String description "nullable"
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
-  String createById "nullable"
-  DateTime updateAt "nullable"
-  String updateById "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
 "exchange_rate_table" }o--o| "currency_table" : currency_table
 "good_receive_note_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
@@ -378,9 +378,9 @@ erDiagram
 "stock_out_1_table" }o--|| "stock_out_0_table" : stock_out_0_table
 "store_requisition_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
 "store_requisition_1_table" }o--|| "store_requisition_0_table" : store_requisition_0_table
-"unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_fromUnitIdTounit_table
+"unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_from_unit_idTounit_table
 "unit_conversion_table" }o--o| "product_table" : product_table
-"unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_toUnitIdTounit_table
+"unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_to_unit_idTounit_table
 "vendor_address_table" }o--|| "address_type_table" : address_type_table
 "vendor_address_table" }o--o| "vendor_table" : vendor_table
 "vendor_contact_table" }o--|| "contact_type_table" : contact_type_table
@@ -393,11 +393,11 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `contact_type_table`
 
@@ -405,11 +405,11 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `currency_table`
 
@@ -419,23 +419,23 @@ erDiagram
   - `name`: 
   - `symbol`: 
   - `description`: 
-  - `isActive`: 
+  - `is_active`: 
   - `rate`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `delivery_point_table`
 
 **Properties**
   - `id`: 
   - `name`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `department_table`
 
@@ -443,53 +443,53 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `exchange_rate_table`
 
 **Properties**
   - `id`: 
-  - `dateAt`: 
-  - `currencyId`: 
+  - `at_date`: 
+  - `currency_id`: 
   - `rate`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `global_activity_table`
 
 **Properties**
   - `id`: 
   - `action`: 
-  - `entityType`: 
-  - `entityId`: 
-  - `actorId`: 
-  - `metadata`: 
-  - `oldData`: 
-  - `newData`: 
-  - `ipAddress`: 
-  - `userAgent`: 
+  - `entity_type`: 
+  - `entity_id`: 
+  - `actor_id`: 
+  - `meta_data`: 
+  - `old_data`: 
+  - `new_data`: 
+  - `ip_address`: 
+  - `user_agent`: 
   - `description`: 
-  - `createdAt`: 
-  - `createById`: 
+  - `created_at`: 
+  - `created_by_id`: 
 
 ### `good_receive_note_0_table`
 
 **Properties**
   - `id`: 
-  - `inv0Id`: 
+  - `inventory_transaction_0_id`: 
   - `name`: 
 
 ### `good_receive_note_1_table`
 
 **Properties**
   - `id`: 
-  - `GRN0Id`: 
+  - `good_receive_note_0_id`: 
   - `name`: 
 
 ### `inventory_transaction_0_table`
@@ -497,15 +497,15 @@ erDiagram
 **Properties**
   - `id`: 
   - `name`: 
-  - `invDocType`: 
+  - `inventory_doc_type`: 
 
 ### `inventory_transaction_1_table`
 
 **Properties**
   - `id`: 
-  - `inv0Id`: 
-  - `fromLot`: 
-  - `currentLotName`: 
+  - `inventory_transaction_0_id`: 
+  - `from_lot_name`: 
+  - `current_lot_name`: 
   - `qty`: 
   - `cost`: 
 
@@ -513,9 +513,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inv1Id`: 
-  - `lotName`: 
-  - `lotIndex`: 
+  - `inventory_transaction_1_id`: 
+  - `lot_name`: 
+  - `lot_index`: 
   - `qty`: 
   - `cost`: 
 
@@ -524,14 +524,14 @@ erDiagram
 **Properties**
   - `id`: 
   - `name`: 
-  - `locationType`: 
+  - `location_type`: 
   - `description`: 
-  - `isActive`: 
-  - `deliveryPointId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `delivery_point_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `menu_table`
 
@@ -539,12 +539,12 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
+  - `is_active`: 
   - `isVisible`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_category_table`
 
@@ -552,23 +552,23 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_info_table`
 
 **Properties**
   - `id`: 
-  - `productId`: 
+  - `product_id`: 
   - `price`: 
   - `info`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_item_group_table`
 
@@ -576,12 +576,12 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `productSubCategoryId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `product_subcategory_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_sub_category_table`
 
@@ -589,12 +589,12 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `productCategoryId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `product_category_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_table`
 
@@ -603,25 +603,25 @@ erDiagram
   - `code`: 
   - `name`: 
   - `description`: 
-  - `primaryUnit`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `primary_unit`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `product_vendor_table`
 
 **Properties**
   - `id`: 
-  - `vendorId`: 
-  - `productId`: 
+  - `vendor_id`: 
+  - `product_id`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `purchase_order_0_table`
 
@@ -629,11 +629,11 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `purchase_order_1_table`
 
@@ -641,55 +641,55 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `PO0Id`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `purchase_order_0_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `purchase_request_0_table`
 
 **Properties**
   - `id`: 
-  - `refName`: 
-  - `prDate`: 
-  - `prTypeId`: 
-  - `requestorId`: 
-  - `departmentId`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `reference_name`: 
+  - `purchase_request_date`: 
+  - `purchase_request_type_id`: 
+  - `requestor_id`: 
+  - `department_id`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `purchase_request_1_table`
 
 **Properties**
   - `id`: 
-  - `PR0Id`: 
-  - `locationId`: 
-  - `productId`: 
-  - `unitId`: 
+  - `purchase_request_0_id`: 
+  - `location_id`: 
+  - `product_id`: 
+  - `unit_id`: 
   - `description`: 
-  - `requestQty`: 
-  - `approveQty`: 
-  - `currencyId`: 
-  - `currencyRate`: 
+  - `requested_qty`: 
+  - `approved_qty`: 
+  - `currency_id`: 
+  - `currency_rate`: 
   - `price`: 
-  - `totalPrice`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `total_price`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `purchase_request_1_workflow_table`
 
 **Properties**
   - `id`: 
-  - `PR1Id`: 
-  - `createdAt`: 
-  - `createById`: 
+  - `purchase_request_1_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
 
 ### `purchase_request_type_table`
 
@@ -697,69 +697,69 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `stock_in_0_table`
 
 **Properties**
   - `id`: 
-  - `inv0Id`: 
+  - `inventory_transaction_0_id`: 
   - `name`: 
 
 ### `stock_in_1_table`
 
 **Properties**
   - `id`: 
-  - `SI0Id`: 
+  - `stock_in_0_id`: 
   - `name`: 
 
 ### `stock_out_0_table`
 
 **Properties**
   - `id`: 
-  - `inv0Id`: 
+  - `inventory_transaction_0_id`: 
   - `name`: 
 
 ### `stock_out_1_table`
 
 **Properties**
   - `id`: 
-  - `SO0Id`: 
+  - `stock_in_0_id`: 
   - `name`: 
 
 ### `store_requisition_0_table`
 
 **Properties**
   - `id`: 
-  - `inv0Id`: 
+  - `inventory_transaction_0_id`: 
   - `name`: 
 
 ### `store_requisition_1_table`
 
 **Properties**
   - `id`: 
-  - `SR0Id`: 
+  - `store_requisition_0_id`: 
   - `name`: 
 
 ### `unit_conversion_table`
 
 **Properties**
   - `id`: 
-  - `productId`: 
-  - `unitType`: 
-  - `fromUnitId`: 
-  - `toUnitId`: 
+  - `product_id`: 
+  - `unit_type`: 
+  - `from_unit_id`: 
+  - `to_unit_id`: 
   - `rate`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `unit_table`
 
@@ -767,37 +767,37 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `vendor_address_table`
 
 **Properties**
   - `id`: 
-  - `vendorId`: 
-  - `addressTypeId`: 
+  - `vendor_id`: 
+  - `address_type_id`: 
   - `address`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `vendor_contact_table`
 
 **Properties**
   - `id`: 
-  - `vendorId`: 
-  - `contactTypeId`: 
+  - `vendor_id`: 
+  - `contact_type_id`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `vendor_table`
 
@@ -805,8 +805,8 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `isActive`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 

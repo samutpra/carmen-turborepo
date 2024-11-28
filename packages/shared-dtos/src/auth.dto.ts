@@ -1,10 +1,30 @@
+import { z } from 'zod';
+
+//#region  Zod
+export const authLoginSchema = z.object({
+	username: z
+		.string({
+			required_error: 'Username field is required',
+		})
+		.min(3, 'Username must be at least 3 characters'),
+	password: z
+		.string({
+			required_error: 'password field is required',
+		})
+		.min(3, 'Password must be at least 3 characters'),
+});
+
+export type AuthLoginModel = z.infer<typeof authLoginSchema>;
+
+//#endregion Zod
+
 export class AuthPayloadDto {
 	id?: string;
 	username!: string;
 	password!: string;
 }
 
-export class AuthLoginDto {
+export class AuthLoginDto implements AuthLoginModel {
 	username!: string;
 	password!: string;
 }
@@ -42,4 +62,3 @@ export class UserForgotPassDto {
 	password!: string;
 	emailToken!: string;
 }
-

@@ -8,237 +8,240 @@
 erDiagram
 "business_unit_module_table" {
   String id PK
-  String businessUnitId FK
-  String moduleId FK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String business_unit_id FK
+  String module_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "business_unit_table" {
   String id PK
-  String clusterId FK
+  String cluster_id FK
   String code
   String name
-  Boolean isHq "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  Boolean is_hq "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "cluster_table" {
   String id PK
   String code UK
   String name UK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  Boolean is_active "nullable"
+  Json info "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "module_table" {
   String id PK
   String name UK
   String description "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "notification_preference_table" {
   String id PK
-  String userId FK
-  Boolean isEmail
-  Boolean isSMS "nullable"
-  Boolean isInApp "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String user_id FK
+  Boolean is_email
+  Boolean is_sms "nullable"
+  Boolean is_in_app "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "notification_table" {
   String id PK
-  String userId FK
+  String user_id FK
   String message "nullable"
-  Boolean isRead "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  Boolean is_read "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "password_table" {
   String id PK
-  String userId FK
+  String user_id FK
   String hash
-  Boolean isActive "nullable"
-  DateTime createdAt "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
 }
 "permission_table" {
   String id PK
-  String name UK
+  String group
+  String name
+  enum_permission_action action
   String description "nullable"
-  Boolean canGet
-  Boolean canCreate
-  Boolean canUpdate
-  Boolean canDelete
-  Boolean canPrint
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "role_permission_table" {
   String id PK
-  String roleId FK
-  String permissionId FK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String role_id FK
+  String permission_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "role_table" {
   String id PK
-  String bussinessUnitId FK
+  String business_unit_id FK
   String name UK
   String description "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "subscription_detail_table" {
   String id PK
-  String subscriptionId FK
-  String bussinessUnitId FK
-  String moduleId FK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String subscription_id FK
+  String business_unit_id FK
+  String module_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "subscription_table" {
   String id PK
-  String clusterId FK
-  DateTime startDate
-  DateTime endDate
+  String cluster_id FK
+  DateTime start_date
+  DateTime end_date
   enum_subscription_status status
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "user_business_unit_table" {
   String id PK
-  String userId FK "nullable"
-  String businessunitId FK "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String user_id FK "nullable"
+  String business_unit_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "user_profile_table" {
   String id PK
-  String userId FK "nullable"
+  String user_id FK "nullable"
   String firstname "nullable"
   String middlename "nullable"
   String lastname "nullable"
   Json bio "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "user_role_table" {
   String id PK
-  String userId FK
-  String roleId FK
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  String user_id FK
+  String role_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "user_table" {
   String id PK
   String username UK
   String email
+  Boolean is_active "nullable"
+  Boolean is_consent "nullable"
   DateTime consent "nullable"
-  DateTime createdAt "nullable"
-  String createById FK "nullable"
-  DateTime updateAt "nullable"
-  String updateById FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
 }
 "business_unit_module_table" }o--|| "business_unit_table" : business_unit_table
-"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_createByIdTouser_table
+"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_created_by_idTouser_table
 "business_unit_module_table" }o--|| "module_table" : module_table
-"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_updateByIdTouser_table
+"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_updated_by_idTouser_table
 "business_unit_table" }o--|| "cluster_table" : cluster_table
-"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_createByIdTouser_table
-"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_updateByIdTouser_table
-"cluster_table" }o--o| "user_table" : user_table_cluster_table_createByIdTouser_table
-"cluster_table" }o--o| "user_table" : user_table_cluster_table_updateByIdTouser_table
-"module_table" }o--o| "user_table" : user_table_module_table_createByIdTouser_table
-"module_table" }o--o| "user_table" : user_table_module_table_updateByIdTouser_table
-"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_createByIdTouser_table
-"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_updateByIdTouser_table
-"notification_preference_table" |o--|| "user_table" : user_table_notification_preference_table_userIdTouser_table
-"notification_table" }o--o| "user_table" : user_table_notification_table_createByIdTouser_table
-"notification_table" }o--o| "user_table" : user_table_notification_table_updateByIdTouser_table
-"notification_table" }o--|| "user_table" : user_table_notification_table_userIdTouser_table
+"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_created_by_idTouser_table
+"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_updated_by_idTouser_table
+"cluster_table" }o--o| "user_table" : user_table_cluster_table_created_by_idTouser_table
+"cluster_table" }o--o| "user_table" : user_table_cluster_table_updated_by_idTouser_table
+"module_table" }o--o| "user_table" : user_table_module_table_created_by_idTouser_table
+"module_table" }o--o| "user_table" : user_table_module_table_updated_by_idTouser_table
+"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_created_by_idTouser_table
+"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_updated_by_idTouser_table
+"notification_preference_table" |o--|| "user_table" : user_table_notification_preference_table_user_idTouser_table
+"notification_table" }o--o| "user_table" : user_table_notification_table_created_by_idTouser_table
+"notification_table" }o--o| "user_table" : user_table_notification_table_updated_by_idTouser_table
+"notification_table" }o--|| "user_table" : user_table_notification_table_user_idTouser_table
 "password_table" }o--|| "user_table" : user_table
-"permission_table" }o--o| "user_table" : user_table_permission_table_createByIdTouser_table
-"permission_table" }o--o| "user_table" : user_table_permission_table_updateByIdTouser_table
-"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_createByIdTouser_table
+"permission_table" }o--o| "user_table" : user_table_permission_table_created_by_idTouser_table
+"permission_table" }o--o| "user_table" : user_table_permission_table_updated_by_idTouser_table
+"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_created_by_idTouser_table
 "role_permission_table" }o--|| "permission_table" : permission_table
 "role_permission_table" }o--|| "role_table" : role_table
-"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_updateByIdTouser_table
+"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_updated_by_idTouser_table
 "role_table" }o--|| "business_unit_table" : business_unit_table
-"role_table" }o--o| "user_table" : user_table_role_table_createByIdTouser_table
-"role_table" }o--o| "user_table" : user_table_role_table_updateByIdTouser_table
+"role_table" }o--o| "user_table" : user_table_role_table_created_by_idTouser_table
+"role_table" }o--o| "user_table" : user_table_role_table_updated_by_idTouser_table
 "subscription_detail_table" }o--|| "business_unit_table" : business_unit_table
-"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_createByIdTouser_table
+"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_created_by_idTouser_table
 "subscription_detail_table" }o--|| "module_table" : module_table
 "subscription_detail_table" }o--|| "subscription_table" : subscription_table
-"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_updateByIdTouser_table
+"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_updated_by_idTouser_table
 "subscription_table" }o--|| "cluster_table" : cluster_table
-"subscription_table" }o--o| "user_table" : user_table_subscription_table_createByIdTouser_table
-"subscription_table" }o--o| "user_table" : user_table_subscription_table_updateByIdTouser_table
+"subscription_table" }o--o| "user_table" : user_table_subscription_table_created_by_idTouser_table
+"subscription_table" }o--o| "user_table" : user_table_subscription_table_updated_by_idTouser_table
 "user_business_unit_table" }o--o| "business_unit_table" : business_unit_table
-"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_createByIdTouser_table
-"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_updateByIdTouser_table
-"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_userIdTouser_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_createByIdTouser_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_updateByIdTouser_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_userIdTouser_table
-"user_role_table" }o--o| "user_table" : user_table_user_role_table_createByIdTouser_table
+"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_created_by_idTouser_table
+"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_updated_by_idTouser_table
+"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_user_idTouser_table
+"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_created_by_idTouser_table
+"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_updated_by_idTouser_table
+"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_user_idTouser_table
+"user_role_table" }o--o| "user_table" : user_table_user_role_table_created_by_idTouser_table
 "user_role_table" }o--|| "role_table" : role_table
-"user_role_table" }o--o| "user_table" : user_table_user_role_table_updateByIdTouser_table
-"user_role_table" }o--|| "user_table" : user_table_user_role_table_userIdTouser_table
-"user_table" }o--o| "user_table" : user_table_user_table_createByIdTouser_table
-"user_table" }o--o| "user_table" : user_table_user_table_updateByIdTouser_table
+"user_role_table" }o--o| "user_table" : user_table_user_role_table_updated_by_idTouser_table
+"user_role_table" }o--|| "user_table" : user_table_user_role_table_user_idTouser_table
+"user_table" }o--o| "user_table" : user_table_user_table_created_by_idTouser_table
+"user_table" }o--o| "user_table" : user_table_user_table_updated_by_idTouser_table
 ```
 
 ### `business_unit_module_table`
 
 **Properties**
   - `id`: 
-  - `businessUnitId`: 
-  - `moduleId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `business_unit_id`: 
+  - `module_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `business_unit_table`
 
 **Properties**
   - `id`: 
-  - `clusterId`: 
+  - `cluster_id`: 
   - `code`: 
   - `name`: 
-  - `isHq`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_hq`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `cluster_table`
 
@@ -246,10 +249,12 @@ erDiagram
   - `id`: 
   - `code`: 
   - `name`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_active`: 
+  - `info`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `module_table`
 
@@ -257,144 +262,141 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `notification_preference_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
-  - `isEmail`: 
-  - `isSMS`: 
-  - `isInApp`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `user_id`: 
+  - `is_email`: 
+  - `is_sms`: 
+  - `is_in_app`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `notification_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
+  - `user_id`: 
   - `message`: 
-  - `isRead`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `is_read`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `password_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
+  - `user_id`: 
   - `hash`: 
-  - `isActive`: 
-  - `createdAt`: 
+  - `is_active`: 
+  - `created_at`: 
 
 ### `permission_table`
 
 **Properties**
   - `id`: 
+  - `group`: 
   - `name`: 
+  - `action`: 
   - `description`: 
-  - `canGet`: 
-  - `canCreate`: 
-  - `canUpdate`: 
-  - `canDelete`: 
-  - `canPrint`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `role_permission_table`
 
 **Properties**
   - `id`: 
-  - `roleId`: 
-  - `permissionId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `role_id`: 
+  - `permission_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `role_table`
 
 **Properties**
   - `id`: 
-  - `bussinessUnitId`: 
+  - `business_unit_id`: 
   - `name`: 
   - `description`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `subscription_detail_table`
 
 **Properties**
   - `id`: 
-  - `subscriptionId`: 
-  - `bussinessUnitId`: 
-  - `moduleId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `subscription_id`: 
+  - `business_unit_id`: 
+  - `module_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `subscription_table`
 
 **Properties**
   - `id`: 
-  - `clusterId`: 
-  - `startDate`: 
-  - `endDate`: 
+  - `cluster_id`: 
+  - `start_date`: 
+  - `end_date`: 
   - `status`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `user_business_unit_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
-  - `businessunitId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `user_id`: 
+  - `business_unit_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `user_profile_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
+  - `user_id`: 
   - `firstname`: 
   - `middlename`: 
   - `lastname`: 
   - `bio`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `user_role_table`
 
 **Properties**
   - `id`: 
-  - `userId`: 
-  - `roleId`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `user_id`: 
+  - `role_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
 
 ### `user_table`
 
@@ -402,8 +404,10 @@ erDiagram
   - `id`: 
   - `username`: 
   - `email`: 
+  - `is_active`: 
+  - `is_consent`: 
   - `consent`: 
-  - `createdAt`: 
-  - `createById`: 
-  - `updateAt`: 
-  - `updateById`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 

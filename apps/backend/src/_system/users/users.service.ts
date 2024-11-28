@@ -110,10 +110,11 @@ export class UsersService {
     const createObj = await this.db_System.user_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        consent: createDto.is_consent ? new Date() : null,
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -141,7 +142,7 @@ export class UsersService {
       where: {
         id: id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

@@ -92,7 +92,7 @@ export class UserProfileService {
 
     const found = await this.db_System.user_profile_table.findFirst({
       where: {
-        userId: createDto.userId,
+        user_id: createDto.user_id,
       },
     });
 
@@ -109,12 +109,13 @@ export class UserProfileService {
         firstname: createDto.firstname,
         lastname: createDto.lastname,
         middlename: createDto.middlename,
-        userId: createDto.userId,
+        user_id: createDto.user_id,
         // bio: createDto.bio,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -146,10 +147,10 @@ export class UserProfileService {
         firstname: updateDto.firstname,
         lastname: updateDto.lastname,
         middlename: updateDto.middlename,
-        userId: updateDto.userId,
+        user_id: updateDto.user_id,
         // bio: updateDto.bio,
-        updateById: userId,
-        updateAt: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 

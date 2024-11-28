@@ -94,8 +94,8 @@ export class UserBusinessUnitService {
 
     const found = await this.db_System.user_business_unit_table.findFirst({
       where: {
-        userId: createDto.userId,
-        businessunitId: createDto.businessUnitId,
+        user_id: createDto.user_id,
+        business_unit_id: createDto.business_unit_id,
       },
     });
 
@@ -110,10 +110,10 @@ export class UserBusinessUnitService {
     const createObj = await this.db_System.user_business_unit_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -141,7 +141,7 @@ export class UserBusinessUnitService {
       where: {
         id: id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

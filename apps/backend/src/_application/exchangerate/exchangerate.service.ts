@@ -94,9 +94,9 @@ export class ExchangerateService {
 
     const found = await this.db_tenant.exchange_rate_table.findUnique({
       where: {
-        dateAt_currencyId: {
-          currencyId: createDto.currencyId,
-          dateAt: createDto.dateAt,
+        at_date_currency_id: {
+          currency_id: createDto.currency_id,
+          at_date: createDto.at_date,
         },
       },
     });
@@ -112,10 +112,10 @@ export class ExchangerateService {
     const createObj = await this.db_tenant.exchange_rate_table.create({
       data: {
         ...createDto,
-        createById: userId,
-        createdAt: new Date(),
-        updateById: userId,
-        updateAt: new Date(),
+        created_by_id: userId,
+        created_at: new Date(),
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
 
@@ -138,7 +138,7 @@ export class ExchangerateService {
       where: {
         id,
       },
-      data: { ...updateDto, updateById: userId, updateAt: new Date() },
+      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {

@@ -1,6 +1,6 @@
 import { PrismaClient as dbTenant } from '@prisma-carmen-client-tenant';
 
-const prisma = new dbTenant();
+const db_tenant = new dbTenant();
 
 async function main() {
   /// create, update database
@@ -8,10 +8,10 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db_tenant.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db_tenant.$disconnect();
     process.exit(1);
   });
