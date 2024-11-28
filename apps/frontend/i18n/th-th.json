@@ -91,5 +91,19 @@
     "system": "ระบบ",
     "username_zod_error": "ชื่อผู้ใช้ต้องมีอย่างน้อย 2 ตัวอักษร",
     "password_zod_error": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
-    "department": "แผนก"
+    "department": "แผนก",
+    "department_approve": "การอนุมัติของแผนก",
+    "procurement_request_queue": "คิวคำขอจัดซื้อจัดจ้าง",
+    "staff_requests_awaiting_your_approval": "คำขอของเจ้าหน้าที่กำลังรอการอนุมัติจากคุณ",
+    "pending_approval": "รอการอนุมัติ",
+    "flagged_for_review": "ถูกทำเครื่องหมายเพื่อตรวจสอบ",
+    "details": "รายละเอียด",
+    "approve": "อนุมัติ",
+    "review": "ทบทวน",
+    "requested_by": "ตามคำร้องขอของ",
+    "units": "หน่วย",
+    "recent_approvals": "การอนุมัติล่าสุด",
+    "recent_approvals_des": "บันทึกการดำเนินการอนุมัติล่าสุดของคุณ",
+    "notification": "การแจ้งเตือน",
+    "notification_des": "การอัปเดตและการแจ้งเตือนล่าสุด"
 }

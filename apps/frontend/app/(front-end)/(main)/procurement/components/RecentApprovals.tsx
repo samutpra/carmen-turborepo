@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle, CheckCircle, Clock, DollarSign, Users } from 'lucide-react'
 import { ApprovalActivity, getBadgeClasses, RECENT_ACTIVITIES } from './types_data'
+import * as m from '@/paraglide/messages.js';
 
 const getActionIcon = (action: ApprovalActivity['action']) => {
     switch (action) {
@@ -19,8 +20,8 @@ const RecentApprovals = () => {
     return (
         <Card>
             <CardHeader className="border-b">
-                <CardTitle>Recent Approvals</CardTitle>
-                <CardDescription>Log of your recent approval actions</CardDescription>
+                <CardTitle>{m.recent_approvals()}</CardTitle>
+                <CardDescription>{m.recent_approvals_des()}</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
                 <ScrollArea className="h-[250px]">

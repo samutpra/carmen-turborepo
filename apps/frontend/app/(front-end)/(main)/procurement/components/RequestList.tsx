@@ -3,6 +3,7 @@ import { FlaggedRequest, getUrgencyBadgeClasses, PendingRequest } from './types_
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle, Eye, ThumbsUp, Users } from 'lucide-react'
 import { Button } from '@/components/ui-custom/button'
+import * as m from '@/paraglide/messages.js';
 
 const RequestList = ({
     requests,
@@ -14,7 +15,7 @@ const RequestList = ({
     return (
         <ul className="space-y-4">
             {requests.map((request) => (
-                <li key={request.id} className="bg-white p-4 rounded-md border">
+                <li key={request.id} className="p-4 rounded-md border">
                     <div className="flex justify-between items-start mb-2">
                         <h3 className="font-medium text-lg text-gray-800">{request.item}</h3>
                         <Badge
@@ -25,7 +26,7 @@ const RequestList = ({
                         </Badge>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">
-                        {request.quantity} units, ${request.total.toLocaleString()} - Requested by {request.requester}
+                        {request.quantity} {m.units()}, ${request.total.toLocaleString()} - {m.requested_by()} {request.requester}
                     </p>
                     <div className="flex justify-between items-center">
                         <div>
@@ -47,22 +48,22 @@ const RequestList = ({
                                 <>
                                     <Button size="sm" variant="outline">
                                         <Eye className="w-4 h-4 mr-2" />
-                                        Details
+                                        {m.details()}
                                     </Button>
                                     <Button size="sm">
                                         <ThumbsUp className="w-4 h-4 mr-2" />
-                                        Approve
+                                        {m.approve()}
                                     </Button>
                                 </>
                             ) : (
                                 <>
                                     <Button size="sm" variant="outline">
                                         <Eye className="w-4 h-4 mr-2" />
-                                        Details
+                                        {m.details()}
                                     </Button>
                                     <Button size="sm" variant="secondary">
                                         <AlertCircle className="w-4 h-4 mr-2" />
-                                        Review
+                                        {m.review()}
                                     </Button>
                                 </>
                             )}

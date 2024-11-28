@@ -91,5 +91,20 @@
     "system": "System",
     "username_zod_error": "Username must be at least 2 characters.",
     "password_zod_error": "Password must be at least 6 characters.",
-    "department": "Department"
+    "department": "Department",
+    "department_approval": "Department Approval",
+    "department_approve": "Department Approval",
+    "procurement_request_queue": "Procurement Request Queue",
+    "staff_requests_awaiting_your_approval": "Staff requests awaiting your approval",
+    "pending_approval": "Pending Approval",
+    "flagged_for_review": "Flagged for Review",
+    "details": "Details",
+    "approve": "Approve",
+    "review": "Review",
+    "requested_by": "Requested by",
+    "units": "units",
+    "recent_approvals": "Recent Approvals",
+    "recent_approvals_des": "Log of your recent approval actions",
+    "notification": "Notifications",
+    "notification_des": "Recent updates and alerts"
 }
