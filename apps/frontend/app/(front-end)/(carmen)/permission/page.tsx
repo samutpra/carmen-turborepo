@@ -152,7 +152,7 @@ const PermissionPage = () => {
 		const roleParts = [
 			user.role.charAt(0).toUpperCase() + user.role.slice(1),
 			user.subRole &&
-				user.subRole.charAt(0).toUpperCase() + user.subRole.slice(1),
+			user.subRole.charAt(0).toUpperCase() + user.subRole.slice(1),
 			user.bu && `(${user.bu})`,
 		].filter(Boolean);
 		return roleParts.join(' ');
@@ -230,22 +230,20 @@ const PermissionPage = () => {
 										</TableCell>
 										<TableCell>
 											<span
-												className={`px-2 py-1 rounded ${
-													comment.visibility === 'public'
-														? 'bg-green-100'
-														: 'bg-yellow-100'
-												}`}
+												className={`px-2 py-1 rounded ${comment.visibility === 'public'
+													? 'bg-green-100'
+													: 'bg-yellow-100'
+													}`}
 											>
 												{comment.visibility}
 											</span>
 										</TableCell>
 										<TableCell>
 											<span
-												className={`px-2 py-1 rounded ${
-													comment.ownerId === user.id
-														? 'bg-blue-100'
-														: 'bg-gray-100'
-												}`}
+												className={`px-2 py-1 rounded ${comment.ownerId === user.id
+													? 'bg-blue-100'
+													: 'bg-gray-100'
+													}`}
 											>
 												{comment.ownerId === user.id ? 'You' : comment.ownerId}
 											</span>
