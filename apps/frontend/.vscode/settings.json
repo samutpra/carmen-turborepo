@@ -25,5 +25,10 @@
     "prettier.vueIndentScriptAndStyle": true,
     "prettier.singleQuote": true,
     "prettier.singleAttributePerLine": true,
-    "sherlock.inlineAnnotations.enabled": true
+    "sherlock.inlineAnnotations.enabled": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
 }
