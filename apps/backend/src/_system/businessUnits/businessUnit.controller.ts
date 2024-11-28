@@ -11,6 +11,7 @@ import {
   Logger,
   Query,
   UsePipes,
+  BadRequestException,
 } from '@nestjs/common';
 import { BusinessUnitsService } from './businessUnit.service';
 import {
@@ -110,7 +111,7 @@ export class BusinessUnitsController {
   ) {
     const parseObj = BusinessUnitUpdateSchema.safeParse(updateDto);
     if (!parseObj.success) {
-      throw new Error(parseObj.error.message);
+      throw new BadRequestException(parseObj.error.format());
     }
     const updatedto = parseObj.data;
     updatedto.id = id;

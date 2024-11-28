@@ -10,6 +10,8 @@ import {
   Req,
   Logger,
   Query,
+  UsePipes,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,12 +24,15 @@ import { UserBusinessUnitService } from './user-bussinessUnit.service';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import {
   UserBusinessUnitCreateDto,
+  UserBusinessUnitCreateSchema,
   UserBusinessUnitUpdateDto,
+  UserBusinessUnitUpdateSchema,
 } from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
 
-@Controller('api/v1/system/user-businessUnit')
+@Controller('system-api/v1/user-businessUnit')
 @ApiTags('system/user businessUnit')
 @ApiBearerAuth()
 @ApiHeader({
@@ -85,7 +90,11 @@ export class UserBusinessUnitController {
     type: UserBusinessUnitCreateDto,
     description: 'UserBusinessUnitCreateDto',
   })
-  async create(@Body() createDto: any, @Req() req: Request) {
+  @UsePipes(new ZodValidationPipe(UserBusinessUnitCreateSchema))
+  async create(
+    @Body() createDto: UserBusinessUnitCreateDto,
+    @Req() req: Request,
+  ) {
     return this.userBusinessUnitService.create(req, createDto);
   }
 
@@ -102,10 +111,14 @@ export class UserBusinessUnitController {
   })
   async update(
     @Param('id') id: string,
-    @Body() updateDto: any,
+    @Body() updateDto: UserBusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
-    const { ...updatedto } = updateDto;
+    const parseObj = UserBusinessUnitUpdateSchema.safeParse(updateDto);
+    if (!parseObj.success) {
+      throw new BadRequestException(parseObj.error.format());
+    }
+    const updatedto = parseObj.data;
     updatedto.id = id;
     return this.userBusinessUnitService.update(req, id, updatedto);
   }

@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Post (User 1 - BU Dummy)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/system-api/v1/user-businessUnit
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "user_id": "{{user_id}}",
+    "business_unit_id": "{{bu_id}}"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('user_bu_id',res.body.id)
+}
