@@ -9,13 +9,14 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bell } from 'lucide-react';
 import { notifications } from './types_data';
+import * as m from '@/paraglide/messages.js';
 
 const NotiApproval: React.FC = () => {
     return (
         <Card>
             <CardHeader className="border-b">
-                <CardTitle>Notifications</CardTitle>
-                <CardDescription>Recent updates and alerts</CardDescription>
+                <CardTitle>{m.notification()}</CardTitle>
+                <CardDescription>{m.notification_des()}</CardDescription>
             </CardHeader>
             <CardContent>
                 <ScrollArea className="h-[250px]">
