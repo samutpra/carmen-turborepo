@@ -1,9 +1,9 @@
 import React from 'react'
-
+import MyApprovalList from '../components/MyApprovalList'
 
 const MyApprovalsPage = () => {
     return (
-        <div>MyApprovalsPage</div>
+        <MyApprovalList />
     )
 }
 
