@@ -61,7 +61,7 @@ const StoreLocationList = () => {
 			description: '',
 			name: '',
 			delivery_point_id: '',
-			location_type: 'Inventory',
+			location_type: 'inventory',
 			is_active: true,
 		},
 	});
@@ -130,7 +130,7 @@ const StoreLocationList = () => {
 			description: '',
 			name: '',
 			delivery_point_id: '',
-			location_type: 'Inventory',
+			location_type: 'inventory',
 			is_active: true,
 		});
 		setDialogForm(false);

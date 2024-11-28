@@ -1022,13 +1022,13 @@ export interface StoreLocationLabel {
 }
 
 export const CurrencySchema = z.object({
-	id: z.string().optional(),
-	code: z.string(),
-	name: z.string(),
-	symbol: z.string().optional(),
-	description: z.string(),
-	rate: z.number(),
-	is_active: z.boolean().optional(),
+  id: z.string().optional(),
+  code: z.string(),
+  name: z.string(),
+  symbol: z.string().optional(),
+  description: z.string(),
+  rate: z.number(),
+  is_active: z.boolean().optional(),
 });
 
 export type CurrencyType = z.infer<typeof CurrencySchema>;
@@ -1443,13 +1443,13 @@ export interface CustomJwtPayload extends JwtPayload {
 }
 
 export const LocationSchema = z.object({
-	id: z.string().uuid().optional(),
-	name: z.string(),
-	location_type: z.enum(['Inventory', 'Direct']),
-	description: z.string(),
-	is_active: z.boolean(),
-	delivery_point_id: z.string().optional(),
-});;
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  location_type: z.enum(['inventory', 'direct']),
+  description: z.string(),
+  is_active: z.boolean(),
+  delivery_point_id: z.string().optional().nullable(),
+});
 
 export type LocationType = z.infer<typeof LocationSchema>;
 
