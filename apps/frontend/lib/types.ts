@@ -1022,13 +1022,13 @@ export interface StoreLocationLabel {
 }
 
 export const CurrencySchema = z.object({
-  id: z.string().optional(),
-  code: z.string(),
-  name: z.string(),
-  symbol: z.string().optional(),
-  description: z.string(),
-  rate: z.number(),
-  isActive: z.boolean().optional(),
+	id: z.string().optional(),
+	code: z.string(),
+	name: z.string(),
+	symbol: z.string().optional(),
+	description: z.string(),
+	rate: z.number(),
+	is_active: z.boolean().optional(),
 });
 
 export type CurrencyType = z.infer<typeof CurrencySchema>;
