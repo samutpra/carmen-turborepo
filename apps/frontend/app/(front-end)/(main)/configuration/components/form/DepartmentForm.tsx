@@ -25,120 +25,123 @@ const DepartmentForm: React.FC<Props> = ({
 }) => {
 
     const form = useForm<PayloadLocationType>({
-        resolver: zodResolver(DepartmentSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            isActive: true,
-        },
-    });
+			resolver: zodResolver(DepartmentSchema),
+			defaultValues: {
+				name: '',
+				description: '',
+				is_active: true,
+			},
+		});
 
-    useEffect(() => {
-        if (editingItem) {
-            form.reset({
-                name: editingItem.name,
-                description: editingItem.description,
-                isActive: editingItem.isActive,
-            });
-        }
-    }, [editingItem, form]);
+		useEffect(() => {
+			if (editingItem) {
+				form.reset({
+					name: editingItem.name,
+					description: editingItem.description,
+					is_active: editingItem.is_active,
+				});
+			}
+		}, [editingItem, form]);
 
-    const handleClose = () => {
-        form.reset();
-        onOpenChange(false);
-    };
+		const handleClose = () => {
+			form.reset();
+			onOpenChange(false);
+		};
 
-    return (
-        <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[700px]">
-                <DialogHeader>
-                    <DialogTitle>
-                        {editingItem ? "Edit Department" : "Add New Department"}
-                    </DialogTitle>
-                </DialogHeader>
+		return (
+			<Dialog open={open} onOpenChange={handleClose}>
+				<DialogContent className="sm:max-w-[700px]">
+					<DialogHeader>
+						<DialogTitle>
+							{editingItem ? 'Edit Department' : 'Add New Department'}
+						</DialogTitle>
+					</DialogHeader>
 
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							<div className="grid grid-cols-2 gap-4">
+								<FormField
+									control={form.control}
+									name="name"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Name</FormLabel>
+											<FormControl>
+												<InputCustom
+													placeholder="Enter Name"
+													error={!!form.formState.errors.name}
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+									required
+								/>
+							</div>
 
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <InputCustom
-                                                placeholder="Enter Name"
-                                                error={!!form.formState.errors.name}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                                required
-                            />
-                        </div>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Description</FormLabel>
+										<FormControl>
+											<InputCustom
+												placeholder="Enter description"
+												error={!!form.formState.errors.description}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+								required
+							/>
 
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <InputCustom
-                                            placeholder="Enter description"
-                                            error={!!form.formState.errors.description}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                            required
-                        />
+							<FormField
+								control={form.control}
+								name="is_active"
+								render={({ field }) => (
+									<FormItem className="flex items-center space-x-2">
+										<FormControl>
+											<Switch
+												checked={field.value}
+												onCheckedChange={field.onChange}
+											/>
+										</FormControl>
+										<FormLabel>Active</FormLabel>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-                        <FormField
-                            control={form.control}
-                            name="isActive"
-                            render={({ field }) => (
-                                <FormItem className="flex items-center space-x-2">
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormLabel>Active</FormLabel>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <DialogFooter>
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleClose}
-                                disabled={isLoading}
-                            >
-                                Cancel
-                            </Button>
-                            <LoaderButton
-                                type="submit"
-                                disabled={isLoading}
-                                isLoading={isLoading}
-                            >
-                                {isLoading ? "Saving..." : editingItem ? "Save Changes" : "Add"}
-                            </LoaderButton>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-    )
+							<DialogFooter>
+								<Button
+									type="button"
+									variant="secondary"
+									onClick={handleClose}
+									disabled={isLoading}
+								>
+									Cancel
+								</Button>
+								<LoaderButton
+									type="submit"
+									disabled={isLoading}
+									isLoading={isLoading}
+								>
+									{isLoading
+										? 'Saving...'
+										: editingItem
+											? 'Save Changes'
+											: 'Add'}
+								</LoaderButton>
+							</DialogFooter>
+						</form>
+					</Form>
+				</DialogContent>
+			</Dialog>
+		);
 }
 
 export default DepartmentForm
