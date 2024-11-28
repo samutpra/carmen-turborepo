@@ -39,6 +39,25 @@ export class UserBusinessUnitService {
       where: {
         id: id,
       },
+      relationLoadStrategy: 'join',
+      include: {
+        business_unit_table: {
+          select: {
+            cluster_id: true,
+            code: true,
+            name: true,
+            is_hq: true,
+            is_active: true,
+          },
+        },
+        user_table: {
+          select: {
+            username: true,
+            email: true,
+            is_active: true,
+          },
+        },
+      },
     });
     return res;
   }
@@ -69,8 +88,32 @@ export class UserBusinessUnitService {
     const max = await this.db_System.user_business_unit_table.count({
       where: q.where(),
     });
+
+    const q_include = {
+      ...q.findMany(),
+      relationLoadStrategy: 'join',
+      include: {
+        business_unit_table: {
+          select: {
+            cluster_id: true,
+            code: true,
+            name: true,
+            is_hq: true,
+            is_active: true,
+          },
+        },
+        user_table: {
+          select: {
+            username: true,
+            email: true,
+            is_active: true,
+          },
+        },
+      },
+    };
+
     const listObj = await this.db_System.user_business_unit_table.findMany(
-      q.findMany(),
+      q_include, // q.findMany(),
     );
 
     const res: ResponseList<user_business_unit_table> = {

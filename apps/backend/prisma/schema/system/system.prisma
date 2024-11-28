@@ -226,7 +226,7 @@ model user_business_unit_table {
   business_unit_table                                           business_unit_table? @relation(fields: [business_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_table_user_business_unit_table_created_by_idTouser_table user_table?          @relation("user_business_unit_table_created_by_idTouser_table", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_table_user_business_unit_table_updated_by_idTouser_table user_table?          @relation("user_business_unit_table_updated_by_idTouser_table", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_table_user_business_unit_table_user_idTouser_table       user_table?          @relation("user_business_unit_table_user_idTouser_table", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_table                                                    user_table?          @relation("user_business_unit_table_user_idTouser_table", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_id, business_unit_id], map: "usertenant_user_id_business_unit_id_u")
 }
@@ -327,8 +327,8 @@ enum enum_subscription_status {
 }
 
 enum enum_permission_action {
-  read
-  read_all
+  view
+  view_all
   create
   update
   delete
