@@ -6,7 +6,7 @@ import PrqApproval from './PrqApproval'
 const MyApprovalList = () => {
     return (
         <div className='container mx-auto p-6'>
-            <h1 className="text-3xl font-semibold mb-6 text-gray-800">Department Approval</h1>
+            <h1 className="text-3xl font-semibold mb-6">Department Approval</h1>
             <div className="grid gap-6 lg:grid-cols-3">
                 <PrqApproval />
                 <div className='space-y-6'>
