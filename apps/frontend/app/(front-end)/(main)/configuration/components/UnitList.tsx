@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Pen, Trash } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { mockToken } from '@/lib/util/api';
-import { DisplayData } from './template/DisplayData';
 import DialogAdd from './template/DialogAdd';
 import { PaginationType } from '@/lib/types';
 
@@ -129,7 +128,8 @@ const UnitList = () => {
 
     return (
         <div className="space-y-4">
-            <DisplayData
+            unit list
+            {/* <DisplayData
                 data={units}
                 columns={columns}
                 isActive={(unit) => unit.isActive}
@@ -152,7 +152,7 @@ const UnitList = () => {
                 open={isAddDialogOpen}
                 onOpenChange={setIsAddDialogOpen}
                 onSubmit={handleAdd}
-            />
+            /> */}
         </div>
     );
 };

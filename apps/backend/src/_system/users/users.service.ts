@@ -161,6 +161,9 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    //check if uses is inused
+    // TODO: check if user is inused
+
     await this.db_System.user_table.delete({
       where: {
         id: id,

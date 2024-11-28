@@ -132,13 +132,14 @@ const CreditNoteList = () => {
                 {isLoading ? (
                     <SkeletonTableLoading />
                 ) : (
-                    <DataTable
-                        data={creditNotes}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onView={handleView}
-                    />
+                    // <DataTable
+                    //     data={creditNotes}
+                    //     columns={columns}
+                    //     onEdit={handleEdit}
+                    //     onDelete={handleDelete}
+                    //     onView={handleView}
+                    // />
+                    <>Credit Notes List</>
                 )}
             </div>
 

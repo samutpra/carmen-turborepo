@@ -21,7 +21,7 @@ const DialogAdd = ({ open, onOpenChange, onSubmit }: DialogAddProps) => {
             id: Date.now().toString(),
             name,
             description,
-            isActive: true
+            is_active: true
         };
         onSubmit(newUnit);
         onOpenChange(false);
