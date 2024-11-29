@@ -64,7 +64,7 @@ const PriceListComponent = () => {
     if (error) return <div>Error: {error}</div>
 
     const actionButtons = (
-        <>
+        <div className='flex gap-2'>
             <Button onClick={handleAddPricelist}>
                 <Plus className="h-4 w-4" /> Add Pricelist
             </Button>
@@ -74,13 +74,13 @@ const PriceListComponent = () => {
             <Button variant="outline" onClick={handleGenerateReport}>
                 <Printer className="h-4 w-4" /> Print
             </Button>
-        </>
+        </div>
     )
 
     const content = (
         <div className="space-y-6">
             {/* Description Section */}
-            <div className="bg-white px-6 py-4 border rounded-lg">
+            <div className="px-6 py-4 border rounded-lg">
                 <h2 className="text-sm font-semibold text-gray-900">About Price Lists</h2>
                 <p className="mt-1 text-sm text-gray-500">
                     Manage your vendor price lists, special offers, and seasonal discounts. Create and track different pricing strategies for various time periods.
@@ -88,7 +88,7 @@ const PriceListComponent = () => {
             </div>
 
             {/* Search and Filters Row */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 bg-background">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                     <Input
@@ -112,7 +112,7 @@ const PriceListComponent = () => {
             </div>
 
             {pricelists.length > 0 ? (
-                <div className="rounded-lg border bg-white">
+                <div className="rounded-lg border ">
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-gray-50/75">
