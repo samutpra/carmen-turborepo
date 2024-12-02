@@ -8,7 +8,10 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { Switch } from '@/components/ui/switch';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Button } from '@/components/ui/button';
-import { CurrencySchema, CurrencyType } from '@/lib/types';
+import {
+	CurrencySchema,
+	CurrencyType,
+} from '@carmensoftware/shared-types/dist/currencySchema';
 
 interface Props {
     open: boolean;

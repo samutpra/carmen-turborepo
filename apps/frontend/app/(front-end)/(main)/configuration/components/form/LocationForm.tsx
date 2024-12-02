@@ -1,4 +1,3 @@
-import { LocationSchema, LocationType, PayloadLocationType } from '@/lib/types';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +27,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import {
+	LocationSchema,
+	LocationType,
+	PayloadLocationType,
+} from '@carmensoftware/shared-types/src/locationSchema';
 
 interface Props {
 	open: boolean;

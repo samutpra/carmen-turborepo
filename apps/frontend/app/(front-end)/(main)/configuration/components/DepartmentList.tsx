@@ -135,18 +135,25 @@ const DepartmentList = () => {
 				const newDepartment = await createDepartment(token, data);
 				setDepartments((prev: DepartmentType[]) => [...prev, newDepartment]);
 			}
+
 			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error details:', {
-				error,
-				message: error instanceof Error ? error.message : 'Unknown error',
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				console.error('Save error details:', {
+					error: error.message,
+					stack: error.stack,
+				});
+			} else {
+				console.error('Save error details:', {
+					error: 'Unknown error occurred',
+				});
+			}
 		} finally {
 			setIsLoading(false);
 			setDialogForm(false);
 		}
 	};
+	
 
 	const handleCloseDialog = () => {
 		form.reset({
