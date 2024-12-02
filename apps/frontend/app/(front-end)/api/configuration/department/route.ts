@@ -49,8 +49,6 @@ export async function POST(request: NextRequest) {
         }
         const body = await request.json();
 
-        console.log('body', body);
-
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
