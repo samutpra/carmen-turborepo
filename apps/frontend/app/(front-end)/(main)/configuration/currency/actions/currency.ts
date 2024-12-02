@@ -1,21 +1,8 @@
 "use client";
-
-import { CurrencySchema, CurrencyType, PaginationType } from "@/lib/types";
+import { CurrencyType } from "@carmensoftware/shared-types/dist/currencySchema";
+import { APIError, PaginationType, ParamsType } from "@carmensoftware/shared-types/src/pagination";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-
-interface ParamsType {
-    page?: number;
-    perpage?: number;
-    search?: string;
-}
-
-class APIError extends Error {
-    constructor(public status: number, message: string) {
-        super(message);
-        this.name = 'APIError';
-    }
-}
 
 export const fetchCurrency = async (
     accessToken: string,
@@ -51,12 +38,8 @@ export const fetchCurrency = async (
 
         const data = await response.json();
 
-        const currenciesResult = data.data.map((unit: unknown) =>
-            CurrencySchema.parse(unit)
-        );
-
         return {
-            currencies: currenciesResult,
+            currencies: data.data,
             pagination: data.pagination,
         };
     } catch (error) {
