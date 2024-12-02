@@ -118,6 +118,7 @@ const DepartmentList = () => {
 	const handleSave = async (data: DepartmentType) => {
 		try {
 			setIsLoading(true);
+			console.log('data', data);
 
 			if (editingItem?.id) {
 				const updatedFields: DepartmentType = { ...data };
