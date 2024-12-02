@@ -24,11 +24,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as m from '@/paraglide/messages.js';
 import {
+	LocationLabel,
 	LocationSchema,
 	LocationType,
 	PayloadLocationType,
-	LocationLabel,
-} from '../../../../../../../packages/shared-types/src/locationSchema';
+} from '@carmensoftware/shared-types/src/locationSchema';
+
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
