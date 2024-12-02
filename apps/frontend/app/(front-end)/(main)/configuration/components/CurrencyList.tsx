@@ -25,10 +25,14 @@ import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '.
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
+import { CurrencyLabel } from '@/lib/types';
 import CurrencyForm from './form/CurrencyForm';
 import { useAuth } from '@/app/context/AuthContext';
 import EmptyData from '@/components/EmptyData';
+import {
+	CurrencySchema,
+	CurrencyType,
+} from '@carmensoftware/shared-types/dist/currencySchema';
 
 const statusOptions = [
 	{ value: 'all', label: 'All Statuses' },
@@ -50,7 +54,7 @@ const CurrencyList = () => {
 	const token = accessToken || ''
 
 	const {
-		currencies,
+		currencies: rawCurrencies,
 		setCurrencies,
 		loading,
 		error,
@@ -63,6 +67,12 @@ const CurrencyList = () => {
 		handleSearch,
 		fetchData
 	} = useCurrencies(token);
+
+	const currencies = rawCurrencies.map(currency => ({
+		...currency,
+		symbol: currency.symbol || '',
+		is_active: currency.is_active || false
+	})) as CurrencyType[];
 
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
@@ -130,30 +140,23 @@ const CurrencyList = () => {
 	const handleSave = async (data: CurrencyType) => {
 		try {
 			setIsLoading(true);
-
 			if (editingItem?.id) {
-				const updatedFields: CurrencyType = { ...data };
-				const updatedCurrency = await updateCurrency(
-					token,
-					editingItem.id,
-					updatedFields
-				);
-				setCurrencies((prev) =>
-					prev.map((currency) =>
-						currency.id === editingItem.id ? updatedCurrency : currency
-					)
+				const updatedCurrency = await updateCurrency(token, editingItem.id, data);
+				setCurrencies((prev) => 
+					prev.map((item) => item.id === editingItem.id ? updatedCurrency : item)
 				);
 			} else {
 				const newCurrency = await createCurrency(token, data);
-				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
+				const currencyWithRequiredFields: CurrencyType = {
+					...newCurrency,
+					symbol: newCurrency.symbol || '',
+					is_active: newCurrency.is_active || false
+				};
+				setCurrencies((prev) => [...prev, currencyWithRequiredFields]);
 			}
 			handleCloseDialog();
 		} catch (error) {
-			console.error('Save error details:', {
-				error,
-				message: error instanceof Error ? error.message : 'Unknown error',
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+			console.error('Save error:', error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -352,7 +355,7 @@ const CurrencyList = () => {
 				editingItem={editingItem}
 				isLoading={isLoading}
 				onOpenChange={setDialogForm}
-				onSubmit={handleSave}
+				onSubmit={(data) => handleSave({ ...data, symbol: data.symbol || '', is_active: data.is_active || false } as CurrencyType)}
 			/>
 		</>
 	);

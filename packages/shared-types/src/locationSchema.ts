@@ -1,18 +1,19 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-export const StoreLocationSchema = z.object({
-    id: z.string().optional(),
-    storeCode: z.string(),
-    storeName: z.string(),
-    departmentName: z.string(),
-    type: z.string(),
-    status: z.string(),
-    isActive: z.boolean().default(true),
-  });
-  
-  export type StoreLocationType = z.infer<typeof StoreLocationSchema>;
-  
-  export interface StoreLocationLabel {
-    key: keyof StoreLocationType;
-    label: string;
-  }
+export const LocationSchema = z.object({
+	id: z.string().uuid().optional(),
+	name: z.string(),
+	location_type: z.enum(['inventory', 'direct']),
+	description: z.string(),
+	is_active: z.boolean(),
+	delivery_point_id: z.string().optional().nullable(),
+});
+
+export type LocationType = z.infer<typeof LocationSchema>;
+
+export type PayloadLocationType = Omit<LocationType, 'id'>;
+
+export interface LocationLabel {
+	key: keyof LocationType;
+	label: string;
+}
