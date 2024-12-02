@@ -667,7 +667,7 @@ export interface PurchaseRequest {
 	refNumber: string;
 	date: Date;
 	vendor: string;
-	vendorId: number;
+	vendorId: string;
 	type: PRType;
 	deliveryDate: Date;
 	description: string;
