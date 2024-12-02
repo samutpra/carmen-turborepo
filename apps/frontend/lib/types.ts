@@ -1,6 +1,5 @@
 // File: types/inventory.ts
 
-import { JwtPayload } from "jwt-decode";
 import { z } from "zod";
 import * as m from '@/paraglide/messages.js';
 
@@ -1003,41 +1002,6 @@ export interface UnitLabel {
   key: keyof UnitType;
   label: string;
 }
-
-export const StoreLocationSchema = z.object({
-  id: z.string().optional(),
-  storeCode: z.string(),
-  storeName: z.string(),
-  departmentName: z.string(),
-  type: z.string(),
-  status: z.string(),
-  is_active: z.boolean().default(true),
-});
-
-export type StoreLocationType = z.infer<typeof StoreLocationSchema>;
-
-export interface StoreLocationLabel {
-  key: keyof StoreLocationType;
-  label: string;
-}
-
-export const CurrencySchema = z.object({
-  id: z.string().optional(),
-  code: z.string(),
-  name: z.string(),
-  symbol: z.string().optional(),
-  description: z.string(),
-  rate: z.number(),
-  is_active: z.boolean().optional(),
-});
-
-export type CurrencyType = z.infer<typeof CurrencySchema>;
-export interface CurrencyLabel {
-  key: keyof CurrencyType;
-  label: string;
-}
-
-
 export const PrSchema = z.object({
   id: z.string().optional(),
   type: z.string(),
@@ -1436,40 +1400,6 @@ export const EmailSchema = z.object({
 });
 
 export type EmailType = z.infer<typeof EmailSchema>;
-
-export interface CustomJwtPayload extends JwtPayload {
-  email?: string;
-  username?: string
-}
-
-
-export const DepartmentSchema = z.object({
-  id: z.string().optional(),
-  name: z.string(),
-  description: z.string(),
-  is_active: z.boolean(),
-})
-
-export type DepartmentType = z.infer<typeof DepartmentSchema>;
-export interface DepartmentLabel {
-  key: keyof DepartmentType;
-  label: string;
-}
-
-export type PayloaDepartmentType = Omit<DepartmentType, 'id'>;
-
-export interface ParamsType {
-  page?: number;
-  perpage?: number;
-  search?: string;
-}
-
-export class APIError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = 'APIError';
-  }
-}
 
 export type SubMenuItem = {
   name: string;

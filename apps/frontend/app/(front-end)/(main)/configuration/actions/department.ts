@@ -1,14 +1,9 @@
 'use client';
-import {
-	APIError,
-	DepartmentSchema,
-	DepartmentType,
-	PaginationType,
-	ParamsType,
-	PayloaDepartmentType,
-} from '@/lib/types';
+
+import { APIError, PaginationType, ParamsType } from '@carmensoftware/shared-types/src/pagination';
 import { useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
+import { DepartmentSchema, DepartmentType, PayloaDepartmentType } from '@carmensoftware/shared-types/src/department';
 
 export const fetchDepartment = async (
 	accessToken: string,
