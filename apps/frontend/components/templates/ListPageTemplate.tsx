@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Card } from "../ui/card";
 
 interface IProps {
   title: string;
@@ -17,13 +18,13 @@ const ListPageTemplate: React.FC<IProps> = ({
 }) => {
   return (
     <div className="flex flex-col p-6 justify-center my-4 mx-4 rounded-lg shadow-lg">
-      <div className="shadow p-4 sticky top-0 z-10 rounded-lg">
-        <div className="md:flex justify-between items-center mb-4">
+      <div className="shadow sticky top-0 z-10 rounded-lg">
+        <Card className="md:flex justify-between items-center mb-4 p-6">
           <h1 className="text-2xl font-semibold">{title}</h1>
           {actionButtons && (
             <div className="mt-4 md:mt-0">{actionButtons}</div>
           )}
-        </div>
+        </Card>
         {filters && <div className="mb-4">{filters}</div>}
         {bulkActions && <div className="mb-4">{bulkActions}</div>}
       </div>

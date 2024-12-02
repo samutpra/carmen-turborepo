@@ -48,7 +48,7 @@ const LocationForm: React.FC<Props> = ({
 		resolver: zodResolver(LocationSchema),
 		defaultValues: {
 			name: '',
-			location_type: 'Inventory',
+			location_type: 'inventory',
 			description: '',
 			delivery_point_id: '',
 			is_active: true,
@@ -121,8 +121,8 @@ const LocationForm: React.FC<Props> = ({
 													<SelectValue placeholder="Select location type" />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="Inventory">Inventory</SelectItem>
-													<SelectItem value="Direct">Direct</SelectItem>
+													<SelectItem value="inventory">Inventory</SelectItem>
+													<SelectItem value="direct">Direct</SelectItem>
 												</SelectContent>
 											</Select>
 										</FormControl>

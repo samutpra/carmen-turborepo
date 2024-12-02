@@ -15,6 +15,7 @@ export const fetchLocation = async (
 	accessToken: string,
 	params: ParamsType = {}
 ): Promise<{ stores: LocationType[]; pagination: PaginationType }> => {
+
 	if (!accessToken) {
 		throw new Error('Access token is required');
 	}
@@ -43,9 +44,15 @@ export const fetchLocation = async (
 
 		const data = await response.json();
 
+		console.log('data', data);
+
+
 		const storesResult = data.data.map((unit: unknown) =>
 			LocationSchema.parse(unit)
 		);
+
+		console.log('storesResult', storesResult);
+
 
 		return {
 			stores: storesResult,
@@ -143,6 +150,8 @@ export const createLocation = async (
 };
 
 export const useLocations = (token: string) => {
+
+
 	const [search, setSearch] = useState('');
 	const [locations, setLocations] = useState<LocationType[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -275,7 +284,7 @@ export const deleteLocation = async (
 			throw new APIError(
 				response.status,
 				errorData?.message ||
-					`Failed to delete store: ${response.status} ${response.statusText}`
+				`Failed to delete store: ${response.status} ${response.statusText}`
 			);
 		}
 	} catch (error) {
