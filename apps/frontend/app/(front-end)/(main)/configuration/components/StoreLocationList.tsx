@@ -18,16 +18,17 @@ import {
 import { useAuth } from '@/app/context/AuthContext';
 import SearchInput from '@/components/ui-custom/SearchInput';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import {
-	LocationLabel,
-	LocationSchema,
-	LocationType,
-	PayloadLocationType,
-} from '@/lib/types';
+
 import LocationForm from './form/LocationForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as m from '@/paraglide/messages.js';
+import {
+	LocationSchema,
+	LocationType,
+	PayloadLocationType,
+	LocationLabel,
+} from '../../../../../../../packages/shared-types/src/locationSchema';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -78,7 +79,7 @@ const StoreLocationList = () => {
 			if (editingItem?.id) {
 				const updatedFields: LocationType = {
 					...data,
-					id: editingItem.id, // make sure id is included
+					id: editingItem.id,
 				};
 				const updatedLocation = await updateLocation(
 					token,

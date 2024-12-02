@@ -1,15 +1,13 @@
 'use client';
 
-import {
-	APIError,
-	LocationSchema,
-	LocationType,
-	PaginationType,
-	ParamsType,
-	PayloadLocationType,
-} from '@/lib/types';
 import { useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
+import {
+	LocationSchema,
+	LocationType,
+	PayloadLocationType,
+} from '../../../../../../../packages/shared-types/src/locationSchema';
+import { APIError, PaginationType, ParamsType } from '../../../../../../../packages/shared-types/src/pagination';
 
 export const fetchLocation = async (
 	accessToken: string,
@@ -150,8 +148,6 @@ export const createLocation = async (
 };
 
 export const useLocations = (token: string) => {
-
-
 	const [search, setSearch] = useState('');
 	const [locations, setLocations] = useState<LocationType[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
