@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sampleData } from '@/lib/mock/samplePurchaseOrderList';
+import { sampleData } from '@/lib/mock/samplePurchaseRequestList';
 const apiUrl =
 	process.env.CURRENCY_API_URL ||
 	'http://localhost:4000/api/v1/purchase-requests';

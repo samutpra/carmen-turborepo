@@ -295,7 +295,7 @@ export interface PurchaseRequest_1 {
 		department: string;
 	};
 	currency: string;
-	status: DocumentStatus;
+	status: Status;
 	workflowStatus: WorkflowStatus;
 	currentWorkflowStage: WorkflowStage;
 	location: string;
@@ -639,14 +639,6 @@ export enum PRType {
 	ServiceRequest = 'ServiceRequest',
 }
 
-export enum DocumentStatus {
-	Draft = 'Draft',
-	Submitted = 'Submitted',
-	InProgress = 'InProgress',
-	Completed = 'Completed',
-	Rejected = 'Rejected',
-}
-
 export enum WorkflowStatus {
 	pending = 'Pending',
 	approved = 'Approved',
@@ -664,10 +656,8 @@ export enum WorkflowStage {
 
 export interface PurchaseRequest {
 	id: string;
-	refNumber: string;
+	ref: string;
 	date: Date;
-	vendor: string;
-	vendorId: string;
 	type: PRType;
 	deliveryDate: Date;
 	description: string;
@@ -677,7 +667,7 @@ export interface PurchaseRequest {
 		id: string;
 		department: string;
 	};
-	status: DocumentStatus;
+	status: Status;
 	workflowStatus: WorkflowStatus;
 	currentWorkflowStage: WorkflowStage;
 	location: string;

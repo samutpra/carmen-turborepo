@@ -45,7 +45,7 @@ const PurchaseRequestList = () => {
 	};
 
 	const handleView = (item: PrList) => {
-		console.log('Viewing unit:', item);
+		console.log('Viewing pr:', item);
 		router.push(`/procurement/purchase-requests/${item.id}`);
 	};
 
@@ -163,6 +163,7 @@ const PurchaseRequestList = () => {
 						columns={columns}
 						onEdit={handleEdit}
 						onDelete={handleDelete}
+						onView={handleView}
 						pagination={pagination}
 						goToPage={goToPage}
 						nextPage={nextPage}
