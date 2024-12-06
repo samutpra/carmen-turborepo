@@ -46,8 +46,8 @@ export class ExchangerateService {
     req: Request,
     id: string,
   ): Promise<ResponseSingle<exchange_rate_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -64,8 +64,8 @@ export class ExchangerateService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<exchange_rate_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const max = await this.db_tenant.exchange_rate_table.count({
       where: q.where(),
     });
@@ -89,8 +89,8 @@ export class ExchangerateService {
     req: Request,
     createDto: ExchangeRateCreateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.exchange_rate_table.findUnique({
       where: {
@@ -112,9 +112,9 @@ export class ExchangerateService {
     const createObj = await this.db_tenant.exchange_rate_table.create({
       data: {
         ...createDto,
-        created_by_id: userId,
+        created_by_id: user_id,
         created_at: new Date(),
-        updated_by_id: userId,
+        updated_by_id: user_id,
         updated_at: new Date(),
       },
     });
@@ -126,8 +126,8 @@ export class ExchangerateService {
   }
 
   async update(req: Request, id: string, updateDto: ExchangeRateUpdateDto) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -138,7 +138,7 @@ export class ExchangerateService {
       where: {
         id,
       },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
+      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -149,8 +149,8 @@ export class ExchangerateService {
   }
 
   async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

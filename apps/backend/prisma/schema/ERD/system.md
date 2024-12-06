@@ -20,6 +20,7 @@ erDiagram
   String cluster_id FK
   String code
   String name
+  String description "nullable"
   Boolean is_hq "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
@@ -63,6 +64,7 @@ erDiagram
   String user_id FK
   String message "nullable"
   Boolean is_read "nullable"
+  Boolean is_sent "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
@@ -73,7 +75,9 @@ erDiagram
   String user_id FK
   String hash
   Boolean is_active "nullable"
+  DateTime expiredOn
   DateTime created_at "nullable"
+  String created_by_id FK "nullable"
 }
 "permission_table" {
   String id PK
@@ -118,6 +122,7 @@ erDiagram
 "subscription_table" {
   String id PK
   String cluster_id FK
+  String subscription_number
   DateTime start_date
   DateTime end_date
   enum_subscription_status status
@@ -130,6 +135,7 @@ erDiagram
   String id PK
   String user_id FK "nullable"
   String business_unit_id FK "nullable"
+  Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
@@ -138,7 +144,7 @@ erDiagram
 "user_profile_table" {
   String id PK
   String user_id FK "nullable"
-  String firstname "nullable"
+  String firstname
   String middlename "nullable"
   String lastname "nullable"
   Json bio "nullable"
@@ -185,6 +191,7 @@ erDiagram
 "notification_table" }o--o| "user_table" : user_table_notification_table_created_by_idTouser_table
 "notification_table" }o--o| "user_table" : user_table_notification_table_updated_by_idTouser_table
 "notification_table" }o--|| "user_table" : user_table_notification_table_user_idTouser_table
+"password_table" }o--o| "user_table" : user_table_password_table_created_by_idTouser_table
 "password_table" }o--|| "user_table" : user_table
 "permission_table" }o--o| "user_table" : user_table_permission_table_created_by_idTouser_table
 "permission_table" }o--o| "user_table" : user_table_permission_table_updated_by_idTouser_table
@@ -236,6 +243,7 @@ erDiagram
   - `cluster_id`: 
   - `code`: 
   - `name`: 
+  - `description`: 
   - `is_hq`: 
   - `is_active`: 
   - `created_at`: 
@@ -287,6 +295,7 @@ erDiagram
   - `user_id`: 
   - `message`: 
   - `is_read`: 
+  - `is_sent`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -299,7 +308,9 @@ erDiagram
   - `user_id`: 
   - `hash`: 
   - `is_active`: 
+  - `expiredOn`: 
   - `created_at`: 
+  - `created_by_id`: 
 
 ### `permission_table`
 
@@ -354,6 +365,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `cluster_id`: 
+  - `subscription_number`: 
   - `start_date`: 
   - `end_date`: 
   - `status`: 
@@ -368,6 +380,7 @@ erDiagram
   - `id`: 
   - `user_id`: 
   - `business_unit_id`: 
+  - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

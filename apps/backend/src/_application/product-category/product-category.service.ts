@@ -1,162 +1,157 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
+  ProductCategoryCreateDto,
+  ProductCategoryUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ProductCategoryCreateDto,
-  ProductCategoryUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import {
   PrismaClient as dbTenant,
   product_category_table,
 } from '@prisma-carmen-client-tenant';
 
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
-
 @Injectable()
 export class ProductCategoryService {
-  private db_tenant: dbTenant;
+	private db_tenant: dbTenant;
 
-  constructor(
-    private prismaClientMamager: PrismaClientManagerService,
-    private extractReqService: ExtractReqService,
-  ) {}
+	constructor(private prismaClientMamager: PrismaClientManagerService, private extractReqService: ExtractReqService) {}
 
-  logger = new Logger(ProductCategoryService.name);
+	logger = new Logger(ProductCategoryService.name);
 
-  async _getById(
-    db_tenant: dbTenant,
-    id: string,
-  ): Promise<product_category_table> {
-    const res = await db_tenant.product_category_table.findUnique({
-      where: {
-        id: id,
-      },
-    });
-    return res;
-  }
+	async _getById(db_tenant: dbTenant, id: string): Promise<product_category_table> {
+		const res = await db_tenant.product_category_table.findUnique({
+			where: {
+				id: id
+			}
+		});
+		return res;
+	}
 
-  async findOne(
-    req: Request,
-    id: string,
-  ): Promise<ResponseSingle<product_category_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getById(this.db_tenant, id);
+	async findOne(req: Request, id: string): Promise<ResponseSingle<product_category_table>> {
+		const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+		this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+		const oneObj = await this._getById(this.db_tenant, id);
 
-    if (!oneObj) {
-      throw new NotFoundException('ProductCategory not found');
-    }
-    const res: ResponseSingle<product_category_table> = {
-      data: oneObj,
-    };
-    return res;
-  }
+		if (!oneObj) {
+			throw new NotFoundException('ProductCategory not found');
+		}
+		const res: ResponseSingle<product_category_table> = {
+			data: oneObj
+		};
+		return res;
+	}
 
-  async findAll(
-    req: Request,
-    q: QueryParams,
-  ): Promise<ResponseList<product_category_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+	async findAll(req: Request, q: QueryParams): Promise<ResponseList<product_category_table>> {
+		const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+		this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const max = await this.db_tenant.product_category_table.count({
-      where: q.where(),
-    });
-    const listObj = await this.db_tenant.product_category_table.findMany(
-      q.findMany(),
-    );
+		const max = await this.db_tenant.product_category_table.count({
+			where: q.where()
+		});
+		const listObj = await this.db_tenant.product_category_table.findMany(q.findMany());
 
-    const res: ResponseList<product_category_table> = {
-      data: listObj,
-      pagination: {
-        total: max,
-        page: q.page,
-        perPage: q.perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
-      },
-    };
+		const res: ResponseList<product_category_table> = {
+			data: listObj,
+			pagination: {
+				total: max,
+				page: q.page,
+				perPage: q.perPage,
+				pages:
 
-    return res;
-  }
+						max == 0 ? 1 :
+						Math.ceil(max / q.perPage)
+			}
+		};
 
-  async create(
-    req: Request,
-    createDto: ProductCategoryCreateDto,
-  ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+		return res;
+	}
 
-    const found = await this.db_tenant.product_category_table.findUnique({
-      where: {
-        name: createDto.name,
-      },
-    });
+	async create(req: Request, createDto: ProductCategoryCreateDto): Promise<ResponseId<string>> {
+		const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+		this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    if (found) {
-      throw new DuplicateException({
-        statusCode: HttpStatus.CONFLICT,
-        message: 'ProductCategory already exists',
-        id: found.id,
-      });
-    }
+		const found = await this.db_tenant.product_category_table.findUnique({
+			where: {
+				name: createDto.name
+			}
+		});
 
-    const createObj = await this.db_tenant.product_category_table.create({
-      data: {
-        ...createDto,
-        created_by_id: userId,
-        created_at: new Date(),
-        updated_by_id: userId,
-        updated_at: new Date(),
-      },
-    });
+		if (found) {
+			throw new DuplicateException({
+				statusCode: HttpStatus.CONFLICT,
+				message: 'ProductCategory already exists',
+				id: found.id
+			});
+		}
 
-    const res: ResponseId<string> = { id: createObj.id };
-    return res;
-  }
+		const createObj = await this.db_tenant.product_category_table.create({
+			data: {
+				...createDto,
+				code: createDto.name.toUpperCase(),
+				created_by_id: user_id,
+				created_at: new Date(),
+				updated_by_id: user_id,
+				updated_at: new Date()
+			}
+		});
 
-  async update(req: Request, id: string, updateDto: ProductCategoryUpdateDto) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getById(this.db_tenant, id);
+		const res: ResponseId<string> = { id: createObj.id };
+		return res;
+	}
 
-    if (!oneObj) {
-      throw new NotFoundException('productCategory not found');
-    }
+	async update(req: Request, id: string, updateDto: ProductCategoryUpdateDto) {
+		const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+		this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+		const oneObj = await this._getById(this.db_tenant, id);
 
-    const updateObj = await this.db_tenant.product_category_table.update({
-      where: {
-        id,
-      },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
-    });
+		if (!oneObj) {
+			throw new NotFoundException('productCategory not found');
+		}
 
-    const res: ResponseId<string> = {
-      id: updateObj.id,
-    };
+		const updateObj = await this.db_tenant.product_category_table.update({
+			where: {
+				id
+			},
+			data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() }
+		});
 
-    return res;
-  }
+		const res: ResponseId<string> = {
+			id: updateObj.id
+		};
 
-  async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const oneObj = await this._getById(this.db_tenant, id);
+		return res;
+	}
 
-    if (!oneObj) {
-      throw new NotFoundException('productCategory not found');
-    }
+	async delete(req: Request, id: string) {
+		const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+		this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+		const oneObj = await this._getById(this.db_tenant, id);
 
-    await this.db_tenant.product_category_table.delete({
-      where: {
-        id,
-      },
-    });
-  }
+		if (!oneObj) {
+			throw new NotFoundException('productCategory not found');
+		}
+
+		await this.db_tenant.product_category_table.delete({
+			where: {
+				id
+			}
+		});
+	}
 }

@@ -54,7 +54,9 @@ export default class QueryParams {
   }
 
   public where(): any {
-    const _where: any = {};
+    const _where: any = {
+      AND: {},
+    };
 
     if (this.advance != null && this.advance.where != null) {
       _where.AND = this.advance?.where;

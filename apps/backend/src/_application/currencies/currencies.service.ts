@@ -81,8 +81,8 @@ export class CurrenciesService {
     req: Request,
     id: string,
   ): Promise<ResponseSingle<currency_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -100,8 +100,8 @@ export class CurrenciesService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<currency_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.currency_table.count({
       where: q.where(),
@@ -128,8 +128,8 @@ export class CurrenciesService {
     createDto: CurrencyCreateDto,
   ): Promise<ResponseId<string>> {
     // Check if currency already exists
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.currency_table.findUnique({
       where: {
@@ -153,9 +153,9 @@ export class CurrenciesService {
         // symbol: createDto.symbol ?? '',
         // description: createDto.description ?? '',
         // isActive: createDto.isActive ?? false,
-        created_by_id: userId,
+        created_by_id: user_id,
         created_at: new Date(),
-        updated_by_id: userId,
+        updated_by_id: user_id,
         updated_at: new Date(),
       },
     });
@@ -172,8 +172,8 @@ export class CurrenciesService {
     id: string,
     updateDto: CurrencyUpdateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -184,7 +184,7 @@ export class CurrenciesService {
       where: {
         id,
       },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
+      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -197,8 +197,8 @@ export class CurrenciesService {
 
   //#region DELETE
   async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

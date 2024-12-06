@@ -43,8 +43,8 @@ export class DepartmentsService {
     req: Request,
     id: string,
   ): Promise<ResponseSingle<department_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -60,8 +60,8 @@ export class DepartmentsService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<department_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.department_table.count({
       where: q.where(),
@@ -88,8 +88,8 @@ export class DepartmentsService {
     req: Request,
     createDto: DepartmentCreateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
     console.log(createDto);
 
@@ -110,9 +110,9 @@ export class DepartmentsService {
     const createObj = await this.db_tenant.department_table.create({
       data: {
         ...createDto,
-        created_by_id: userId,
+        created_by_id: user_id,
         created_at: new Date(),
-        updated_by_id: userId,
+        updated_by_id: user_id,
         updated_at: new Date(),
       },
     });
@@ -122,8 +122,8 @@ export class DepartmentsService {
   }
 
   async update(req: Request, id: string, updateDto: DepartmentUpdateDto) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -134,7 +134,7 @@ export class DepartmentsService {
       where: {
         id,
       },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
+      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -145,8 +145,8 @@ export class DepartmentsService {
   }
 
   async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

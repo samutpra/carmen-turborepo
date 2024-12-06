@@ -20,7 +20,7 @@ import { comparePassword, hashPassword } from 'lib/utils/password';
 
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
-import { UsersService } from 'src/_system/users/users.service';
+import { SystemUsersService } from 'src/_system/system-users/system-users.service';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 import { isWelformJWT } from '../../../lib/utils/functions';
 
@@ -29,7 +29,7 @@ export class AuthService {
   constructor(
     private prismaClientMamager: PrismaClientManagerService,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private systemUsersService: SystemUsersService,
   ) {}
 
   private db_System: dbSystem;
@@ -76,7 +76,7 @@ export class AuthService {
     this.db_System = this.prismaClientMamager.getSystemDB();
 
     this.logger.debug(userForgotPassDto);
-    const u = await this.usersService.findByUsername(
+    const u = await this.systemUsersService.findByUsername(
       this.db_System,
       userForgotPassDto.email,
     );
@@ -125,7 +125,7 @@ export class AuthService {
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const user = await this.usersService.findByUsername(
+    const user = await this.systemUsersService.findByUsername(
       this.db_System,
       userForgotPassDto.username,
     );
@@ -173,7 +173,7 @@ export class AuthService {
     this.logger.debug(userRegisterEmailDto);
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const found = await this.usersService.findByUsername(
+    const found = await this.systemUsersService.findByUsername(
       this.db_System,
       userRegisterEmailDto.email,
     );
@@ -228,7 +228,7 @@ export class AuthService {
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const found = await this.usersService.findByUsername(
+    const found = await this.systemUsersService.findByUsername(
       this.db_System,
       userRegisterDto.username,
     );
@@ -271,7 +271,7 @@ export class AuthService {
 
   async validateUser({ username, password }: AuthPayloadDto) {
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const findUser = await this.usersService.findByUsername(
+    const findUser = await this.systemUsersService.findByUsername(
       this.db_System,
       username,
     );

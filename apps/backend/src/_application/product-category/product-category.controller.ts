@@ -1,3 +1,11 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import {
+  ProductCategoryCreateDto,
+  ProductCategoryUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
@@ -12,114 +20,91 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ProductCategoryCreateDto,
-  ProductCategoryUpdateDto,
-} from '@carmensoftware/shared-dtos';
-
-import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import QueryParams from 'lib/types';
-import { QueryAdvance } from 'lib/types';
+
 import { ProductCategoryService } from './product-category.service';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/product-category')
 @ApiTags('product-category')
 @ApiBearerAuth()
 @ApiHeader({
-  name: 'x-tenant-id',
-  description: 'tenant id',
+	name: 'x-tenant-id',
+	description: 'tenant id'
 })
 @UseGuards(JwtAuthGuard)
 export class ProductCategoryController {
-  constructor(
-    private readonly productCategoryService: ProductCategoryService,
-  ) {}
+	constructor(private readonly productCategoryService: ProductCategoryService) {}
 
-  private readonly logger = new Logger(ProductCategoryController.name);
+	private readonly logger = new Logger(ProductCategoryController.name);
 
-  @Get(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'id',
-    required: true,
-    type: 'uuid',
-  })
-  async fineOne(@Param('id') id: string, @Req() req: Request) {
-    return this.productCategoryService.findOne(req, id);
-  }
+	@Get(':id')
+	@ApiParam({
+		name: 'id',
+		description: 'id',
+		required: true,
+		type: 'uuid'
+	})
+	async fineOne(@Param('id') id: string, @Req() req: Request) {
+		return this.productCategoryService.findOne(req, id);
+	}
 
-  @Get()
-  @ApiUserFilterQueries()
-  async findAll(
-    @Req() req: Request,
-    @Query('page') page?: number,
-    @Query('perpage') perpage?: number,
-    @Query('search') search?: string,
-    @Query('searchfields') searchfields?: string,
-    @Query('filter') filter?: Record<string, string>,
-    @Query('sort') sort?: string,
-    @Query('advance') advance?: QueryAdvance,
-  ) {
-    const defaultSearchFields: string[] = [];
+	@Get()
+	@ApiUserFilterQueries()
+	async findAll(
+		@Req() req: Request,
+		@Query('page') page?: number,
+		@Query('perpage') perpage?: number,
+		@Query('search') search?: string,
+		@Query('searchfields') searchfields?: string,
+		@Query('filter') filter?: Record<string, string>,
+		@Query('sort') sort?: string,
+		@Query('advance') advance?: QueryAdvance
+	) {
+		const defaultSearchFields: string[] = [];
 
-    const q = new QueryParams(
-      page,
-      perpage,
-      search,
-      searchfields,
-      defaultSearchFields,
-      filter,
-      sort,
-      advance,
-    );
-    return this.productCategoryService.findAll(req, q);
-  }
+		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
+		return this.productCategoryService.findAll(req, q);
+	}
 
-  @Post()
-  @ApiBody({
-    type: ProductCategoryCreateDto,
-    description: 'ProductCategoryCreateDto',
-  })
-  async create(@Body() createDto: any, @Req() req: Request) {
-    return this.productCategoryService.create(req, createDto);
-  }
+	@Post()
+	@ApiBody({
+		type: ProductCategoryCreateDto,
+		description: 'ProductCategoryCreateDto'
+	})
+	async create(@Body() createDto: any, @Req() req: Request) {
+		return this.productCategoryService.create(req, createDto);
+	}
 
-  @Patch(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'id',
-    required: true,
-    type: 'uuid',
-  })
-  @ApiBody({
-    type: ProductCategoryUpdateDto,
-    description: 'ProductCategoryUpdateDto',
-  })
-  async update(
-    @Param('id') id: string,
-    @Body() updateDto: any,
-    @Req() req: Request,
-  ) {
-    const { ...updatedto } = updateDto;
-    updatedto.id = id;
-    return this.productCategoryService.update(req, id, updatedto);
-  }
+	@Patch(':id')
+	@ApiParam({
+		name: 'id',
+		description: 'id',
+		required: true,
+		type: 'uuid'
+	})
+	@ApiBody({
+		type: ProductCategoryUpdateDto,
+		description: 'ProductCategoryUpdateDto'
+	})
+	async update(@Param('id') id: string, @Body() updateDto: any, @Req() req: Request) {
+		const { ...updatedto } = updateDto;
+		updatedto.id = id;
+		return this.productCategoryService.update(req, id, updatedto);
+	}
 
-  @Delete(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'id',
-    required: true,
-    type: 'uuid',
-  })
-  async delete(@Param('id') id: string, @Req() req: Request) {
-    return this.productCategoryService.delete(req, id);
-  }
+	@Delete(':id')
+	@ApiParam({
+		name: 'id',
+		description: 'id',
+		required: true,
+		type: 'uuid'
+	})
+	async delete(@Param('id') id: string, @Req() req: Request) {
+		return this.productCategoryService.delete(req, id);
+	}
 }

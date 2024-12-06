@@ -11,14 +11,14 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaClientManagerModule } from '../prisma-client-manager/prisma-client-manager.module';
 import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
 import { SendMailModule } from 'src/_lib/send-mail/send-mail.module';
-import { UserModule } from 'src/_system/users/users.module';
+import { SystemUserModule } from 'src/_system/system-users/system-users.module';
 
 dotenv.config();
 
 @Module({
   imports: [
     PrismaClientManagerModule,
-    UserModule,
+    SystemUserModule,
     PassportModule,
     SendMailModule,
     JwtModule.register({

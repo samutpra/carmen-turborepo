@@ -71,7 +71,7 @@ erDiagram
 "global_activity_table" {
   String id PK
   enum_activity_action action "nullable"
-  String entity_type "nullable"
+  enum_activity_entity_type entity_type "nullable"
   String entity_id "nullable"
   String actor_id "nullable"
   Json meta_data "nullable"
@@ -82,37 +82,6 @@ erDiagram
   String description "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
-}
-"good_receive_note_0_table" {
-  String id PK
-  String inventory_transaction_0_id FK
-  String name "nullable"
-}
-"good_receive_note_1_table" {
-  String id PK
-  String good_receive_note_0_id FK
-  String name "nullable"
-}
-"inventory_transaction_0_table" {
-  String id PK
-  String name UK
-  enum_inventory_doc_type inventory_doc_type "nullable"
-}
-"inventory_transaction_1_table" {
-  String id PK
-  String inventory_transaction_0_id FK
-  String from_lot_name "nullable"
-  String current_lot_name "nullable"
-  Decimal qty "nullable"
-  Decimal cost "nullable"
-}
-"inventory_transaction_2_table" {
-  String id PK
-  String inventory_transaction_1_id FK
-  String lot_name "nullable"
-  Int lot_index
-  Decimal qty "nullable"
-  Decimal cost "nullable"
 }
 "location_table" {
   String id PK
@@ -131,7 +100,7 @@ erDiagram
   String name UK
   String description "nullable"
   Boolean is_active "nullable"
-  Boolean isVisible "nullable"
+  Boolean is_visible "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -139,6 +108,7 @@ erDiagram
 }
 "product_category_table" {
   String id PK
+  String code UK
   String name UK
   String description "nullable"
   Boolean is_active "nullable"
@@ -159,6 +129,7 @@ erDiagram
 }
 "product_item_group_table" {
   String id PK
+  String code UK
   String name UK
   String description "nullable"
   Boolean is_active "nullable"
@@ -170,6 +141,7 @@ erDiagram
 }
 "product_sub_category_table" {
   String id PK
+  String code UK
   String name UK
   String description "nullable"
   Boolean is_active "nullable"
@@ -193,75 +165,18 @@ erDiagram
 }
 "product_vendor_table" {
   String id PK
-  String vendor_id FK "nullable"
   String product_id FK "nullable"
+  String vendor_id FK "nullable"
   String description "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
   String updated_by_id "nullable"
-}
-"purchase_order_0_table" {
-  String id PK
-  String name UK
-  String description "nullable"
-  Boolean is_active "nullable"
-  DateTime created_at "nullable"
-  String created_by_id "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id "nullable"
-}
-"purchase_order_1_table" {
-  String id PK
-  String name UK "nullable"
-  String description "nullable"
-  Boolean is_active "nullable"
-  String purchase_order_0_id FK "nullable"
-  DateTime created_at "nullable"
-  String created_by_id "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id "nullable"
-}
-"purchase_request_0_table" {
-  String id PK
-  String reference_name UK
-  DateTime purchase_request_date "nullable"
-  String purchase_request_type_id FK "nullable"
-  String requestor_id "nullable"
-  String department_id "nullable"
-  Boolean is_active "nullable"
-  DateTime created_at "nullable"
-  String created_by_id "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id "nullable"
-}
-"purchase_request_1_table" {
-  String id PK
-  String purchase_request_0_id FK "nullable"
-  String location_id "nullable"
-  String product_id "nullable"
-  String unit_id "nullable"
-  String description "nullable"
-  Float requested_qty "nullable"
-  Float approved_qty "nullable"
-  String currency_id "nullable"
-  Float currency_rate "nullable"
-  Decimal price "nullable"
-  Decimal total_price "nullable"
-  DateTime created_at "nullable"
-  String created_by_id "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id "nullable"
-}
-"purchase_request_1_workflow_table" {
-  String id PK
-  String purchase_request_1_id FK "nullable"
-  DateTime created_at "nullable"
-  String created_by_id "nullable"
 }
 "purchase_request_type_table" {
   String id PK
+  String code UK
   String name UK
   String description "nullable"
   Boolean is_active "nullable"
@@ -269,44 +184,15 @@ erDiagram
   String created_by_id "nullable"
   DateTime updated_at "nullable"
   String updated_by_id "nullable"
-}
-"stock_in_0_table" {
-  String id PK
-  String inventory_transaction_0_id FK
-  String name "nullable"
-}
-"stock_in_1_table" {
-  String id PK
-  String stock_in_0_id FK
-  String name "nullable"
-}
-"stock_out_0_table" {
-  String id PK
-  String inventory_transaction_0_id FK
-  String name "nullable"
-}
-"stock_out_1_table" {
-  String id PK
-  String stock_in_0_id FK
-  String name "nullable"
-}
-"store_requisition_0_table" {
-  String id PK
-  String inventory_transaction_0_id FK
-  String name "nullable"
-}
-"store_requisition_1_table" {
-  String id PK
-  String store_requisition_0_id FK
-  String name "nullable"
 }
 "unit_conversion_table" {
   String id PK
   String product_id FK "nullable"
   enum_unit_type unit_type
   String from_unit_id FK "nullable"
+  Float from_unit_qty "nullable"
   String to_unit_id FK "nullable"
-  Float rate "nullable"
+  Float to_unit_qty "nullable"
   String description "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
@@ -341,6 +227,7 @@ erDiagram
   String contact_type_id FK
   String description "nullable"
   Boolean is_active "nullable"
+  Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -356,11 +243,237 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id "nullable"
 }
+"credit_note_detail_table" {
+  String id PK
+  String credit_note_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  Decimal amount "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"credit_note_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"good_receive_note_detail_table" {
+  String id PK
+  String good_receive_note_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"good_receive_note_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"inventory_adjustment_detail_table" {
+  String id PK
+  String inventory_adjustment_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"inventory_adjustment_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"inventory_transaction_cf_table" {
+  String id PK
+  String inventory_transaction_detail_id FK
+  String lot_name "nullable"
+  Int lot_index
+  Decimal qty "nullable"
+  Decimal cost "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"inventory_transaction_detail_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String from_lot_name "nullable"
+  String current_lot_name "nullable"
+  Decimal qty "nullable"
+  Decimal cost "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"inventory_transaction_table" {
+  String id PK
+  String name UK
+  enum_inventory_doc_type inventory_doc_type
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"purchase_order_detail_table" {
+  String id PK
+  String name UK "nullable"
+  String description "nullable"
+  Boolean is_active "nullable"
+  String purchase_order_id FK "nullable"
+  String purchase_request_detail_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"purchase_order_table" {
+  String id PK
+  String name UK
+  enum_purchase_order_doc_status purchase_order_status "nullable"
+  String description "nullable"
+  DateTime order_date "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"purchase_request_detail_table" {
+  String id PK
+  String purchase_request_id FK "nullable"
+  String location_id "nullable"
+  String product_id "nullable"
+  String unit_id "nullable"
+  String description "nullable"
+  Float requested_qty "nullable"
+  Float approved_qty "nullable"
+  String currency_id "nullable"
+  Float currency_rate "nullable"
+  Decimal price "nullable"
+  Decimal total_price "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"purchase_request_detail_workflow_table" {
+  String id PK
+  String purchase_request_detail_id FK "nullable"
+  enum_purchase_request_workflow_status purchase_request_workflow_status "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+}
+"purchase_request_table" {
+  String id PK
+  String reference_name UK
+  DateTime purchase_request_date "nullable"
+  String purchase_request_type_id FK "nullable"
+  enum_purchase_request_doc_status purchase_request_status "nullable"
+  String requestor_id "nullable"
+  String department_id "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_in_detail_table" {
+  String id PK
+  String stock_in_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_in_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_out_detail_table" {
+  String id PK
+  String stock_in_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_out_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_take_detail_table" {
+  String id PK
+  String stock_take_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"stock_take_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"store_requisition_detail_table" {
+  String id PK
+  String store_requisition_id FK
+  String name "nullable"
+  Decimal qty "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"store_requisition_table" {
+  String id PK
+  String inventory_transaction_id FK
+  String name "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
 "exchange_rate_table" }o--o| "currency_table" : currency_table
-"good_receive_note_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
-"good_receive_note_1_table" }o--|| "good_receive_note_0_table" : good_receive_note_0_table
-"inventory_transaction_1_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
-"inventory_transaction_2_table" }o--|| "inventory_transaction_1_table" : inventory_transaction_1_table
 "location_table" }o--o| "delivery_point_table" : delivery_point_table
 "product_info_table" |o--|| "product_table" : product_table
 "product_item_group_table" }o--o| "product_sub_category_table" : product_sub_category_table
@@ -368,16 +481,6 @@ erDiagram
 "product_table" }o--|| "unit_table" : unit_table
 "product_vendor_table" }o--o| "product_table" : product_table
 "product_vendor_table" }o--o| "vendor_table" : vendor_table
-"purchase_order_1_table" }o--o| "purchase_order_0_table" : purchase_order_0_table
-"purchase_request_0_table" }o--o| "purchase_request_type_table" : purchase_request_type_table
-"purchase_request_1_table" }o--o| "purchase_request_0_table" : purchase_request_0_table
-"purchase_request_1_workflow_table" }o--o| "purchase_request_1_table" : purchase_request_1_table
-"stock_in_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
-"stock_in_1_table" }o--|| "stock_in_0_table" : stock_in_0_table
-"stock_out_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
-"stock_out_1_table" }o--|| "stock_out_0_table" : stock_out_0_table
-"store_requisition_0_table" }o--|| "inventory_transaction_0_table" : inventory_transaction_0_table
-"store_requisition_1_table" }o--|| "store_requisition_0_table" : store_requisition_0_table
 "unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_from_unit_idTounit_table
 "unit_conversion_table" }o--o| "product_table" : product_table
 "unit_conversion_table" }o--o| "unit_table" : unit_table_unit_conversion_table_to_unit_idTounit_table
@@ -385,6 +488,27 @@ erDiagram
 "vendor_address_table" }o--o| "vendor_table" : vendor_table
 "vendor_contact_table" }o--|| "contact_type_table" : contact_type_table
 "vendor_contact_table" }o--o| "vendor_table" : vendor_table
+"credit_note_detail_table" }o--|| "credit_note_table" : credit_note_table
+"credit_note_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"good_receive_note_detail_table" }o--|| "good_receive_note_table" : good_receive_note_table
+"good_receive_note_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"inventory_adjustment_detail_table" }o--|| "inventory_adjustment_table" : inventory_adjustment_table
+"inventory_adjustment_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"inventory_transaction_cf_table" }o--|| "inventory_transaction_detail_table" : inventory_transaction_detail_table
+"inventory_transaction_detail_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"purchase_order_detail_table" }o--o| "purchase_order_table" : purchase_order_table
+"purchase_order_detail_table" }o--o| "purchase_request_detail_table" : purchase_request_detail_table
+"purchase_request_detail_table" }o--o| "purchase_request_table" : purchase_request_table
+"purchase_request_detail_workflow_table" }o--o| "purchase_request_detail_table" : purchase_request_detail_table
+"purchase_request_table" }o--o| "purchase_request_type_table" : purchase_request_type_table
+"stock_in_detail_table" }o--|| "stock_in_table" : stock_in_table
+"stock_in_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"stock_out_detail_table" }o--|| "stock_out_table" : stock_out_table
+"stock_out_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"stock_take_detail_table" }o--|| "stock_take_table" : stock_take_table
+"stock_take_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
+"store_requisition_detail_table" }o--|| "store_requisition_table" : store_requisition_table
+"store_requisition_table" }o--|| "inventory_transaction_table" : inventory_transaction_table
 ```
 
 ### `address_type_table`
@@ -478,47 +602,6 @@ erDiagram
   - `created_at`: 
   - `created_by_id`: 
 
-### `good_receive_note_0_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_0_id`: 
-  - `name`: 
-
-### `good_receive_note_1_table`
-
-**Properties**
-  - `id`: 
-  - `good_receive_note_0_id`: 
-  - `name`: 
-
-### `inventory_transaction_0_table`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `inventory_doc_type`: 
-
-### `inventory_transaction_1_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_0_id`: 
-  - `from_lot_name`: 
-  - `current_lot_name`: 
-  - `qty`: 
-  - `cost`: 
-
-### `inventory_transaction_2_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_1_id`: 
-  - `lot_name`: 
-  - `lot_index`: 
-  - `qty`: 
-  - `cost`: 
-
 ### `location_table`
 
 **Properties**
@@ -540,7 +623,7 @@ erDiagram
   - `name`: 
   - `description`: 
   - `is_active`: 
-  - `isVisible`: 
+  - `is_visible`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -550,6 +633,7 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `code`: 
   - `name`: 
   - `description`: 
   - `is_active`: 
@@ -574,6 +658,7 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `code`: 
   - `name`: 
   - `description`: 
   - `is_active`: 
@@ -587,6 +672,7 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `code`: 
   - `name`: 
   - `description`: 
   - `is_active`: 
@@ -614,87 +700,20 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `product_id`: 
   - `vendor_id`: 
-  - `product_id`: 
   - `description`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
-
-### `purchase_order_0_table`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `is_active`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `purchase_order_1_table`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `description`: 
-  - `is_active`: 
-  - `purchase_order_0_id`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `purchase_request_0_table`
-
-**Properties**
-  - `id`: 
-  - `reference_name`: 
-  - `purchase_request_date`: 
-  - `purchase_request_type_id`: 
-  - `requestor_id`: 
-  - `department_id`: 
-  - `is_active`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `purchase_request_1_table`
-
-**Properties**
-  - `id`: 
-  - `purchase_request_0_id`: 
-  - `location_id`: 
-  - `product_id`: 
-  - `unit_id`: 
-  - `description`: 
-  - `requested_qty`: 
-  - `approved_qty`: 
-  - `currency_id`: 
-  - `currency_rate`: 
-  - `price`: 
-  - `total_price`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `purchase_request_1_workflow_table`
-
-**Properties**
-  - `id`: 
-  - `purchase_request_1_id`: 
-  - `created_at`: 
-  - `created_by_id`: 
 
 ### `purchase_request_type_table`
 
 **Properties**
   - `id`: 
+  - `code`: 
   - `name`: 
   - `description`: 
   - `is_active`: 
@@ -702,48 +721,6 @@ erDiagram
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
-
-### `stock_in_0_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_0_id`: 
-  - `name`: 
-
-### `stock_in_1_table`
-
-**Properties**
-  - `id`: 
-  - `stock_in_0_id`: 
-  - `name`: 
-
-### `stock_out_0_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_0_id`: 
-  - `name`: 
-
-### `stock_out_1_table`
-
-**Properties**
-  - `id`: 
-  - `stock_in_0_id`: 
-  - `name`: 
-
-### `store_requisition_0_table`
-
-**Properties**
-  - `id`: 
-  - `inventory_transaction_0_id`: 
-  - `name`: 
-
-### `store_requisition_1_table`
-
-**Properties**
-  - `id`: 
-  - `store_requisition_0_id`: 
-  - `name`: 
 
 ### `unit_conversion_table`
 
@@ -752,8 +729,9 @@ erDiagram
   - `product_id`: 
   - `unit_type`: 
   - `from_unit_id`: 
+  - `from_unit_qty`: 
   - `to_unit_id`: 
-  - `rate`: 
+  - `to_unit_qty`: 
   - `description`: 
   - `is_active`: 
   - `created_at`: 
@@ -794,6 +772,7 @@ erDiagram
   - `contact_type_id`: 
   - `description`: 
   - `is_active`: 
+  - `info`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -806,6 +785,280 @@ erDiagram
   - `name`: 
   - `description`: 
   - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `credit_note_detail_table`
+
+**Properties**
+  - `id`: 
+  - `credit_note_id`: 
+  - `name`: 
+  - `qty`: 
+  - `amount`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `credit_note_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `good_receive_note_detail_table`
+
+**Properties**
+  - `id`: 
+  - `good_receive_note_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `good_receive_note_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `inventory_adjustment_detail_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_adjustment_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `inventory_adjustment_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `inventory_transaction_cf_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_detail_id`: 
+  - `lot_name`: 
+  - `lot_index`: 
+  - `qty`: 
+  - `cost`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `inventory_transaction_detail_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `from_lot_name`: 
+  - `current_lot_name`: 
+  - `qty`: 
+  - `cost`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `inventory_transaction_table`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `inventory_doc_type`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `purchase_order_detail_table`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `description`: 
+  - `is_active`: 
+  - `purchase_order_id`: 
+  - `purchase_request_detail_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `purchase_order_table`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `purchase_order_status`: 
+  - `description`: 
+  - `order_date`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `purchase_request_detail_table`
+
+**Properties**
+  - `id`: 
+  - `purchase_request_id`: 
+  - `location_id`: 
+  - `product_id`: 
+  - `unit_id`: 
+  - `description`: 
+  - `requested_qty`: 
+  - `approved_qty`: 
+  - `currency_id`: 
+  - `currency_rate`: 
+  - `price`: 
+  - `total_price`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `purchase_request_detail_workflow_table`
+
+**Properties**
+  - `id`: 
+  - `purchase_request_detail_id`: 
+  - `purchase_request_workflow_status`: 
+  - `created_at`: 
+  - `created_by_id`: 
+
+### `purchase_request_table`
+
+**Properties**
+  - `id`: 
+  - `reference_name`: 
+  - `purchase_request_date`: 
+  - `purchase_request_type_id`: 
+  - `purchase_request_status`: 
+  - `requestor_id`: 
+  - `department_id`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_in_detail_table`
+
+**Properties**
+  - `id`: 
+  - `stock_in_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_in_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_out_detail_table`
+
+**Properties**
+  - `id`: 
+  - `stock_in_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_out_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_take_detail_table`
+
+**Properties**
+  - `id`: 
+  - `stock_take_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `stock_take_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `store_requisition_detail_table`
+
+**Properties**
+  - `id`: 
+  - `store_requisition_id`: 
+  - `name`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `store_requisition_table`
+
+**Properties**
+  - `id`: 
+  - `inventory_transaction_id`: 
+  - `name`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
