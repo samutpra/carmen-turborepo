@@ -25,11 +25,11 @@ import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '.
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import { CurrencyLabel } from '@/lib/types';
 import CurrencyForm from './form/CurrencyForm';
 import { useAuth } from '@/app/context/AuthContext';
 import EmptyData from '@/components/EmptyData';
 import {
+	CurrencyLabel,
 	CurrencySchema,
 	CurrencyType,
 } from '@carmensoftware/shared-types/dist/currencySchema';
@@ -142,7 +142,7 @@ const CurrencyList = () => {
 			setIsLoading(true);
 			if (editingItem?.id) {
 				const updatedCurrency = await updateCurrency(token, editingItem.id, data);
-				setCurrencies((prev) => 
+				setCurrencies((prev) =>
 					prev.map((item) => item.id === editingItem.id ? updatedCurrency : item)
 				);
 			} else {
@@ -243,8 +243,8 @@ const CurrencyList = () => {
 						>
 							{selectedStatus
 								? statusOptions.find(
-										(status) => status.value === selectedStatus
-									)?.label
+									(status) => status.value === selectedStatus
+								)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
