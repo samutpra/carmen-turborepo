@@ -2,9 +2,30 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import { ProductSubCategoryCreateDto, ProductSubCategoryUpdateDto } from '@carmensoftware/shared-dtos';
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ProductSubCategoryCreateDto,
+  ProductSubCategoryUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { ProductSubCategoryService } from './product-sub-category.service';
 
@@ -29,7 +50,7 @@ export class ProductSubCategoryController {
 		type: 'uuid'
 	})
 	async fineOne(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id, req: req });
+		this.logger.debug({ id: id });
 		return this.productSubCategoryService.findOne(req, id);
 	}
 
@@ -57,7 +78,7 @@ export class ProductSubCategoryController {
 			advance: advance
 		});
 		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
-		this.logger.debug({ q: q, req: req });
+		this.logger.debug({ q: q });
 		return this.productSubCategoryService.findAll(req, q);
 	}
 
@@ -67,7 +88,7 @@ export class ProductSubCategoryController {
 		description: 'ProductSubCategoryCreateDto'
 	})
 	async create(@Body() createDto: any, @Req() req: Request) {
-		this.logger.debug({ createDto: createDto, req: req });
+		this.logger.debug({ createDto: createDto });
 		return this.productSubCategoryService.create(req, createDto);
 	}
 
@@ -85,7 +106,7 @@ export class ProductSubCategoryController {
 	async update(@Param('id') id: string, @Body() updateDto: ProductSubCategoryUpdateDto, @Req() req: Request) {
 		const { ...updatedto } = updateDto;
 		updatedto.id = id;
-		this.logger.debug({ updatedto: updatedto, req: req });
+		this.logger.debug({ updatedto: updatedto });
 		return this.productSubCategoryService.update(req, id, updatedto);
 	}
 
@@ -97,7 +118,7 @@ export class ProductSubCategoryController {
 		type: 'uuid'
 	})
 	async delete(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id, req: req });
+		this.logger.debug({ id: id });
 		return this.productSubCategoryService.delete(req, id);
 	}
 }

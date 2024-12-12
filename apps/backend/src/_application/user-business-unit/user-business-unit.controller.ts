@@ -2,8 +2,21 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import { Controller, Get, Logger, Param, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { UserBusinessUnitService } from './user-business-unit.service';
 
@@ -28,7 +41,7 @@ export class UserBusinessUnitController {
 		type: 'uuid'
 	})
 	async findOne(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id, req: req });
+		this.logger.debug({ id: id });
 		return this.userBusinessUnitService.findOne(req, id);
 	}
 
@@ -58,7 +71,7 @@ export class UserBusinessUnitController {
 
 		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
 
-		this.logger.debug({ q: q, req: req });
+		this.logger.debug({ q: q });
 
 		return this.userBusinessUnitService.findAll(req, q);
 	}

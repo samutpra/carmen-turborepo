@@ -2,9 +2,30 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import { ProductCreateDto, ProductUpdateDto } from '@carmensoftware/shared-dtos';
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ProductCreateDto,
+  ProductUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { ProductsService } from './products.service';
 
@@ -29,7 +50,7 @@ export class ProductsController {
 		type: 'uuid'
 	})
 	async findOne(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id, req: req });
+		this.logger.debug({ id: id });
 		return this.productsService.findOne(req, id);
 	}
 
@@ -63,7 +84,7 @@ export class ProductsController {
 
 		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
 
-		this.logger.debug({ q: q, req: req });
+		this.logger.debug({ q: q });
 		return this.productsService.findAll(req, q);
 	}
 
@@ -73,7 +94,7 @@ export class ProductsController {
 		description: 'ProductCreateDto'
 	})
 	async create(@Body() createDto: any, @Req() req: Request) {
-		this.logger.debug({ createDto: createDto, req: req });
+		this.logger.debug({ createDto: createDto });
 		return this.productsService.create(req, createDto);
 	}
 
@@ -91,7 +112,7 @@ export class ProductsController {
 	async update(@Param('id') id: string, @Body() updateDto: any, @Req() req: Request) {
 		const { ...updatedto } = updateDto;
 		updatedto.id = id;
-		this.logger.debug({ id: id, updateDto: updateDto, req: req });
+		this.logger.debug({ id: id, updateDto: updateDto });
 		return this.productsService.update(req, id, updatedto);
 	}
 
@@ -103,7 +124,7 @@ export class ProductsController {
 		type: 'uuid'
 	})
 	async delete(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id, req: req });
+		this.logger.debug({ id: id });
 		return this.productsService.delete(req, id);
 	}
 }

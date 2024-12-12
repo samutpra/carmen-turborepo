@@ -1,5 +1,15 @@
-import { Controller, Get, Logger, Param, Query, Req } from '@nestjs/common';
-import { ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Query,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 
 import { UserPermissionService } from './user-permission.service';
 
@@ -26,7 +36,7 @@ export class UserPermissionController {
 		@Req() req: Request,
 		@Query('as-list') asList?: boolean
 	) {
-		this.logger.debug({ permission: permission, asList: asList, req: req });
+		this.logger.debug({ permission: permission, asList: asList });
 		return this.userPermissionService.getPermissions(req, permission, asList);
 	}
 }
