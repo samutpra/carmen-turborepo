@@ -238,7 +238,7 @@ TABLE CARMEN_SYSTEM.notification_table {
   }
 }
 
-TABLE CARMEN_SYSTEM.role_table {
+TABLE CARMEN_SYSTEM.application_role_table {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.business_unit_table.id]
   name        varchar   [not null, unique]
@@ -251,8 +251,8 @@ TABLE CARMEN_SYSTEM.role_table {
   updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
 
   indexes {
-    name [name: "role_name_idx"]
-    (business_unit_id, name) [unique, name: "role_business_unit_id_name_u"]
+    name [name: "application_role_name_idx"]
+    (business_unit_id, name) [unique, name: "application_role_business_unit_id_name_u"]
   }
 }
 
@@ -285,10 +285,10 @@ TABLE CARMEN_SYSTEM.permission_table {
   }
 }
 
-TABLE CARMEN_SYSTEM.user_role_table {
+TABLE CARMEN_SYSTEM.user_application_role_table {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   user_id   uuid [not null, ref: > CARMEN_SYSTEM.user_table.id]
-  role_id   uuid [not null, ref: > CARMEN_SYSTEM.role_table.id]
+  application_role_id   uuid [not null, ref: > CARMEN_SYSTEM.application_role_table.id]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
@@ -297,13 +297,13 @@ TABLE CARMEN_SYSTEM.user_role_table {
   updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
 
   Indexes {
-    (user_id, role_id) [unique, name: "userrole_user_id_role_id_u"]
+    (user_id, application_role_id) [unique, name: "userapplicationrole_user_id_application_role_id_u"]
   }
 }
 
-TABLE CARMEN_SYSTEM.role_permission_table {
+TABLE CARMEN_SYSTEM.application_role_permission_table {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  role_id       uuid [not null, ref: > CARMEN_SYSTEM.role_table.id]
+  application_role_id       uuid [not null, ref: > CARMEN_SYSTEM.application_role_table.id]
   permission_id uuid [not null, ref: > CARMEN_SYSTEM.permission_table.id]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -313,7 +313,7 @@ TABLE CARMEN_SYSTEM.role_permission_table {
   updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
 
   Indexes {
-    (role_id, permission_id) [unique, name: "rolepermission_role_id_permission_id_u"]
+    (application_role_id, permission_id) [unique, name: "applicationrolepermission_application_role_id_permission_id_u"]
   }
 }
 
@@ -1209,7 +1209,7 @@ TABLE TENANT_DUMMY.stock_take_detail_table {
   stock_take_id uuid [not null, ref: > TENANT_DUMMY.stock_take_table.id]
 
   name varchar
-
+  
   qty decimal
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]

@@ -2,30 +2,9 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import {
-  CreditNoteCreateDto,
-  CreditNoteUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Logger,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiHeader,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { CreditNoteCreateDto, CreditNoteUpdateDto } from '@carmensoftware/shared-dtos';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { CreditNoteService } from './credit-note.service';
 
@@ -50,6 +29,7 @@ export class CreditNoteController {
 		type: 'uuid'
 	})
 	async findOne(@Param('id') id: string, @Req() req: Request) {
+		this.logger.debug({ id: id, req: req });
 		return this.creditNoteService.findOne(req, id);
 	}
 
@@ -69,9 +49,19 @@ export class CreditNoteController {
 			'name',
 			'description'
 		];
+		this.logger.debug({
+			page: page,
+			perpage: perpage,
+			search: search,
+			searchfields: searchfields,
+			filter: filter,
+			sort: sort,
+			advance: advance
+		});
 
 		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
 
+		this.logger.debug({ q: q, req: req });
 		return this.creditNoteService.findAll(req, q);
 	}
 
@@ -81,6 +71,7 @@ export class CreditNoteController {
 		description: 'CreditNoteCreateDto'
 	})
 	async create(@Req() req: Request, @Body() createDto: CreditNoteCreateDto) {
+		this.logger.debug({ req: req, createDto: createDto });
 		return this.creditNoteService.create(req, createDto);
 	}
 
@@ -98,6 +89,7 @@ export class CreditNoteController {
 	async update(@Param('id') id: string, @Req() req: Request, @Body() updateDto: any) {
 		const { ...updatedto } = updateDto;
 		updatedto.id = id;
+		this.logger.debug({ req: req, id: id, updatedto: updatedto });
 		return this.creditNoteService.update(req, id, updatedto);
 	}
 
@@ -109,6 +101,7 @@ export class CreditNoteController {
 		type: 'uuid'
 	})
 	async delete(@Param('id') id: string, @Req() req: Request) {
+		this.logger.debug({ req: req, id: id });
 		return this.creditNoteService.delete(req, id);
 	}
 }

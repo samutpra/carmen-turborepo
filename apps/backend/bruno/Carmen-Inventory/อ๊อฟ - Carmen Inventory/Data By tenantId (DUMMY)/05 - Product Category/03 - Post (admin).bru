@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (admin)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/product-category
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "BEVERAGE",
+    "description": "BEVERAGE Description",
+    "is_active": true
+  }
+}

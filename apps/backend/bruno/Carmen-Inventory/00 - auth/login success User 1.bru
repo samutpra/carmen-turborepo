@@ -13,10 +13,12 @@ post {
 body:json {
   {
     "username": "test@carmensoftware.com",
-    "password": "1234"
+    "password": "123456"
   }
 }
 
 script:post-response {
   bru.setEnvVar('access_token',res.body.access_token)
+  bru.setEnvVar('refresh_token',res.body.refresh_token)
+  bru.setEnvVar('user_id',res.body.id)
 }

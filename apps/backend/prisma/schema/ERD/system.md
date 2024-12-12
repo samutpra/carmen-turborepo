@@ -90,25 +90,6 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"role_permission_table" {
-  String id PK
-  String role_id FK
-  String permission_id FK
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
-"role_table" {
-  String id PK
-  String business_unit_id FK
-  String name UK
-  String description "nullable"
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
 "subscription_detail_table" {
   String id PK
   String subscription_id FK
@@ -153,15 +134,6 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"user_role_table" {
-  String id PK
-  String user_id FK
-  String role_id FK
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
 "user_table" {
   String id PK
   String username UK
@@ -169,6 +141,34 @@ erDiagram
   Boolean is_active "nullable"
   Boolean is_consent "nullable"
   DateTime consent "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"application_role_permission_table" {
+  String id PK
+  String application_role_id FK
+  String permission_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"application_role_table" {
+  String id PK
+  String business_unit_id FK
+  String name UK
+  String description "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"user_application_role_table" {
+  String id PK
+  String user_id FK
+  String application_role_id FK
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
@@ -195,13 +195,6 @@ erDiagram
 "password_table" }o--|| "user_table" : user_table
 "permission_table" }o--o| "user_table" : user_table_permission_table_created_by_idTouser_table
 "permission_table" }o--o| "user_table" : user_table_permission_table_updated_by_idTouser_table
-"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_created_by_idTouser_table
-"role_permission_table" }o--|| "permission_table" : permission_table
-"role_permission_table" }o--|| "role_table" : role_table
-"role_permission_table" }o--o| "user_table" : user_table_role_permission_table_updated_by_idTouser_table
-"role_table" }o--|| "business_unit_table" : business_unit_table
-"role_table" }o--o| "user_table" : user_table_role_table_created_by_idTouser_table
-"role_table" }o--o| "user_table" : user_table_role_table_updated_by_idTouser_table
 "subscription_detail_table" }o--|| "business_unit_table" : business_unit_table
 "subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_created_by_idTouser_table
 "subscription_detail_table" }o--|| "module_table" : module_table
@@ -217,12 +210,19 @@ erDiagram
 "user_profile_table" }o--o| "user_table" : user_table_user_profile_table_created_by_idTouser_table
 "user_profile_table" }o--o| "user_table" : user_table_user_profile_table_updated_by_idTouser_table
 "user_profile_table" }o--o| "user_table" : user_table_user_profile_table_user_idTouser_table
-"user_role_table" }o--o| "user_table" : user_table_user_role_table_created_by_idTouser_table
-"user_role_table" }o--|| "role_table" : role_table
-"user_role_table" }o--o| "user_table" : user_table_user_role_table_updated_by_idTouser_table
-"user_role_table" }o--|| "user_table" : user_table_user_role_table_user_idTouser_table
 "user_table" }o--o| "user_table" : user_table_user_table_created_by_idTouser_table
 "user_table" }o--o| "user_table" : user_table_user_table_updated_by_idTouser_table
+"application_role_permission_table" }o--|| "application_role_table" : application_role_table
+"application_role_permission_table" }o--o| "user_table" : user_table_application_role_permission_table_created_by_idTouser_table
+"application_role_permission_table" }o--|| "permission_table" : permission_table
+"application_role_permission_table" }o--o| "user_table" : user_table_application_role_permission_table_updated_by_idTouser_table
+"application_role_table" }o--|| "business_unit_table" : business_unit_table
+"application_role_table" }o--o| "user_table" : user_table_application_role_table_created_by_idTouser_table
+"application_role_table" }o--o| "user_table" : user_table_application_role_table_updated_by_idTouser_table
+"user_application_role_table" }o--|| "application_role_table" : application_role_table
+"user_application_role_table" }o--o| "user_table" : user_table_user_application_role_table_created_by_idTouser_table
+"user_application_role_table" }o--o| "user_table" : user_table_user_application_role_table_updated_by_idTouser_table
+"user_application_role_table" }o--|| "user_table" : user_table_user_application_role_table_user_idTouser_table
 ```
 
 ### `business_unit_module_table`
@@ -325,29 +325,6 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `role_permission_table`
-
-**Properties**
-  - `id`: 
-  - `role_id`: 
-  - `permission_id`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `role_table`
-
-**Properties**
-  - `id`: 
-  - `business_unit_id`: 
-  - `name`: 
-  - `description`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
 ### `subscription_detail_table`
 
 **Properties**
@@ -400,17 +377,6 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `user_role_table`
-
-**Properties**
-  - `id`: 
-  - `user_id`: 
-  - `role_id`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
 ### `user_table`
 
 **Properties**
@@ -420,6 +386,40 @@ erDiagram
   - `is_active`: 
   - `is_consent`: 
   - `consent`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `application_role_permission_table`
+
+**Properties**
+  - `id`: 
+  - `application_role_id`: 
+  - `permission_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `application_role_table`
+
+**Properties**
+  - `id`: 
+  - `business_unit_id`: 
+  - `name`: 
+  - `description`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `user_application_role_table`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
+  - `application_role_id`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

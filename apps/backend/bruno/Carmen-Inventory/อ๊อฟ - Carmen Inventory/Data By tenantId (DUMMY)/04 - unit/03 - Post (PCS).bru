@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (PCS)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/units
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "PCS",
+    "description": "PCS Description",
+    "is_active": true
+  }
+}
