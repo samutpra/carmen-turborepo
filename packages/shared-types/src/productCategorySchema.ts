@@ -5,18 +5,18 @@ import { z } from "zod";
 // Category
 
 const productItemGroupSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  productSubCategoryId: z.string(),
+	id: z.string(),
+	name: z.string(),
+	product_subcategory_id: z.string(),
 });
 
 export type ProductItemGroupType = z.infer<typeof productItemGroupSchema>;
 
 const productSubCategorySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  productCategoryId: z.string(),
-  productItemGroups: z.array(productItemGroupSchema),
+	id: z.string(),
+	name: z.string(),
+	product_category_id: z.string(),
+	productItemGroups: z.array(productItemGroupSchema),
 });
 
 export type ProductSubCategoryType = z.infer<typeof productSubCategorySchema>;
