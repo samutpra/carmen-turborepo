@@ -11,12 +11,23 @@ import {
 	ProductItemGroupType,
 	ProductSubCategoryType,
 } from '@carmensoftware/shared-types';
+import SummaryCard from './SummaryCard';
+import { Folder, Tag, LayoutGrid } from 'lucide-react';
+import { ItemGroupList } from './ItemGroupList';
+import ProductList from './ProductList';
+import SubProductList from './SubProductList';
 
 interface ProductResponse {
 	name: string;
 	id: string;
 	productSubCategories: ProductSubCategoryType[];
 }
+
+type CategorySummary = {
+	totalCategories: number;
+	totalSubCategories: number;
+	totalItemGroups: number;
+};
 
 const CategorieList = () => {
 	const { accessToken } = useAuth();
@@ -79,104 +90,53 @@ const CategorieList = () => {
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
+	const summary: CategorySummary = {
+		totalCategories: products.length,
+		totalSubCategories: subProducts.length,
+		totalItemGroups: itemGroups.length,
+	};
+
 	return (
-		<div className="flex gap-4">
-			<ProductList
-				products={products}
-				selectedProduct={selectedProduct}
-				onSelectProduct={(product) => {
-					setSelectedProduct(product);
-					setSelectedSubProduct(null);
-				}}
-			/>
-			<SubProductList
-				subProducts={filteredSubProducts}
-				selectedSubProduct={selectedSubProduct}
-				onSelectSubProduct={setSelectedSubProduct}
-			/>
-			<ItemGroupList itemGroups={filteredItemGroups} />
+		<div className="space-y-6">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+				<SummaryCard
+					title="Categories"
+					count={summary.totalCategories}
+					icon={<Folder className="w-6 h-6" />}
+				/>
+				<SummaryCard
+					title="Sub Categories"
+					count={summary.totalSubCategories}
+					icon={<Tag className="w-6 h-6" />}
+				/>
+				<SummaryCard
+					title="Item Groups"
+					count={summary.totalItemGroups}
+					icon={<LayoutGrid className="w-6 h-6" />}
+				/>
+			</div>
+			<div className="flex gap-4">
+				<ProductList
+					products={products}
+					selectedProduct={selectedProduct}
+					onSelectProduct={(product) => {
+						setSelectedProduct(product);
+						setSelectedSubProduct(null);
+					}}
+				/>
+				<SubProductList
+					subProducts={filteredSubProducts}
+					selectedSubProduct={selectedSubProduct}
+					onSelectSubProduct={setSelectedSubProduct}
+				/>
+				<ItemGroupList
+					itemGroups={filteredItemGroups}
+					categoryName={selectedProduct?.name || ''}
+					subCategoryName={selectedSubProduct?.name || ''}
+				/>
+			</div>
 		</div>
 	);
 };
-
-const ProductList = ({
-	products,
-	selectedProduct,
-	onSelectProduct,
-}: {
-	products: ProductResponse[];
-	selectedProduct: ProductResponse | null;
-	onSelectProduct: (product: ProductResponse) => void;
-}) => (
-	<div className="w-1/3">
-		<h2 className="text-xl font-bold mb-4">Product Categories</h2>
-		{products.map((category) => (
-			<div
-				key={category.id}
-				className={`border p-2 mb-2 cursor-pointer ${
-					selectedProduct?.id === category.id
-						? 'bg-blue-100 border-blue-500'
-						: 'hover:bg-gray-100'
-				}`}
-				onClick={() => onSelectProduct(category)}
-			>
-				<p>ID: {category.id}</p>
-				<p>Name: {category.name}</p>
-			</div>
-		))}
-	</div>
-);
-
-const SubProductList = ({
-	subProducts,
-	selectedSubProduct,
-	onSelectSubProduct,
-}: {
-	subProducts: ProductSubCategoryType[];
-	selectedSubProduct: ProductSubCategoryType | null;
-	onSelectSubProduct: (subProduct: ProductSubCategoryType) => void;
-}) => (
-	<div className="w-1/3">
-		<h2 className="text-xl font-bold mb-4">Sub Products</h2>
-		{subProducts.length > 0 ? (
-			subProducts.map((subProduct) => (
-				<div
-					key={subProduct.id}
-					className={`border p-2 mb-2 cursor-pointer ${
-						selectedSubProduct?.id === subProduct.id
-							? 'bg-blue-100 border-blue-500'
-							: 'hover:bg-gray-100'
-					}`}
-					onClick={() => onSelectSubProduct(subProduct)}
-				>
-					<p>ID: {subProduct.id}</p>
-					<p>Name: {subProduct.name}</p>
-				</div>
-			))
-		) : (
-			<div className="text-gray-500">No sub-products available</div>
-		)}
-	</div>
-);
-
-const ItemGroupList = ({
-	itemGroups,
-}: {
-	itemGroups: ProductItemGroupType[];
-}) => (
-	<div className="w-1/3">
-		<h2 className="text-xl font-bold mb-4">Item Groups</h2>
-		{itemGroups.length > 0 ? (
-			itemGroups.map((itemGroup) => (
-				<div key={itemGroup.id} className="border p-2 mb-2">
-					<p>ID: {itemGroup.id}</p>
-					<p>Name: {itemGroup.name}</p>
-				</div>
-			))
-		) : (
-			<div className="text-gray-500">No item groups available</div>
-		)}
-	</div>
-);
 
 export default CategorieList;
