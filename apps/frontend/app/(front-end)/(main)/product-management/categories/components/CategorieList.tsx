@@ -111,12 +111,16 @@ const CategorieList = () => {
 	};
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+		<div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Categories"
 					count={summary.totalCategories}
 					icon={<Folder className="w-6 h-6" />}
+					onAddData={() => {
+						// Your custom logic here
+						console.log('Category Add');
+					}}
 				/>
 				<ProductList
 					products={products}
@@ -133,6 +137,10 @@ const CategorieList = () => {
 					title="Sub Categories"
 					count={summary.totalSubCategories}
 					icon={<Tag className="w-6 h-6" />}
+					onAddData={() => {
+						// Your custom logic here
+						console.log('Sub Category Add');
+					}}
 				/>
 				<SubProductList
 					subProducts={filteredSubProducts}
@@ -146,6 +154,10 @@ const CategorieList = () => {
 					title="Item Groups"
 					count={summary.totalItemGroups}
 					icon={<LayoutGrid className="w-6 h-6" />}
+					onAddData={() => {
+						// Your custom logic here
+						console.log('Item Group Add');
+					}}
 				/>
 				<ItemGroupList
 					itemGroups={filteredItemGroups}
