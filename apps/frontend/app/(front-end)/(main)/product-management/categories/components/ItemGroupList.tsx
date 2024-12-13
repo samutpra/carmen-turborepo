@@ -4,15 +4,21 @@ import React, { useState } from 'react';
 import { ProductItemGroupType } from '@carmensoftware/shared-types';
 import ItemGroupSummaryModal from './ItemGroupSummaryModal';
 
+type ItemGroupListProps = {
+	itemGroups: ProductItemGroupType[];
+	categoryName: string;
+	subCategoryName: string;
+	onDeleteItemGroup: (itemGroupId: string) => void;
+	onUpdateItemGroup: (itemGroupId: string, newName: string) => void;
+};
+
 export const ItemGroupList = ({
 	itemGroups,
 	categoryName,
 	subCategoryName,
-}: {
-	itemGroups: ProductItemGroupType[];
-	categoryName: string;
-	subCategoryName: string;
-}) => {
+	onDeleteItemGroup,
+	onUpdateItemGroup,
+}: ItemGroupListProps) => {
 	const [selectedItemGroup, setSelectedItemGroup] =
 		useState<ProductItemGroupType | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
@@ -22,9 +28,20 @@ export const ItemGroupList = ({
 		setIsOpen(true);
 	};
 
+	const handleDelete = (itemGroupId: string) => {
+		onDeleteItemGroup(itemGroupId);
+		setIsOpen(false);
+		setSelectedItemGroup(null);
+	};
+
+	const handleUpdate = (itemGroupId: string, newName: string) => {
+		onUpdateItemGroup(itemGroupId, newName);
+		setIsOpen(false);
+		setSelectedItemGroup(null);
+	};
+
 	return (
 		<div className="w-1/3">
-			<h2 className="text-xl font-bold mb-4">Item Groups</h2>
 			{itemGroups.length > 0 ? (
 				itemGroups.map((itemGroup) => (
 					<div
@@ -32,8 +49,7 @@ export const ItemGroupList = ({
 						className="border p-2 mb-2 cursor-pointer hover:bg-gray-50"
 						onClick={() => handleItemClick(itemGroup)}
 					>
-						<p>ID: {itemGroup.id}</p>
-						<p>Name: {itemGroup.name}</p>
+						<p>{itemGroup.name}</p>
 					</div>
 				))
 			) : (
@@ -46,6 +62,8 @@ export const ItemGroupList = ({
 				subCategoryName={subCategoryName}
 				open={isOpen}
 				onOpenChange={setIsOpen}
+				onDelete={handleDelete}
+				onUpdate={handleUpdate}
 			/>
 		</div>
 	);

@@ -87,6 +87,20 @@ const CategorieList = () => {
 			)
 		: [];
 
+	const handleDeleteItemGroup = (itemGroupId: string) => {
+		setItemGroups((prevGroups) =>
+			prevGroups.filter((group) => group.id !== itemGroupId)
+		);
+	};
+
+	const handleUpdateItemGroup = (itemGroupId: string, newName: string) => {
+		setItemGroups((prevGroups) =>
+			prevGroups.map((group) =>
+				group.id === itemGroupId ? { ...group, name: newName } : group
+			)
+		);
+	};
+
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
@@ -97,25 +111,13 @@ const CategorieList = () => {
 	};
 
 	return (
-		<div className="space-y-6">
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+		<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Categories"
 					count={summary.totalCategories}
 					icon={<Folder className="w-6 h-6" />}
 				/>
-				<SummaryCard
-					title="Sub Categories"
-					count={summary.totalSubCategories}
-					icon={<Tag className="w-6 h-6" />}
-				/>
-				<SummaryCard
-					title="Item Groups"
-					count={summary.totalItemGroups}
-					icon={<LayoutGrid className="w-6 h-6" />}
-				/>
-			</div>
-			<div className="flex gap-4">
 				<ProductList
 					products={products}
 					selectedProduct={selectedProduct}
@@ -124,15 +126,33 @@ const CategorieList = () => {
 						setSelectedSubProduct(null);
 					}}
 				/>
+			</div>
+
+			<div className="flex flex-col space-y-4">
+				<SummaryCard
+					title="Sub Categories"
+					count={summary.totalSubCategories}
+					icon={<Tag className="w-6 h-6" />}
+				/>
 				<SubProductList
 					subProducts={filteredSubProducts}
 					selectedSubProduct={selectedSubProduct}
 					onSelectSubProduct={setSelectedSubProduct}
 				/>
+			</div>
+
+			<div className="flex flex-col space-y-4">
+				<SummaryCard
+					title="Item Groups"
+					count={summary.totalItemGroups}
+					icon={<LayoutGrid className="w-6 h-6" />}
+				/>
 				<ItemGroupList
 					itemGroups={filteredItemGroups}
 					categoryName={selectedProduct?.name || ''}
 					subCategoryName={selectedSubProduct?.name || ''}
+					onDeleteItemGroup={handleDeleteItemGroup}
+					onUpdateItemGroup={handleUpdateItemGroup}
 				/>
 			</div>
 		</div>
