@@ -118,7 +118,6 @@ const DepartmentList = () => {
 	const handleSave = async (data: DepartmentType) => {
 		try {
 			setIsLoading(true);
-
 			if (editingItem?.id) {
 				const updatedFields: DepartmentType = { ...data };
 				const updatedCurrency = await updateDepartment(
@@ -135,7 +134,6 @@ const DepartmentList = () => {
 				const newDepartment = await createDepartment(token, data);
 				setDepartments((prev: DepartmentType[]) => [...prev, newDepartment]);
 			}
-
 			handleCloseDialog();
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -153,7 +151,7 @@ const DepartmentList = () => {
 			setDialogForm(false);
 		}
 	};
-	
+
 
 	const handleCloseDialog = () => {
 		form.reset({

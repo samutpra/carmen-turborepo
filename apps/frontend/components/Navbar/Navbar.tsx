@@ -24,10 +24,12 @@ const Navbar = () => {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="hidden md:inline-flex "
+							className="hidden md:inline-flex"
+							aria-label="Notifications"
 						>
 							<Bell size={20} />
 						</Button>
+
 						<LanguageSwitcher />
 						<SwitchTheme />
 						{isAuthenticated ? (
