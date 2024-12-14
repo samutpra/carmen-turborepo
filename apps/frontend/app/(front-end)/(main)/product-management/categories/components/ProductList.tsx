@@ -1,10 +1,13 @@
 'use client';
 
-import { ProductSubCategoryType } from '@carmensoftware/shared-types/dist/productCategorySchema';
+import {
+	CategoryFormData,
+	ProductSubCategoryType,
+} from '@carmensoftware/shared-types/dist/productCategorySchema';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -17,10 +20,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import CategoryDialog from './CategoryDialog';
 
 interface ProductResponse {
 	name: string;
 	id: string;
+	description?: string;
+	is_active?: boolean;
 	productSubCategories: ProductSubCategoryType[];
 }
 
@@ -29,6 +35,10 @@ interface ProductListProps {
 	selectedProduct: ProductResponse | null;
 	onSelectProduct: (product: ProductResponse) => void;
 	onDeleteProduct: (productId: string) => Promise<void>;
+	onEditProduct: (
+		productId: string,
+		formData: CategoryFormData
+	) => Promise<void>;
 }
 
 const ProductList = ({
@@ -36,14 +46,23 @@ const ProductList = ({
 	selectedProduct,
 	onSelectProduct,
 	onDeleteProduct,
+	onEditProduct,
 }: ProductListProps) => {
-	
 	const [productToDelete, setProductToDelete] =
+		React.useState<ProductResponse | null>(null);
+	const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+	const [productToEdit, setProductToEdit] =
 		React.useState<ProductResponse | null>(null);
 
 	const handleDeleteClick = (e: React.MouseEvent, product: ProductResponse) => {
 		e.stopPropagation();
 		setProductToDelete(product);
+	};
+
+	const handleEditClick = (e: React.MouseEvent, product: ProductResponse) => {
+		e.stopPropagation();
+		setProductToEdit(product);
+		setEditDialogOpen(true);
 	};
 
 	const handleDelete = async () => {
@@ -55,6 +74,12 @@ const ProductList = ({
 			console.error('Error deleting product:', error);
 			toast.error('Failed to delete product');
 		}
+	};
+
+	const handleEdit = async (formData: CategoryFormData) => {
+		if (!productToEdit) return;
+		await onEditProduct(productToEdit.id, formData);
+		setEditDialogOpen(false);
 	};
 
 	return (
@@ -81,20 +106,30 @@ const ProductList = ({
 					>
 						<CardContent className="p-4 flex items-center justify-between">
 							<p className="text-sm font-medium">{category.name}</p>
-							<Button
-								variant="ghost"
-								size="icon"
-								className="opacity-0 group-hover:opacity-100 transition-opacity"
-								onClick={(e) => handleDeleteClick(e, category)}
-								aria-label={`Delete ${category.name}`}
-							>
-								<Trash2 className="h-4 w-4 text-red-500" />
-							</Button>
+							<div className="flex gap-2">
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={(e) => handleEditClick(e, category)}
+									aria-label={`Edit ${category.name}`}
+								>
+									<Pencil className="h-4 w-4 text-blue-500" />
+								</Button>
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={(e) => handleDeleteClick(e, category)}
+									aria-label={`Delete ${category.name}`}
+								>
+									<Trash2 className="h-4 w-4 text-red-500" />
+								</Button>
+							</div>
 						</CardContent>
 					</Card>
 				))}
 			</div>
 
+			{/* Delete Dialog */}
 			<AlertDialog
 				open={!!productToDelete}
 				onOpenChange={() => setProductToDelete(null)}
@@ -118,6 +153,23 @@ const ProductList = ({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{/* Edit Dialog */}
+			<CategoryDialog
+				open={editDialogOpen}
+				onOpenChange={setEditDialogOpen}
+				onSubmit={handleEdit}
+				initialData={
+					productToEdit
+						? {
+								name: productToEdit.name,
+								description: productToEdit.description || '',
+								is_active: productToEdit.is_active ?? true,
+							}
+						: undefined
+				}
+				mode="edit"
+			/>
 		</>
 	);
 };

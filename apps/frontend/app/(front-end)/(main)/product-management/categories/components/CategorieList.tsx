@@ -8,6 +8,7 @@ import {
 	fetchSubProduct,
 } from '../actions/actions';
 import {
+	CategoryFormData,
 	ProductItemGroupType,
 	ProductSubCategoryType,
 } from '@carmensoftware/shared-types';
@@ -16,8 +17,8 @@ import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import { ItemGroupList } from './ItemGroupList';
 import ProductList from './ProductList';
 import SubProductList from './SubProductList';
-import AddCategoryDialog from './AddCategoryDialog';
 import { toast } from 'sonner';
+import CategoryDialog from './CategoryDialog';
 
 interface ProductResponse {
 	name: string;
@@ -183,11 +184,7 @@ const CategorieList = () => {
 		);
 	};
 
-	const handleAddCategory = async (data: {
-		name: string;
-		is_active: boolean;
-		description?: string;
-	}) => {
+	const handleAddCategory = async (formData: CategoryFormData) => {
 		try {
 			const response = await fetch(
 				'/api/product-management/category/products',
@@ -197,10 +194,7 @@ const CategorieList = () => {
 						Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({
-						...data,
-						description: data.description || '',
-					}),
+					body: JSON.stringify(formData),
 				}
 			);
 
@@ -208,7 +202,7 @@ const CategorieList = () => {
 				const result = await response.json();
 				const newCategory: ProductResponse = {
 					id: result.data,
-					name: data.name,
+					name: formData.name,
 					productSubCategories: [],
 				};
 				setProducts((prev) => [...prev, newCategory]);
@@ -220,6 +214,42 @@ const CategorieList = () => {
 		} catch (error) {
 			console.error('Error adding category:', error);
 			toast.error('Failed to add category');
+		}
+	};
+
+	const handleEditProduct = async (
+		productId: string,
+		formData: CategoryFormData
+	) => {
+		try {
+			const response = await fetch(
+				`/api/product-management/category/products/${productId}`,
+				{
+					method: 'PATCH',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to update product');
+			}
+
+			const result = await response.json();
+			if (result.id) {
+				toast.success('Product updated successfully');
+				setProducts((prevProducts) =>
+					prevProducts.map((product) =>
+						product.id === productId ? { ...product, ...formData } : product
+					)
+				);
+			}
+		} catch (error) {
+			console.error('Error updating product:', error);
+			toast.error('Failed to update product');
 		}
 	};
 
@@ -246,10 +276,11 @@ const CategorieList = () => {
 
 	return (
 		<div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-			<AddCategoryDialog
-				isOpen={isAddCategoryOpen}
-				onClose={() => setIsAddCategoryOpen(false)}
+			<CategoryDialog
+				open={isAddCategoryOpen}
+				onOpenChange={setIsAddCategoryOpen}
 				onSubmit={handleAddCategory}
+				mode="add"
 			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
@@ -266,6 +297,7 @@ const CategorieList = () => {
 						setSelectedSubProduct(null);
 					}}
 					onDeleteProduct={handleDeleteProduct}
+					onEditProduct={handleEditProduct}
 				/>
 			</div>
 

@@ -30,3 +30,9 @@ const produtcCategorySchema = z.object({
 export const productCategoryDataSchema = z.array(produtcCategorySchema);
 
 export type ProductCategoryType = z.infer<typeof productCategoryDataSchema>;
+
+export interface CategoryFormData {
+	name: string;
+	description: string;
+	is_active: boolean;
+}
