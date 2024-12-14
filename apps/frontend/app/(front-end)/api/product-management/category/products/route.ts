@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
 
 		const result = await response.json();
 
+
 		return NextResponse.json(result, { status: 200 });
 	} catch (error) {
 		console.error('Unexpected error:', error);
@@ -107,3 +108,4 @@ export async function POST(request: NextRequest) {
 		);
 	}
 }
+

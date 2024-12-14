@@ -3,16 +3,18 @@
 import React from 'react';
 import { ProductSubCategoryType } from '@carmensoftware/shared-types';
 
-type SubProductListProps = {
-  subProducts: ProductSubCategoryType[];
-  selectedSubProduct: ProductSubCategoryType | null;
-  onSelectSubProduct: (subProduct: ProductSubCategoryType) => void;
-};
+interface SubProductListProps {
+	subProducts: ProductSubCategoryType[];
+	selectedSubProduct: ProductSubCategoryType | null;
+	onSelectSubProduct: (subProduct: ProductSubCategoryType) => void;
+	onDeleteSubProduct: (subProductId: string) => Promise<void>;
+}
 
 const SubProductList = ({
 	subProducts,
 	selectedSubProduct,
 	onSelectSubProduct,
+	onDeleteSubProduct,
 }: SubProductListProps) => (
 	<div className="w-1/3">
 		{subProducts.length > 0 ? (

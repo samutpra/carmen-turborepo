@@ -16,6 +16,8 @@ import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import { ItemGroupList } from './ItemGroupList';
 import ProductList from './ProductList';
 import SubProductList from './SubProductList';
+import AddCategoryDialog from './AddCategoryDialog';
+import { toast } from 'sonner';
 
 interface ProductResponse {
 	name: string;
@@ -40,6 +42,7 @@ const CategorieList = () => {
 		useState<ProductSubCategoryType | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
 
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
@@ -87,10 +90,89 @@ const CategorieList = () => {
 			)
 		: [];
 
-	const handleDeleteItemGroup = (itemGroupId: string) => {
-		setItemGroups((prevGroups) =>
-			prevGroups.filter((group) => group.id !== itemGroupId)
-		);
+	const handleDeleteProduct = async (productId: string) => {
+		try {
+			const response = await fetch(
+				`/api/product-management/category/products/${productId}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.ok) {
+				setProducts((prevProducts) =>
+					prevProducts.filter((product) => product.id !== productId)
+				);
+				if (selectedProduct?.id === productId) {
+					setSelectedProduct(null);
+					setSelectedSubProduct(null);
+				}
+				toast.success('Category deleted successfully');
+			} else {
+				throw new Error('Failed to delete category');
+			}
+		} catch (error) {
+			console.error('Error deleting category:', error);
+			toast.error('Failed to delete category');
+		}
+	};
+
+	const handleDeleteSubProduct = async (subProductId: string) => {
+		try {
+			const response = await fetch(
+				`/api/product-management/category/sub-products/${subProductId}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.ok) {
+				setSubProducts((prevSubProducts) =>
+					prevSubProducts.filter((subProduct) => subProduct.id !== subProductId)
+				);
+				if (selectedSubProduct?.id === subProductId) {
+					setSelectedSubProduct(null);
+				}
+				toast.success('Sub-category deleted successfully');
+			} else {
+				throw new Error('Failed to delete sub-category');
+			}
+		} catch (error) {
+			console.error('Error deleting sub-category:', error);
+			toast.error('Failed to delete sub-category');
+		}
+	};
+
+	const handleDeleteItemGroup = async (itemGroupId: string) => {
+		try {
+			const response = await fetch(
+				`/api/product-management/category/item-groups/${itemGroupId}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.ok) {
+				setItemGroups((prevGroups) =>
+					prevGroups.filter((group) => group.id !== itemGroupId)
+				);
+				toast.success('Item group deleted successfully');
+			} else {
+				throw new Error('Failed to delete item group');
+			}
+		} catch (error) {
+			console.error('Error deleting item group:', error);
+			toast.error('Failed to delete item group');
+		}
 	};
 
 	const handleUpdateItemGroup = (itemGroupId: string, newName: string) => {
@@ -99,6 +181,46 @@ const CategorieList = () => {
 				group.id === itemGroupId ? { ...group, name: newName } : group
 			)
 		);
+	};
+
+	const handleAddCategory = async (data: {
+		name: string;
+		is_active: boolean;
+		description?: string;
+	}) => {
+		try {
+			const response = await fetch(
+				'/api/product-management/category/products',
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						...data,
+						description: data.description || '',
+					}),
+				}
+			);
+
+			if (response.ok) {
+				const result = await response.json();
+				const newCategory: ProductResponse = {
+					id: result.data,
+					name: data.name,
+					productSubCategories: [],
+				};
+				setProducts((prev) => [...prev, newCategory]);
+				toast.success('Category added successfully');
+				setIsAddCategoryOpen(false);
+			} else {
+				throw new Error('Failed to add category');
+			}
+		} catch (error) {
+			console.error('Error adding category:', error);
+			toast.error('Failed to add category');
+		}
 	};
 
 	if (loading) return <div>Loading...</div>;
@@ -110,17 +232,31 @@ const CategorieList = () => {
 		totalItemGroups: itemGroups.length,
 	};
 
+	const onAddCategory = () => {
+		setIsAddCategoryOpen(true);
+	};
+
+	const onAddSubCategory = () => {
+		console.log('Sub Category Add');
+	};
+
+	const onAddItemGroup = () => {
+		console.log('Item Group Add');
+	};
+
 	return (
 		<div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+			<AddCategoryDialog
+				isOpen={isAddCategoryOpen}
+				onClose={() => setIsAddCategoryOpen(false)}
+				onSubmit={handleAddCategory}
+			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Categories"
 					count={summary.totalCategories}
 					icon={<Folder className="w-6 h-6" />}
-					onAddData={() => {
-						// Your custom logic here
-						console.log('Category Add');
-					}}
+					onAddData={onAddCategory}
 				/>
 				<ProductList
 					products={products}
@@ -129,6 +265,7 @@ const CategorieList = () => {
 						setSelectedProduct(product);
 						setSelectedSubProduct(null);
 					}}
+					onDeleteProduct={handleDeleteProduct}
 				/>
 			</div>
 
@@ -137,15 +274,13 @@ const CategorieList = () => {
 					title="Sub Categories"
 					count={summary.totalSubCategories}
 					icon={<Tag className="w-6 h-6" />}
-					onAddData={() => {
-						// Your custom logic here
-						console.log('Sub Category Add');
-					}}
+					onAddData={onAddSubCategory}
 				/>
 				<SubProductList
 					subProducts={filteredSubProducts}
 					selectedSubProduct={selectedSubProduct}
 					onSelectSubProduct={setSelectedSubProduct}
+					onDeleteSubProduct={handleDeleteSubProduct}
 				/>
 			</div>
 
@@ -154,10 +289,7 @@ const CategorieList = () => {
 					title="Item Groups"
 					count={summary.totalItemGroups}
 					icon={<LayoutGrid className="w-6 h-6" />}
-					onAddData={() => {
-						// Your custom logic here
-						console.log('Item Group Add');
-					}}
+					onAddData={onAddItemGroup}
 				/>
 				<ItemGroupList
 					itemGroups={filteredItemGroups}
