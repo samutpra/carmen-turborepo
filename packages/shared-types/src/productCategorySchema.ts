@@ -36,3 +36,19 @@ export interface CategoryFormData {
 	description: string;
 	is_active: boolean;
 }
+
+export interface SubCategoryFormData {
+	name: string;
+	description: string;
+	is_active: boolean;
+	product_category_id: string;
+}
+
+export interface ItemGroupFormData {
+	name: string;
+	description: string;
+	is_active: boolean;
+	product_subcategory_id: string;
+}
+
+

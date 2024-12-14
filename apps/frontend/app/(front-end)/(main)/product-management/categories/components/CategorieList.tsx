@@ -11,6 +11,7 @@ import {
 	CategoryFormData,
 	ProductItemGroupType,
 	ProductSubCategoryType,
+	SubCategoryFormData,
 } from '@carmensoftware/shared-types';
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
@@ -19,6 +20,7 @@ import ProductList from './ProductList';
 import SubProductList from './SubProductList';
 import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
+import SubCategoryDialog from './SubCategoryDialog';
 
 interface ProductResponse {
 	name: string;
@@ -44,6 +46,7 @@ const CategorieList = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+	const [isAddSubCategoryOpen, setIsAddSubCategoryOpen] = useState(false);
 
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
@@ -217,6 +220,41 @@ const CategorieList = () => {
 		}
 	};
 
+	const handleAddSubCategory = async (formData: SubCategoryFormData) => {
+		console.log(formData);
+
+		// try {
+		// 	const response = await fetch(
+		// 		'/api/product-management/category/products',
+		// 		{
+		// 			method: 'POST',
+		// 			headers: {
+		// 				Authorization: `Bearer ${token}`,
+		// 				'Content-Type': 'application/json',
+		// 			},
+		// 			body: JSON.stringify(formData),
+		// 		}
+		// 	);
+
+		// 	if (response.ok) {
+		// 		const result = await response.json();
+		// 		const newCategory: ProductResponse = {
+		// 			id: result.data,
+		// 			name: formData.name,
+		// 			productSubCategories: [],
+		// 		};
+		// 		setProducts((prev) => [...prev, newCategory]);
+		// 		toast.success('Category added successfully');
+		// 		setIsAddCategoryOpen(false);
+		// 	} else {
+		// 		throw new Error('Failed to add category');
+		// 	}
+		// } catch (error) {
+		// 	console.error('Error adding category:', error);
+		// 	toast.error('Failed to add category');
+		// }
+	};
+
 	const handleEditProduct = async (
 		productId: string,
 		formData: CategoryFormData
@@ -267,7 +305,7 @@ const CategorieList = () => {
 	};
 
 	const onAddSubCategory = () => {
-		console.log('Sub Category Add');
+		setIsAddSubCategoryOpen(true);
 	};
 
 	const onAddItemGroup = () => {
@@ -300,7 +338,13 @@ const CategorieList = () => {
 					onEditProduct={handleEditProduct}
 				/>
 			</div>
-
+			<SubCategoryDialog
+				open={isAddSubCategoryOpen}
+				onOpenChange={setIsAddSubCategoryOpen}
+				onSubmit={handleAddSubCategory}
+				mode="add"
+				categories={products.map(product => ({ id: product.id, name: product.name }))}
+			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Sub Categories"
