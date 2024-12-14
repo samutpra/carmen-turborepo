@@ -65,7 +65,7 @@ const CategorieList = () => {
 				);
 				setItemGroups(itemGroupResponse.data.data as ProductItemGroupType[]);
 			} catch (err) {
-				console.log(err);
+				console.error(err);
 				setError('An error occurred while fetching data');
 			} finally {
 				setLoading(false);
