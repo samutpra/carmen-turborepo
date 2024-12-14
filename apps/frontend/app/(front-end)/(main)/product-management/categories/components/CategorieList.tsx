@@ -291,6 +291,44 @@ const CategorieList = () => {
 		}
 	};
 
+	const handleEditSubProduct = async (
+		subProductId: string,
+		formData: SubCategoryFormData
+	) => {
+		try {
+			const response = await fetch(
+				`/api/product-management/category/sub-products/${subProductId}`,
+				{
+					method: 'PATCH',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to update sub-category');
+			}
+
+			const result = await response.json();
+			if (result.id) {
+				toast.success('Sub-category updated successfully');
+				setSubProducts((prevSubProducts) =>
+					prevSubProducts.map((subProduct) =>
+						subProduct.id === subProductId
+							? { ...subProduct, ...formData }
+							: subProduct
+					)
+				);
+			}
+		} catch (error) {
+			console.error('Error updating sub-category:', error);
+			toast.error('Failed to update sub-category');
+		}
+	};
+
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
 
@@ -357,6 +395,7 @@ const CategorieList = () => {
 					selectedSubProduct={selectedSubProduct}
 					onSelectSubProduct={setSelectedSubProduct}
 					onDeleteSubProduct={handleDeleteSubProduct}
+					onEditSubProduct={handleEditSubProduct}
 				/>
 			</div>
 

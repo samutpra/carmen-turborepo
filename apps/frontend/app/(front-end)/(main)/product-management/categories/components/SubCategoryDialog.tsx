@@ -79,6 +79,18 @@ const SubCategoryDialog = ({
 		},
 	});
 
+	const handleOpenChange = (open: boolean) => {
+		if (!open) {
+			form.reset({
+				name: '',
+				description: '',
+				is_active: true,
+				product_category_id: '',
+			});
+		}
+		onOpenChange(open);
+	};
+
 	useEffect(() => {
 		if (initialData && open) {
 			form.reset(initialData);
@@ -97,8 +109,18 @@ const SubCategoryDialog = ({
 		}
 	};
 
+	const onClose = () => {
+		form.reset({
+			name: '',
+			description: '',
+			is_active: true,
+			product_category_id: '',
+		});
+		onOpenChange(false);
+	};
+
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
@@ -124,13 +146,15 @@ const SubCategoryDialog = ({
 													role="combobox"
 													aria-expanded={openCombobox}
 													className={cn(
-														"w-full justify-between",
-														!field.value && "text-muted-foreground"
+														'w-full justify-between',
+														!field.value && 'text-muted-foreground'
 													)}
 												>
 													{field.value
-														? categories.find((category) => category.id === field.value)?.name
-														: "Select category..."}
+														? categories.find(
+																(category) => category.id === field.value
+															)?.name
+														: 'Select category...'}
 													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 												</Button>
 											</FormControl>
@@ -148,17 +172,20 @@ const SubCategoryDialog = ({
 															key={category.id}
 															value={category.name}
 															onSelect={() => {
-																form.setValue("product_category_id", category.id);
+																form.setValue(
+																	'product_category_id',
+																	category.id
+																);
 																setOpenCombobox(false);
 															}}
 														>
 															{category.name}
 															<Check
 																className={cn(
-																	"ml-auto h-4 w-4",
+																	'ml-auto h-4 w-4',
 																	category.id === field.value
-																		? "opacity-100"
-																		: "opacity-0"
+																		? 'opacity-100'
+																		: 'opacity-0'
 																)}
 															/>
 														</CommandItem>
@@ -217,15 +244,11 @@ const SubCategoryDialog = ({
 						/>
 
 						<div className="flex justify-end space-x-2">
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => onOpenChange(false)}
-							>
+							<Button type="button" variant="outline" onClick={onClose}>
 								Cancel
 							</Button>
 							<Button type="submit">
-								{mode === 'add' ? 'Add Category' : 'Save Changes'}
+								{mode === 'add' ? 'Add Sub Category' : 'Save Changes'}
 							</Button>
 						</div>
 					</form>
