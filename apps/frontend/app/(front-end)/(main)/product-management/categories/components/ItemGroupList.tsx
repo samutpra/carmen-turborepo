@@ -64,7 +64,6 @@ export const ItemGroupList = ({
 		<div
 			key={itemGroup.id}
 			className="flex items-center p-2 justify-between gap-2"
-			onClick={() => handleItemClick(itemGroup)}
 		>
 			<div
 				className="cursor-pointer hover:bg-accent rounded-lg p-2 w-full"
@@ -73,13 +72,19 @@ export const ItemGroupList = ({
 				<span>{itemGroup.name}</span>
 			</div>
 			<div className="flex">
-				<Button variant="ghost" size="icon" className="h-8 w-8">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8"
+					onClick={() => handleUpdate(itemGroup.id, itemGroup.name)}
+				>
 					<Pencil className="h-4 w-4" />
 				</Button>
 				<Button
 					variant="ghost"
 					size="icon"
 					className="h-8 w-8 text-destructive hover:text-destructive"
+					onClick={() => handleDelete(itemGroup.id)}
 				>
 					<Trash className="h-4 w-4" />
 				</Button>
@@ -91,7 +96,7 @@ export const ItemGroupList = ({
 		<>
 			<Card>
 				<CardHeader>
-					<CardTitle>Sub Categories</CardTitle>
+					<CardTitle>Item Group</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
 			</Card>
