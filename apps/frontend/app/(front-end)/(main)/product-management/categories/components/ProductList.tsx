@@ -82,53 +82,57 @@ const ProductList = ({
 		setEditDialogOpen(false);
 	};
 
+	const productListItems = products.map((category) => (
+		<div
+			key={category.id}
+			className="flex items-center p-2 justify-between gap-2"
+		>
+			<div
+				className={cn(
+					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					selectedProduct?.id === category.id && 'bg-accent'
+				)}
+				onClick={() => onSelectProduct(category)}
+				role="button"
+				tabIndex={0}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						onSelectProduct(category);
+					}
+				}}
+				aria-label={`Select ${category.name} category`}
+				aria-selected={selectedProduct?.id === category.id}
+			>
+				<span>{category.name}</span>
+			</div>
+			<div className="flex">
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={(e) => handleEditClick(e, category)}
+					aria-label={`Edit ${category.name}`}
+				>
+					<Pencil className="h-4 w-4" />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={(e) => handleDeleteClick(e, category)}
+					aria-label={`Delete ${category.name}`}
+				>
+					<Trash className="h-4 w-4 text-red-500" />
+				</Button>
+			</div>
+		</div>
+	));
+
 	return (
 		<>
 			<Card>
 				<CardHeader>
 					<CardTitle>Categories</CardTitle>
 				</CardHeader>
-				<CardContent>
-					{products.map((category) => (
-						<div
-							key={category.id}
-							className={cn(
-								'flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-accent',
-								selectedProduct?.id === category.id && 'bg-accent'
-							)}
-							onClick={() => onSelectProduct(category)}
-							role="button"
-							tabIndex={0}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									onSelectProduct(category);
-								}
-							}}
-							aria-label={`Select ${category.name} category`}
-							aria-selected={selectedProduct?.id === category.id}
-						>
-							<span>{category.name}</span>
-							<div className="flex">
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={(e) => handleEditClick(e, category)}
-									aria-label={`Edit ${category.name}`}
-								>
-									<Pencil className="h-4 w-4" />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={(e) => handleDeleteClick(e, category)}
-									aria-label={`Delete ${category.name}`}
-								>
-									<Trash className="h-4 w-4 text-red-500" />
-								</Button>
-							</div>
-						</div>
-					))}
-				</CardContent>
+				<CardContent>{productListItems}</CardContent>
 			</Card>
 
 			{/* Delete Dialog */}
