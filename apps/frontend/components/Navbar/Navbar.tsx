@@ -41,7 +41,7 @@ const Navbar = () => {
 		<header className="fixed top-0 left-0 right-0 border-b bg-background">
 			<div className="px-4 py-2 sm:px-6">
 				<div className="flex justify-end h-10">
-					<div className="flex items-center space-x-2 sm:space-x-4">
+					<div className="flex items-center gap-2">
 						<div className="md:hidden">
 							<Button
 								variant="ghost"
@@ -54,7 +54,7 @@ const Navbar = () => {
 							</Button>
 						</div>
 
-						<div className="hidden md:flex items-center space-x-2 sm:space-x-4">
+						<div className="hidden md:flex items-center gap-2">
 							<MenuContent />
 						</div>
 						<Notifications />
