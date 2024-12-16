@@ -25,16 +25,27 @@ const Notifications = () => {
 		router.push('/notifications');
 	};
 
+	const notificationCount = 12;
+
 	return (
 		<Drawer open={isOpen} onOpenChange={handleOpenChange} direction="right">
 			<DrawerTrigger asChild>
 				<Button
 					variant="ghost"
 					size="icon"
-					className="hidden md:inline-flex"
+					className="hidden md:inline-flex relative"
 					aria-label="Open notifications"
 				>
 					<Bell size={20} />
+					{notificationCount > 0 && (
+						<span
+							className="absolute -top-1 -right-1 bg-red-500 text-white 
+                                       rounded-full text-xs w-5 h-5 flex items-center 
+                                       justify-center"
+						>
+							{notificationCount > 9 ? '9+' : notificationCount}
+						</span>
+					)}
 				</Button>
 			</DrawerTrigger>
 			<DrawerContent className="fixed right-0 h-full w-[400px]">
