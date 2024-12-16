@@ -45,27 +45,26 @@ const formSchema = z.object({
 	product_category_id: z.string(),
 });
 
-interface Category {
-	id: string;
-	name: string;
-}
+
 
 interface SubCategoryDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (data: SubCategoryFormData) => Promise<void>;
-	initialData?: SubCategoryFormData;
+	onSubmit: (formData: SubCategoryFormData) => Promise<void>;
 	mode: 'add' | 'edit';
-	categories: Category[];
+	categories: { id: string; name: string }[];
+	defaultCategoryId?: string;
+	disableCategory?: boolean;
 }
 
 const SubCategoryDialog = ({
 	open,
 	onOpenChange,
 	onSubmit,
-	initialData,
 	mode,
 	categories,
+	defaultCategoryId,
+	disableCategory,
 }: SubCategoryDialogProps) => {
 	const [openCombobox, setOpenCombobox] = useState(false);
 
@@ -75,7 +74,7 @@ const SubCategoryDialog = ({
 			name: '',
 			description: '',
 			is_active: true,
-			product_category_id: '',
+			product_category_id: defaultCategoryId || '',
 		},
 	});
 
@@ -92,10 +91,20 @@ const SubCategoryDialog = ({
 	};
 
 	useEffect(() => {
-		if (initialData && open) {
-			form.reset(initialData);
+		if (defaultCategoryId && open) {
+			form.reset(
+				{
+					name: '',
+					description: '',
+					is_active: true,
+					product_category_id: defaultCategoryId,
+				},
+				{
+					keepDefaultValues: true,
+				}
+			);
 		}
-	}, [initialData, open, form]);
+	}, [open]);
 
 	const handleSubmit = async (values: z.infer<typeof formSchema>) => {
 		await onSubmit(values);
@@ -145,6 +154,7 @@ const SubCategoryDialog = ({
 													variant="outline"
 													role="combobox"
 													aria-expanded={openCombobox}
+													disabled={disableCategory}
 													className={cn(
 														'w-full justify-between',
 														!field.value && 'text-muted-foreground'
