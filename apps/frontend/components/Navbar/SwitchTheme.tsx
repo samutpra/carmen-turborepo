@@ -22,7 +22,7 @@ export function SwitchTheme() {
 
 	return (
 		<Button variant={'ghost'} onClick={handleClick} className="w-full">
-			{theme === 'dark' ? <Sun /> : <Moon />}
+			{theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
 		</Button>
 	);
 }
