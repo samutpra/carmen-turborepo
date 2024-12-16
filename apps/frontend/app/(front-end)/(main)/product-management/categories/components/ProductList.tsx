@@ -82,7 +82,7 @@ const ProductList = ({
 		setEditDialogOpen(false);
 	};
 
-	const productListItems = products.map((category) => (
+	const categoryListItems = products.map((category) => (
 		<div
 			key={category.id}
 			className="flex items-center p-2 justify-between gap-2"
@@ -132,7 +132,7 @@ const ProductList = ({
 				<CardHeader>
 					<CardTitle>Categories</CardTitle>
 				</CardHeader>
-				<CardContent>{productListItems}</CardContent>
+				<CardContent>{categoryListItems}</CardContent>
 			</Card>
 
 			{/* Delete Dialog */}

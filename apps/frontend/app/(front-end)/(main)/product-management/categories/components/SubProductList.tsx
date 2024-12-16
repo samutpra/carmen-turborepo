@@ -78,51 +78,54 @@ const SubProductList = ({
 		);
 	}
 
+	const subCategoryListItems = subProducts.map((subProduct) => (
+		<div
+			key={subProduct.id}
+			className="flex items-center p-2 justify-between gap-2"
+		>
+			<div
+				className={cn(
+					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					selectedSubProduct?.id === subProduct.id && 'bg-accent'
+				)}
+				onClick={() => handleItemClick(subProduct)}
+				role="button"
+			>
+				<span>{subProduct.name}</span>
+			</div>
+			<div className="flex">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8"
+					onClick={(e) => {
+						e.stopPropagation();
+						handleEdit(subProduct);
+					}}
+					aria-label="Edit sub category"
+				>
+					<Pencil className="h-4 w-4" />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 text-destructive hover:text-destructive"
+					onClick={(e) => handleDelete(subProduct.id, e)}
+					aria-label="Delete sub category"
+				>
+					<Trash className="h-4 w-4" />
+				</Button>
+			</div>
+		</div>
+	));
+
 	return (
 		<>
 			<Card>
 				<CardHeader>
 					<CardTitle>Sub Categories</CardTitle>
 				</CardHeader>
-				<CardContent className="space-y-2">
-					{subProducts.map((subProduct) => (
-						<div
-							key={subProduct.id}
-							className={cn(
-								'flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-accent',
-								selectedSubProduct?.id === subProduct.id && 'bg-accent'
-							)}
-							onClick={() => handleItemClick(subProduct)}
-							role="button"
-							tabIndex={0}
-						>
-							<span>{subProduct.name}</span>
-							<div className="flex">
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-8 w-8"
-									onClick={(e) => {
-										e.stopPropagation();
-										handleEdit(subProduct);
-									}}
-									aria-label="Edit sub category"
-								>
-									<Pencil className="h-4 w-4" />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-8 w-8 text-destructive hover:text-destructive"
-									onClick={(e) => handleDelete(subProduct.id, e)}
-									aria-label="Delete sub category"
-								>
-									<Trash className="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-					))}
-				</CardContent>
+				<CardContent className="space-y-2">{subCategoryListItems}</CardContent>
 			</Card>
 
 			<SubCategoryDialog
