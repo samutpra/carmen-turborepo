@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/button';
-import { Bell } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 import {
 	Drawer,
 	DrawerContent,
@@ -33,7 +33,7 @@ const Notifications = () => {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="hidden md:inline-flex relative"
+					className="relative"
 					aria-label="Open notifications"
 				>
 					<Bell size={20} />
@@ -48,9 +48,16 @@ const Notifications = () => {
 					)}
 				</Button>
 			</DrawerTrigger>
-			<DrawerContent className="fixed right-0 h-full w-[400px]">
+			<DrawerContent className="fixed right-0 h-full w-full md:w-1/2 lg:w-1/4">
 				<DrawerHeader>
-					<DrawerTitle>Notifications</DrawerTitle>
+					<DrawerTitle className="flex items-center justify-between">
+						Notifications
+						<X
+							size={20}
+							className="md:hidden cursor-pointer"
+							onClick={() => handleOpenChange(false)}
+						/>
+					</DrawerTitle>
 					<DrawerDescription>
 						Stay updated with your latest notifications
 					</DrawerDescription>
