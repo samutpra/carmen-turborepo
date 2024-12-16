@@ -136,8 +136,8 @@ const SubProductList = ({
 					editingSubProduct
 						? {
 								name: editingSubProduct.name,
-								description: '',
-								is_active: true,
+								description: editingSubProduct.description || '',
+								is_active: editingSubProduct.is_active ?? true,
 								product_category_id: editingSubProduct.product_category_id,
 							}
 						: undefined
