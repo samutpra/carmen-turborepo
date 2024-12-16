@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '../ui/button';
 import {
@@ -39,8 +39,13 @@ const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } =
 	};
 
 const MenuDialog = () => {
+	const [isOpen, setIsOpen] = useState(true);
+
+	const handleCloseDialog = () => {
+		setIsOpen(false);
+	};
 	return (
-		<Dialog>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
 				<Button variant={'ghost'}>
 					<LayoutPanelLeft />
@@ -52,7 +57,7 @@ const MenuDialog = () => {
 						const IconComponent = iconMap[item.icon];
 						return (
 							<div key={index} className="relative ">
-								<Link href={item.path}>
+								<Link href={item.path} onClick={handleCloseDialog}>
 									<Card className="aspect-square flex flex-col items-center justify-center hover:bg-slate-50 relative">
 										<div className="absolute top-0 right-1 flex gap-1">
 											<LockKeyhole className="w-2 md:w-4 h-2 md:h-4 text-gray-500 hover:text-gray-700" />
