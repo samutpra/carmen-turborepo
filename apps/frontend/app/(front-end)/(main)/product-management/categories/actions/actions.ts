@@ -1,92 +1,135 @@
-export const fetchProduct = async (token: string, tenantId: string = 'DUMMY') => {
-    try {
-        const url = `/api/product-management/category/products`;
+export const categoryList = async (
+	token: string,
+	tenantId: string = 'DUMMY'
+) => {
+	try {
+		const url = `/api/product-management/category/category-list`;
 
-        const options = {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        };
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
 
-        const response = await fetch(url, options);
+		const response = await fetch(url, options);
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Unauthorized access - Invalid or expired token');
-            }
-            throw new Error(
-                `Failed to fetch data: ${response.status} ${response.statusText}`
-            );
-        }
+		if (!response.ok) {
+			if (response.status === 401) {
+				throw new Error('Unauthorized access - Invalid or expired token');
+			}
+			throw new Error(
+				`Failed to fetch data: ${response.status} ${response.statusText}`
+			);
+		}
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching product item group:', error);
-        throw error;
-    }
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching product item group:', error);
+		throw error;
+	}
 };
 
-export const fetchSubProduct = async (token: string, tenantId: string = 'DUMMY') => {
-    try {
-        const url = `/api/product-management/category/product-sub-category`;
+export const fetchProduct = async (
+	token: string,
+	tenantId: string = 'DUMMY'
+) => {
+	try {
+		const url = `/api/product-management/category/products`;
 
-        const options = {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        };
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
 
-        const response = await fetch(url, options);
+		const response = await fetch(url, options);
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Unauthorized access - Invalid or expired token');
-            }
-            throw new Error(
-                `Failed to fetch data: ${response.status} ${response.statusText}`
-            );
-        }
+		if (!response.ok) {
+			if (response.status === 401) {
+				throw new Error('Unauthorized access - Invalid or expired token');
+			}
+			throw new Error(
+				`Failed to fetch data: ${response.status} ${response.statusText}`
+			);
+		}
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching product item group:', error);
-        throw error;
-    }
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching product item group:', error);
+		throw error;
+	}
 };
 
-export const fetchItemGroup = async (token: string, tenantId: string = 'DUMMY') => {
-    try {
-        const url = `/api/product-management/category/product-item-group`;
+export const fetchSubProduct = async (
+	token: string,
+	tenantId: string = 'DUMMY'
+) => {
+	try {
+		const url = `/api/product-management/category/product-sub-category`;
 
-        const options = {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        };
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
 
-        const response = await fetch(url, options);
+		const response = await fetch(url, options);
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Unauthorized access - Invalid or expired token');
-            }
-            throw new Error(
-                `Failed to fetch data: ${response.status} ${response.statusText}`
-            );
-        }
+		if (!response.ok) {
+			if (response.status === 401) {
+				throw new Error('Unauthorized access - Invalid or expired token');
+			}
+			throw new Error(
+				`Failed to fetch data: ${response.status} ${response.statusText}`
+			);
+		}
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching product item group:', error);
-        throw error;
-    }
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching product item group:', error);
+		throw error;
+	}
+};
+
+export const fetchItemGroup = async (
+	token: string,
+	tenantId: string = 'DUMMY'
+) => {
+	try {
+		const url = `/api/product-management/category/product-item-group`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const response = await fetch(url, options);
+
+		if (!response.ok) {
+			if (response.status === 401) {
+				throw new Error('Unauthorized access - Invalid or expired token');
+			}
+			throw new Error(
+				`Failed to fetch data: ${response.status} ${response.statusText}`
+			);
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching product item group:', error);
+		throw error;
+	}
 };

@@ -3,8 +3,8 @@
 import { useAuth } from '@/app/context/AuthContext';
 import React, { useEffect, useState } from 'react';
 import {
+	categoryList,
 	fetchItemGroup,
-	fetchProduct,
 	fetchSubProduct,
 } from '../actions/actions';
 import {
@@ -59,7 +59,7 @@ const CategorieList = () => {
 				setLoading(true);
 				const [productResponse, subProductResponse, itemGroupResponse] =
 					await Promise.all([
-						fetchProduct(token, tenantId),
+						categoryList(token, tenantId),
 						fetchSubProduct(token, tenantId),
 						fetchItemGroup(token, tenantId),
 					]);
@@ -135,7 +135,7 @@ const CategorieList = () => {
 	const handleDeleteSubProduct = async (subProductId: string) => {
 		try {
 			const response = await fetch(
-				`/api/product-management/category/sub-products/${subProductId}`,
+				`/api/product-management/category/product-sub-category/${subProductId}`,
 				{
 					method: 'DELETE',
 					headers: {
