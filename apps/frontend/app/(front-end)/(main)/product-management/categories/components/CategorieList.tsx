@@ -16,11 +16,11 @@ import {
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import { ItemGroupList } from './ItemGroupList';
-import ProductList from './ProductList';
 import SubProductList from './SubProductList';
 import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
 import SubCategoryDialog from './SubCategoryDialog';
+import CategoryItemList from './CategoryItemList';
 
 interface ProductResponse {
 	name: string;
@@ -409,7 +409,7 @@ const CategorieList = () => {
 					icon={<Folder className="w-6 h-6" />}
 					onAddData={onAddCategory}
 				/>
-				<ProductList
+				<CategoryItemList
 					products={products}
 					selectedProduct={selectedProduct}
 					onSelectProduct={(product) => {

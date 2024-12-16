@@ -30,7 +30,7 @@ interface ProductResponse {
 	productSubCategories: ProductSubCategoryType[];
 }
 
-interface ProductListProps {
+interface CategoryItemListtProps {
 	products: ProductResponse[];
 	selectedProduct: ProductResponse | null;
 	onSelectProduct: (product: ProductResponse) => void;
@@ -41,13 +41,13 @@ interface ProductListProps {
 	) => Promise<void>;
 }
 
-const ProductList = ({
+const CategoryItemList = ({
 	products,
 	selectedProduct,
 	onSelectProduct,
 	onDeleteProduct,
 	onEditProduct,
-}: ProductListProps) => {
+}: CategoryItemListtProps) => {
 	const [productToDelete, setProductToDelete] =
 		React.useState<ProductResponse | null>(null);
 	const [editDialogOpen, setEditDialogOpen] = React.useState(false);
@@ -180,4 +180,4 @@ const ProductList = ({
 	);
 };
 
-export default ProductList; 
+export default CategoryItemList;
