@@ -1,24 +1,32 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
+  LocationCreateDto,
+  LocationUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
-  LocationCreateDto,
-  LocationUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import {
-  PrismaClient as dbTenant,
   enum_location_type,
-  location_table,
+  PrismaClient as dbTenant,
+  tb_location,
 } from '@prisma-carmen-client-tenant';
-
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
 
 @Injectable()
 export class LocationsService {
@@ -31,8 +39,8 @@ export class LocationsService {
 
   logger = new Logger(LocationsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<location_table> {
-    const res = await db_tenant.location_table.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<tb_location> {
+    const res = await db_tenant.tb_location.findUnique({
       where: {
         id: id,
       },
@@ -43,7 +51,7 @@ export class LocationsService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<location_table>> {
+  ): Promise<ResponseSingle<tb_location>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -52,7 +60,7 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
-    const res: ResponseSingle<location_table> = {
+    const res: ResponseSingle<tb_location> = {
       data: oneObj,
     };
 
@@ -62,11 +70,11 @@ export class LocationsService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<location_table>> {
+  ): Promise<ResponseList<tb_location>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const max = await this.db_tenant.location_table.count({ where: q.where() });
+    const max = await this.db_tenant.tb_location.count({ where: q.where() });
 
     const q_include = {
       ...q.findMany(),
@@ -89,9 +97,9 @@ export class LocationsService {
     // const typedSql = await this.db_tenant.$queryRaw`select name from Location`;
     // this.logger.debug(typedSql);
 
-    const listObj = await this.db_tenant.location_table.findMany(q_include);
+    const listObj = await this.db_tenant.tb_location.findMany(q_include);
 
-    const res: ResponseList<location_table> = {
+    const res: ResponseList<tb_location> = {
       data: listObj,
       pagination: {
         total: max,
@@ -112,7 +120,7 @@ export class LocationsService {
 
     this.logger.debug(createDto);
 
-    const found = await this.db_tenant.location_table.findFirst({
+    const found = await this.db_tenant.tb_location.findFirst({
       where: {
         name: createDto.name,
       },
@@ -133,7 +141,7 @@ export class LocationsService {
     const location_type =
       createDto.location_type as unknown as enum_location_type;
 
-    const createObj = await this.db_tenant.location_table.create({
+    const createObj = await this.db_tenant.tb_location.create({
       data: {
         ...createDto,
         location_type: location_type,
@@ -166,7 +174,7 @@ export class LocationsService {
     const location_type =
       updateDto.location_type as unknown as enum_location_type;
 
-    const updateObj = await this.db_tenant.location_table.update({
+    const updateObj = await this.db_tenant.tb_location.update({
       where: {
         id,
       },
@@ -194,7 +202,7 @@ export class LocationsService {
       throw new NotFoundException('Location not found');
     }
 
-    await this.db_tenant.location_table.delete({
+    await this.db_tenant.tb_location.delete({
       where: {
         id,
       },

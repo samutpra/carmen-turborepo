@@ -1,6 +1,5 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import { APP_PIPE } from '@nestjs/core';
 import { SystemClusterController } from './system-cluster.controller';
 import { SystemClusterService } from './system-cluster.service';
 

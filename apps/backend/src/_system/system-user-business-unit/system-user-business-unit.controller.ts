@@ -1,17 +1,28 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Logger,
-  Query,
-  UsePipes,
+  UserBusinessUnitCreateDto,
+  UserBusinessUnitCreateSchema,
+  UserBusinessUnitUpdateDto,
+  UserBusinessUnitUpdateSchema,
+} from '@carmensoftware/shared-dtos';
+import {
   BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,17 +31,10 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { SystemUserBusinessUnitService } from './system-user-business-unit.service';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
-  UserBusinessUnitCreateDto,
-  UserBusinessUnitCreateSchema,
-  UserBusinessUnitUpdateDto,
-  UserBusinessUnitUpdateSchema,
-} from '@carmensoftware/shared-dtos';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+  SystemUserBusinessUnitService,
+} from './system-user-business-unit.service';
 
 @Controller('system-api/v1/user-business-unit')
 @ApiTags('system/user business-nit')
@@ -55,6 +59,7 @@ export class SystemUserBusinessUnitController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUserBusinessUnitService.findOne(req, id);
   }
 
@@ -72,6 +77,16 @@ export class SystemUserBusinessUnitController {
   ) {
     const defaultSearchFields: string[] = [];
 
+    this.logger.log({
+      page,
+      perpage,
+      search,
+      searchfields,
+      filter,
+      sort,
+      advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -82,6 +97,8 @@ export class SystemUserBusinessUnitController {
       sort,
       advance,
     );
+
+    this.logger.log({ q });
     return this.systemUserBusinessUnitService.findAll(req, q);
   }
 
@@ -95,10 +112,12 @@ export class SystemUserBusinessUnitController {
     @Body() createDto: UserBusinessUnitCreateDto,
     @Req() req: Request,
   ) {
+    this.logger.log({ createDto });
     const parseObj = UserBusinessUnitUpdateSchema.safeParse(createDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
+    this.logger.log({ parseObj });
     return this.systemUserBusinessUnitService.create(req, createDto);
   }
 
@@ -118,12 +137,14 @@ export class SystemUserBusinessUnitController {
     @Body() updateDto: UserBusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
+    this.logger.log({ id, updateDto });
     const parseObj = UserBusinessUnitUpdateSchema.safeParse(updateDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
     const updatedto = parseObj.data;
     updatedto.id = id;
+    this.logger.log({ updatedto });
     return this.systemUserBusinessUnitService.update(req, id, updatedto);
   }
 
@@ -135,6 +156,7 @@ export class SystemUserBusinessUnitController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUserBusinessUnitService.delete(req, id);
   }
 }

@@ -1,17 +1,11 @@
-import {
-  Prisma,
-  PrismaClient as dbSystem,
-  permission_table,
-} from '@prisma-carmen-client-system';
-
-import { $Enums } from '@prisma-carmen-client-system';
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 const db_system = new dbSystem();
 
 type _permission_item = {
   group: string;
   name: string;
-  actions?: $Enums.enum_permission_action[] | null;
+  // actions?: $Enums.enum_permission_action[] | null;
 };
 
 async function main() {
@@ -71,103 +65,103 @@ async function main() {
   //   data: businessUnit1Obj,
   // });
 
-  const permission_list: _permission_item[] = [
-    {
-      group: 'menu',
-      name: 'dashboard',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'procurement',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'product-management',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'vendor-management',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'configuration',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'store-operations',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'inventory-management',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'operational-planning',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'production',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'reporting-analytics',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'finance',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'system-administration',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'help-support',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    {
-      group: 'menu',
-      name: 'my-profile',
-      actions: [$Enums.enum_permission_action.view],
-    },
-    // {
-    //   group: 'menu',
-    //   name: 'logout',
-    //   actions: [$Enums.enum_permission_action.view],
-    // },
-  ];
+  // const permission_list: _permission_item[] = [
+  //   {
+  //     group: 'menu',
+  //     name: 'dashboard',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'procurement',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'product-management',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'vendor-management',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'configuration',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'store-operations',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'inventory-management',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'operational-planning',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'production',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'reporting-analytics',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'finance',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'system-administration',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'help-support',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   {
+  //     group: 'menu',
+  //     name: 'my-profile',
+  //     actions: [$Enums.enum_permission_action.view],
+  //   },
+  //   // {
+  //   //   group: 'menu',
+  //   //   name: 'logout',
+  //   //   actions: [$Enums.enum_permission_action.view],
+  //   // },
+  // ];
 
-  permission_list.map(async (item) => {
-    item.actions?.map(async (action) => {
-      const permission_tb = await db_system.permission_table.upsert({
-        where: {
-          group_name_action: {
-            group: item.group,
-            name: item.name,
-            action: action,
-          },
-        },
-        update: {},
-        create: {
-          group: item.group,
-          name: item.name,
-          action: action,
-        },
-      });
-    });
-  });
+  // permission_list.map(async (item) => {
+  //   item.actions?.map(async (action) => {
+  //     const permission_tb = await db_system.permission_table.upsert({
+  //       where: {
+  //         group_name_action: {
+  //           group: item.group,
+  //           name: item.name,
+  //           action: action,
+  //         },
+  //       },
+  //       update: {},
+  //       create: {
+  //         group: item.group,
+  //         name: item.name,
+  //         action: action,
+  //       },
+  //     });
+  //   });
+  // });
 
   // path: "/dashboard",
   // path: "/procurement",

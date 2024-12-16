@@ -52,9 +52,6 @@ import {
 } from './_lib/prisma-client-manager/prisma-client-manager.module';
 import { SendMailModule } from './_lib/send-mail/send-mail.module';
 import {
-  SystemUserProfileModule,
-} from './_system/sustem-user-profile/system-user-profile.module';
-import {
   SystemBusinessUnitsModule,
 } from './_system/system-business-units/system-business-unit.module';
 import {
@@ -63,49 +60,48 @@ import {
 import {
   SystemUserBusinessUnitModule,
 } from './_system/system-user-business-unit/system-user-business-unit.module';
+import {
+  SystemUserProfileModule,
+} from './_system/system-user-profile/system-user-profile.module';
 import { SystemUserModule } from './_system/system-users/system-users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true
-		}),
-		SystemUserModule,
-		ProductsModule,
-		SystemBusinessUnitsModule,
-		CurrenciesModule,
-		UnitsModule,
-		LocationsModule,
-		ExchangerateModule,
-		AuthModule,
-		DepartmentsModule,
-		PrismaClientManagerModule,
-		PrismaClientManagerModule,
-		ExtractReqModule,
-		ProductCategoryModule,
-		ProductSubCategoryModule,
-		ProductItemGroupModule,
-		CreditNoteModule,
-		GoodReceiveNoteModule,
-		PurchaseOrderModule,
-		PurchaseRequestModule,
-		StoreRequisitionModule,
-		VendorModule,
-		VendorProductModule,
-		SystemClusterModule,
-		SendMailModule,
-		SystemUserProfileModule,
-		SystemUserBusinessUnitModule,
-		UserBusinessUnitModule,
-		UserPermissionModule
-	],
-	controllers: [
-		AppController
-	],
-	providers: [
-		AppService
-	]
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    SystemUserModule,
+    ProductsModule,
+    SystemBusinessUnitsModule,
+    CurrenciesModule,
+    UnitsModule,
+    LocationsModule,
+    ExchangerateModule,
+    AuthModule,
+    DepartmentsModule,
+    PrismaClientManagerModule,
+    PrismaClientManagerModule,
+    ExtractReqModule,
+    ProductCategoryModule,
+    ProductSubCategoryModule,
+    ProductItemGroupModule,
+    CreditNoteModule,
+    GoodReceiveNoteModule,
+    PurchaseOrderModule,
+    PurchaseRequestModule,
+    StoreRequisitionModule,
+    VendorModule,
+    VendorProductModule,
+    SystemClusterModule,
+    SendMailModule,
+    SystemUserProfileModule,
+    SystemUserBusinessUnitModule,
+    UserBusinessUnitModule,
+    UserPermissionModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

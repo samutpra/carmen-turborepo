@@ -6,7 +6,7 @@ Project Carmen_Inventory {
   Note: 'Carmen Inventory Project 2024'
 }
 
-TABLE CARMEN_SYSTEM.user_table {
+TABLE CARMEN_SYSTEM.tb_user {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   username varchar(30) [unique, not null]
   email varchar(255) [not null]
@@ -16,10 +16,10 @@ TABLE CARMEN_SYSTEM.user_table {
   consent timestamp [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
     username [name: "user_username_idx"]
@@ -27,24 +27,24 @@ TABLE CARMEN_SYSTEM.user_table {
   }
 }
 
-TABLE CARMEN_SYSTEM.password_table {
+TABLE CARMEN_SYSTEM.tb_password {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [not null, ref: > CARMEN_SYSTEM.user_table.id]
+  user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
   hash text [not null]
   is_active bool [default: false]
   expiredOn date [not null, default: `now() + '90 day'::interval`]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-    user_id [name: 'password_user_id_idx']
+    user_id [name: 'password_user_idx']
   }
 }
 
-TABLE CARMEN_SYSTEM.user_profile_table {
+TABLE CARMEN_SYSTEM.tb_user_profile {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [ref: - CARMEN_SYSTEM.user_table.id]
+  user_id uuid [ref: - CARMEN_SYSTEM.tb_user.id]
 
   firstname varchar(100) [not null, default: '']
   middlename varchar(100) [default: '']
@@ -53,95 +53,18 @@ TABLE CARMEN_SYSTEM.user_profile_table {
   bio json [null, default: '{}']
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-    user_id [name: "userprofile_user_id_idx"]
+    user_id [name: "userprofile_user_idx"]
    (firstname, lastname) [name: "userprofile_firstname_lastname_idx"]
   }
 }
 
-TABLE CARMEN_SYSTEM.module_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name        varchar   [not null, unique]
-  description text
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    name [name: "module_name_id_u"]
-  }
-}
-
-TABLE CARMEN_SYSTEM.business_unit_module_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.business_unit_table.id]
-  module_id uuid [not null, ref: > CARMEN_SYSTEM.module_table.id]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    (business_unit_id, module_id) [name: "businessunitmodule_business_unit_id_module_id_u"]
-  }
-}
-
-Enum CARMEN_SYSTEM.enum_subscription_status {
-  active
-  inactive
-  expired
-}
-
-TABLE CARMEN_SYSTEM.subscription_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  cluster_id uuid [not null, ref: > CARMEN_SYSTEM.cluster_table.id]
-
-  subscription_number varchar [not null]
-  start_date date [not null]
-  end_date date [not null]
-
-  status CARMEN_SYSTEM.enum_subscription_status [not null]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    (cluster_id, subscription_number) [unique, name: "subscription_cluster_id_subscription_number_u"]
-  }
-}
-
-TABLE CARMEN_SYSTEM.subscription_detail_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-
-  subscription_id uuid [not null, ref: > CARMEN_SYSTEM.subscription_table.id]
-  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.business_unit_table.id]
-  module_id uuid [not null, ref: > CARMEN_SYSTEM.module_table.id]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    (subscription_id, business_unit_id, module_id) [unique, name: "subscriptiondetail_subscription_id_business_unit_id_module_id_u"]
-  }
-}
-
-TABLE CARMEN_SYSTEM.cluster_table {
+TABLE CARMEN_SYSTEM.tb_cluster {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar(30) [not null, unique]
   name text [not null, unique]
@@ -150,10 +73,10 @@ TABLE CARMEN_SYSTEM.cluster_table {
   info json [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
     code [unique, name: "cluster_code_u"]
@@ -161,9 +84,9 @@ TABLE CARMEN_SYSTEM.cluster_table {
   }
 }
 
-TABLE CARMEN_SYSTEM.business_unit_table {
+TABLE CARMEN_SYSTEM.tb_business_unit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  cluster_id uuid [not null, ref: > CARMEN_SYSTEM.cluster_table.id]
+  cluster_id uuid [not null, ref: > CARMEN_SYSTEM.tb_cluster.id]
 
   code varchar(30) [not null]
   name text [not null]
@@ -173,152 +96,225 @@ TABLE CARMEN_SYSTEM.business_unit_table {
   is_active bool [default: true]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-    cluster_id [name: "tenant_clusertid_idx"]
+    cluster_id [name: "businessunit_cluster_idx"]
     code [name: "businessunit_code_idx"]
-    (cluster_id, code) [unique, name: "businessunit_clusertid_code_u"]
+    (cluster_id, code) [unique, name: "businessunit_cluster_code_u"]
   }
 }
 
-TABLE CARMEN_SYSTEM.user_business_unit_table {
+TABLE CARMEN_SYSTEM.tb_user_tb_business_unit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-  business_unit_id uuid [ref: > CARMEN_SYSTEM.business_unit_table.id]
+  user_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+  business_unit_id uuid [ref: > CARMEN_SYSTEM.tb_business_unit.id]
 
   is_active bool [default: true]
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-    (user_id, business_unit_id) [unique, name: "usertenant_user_id_business_unit_id_u"]
+    (user_id, business_unit_id) [unique, name: "user_businessunit_user_business_unit_u"]
   }
 }
 
-TABLE CARMEN_SYSTEM.notification_preference_table {
+
+TABLE CARMEN_SYSTEM.tb_module {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [not null, unique, ref: > CARMEN_SYSTEM.user_table.id]
+  name        varchar   [not null, unique]
+  description text
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    name [name: "module_name_u"]
+  }
+}
+
+TABLE CARMEN_SYSTEM.tb_business_unit_tb_module {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
+  module_id uuid [not null, ref: > CARMEN_SYSTEM.tb_module.id]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    (business_unit_id, module_id) [name: "businessunit_module_business_unit_module_u"]
+  }
+}
+
+Enum CARMEN_SYSTEM.enum_subscription_status {
+  active
+  inactive
+  expired
+}
+
+TABLE CARMEN_SYSTEM.tb_subscription {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  cluster_id uuid [not null, ref: > CARMEN_SYSTEM.tb_cluster.id]
+
+  subscription_number varchar [not null]
+  start_date date [not null]
+  end_date date [not null]
+
+  status CARMEN_SYSTEM.enum_subscription_status [not null]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    (cluster_id, subscription_number) [unique, name: "subscription_cluster_subscription_number_u"]
+  }
+}
+
+
+TABLE CARMEN_SYSTEM.tb_subscription_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  subscription_id uuid [not null, ref: > CARMEN_SYSTEM.tb_subscription.id]
+  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
+  module_id uuid [not null, ref: > CARMEN_SYSTEM.tb_module.id]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    (subscription_id, business_unit_id, module_id) [unique, name: "subscriptiondetail_subscription_business_unit_module_u"]
+  }
+}
+
+
+TABLE CARMEN_SYSTEM.tb_application_role {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
+  name        varchar   [not null, unique]
+  description text
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    name [name: "tb_application_role_name_idx"]
+    (business_unit_id, name) [unique, name: "applicationrole_business_unit_name_u"]
+  }
+}
+
+
+TABLE CARMEN_SYSTEM.tb_user_tb_application_role {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id   uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
+  application_role_id   uuid [not null, ref: > CARMEN_SYSTEM.tb_application_role.id]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  Indexes {
+    (user_id, application_role_id) [unique, name: "user_applicationrole_user_application_role_u"]
+  }
+}
+
+TABLE CARMEN_SYSTEM.tb_permission {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  group varchar [not null]
+  name varchar   [ not null]
+  description text
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    (group,name) [unique, name: "permission_group_name_u"]
+  }
+}
+
+TABLE CARMEN_SYSTEM.tb_application_role_tb_permission {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  application_role_id       uuid [not null, ref: > CARMEN_SYSTEM.tb_application_role.id]
+  permission_id uuid [not null, ref: > CARMEN_SYSTEM.tb_permission.id]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  Indexes {
+    (application_role_id, permission_id) [unique, name: "applicationrole_permission_application_role_permission_u"]
+  }
+}
+
+
+TABLE CARMEN_SYSTEM.tb_message_format {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  name varchar [not null, unique]
+
+  message text
 
   is_email bool [not null, default: false]
   is_sms bool [default: false]
   is_in_app bool [default: true]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-    user_id [name: "notificationpreference_user_id_u"]
+    name [name: "messageformat_name_u"]
   }
 }
 
-TABLE CARMEN_SYSTEM.notification_table {
+TABLE CARMEN_SYSTEM.tb_notification {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [not null, ref: > CARMEN_SYSTEM.user_table.id]
+  user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
   message text
   is_read bool [default: false]
   is_sent bool [default: false]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
-  }
-}
-
-TABLE CARMEN_SYSTEM.application_role_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.business_unit_table.id]
-  name        varchar   [not null, unique]
-  description text
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    name [name: "application_role_name_idx"]
-    (business_unit_id, name) [unique, name: "application_role_business_unit_id_name_u"]
-  }
-}
-
-ENUM CARMEN_SYSTEM.enum_permission_action{
-  view
-  view_all
-  create
-  update
-  delete
-  own_delete
-  print
-  export
-}
-
-TABLE CARMEN_SYSTEM.permission_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  group varchar [not null]
-  name varchar   [ not null]
-  action CARMEN_SYSTEM.enum_permission_action [not null]
-  description text
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  indexes {
-    (group,name,action) [unique, name: "permission_group_name_action_u"]
-  }
-}
-
-TABLE CARMEN_SYSTEM.user_application_role_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id   uuid [not null, ref: > CARMEN_SYSTEM.user_table.id]
-  application_role_id   uuid [not null, ref: > CARMEN_SYSTEM.application_role_table.id]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  Indexes {
-    (user_id, application_role_id) [unique, name: "userapplicationrole_user_id_application_role_id_u"]
-  }
-}
-
-TABLE CARMEN_SYSTEM.application_role_permission_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  application_role_id       uuid [not null, ref: > CARMEN_SYSTEM.application_role_table.id]
-  permission_id uuid [not null, ref: > CARMEN_SYSTEM.permission_table.id]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > CARMEN_SYSTEM.user_table.id]
-
-  Indexes {
-    (application_role_id, permission_id) [unique, name: "applicationrolepermission_application_role_id_permission_id_u"]
   }
 }
 
 enum TENANT_DUMMY.enum_activity_action {
-  read
+  view
   create
   update
   delete
@@ -355,7 +351,7 @@ enum TENANT_DUMMY.enum_activity_entity_type {
   other
 }
 
-TABLE TENANT_DUMMY.global_activity_table {
+TABLE TENANT_DUMMY.tb_activity {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   action TENANT_DUMMY.enum_activity_action
   entity_type TENANT_DUMMY.enum_activity_entity_type
@@ -372,18 +368,21 @@ TABLE TENANT_DUMMY.global_activity_table {
   created_by_id uuid
 
   indexes {
-    (entity_type, entity_id) [name: 'global_activity_entitytype_entityid_idx']
+    (entity_type, entity_id) [name: 'activity_entitytype_entityid_idx']
   }
 
 }
 
-TABLE TENANT_DUMMY.menu_table {
+TABLE TENANT_DUMMY.tb_menu {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  name varchar(5) [unique, not null]
+  module_id uuid [not null]
+  name varchar [not null]
+  url varchar [not null]
   description text
 
-  is_active bool [default: true]
   is_visible bool [default: true]
+  is_active bool [default: true]
+  is_lock bool [default: true]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -396,7 +395,7 @@ TABLE TENANT_DUMMY.menu_table {
   }
 }
 
-TABLE TENANT_DUMMY.currency_table {
+TABLE TENANT_DUMMY.tb_currency {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar(3) [unique, not null]
   name varchar(100) [not null]
@@ -417,11 +416,11 @@ TABLE TENANT_DUMMY.currency_table {
   }
 }
 
-TABLE TENANT_DUMMY.exchange_rate_table {
+TABLE TENANT_DUMMY.tb_exchange_rate {
   id uuid [not null, pk, default: `gen_random_uuid()`]
 
   at_date timestamp [default: `now()`]
-  currency_id uuid [ref: > TENANT_DUMMY.currency_table.id]
+  currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
   rate float [default: 1]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -431,7 +430,7 @@ TABLE TENANT_DUMMY.exchange_rate_table {
   updated_by_id uuid
 
   indexes {
-    (at_date, currency_id) [unique, name: "exchangerate_at_date_currency_id_u"]
+    (at_date, currency_id) [unique, name: "exchangerate_at_date_currency_u"]
   }
 }
 
@@ -441,7 +440,7 @@ enum TENANT_DUMMY.enum_location_type {
   consignment
 }
 
-TABLE TENANT_DUMMY.location_table {
+TABLE TENANT_DUMMY.tb_location {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
 
@@ -450,7 +449,7 @@ TABLE TENANT_DUMMY.location_table {
   description text
   is_active bool [default: true]
 
-  delivery_point_id uuid [ref: > TENANT_DUMMY.delivery_point_table.id]
+  delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -463,7 +462,7 @@ TABLE TENANT_DUMMY.location_table {
   }
 }
 
-TABLE TENANT_DUMMY.delivery_point_table {
+TABLE TENANT_DUMMY.tb_delivery_point {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   is_active bool [default: true]
@@ -479,7 +478,7 @@ TABLE TENANT_DUMMY.delivery_point_table {
   }
 }
 
-TABLE TENANT_DUMMY.unit_table {
+TABLE TENANT_DUMMY.tb_unit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -502,13 +501,13 @@ Enum TENANT_DUMMY.enum_unit_type {
   recipe_unit
 }
 
-TABLE TENANT_DUMMY.unit_conversion_table {
+TABLE TENANT_DUMMY.tb_unit_conversion {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  product_id uuid [ref: > TENANT_DUMMY.product_table.id]
+  product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
   unit_type TENANT_DUMMY.enum_unit_type [not null]
-  from_unit_id uuid [ref: > TENANT_DUMMY.unit_table.id]
+  from_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
   from_unit_qty float [default: 1]
-  to_unit_id uuid [ref: > TENANT_DUMMY.unit_table.id]
+  to_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
   to_unit_qty float [default: 1]
   description text
 
@@ -521,11 +520,11 @@ TABLE TENANT_DUMMY.unit_conversion_table {
   updated_by_id uuid
 
   indexes {
-    (product_id, unit_type, from_unit_id, to_unit_id) [name: "unitconversion_product_id_unit_type_from_unit_id_to_unit_id_u"]
+    (product_id, unit_type, from_unit_id, to_unit_id) [name: "unitconversion_product_unit_type_from_unit_to_unit_u"]
   }
 }
 
-TABLE TENANT_DUMMY.department_table {
+TABLE TENANT_DUMMY.tb_department {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -542,13 +541,13 @@ TABLE TENANT_DUMMY.department_table {
   }
 }
 
-TABLE TENANT_DUMMY.product_table {
+TABLE TENANT_DUMMY.tb_product {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar [unique, not null]
   name varchar [unique, not null]
   description text
 
-  primary_unit uuid [not null, ref: > TENANT_DUMMY.unit_table.id]
+  primary_unit uuid [not null, ref: > TENANT_DUMMY.tb_unit.id]
 
   is_active bool [default: true]
   
@@ -565,9 +564,9 @@ TABLE TENANT_DUMMY.product_table {
   }
 }
 
-TABLE TENANT_DUMMY.product_info_table {
+TABLE TENANT_DUMMY.tb_product_info {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  product_id uuid [unique, not null, ref: - TENANT_DUMMY.product_table.id]
+  product_id uuid [unique, not null, ref: - TENANT_DUMMY.tb_product.id]
   price Float
 
   info json [null]
@@ -579,11 +578,11 @@ TABLE TENANT_DUMMY.product_info_table {
   updated_by_id uuid
 
   indexes {
-    product_id [name: "productinfo_product_id_u"]
+    product_id [name: "productinfo_product_u"]
   }
 }
 
-TABLE TENANT_DUMMY.product_category_table {
+TABLE TENANT_DUMMY.tb_product_category {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar [unique, not null]
   name varchar [unique, not null]
@@ -602,13 +601,14 @@ TABLE TENANT_DUMMY.product_category_table {
   }
 }
 
-TABLE TENANT_DUMMY.product_sub_category_table {
+TABLE TENANT_DUMMY.tb_product_sub_category {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  code varchar [unique, not null]
-  name varchar [unique, not null]
+  code varchar [ not null, default: ""]
+  name varchar [ not null]
   description text
   is_active bool [default: true]
-  product_category_id uuid [ref: > TENANT_DUMMY.product_category_table.id]
+
+  product_category_id uuid [not null,ref: > TENANT_DUMMY.tb_product_category.id]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -617,18 +617,19 @@ TABLE TENANT_DUMMY.product_sub_category_table {
   updated_by_id uuid
 
   indexes {
-    code [name: "productsubcategory_code_u"]
-    name [name: "productsubcategory_name_u"]
+    (code, name,product_category_id)  [ unique, name: "productsubcategory_code_name_product_category_u"]
   }
 }
 
-TABLE TENANT_DUMMY.product_item_group_table {
+TABLE TENANT_DUMMY.tb_product_item_group {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  code varchar [unique, not null]
-  name varchar [unique, not null]
+  code varchar [ not null, default: ""]
+  name varchar [ not null]
+
   description text
   is_active bool [default: true]
-  product_subcategory_id uuid [ref: > TENANT_DUMMY.product_sub_category_table.id]
+
+  product_subcategory_id uuid [not null, ref: > TENANT_DUMMY.tb_product_sub_category.id]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -637,15 +638,22 @@ TABLE TENANT_DUMMY.product_item_group_table {
   updated_by_id uuid
 
   indexes {
-    code [name: "productitemgroup_code_u"]
-    name [name: "productitemgroup_name_u"]
+    (code, name, product_subcategory_id) [unique, name: "productitemgroup_code_name_product_subcategory_u"]
   }
 }
 
-TABLE TENANT_DUMMY.purchase_request_type_table {
+enum TENANT_DUMMY.enum_workflow_type {
+  purchase_request
+  purchase_order
+  store_requisition
+}
+
+TABLE TENANT_DUMMY.tb_workflow {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  code varchar [unique, not null]
   name varchar [unique, not null]
+
+  workflow_type TENANT_DUMMY.enum_workflow_type [not null]
+
   description text
   is_active bool [default: true]
 
@@ -656,8 +664,7 @@ TABLE TENANT_DUMMY.purchase_request_type_table {
   updated_by_id uuid
 
   indexes {
-    code [name: "PRtype_code_u"]
-    name [name: "PRtype_name_u"]
+    name [name: "workflow_name_u"]
   }
 }
 
@@ -667,13 +674,15 @@ enum TENANT_DUMMY.enum_purchase_request_doc_status {
   complete
 }
 
-TABLE TENANT_DUMMY.purchase_request_table {
+TABLE TENANT_DUMMY.tb_purchase_request {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   reference_name varchar [unique, not null]
 
-
   purchase_request_date date
-  purchase_request_type_id uuid [ref: > TENANT_DUMMY.purchase_request_type_table.id]
+  workflow_id uuid [ref: > TENANT_DUMMY.tb_workflow.id]
+
+  workflow_obj json
+  workflow_history json
 
   purchase_request_status TENANT_DUMMY.enum_purchase_request_doc_status [default: 'draft']
 
@@ -693,9 +702,9 @@ TABLE TENANT_DUMMY.purchase_request_table {
   }
 }
 
-TABLE TENANT_DUMMY.purchase_request_detail_table {
+TABLE TENANT_DUMMY.tb_purchase_request_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  purchase_request_id uuid [ref: > TENANT_DUMMY.purchase_request_table.id]
+  purchase_request_id uuid [ref: > TENANT_DUMMY.tb_purchase_request.id]
 
   location_id uuid
   product_id uuid
@@ -712,13 +721,16 @@ TABLE TENANT_DUMMY.purchase_request_detail_table {
   price numeric(15,5)
   total_price numeric(15,5)
 
+  workflow_history json
+
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
-   indexes {
+  indexes {
+    // name [name: "PR1_name_u"]
   }
 }
 
@@ -728,19 +740,6 @@ enum TENANT_DUMMY.enum_purchase_request_workflow_status {
   review
   accept
 }
-
-TABLE TENANT_DUMMY.purchase_request_detail_workflow_table {
-
-   id uuid [not null, pk, default: `gen_random_uuid()`]
-  purchase_request_detail_id uuid [ref: > TENANT_DUMMY.purchase_request_detail_table.id]
-
-  purchase_request_workflow_status TENANT_DUMMY.enum_purchase_request_workflow_status [default: 'draft']
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid 
-  
-}
-
 
 enum TENANT_DUMMY.enum_purchase_order_doc_status {
   open 
@@ -754,14 +753,15 @@ enum TENANT_DUMMY.enum_purchase_order_doc_status {
   deleted 
 }
 
-TABLE TENANT_DUMMY.purchase_order_table {
+TABLE TENANT_DUMMY.tb_purchase_order {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   purchase_order_status TENANT_DUMMY.enum_purchase_order_doc_status [default: 'open']
 
   description text
-
   order_date date
+
+  history json
 
   is_active bool [default: true]
 
@@ -776,16 +776,18 @@ TABLE TENANT_DUMMY.purchase_order_table {
   }
 }
 
-TABLE TENANT_DUMMY.purchase_order_detail_table {
+TABLE TENANT_DUMMY.tb_purchase_order_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
 
   name varchar [unique]
   description text
   is_active bool [default: true]
 
-  purchase_order_id uuid [ref: > TENANT_DUMMY.purchase_order_table.id]
+  purchase_order_id uuid [ref: > TENANT_DUMMY.tb_purchase_order.id]
 
-  purchase_request_detail_id uuid [ref: > TENANT_DUMMY.purchase_request_detail_table.id]
+  purchase_request_detail_id uuid [ref: > TENANT_DUMMY.tb_purchase_request_detail.id]
+
+  history json
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -799,7 +801,7 @@ TABLE TENANT_DUMMY.purchase_order_detail_table {
 }
 
 
-TABLE TENANT_DUMMY.vendor_table {
+TABLE TENANT_DUMMY.tb_vendor {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   description text
@@ -816,34 +818,15 @@ TABLE TENANT_DUMMY.vendor_table {
   }
 }
 
-
-TABLE TENANT_DUMMY.contact_type_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name uuid [unique, not null]
-  description text
-  is_active bool [default: true]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid 
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid
-
-  indexes {
-    name [name: "contacttype_name_u"]
-  }
-
-  note:'''
-  contact_type_id is not unique because a vendor can have multiple contacts of the same type
-  sample:
-  vendor can have multiple phone numbers, email addresses, etc.
-  '''
+enum TENANT_DUMMY.enum_vendor_contact_type {
+  phone
+  email
 }
 
-TABLE TENANT_DUMMY.vendor_contact_table {
+TABLE TENANT_DUMMY.tb_vendor_contact {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  vendor_id uuid [ref: > TENANT_DUMMY.vendor_table.id]
-  contact_type_id uuid [not null, ref: > TENANT_DUMMY.contact_type_table.id]
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  contact_type TENANT_DUMMY.enum_vendor_contact_type [not null]
   description text
   is_active bool [default: true]
 
@@ -856,38 +839,20 @@ TABLE TENANT_DUMMY.vendor_contact_table {
   updated_by_id uuid
 
   indexes {
-    (vendor_id, contact_type_id) [unique, name: "vendorcontact_vendor_id_contact_type_id_u"]
+    (vendor_id, contact_type) [ name: "vendorcontact_vendor_contact_type_idx"]
   }
 }
 
-
-TABLE TENANT_DUMMY.address_type_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name uuid [unique, not null]
-  description text
-  is_active bool [default: true]
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid 
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid
-
-  indexes {
-    name [name: "addresstype_name_u"]
-  }
-
-  note:'''
-  address_type_id is not unique because a vendor can have multiple addresses of the same type
-  sample:
-  vendor can have multiple physical addresses, mailing addresses, etc.
-  '''
+enum TENANT_DUMMY.enum_vendor_address_type {
+  contact_address
+  mailing_address
+  register_address
 }
 
-TABLE TENANT_DUMMY.vendor_address_table {
+TABLE TENANT_DUMMY.tb_vendor_address {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  vendor_id uuid [ref: > TENANT_DUMMY.vendor_table.id]
-  address_type_id uuid [not null, ref: > TENANT_DUMMY.address_type_table.id]
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  address_type TENANT_DUMMY.enum_vendor_address_type
 
   address json [null]
   is_active bool [default: true]
@@ -899,15 +864,17 @@ TABLE TENANT_DUMMY.vendor_address_table {
   updated_by_id uuid
 
   indexes {
-    (vendor_id, address_type_id) [unique, name: "vendorcontact_vendor_id_address_type_id_u"]
+    (vendor_id, address_type) [ name: "vendoraddress_vendor_address_type_idx"]
   }
 }
 
-TABLE TENANT_DUMMY.product_vendor_table {
+TABLE TENANT_DUMMY.tb_product_tb_vendor {
   id uuid [not null, pk, default: `gen_random_uuid()`]
 
-  product_id uuid [ref: > TENANT_DUMMY.product_table.id]
-  vendor_id uuid [ref: > TENANT_DUMMY.vendor_table.id]
+  product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+
+  vendor_product_name varchar
 
   description text
   is_active bool [default: true]
@@ -919,7 +886,7 @@ TABLE TENANT_DUMMY.product_vendor_table {
   updated_by_id uuid
 
   indexes {
-    (vendor_id, product_id) [unique, name: "productvendor_vendor_id_product_id_u"]
+    (vendor_id, product_id) [unique, name: "product_vendor_vendor_product_u"]
   }
 }
 
@@ -927,13 +894,12 @@ enum TENANT_DUMMY.enum_inventory_doc_type {
   good_receive_note
   credit_note
   store_requisition
-  issue
-  adjust
   stock_in
   stock_out
+  stock_take
 }
 
-TABLE TENANT_DUMMY.inventory_transaction_table {
+TABLE TENANT_DUMMY.tb_inventory_transaction {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
   inventory_doc_type TENANT_DUMMY.enum_inventory_doc_type [not null]
@@ -944,12 +910,16 @@ TABLE TENANT_DUMMY.inventory_transaction_table {
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
+  indexes {
+    name [name: "inventorytransaction_name_idx"]
+  }
+
 }
 
-TABLE TENANT_DUMMY.inventory_transaction_detail_table {
+TABLE TENANT_DUMMY.tb_inventory_transaction_detail {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: > TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: > TENANT_DUMMY.tb_inventory_transaction.id]
 
   from_lot_name uuid
   current_lot_name varchar
@@ -965,10 +935,10 @@ TABLE TENANT_DUMMY.inventory_transaction_detail_table {
 
 }
 
-TABLE TENANT_DUMMY.inventory_transaction_cf_table {
+TABLE TENANT_DUMMY.tb_inventory_transaction_closing_balance {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_detail_id uuid [ not null, ref: - TENANT_DUMMY.inventory_transaction_detail_table.id]
+  inventory_transaction_detail_id uuid [ not null, ref: - TENANT_DUMMY.tb_inventory_transaction_detail.id]
   
   lot_name varchar
   lot_index integer [not null, default: 1]
@@ -983,14 +953,14 @@ TABLE TENANT_DUMMY.inventory_transaction_cf_table {
   updated_by_id uuid
 
   indexes {
-    (lot_name, lot_index) [unique, name: "inv2_lotname_lot_index_u"]
+    (lot_name, lot_index) [unique, name: "inventorytransactionclosingbalance_lotname_lot_index_u"]
   }
 }
 
-TABLE TENANT_DUMMY.good_receive_note_table {
+TABLE TENANT_DUMMY.tb_good_receive_note {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
 
@@ -1002,10 +972,10 @@ TABLE TENANT_DUMMY.good_receive_note_table {
 
 }
 
-TABLE TENANT_DUMMY.good_receive_note_detail_table {
+TABLE TENANT_DUMMY.tb_good_receive_note_detail {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  good_receive_note_id uuid [not null, ref: > TENANT_DUMMY.good_receive_note_table.id]
+  good_receive_note_id uuid [not null, ref: > TENANT_DUMMY.tb_good_receive_note.id]
   
   name varchar
 
@@ -1019,10 +989,10 @@ TABLE TENANT_DUMMY.good_receive_note_detail_table {
 
 }
 
-TABLE TENANT_DUMMY.store_requisition_table {
+TABLE TENANT_DUMMY.tb_store_requisition {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
   
   name varchar
 
@@ -1034,43 +1004,10 @@ TABLE TENANT_DUMMY.store_requisition_table {
 
 }
 
-TABLE TENANT_DUMMY.store_requisition_detail_table {
+TABLE TENANT_DUMMY.tb_store_requisition_detail {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  store_requisition_id uuid [not null, ref: > TENANT_DUMMY.store_requisition_table.id]
-  
-  name varchar
-
-  qty decimal
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid 
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid
-
-}
-
-
-TABLE TENANT_DUMMY.stock_in_table {
-
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
-  
-  name varchar
-
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid 
-
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid
-
-}
-
-TABLE TENANT_DUMMY.stock_in_detail_table {
-
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  stock_in_id uuid [not null, ref: > TENANT_DUMMY.stock_in_table.id]
+  store_requisition_id uuid [not null, ref: > TENANT_DUMMY.tb_store_requisition.id]
   
   name varchar
 
@@ -1085,10 +1022,10 @@ TABLE TENANT_DUMMY.stock_in_detail_table {
 }
 
 
-TABLE TENANT_DUMMY.stock_out_table {
+TABLE TENANT_DUMMY.tb_stock_in {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
   
   name varchar
 
@@ -1100,10 +1037,10 @@ TABLE TENANT_DUMMY.stock_out_table {
 
 }
 
-TABLE TENANT_DUMMY.stock_out_detail_table {
+TABLE TENANT_DUMMY.tb_stock_in_detail {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  stock_in_id uuid [not null, ref: > TENANT_DUMMY.stock_out_table.id]
+  stock_in_id uuid [not null, ref: > TENANT_DUMMY.tb_stock_in.id]
   
   name varchar
 
@@ -1117,46 +1054,42 @@ TABLE TENANT_DUMMY.stock_out_detail_table {
 
 }
 
-TABLE TENANT_DUMMY.inventory_adjustment_table {
+
+TABLE TENANT_DUMMY.tb_stock_out {
 
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
-
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
+  
   name varchar
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid
+  created_by_id uuid 
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
-  indexes {
-    name [name: "inventoryadjustment_name_u"]
-  }
 }
 
-TABLE TENANT_DUMMY.inventory_adjustment_detail_table {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_adjustment_id uuid [not null, ref: > TENANT_DUMMY.inventory_adjustment_table.id]
+TABLE TENANT_DUMMY.tb_stock_out_detail {
 
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  stock_in_id uuid [not null, ref: > TENANT_DUMMY.tb_stock_out.id]
+  
   name varchar
 
   qty decimal
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid
+  created_by_id uuid 
 
   updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
-  indexes {
-    (inventory_adjustment_id, name) [unique, name: "inventoryadjustmentdetail_inventory_adjustment_id_name_u"]
-  }
 }
 
-TABLE TENANT_DUMMY.credit_note_table {
+TABLE TENANT_DUMMY.tb_credit_note {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
 
@@ -1171,9 +1104,9 @@ TABLE TENANT_DUMMY.credit_note_table {
   }
 }
 
-TABLE TENANT_DUMMY.credit_note_detail_table {
+TABLE TENANT_DUMMY.tb_credit_note_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]  
-  credit_note_id uuid [not null, ref: > TENANT_DUMMY.credit_note_table.id]
+  credit_note_id uuid [not null, ref: > TENANT_DUMMY.tb_credit_note.id]
 
   name varchar
 
@@ -1187,13 +1120,13 @@ TABLE TENANT_DUMMY.credit_note_detail_table {
   updated_by_id uuid
 
   indexes {
-    (credit_note_id, name) [unique, name: "creditnotedetail_credit_note_id_name_u"]
+    (credit_note_id, name) [unique, name: "creditnotedetail_credit_note_name_u"]
   }
 }
 
-TABLE TENANT_DUMMY.stock_take_table {
+TABLE TENANT_DUMMY.tb_stock_take {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.inventory_transaction_table.id]
+  inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
 
@@ -1204,9 +1137,9 @@ TABLE TENANT_DUMMY.stock_take_table {
   updated_by_id uuid
 }
 
-TABLE TENANT_DUMMY.stock_take_detail_table {
+TABLE TENANT_DUMMY.tb_stock_take_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  stock_take_id uuid [not null, ref: > TENANT_DUMMY.stock_take_table.id]
+  stock_take_id uuid [not null, ref: > TENANT_DUMMY.tb_stock_take.id]
 
   name varchar
   

@@ -1,33 +1,38 @@
-import { ApiBody, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
-import {
-  Delete,
-  Post,
-  Controller,
-  Get,
-  Logger,
-  Param,
-  Query,
-  Req,
-  UseGuards,
-  Body,
-  Patch,
-  UsePipes,
-  BadRequestException,
-} from '@nestjs/common';
-
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { SystemClusterService } from './system-cluster.service';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import QueryParams from 'lib/types';
-import { QueryAdvance } from 'lib/types';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   ClusterCreateDto,
   ClusterCreateSchema,
   ClusterUpdateDto,
   ClusterUpdateSchema,
 } from '@carmensoftware/shared-dtos';
-import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { SystemClusterService } from './system-cluster.service';
 
 @Controller('system-api/v1/clusters')
 @ApiTags('system/cluster')
@@ -50,6 +55,7 @@ export class SystemClusterController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemClusterService.findOne(req, id);
   }
 
@@ -67,6 +73,15 @@ export class SystemClusterController {
   ) {
     const defaultSearchFields: string[] = ['code', 'name'];
 
+    this.logger.log({
+      page,
+      perpage,
+      search,
+      searchfields,
+      filter,
+      sort,
+      advance,
+    });
     const q = new QueryParams(
       page,
       perpage,
@@ -77,6 +92,8 @@ export class SystemClusterController {
       sort,
       advance,
     );
+
+    this.logger.log({ q });
     return this.systemClusterService.findAll(req, q);
   }
 
@@ -86,15 +103,13 @@ export class SystemClusterController {
     description: 'ClusterCreateDto',
   })
   @UsePipes(new ZodValidationPipe(ClusterCreateSchema))
-  async create(
-    @Body()
-    createDto: ClusterCreateDto,
-    @Req() req: Request,
-  ) {
+  async create(@Body() createDto: ClusterCreateDto, @Req() req: Request) {
+    this.logger.log({ createDto });
     const parseObj = ClusterCreateSchema.safeParse(createDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
+    this.logger.log({ parseObj });
     return this.systemClusterService.create(req, createDto);
   }
 
@@ -114,6 +129,7 @@ export class SystemClusterController {
     @Body() updateDto: ClusterUpdateDto,
     @Req() req: Request,
   ) {
+    this.logger.log({ id, updateDto });
     const parseObj = ClusterUpdateSchema.safeParse(updateDto);
 
     if (!parseObj.success) {
@@ -122,6 +138,7 @@ export class SystemClusterController {
 
     const updatedto = parseObj.data;
     updatedto.id = id;
+    this.logger.log({ updatedto });
     return this.systemClusterService.update(req, id, updatedto);
   }
 
@@ -133,6 +150,7 @@ export class SystemClusterController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemClusterService.delete(req, id);
   }
 }

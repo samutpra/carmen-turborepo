@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 
+import { NestFactory } from '@nestjs/core';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -7,8 +8,6 @@ import {
 } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 
 dotenv.config();
 
