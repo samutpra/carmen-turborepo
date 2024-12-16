@@ -32,13 +32,17 @@ export default function LanguageSwitcher() {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant='ghost' size='icon'>
+				<Button variant="ghost" size="icon" className="w-full">
 					<Globe size={20} />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align='end'>
+			<DropdownMenuContent align="end">
 				{availableLanguageTags.map((lang) => (
-					<DropdownMenuItem key={lang} onClick={() => setLanguage(lang)} className='cursor-pointer'>
+					<DropdownMenuItem
+						key={lang}
+						onClick={() => setLanguage(lang)}
+						className="cursor-pointer"
+					>
 						{labels[lang]}
 					</DropdownMenuItem>
 				))}

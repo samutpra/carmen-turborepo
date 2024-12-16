@@ -11,8 +11,10 @@ const MenuContent = () => {
 		<>
 			<MenuDialog />
 			<TenantList />
-			<LanguageSwitcher />
-			<SwitchTheme />
+			<div className="flex items-center">
+				<LanguageSwitcher />
+				<SwitchTheme />
+			</div>
 		</>
 	);
 };

@@ -42,9 +42,13 @@ export function TenantList() {
 					console.log(businessUnit);
 					setTenantId(businessUnit);
 					setBusinessUnit(businessUnit);
-				}}>
-				<SelectTrigger className='w-[140px] sm:w-[180px]'>
-					<SelectValue placeholder='Business Unit' />
+				}}
+			>
+				<SelectTrigger>
+					<SelectValue
+						placeholder="Business Unit"
+						className="w-full md:w-[180px]"
+					/>
 				</SelectTrigger>
 				<SelectContent>
 					{list &&
