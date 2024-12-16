@@ -3,6 +3,15 @@
 import React, { useState } from 'react';
 import { ProductItemGroupType } from '@carmensoftware/shared-types';
 import ItemGroupSummaryModal from './ItemGroupSummaryModal';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Pencil, Trash } from 'lucide-react';
 
 type ItemGroupListProps = {
 	itemGroups: ProductItemGroupType[];
@@ -40,21 +49,52 @@ export const ItemGroupList = ({
 		setSelectedItemGroup(null);
 	};
 
+	if (!itemGroups.length) {
+		return (
+			<Card>
+				<CardHeader>
+					<CardTitle>Item Groups</CardTitle>
+					<CardDescription>No item groups found</CardDescription>
+				</CardHeader>
+			</Card>
+		);
+	}
+
+	const itemGroupListItems = itemGroups.map((itemGroup) => (
+		<div
+			key={itemGroup.id}
+			className="flex items-center p-2 justify-between gap-2"
+			onClick={() => handleItemClick(itemGroup)}
+		>
+			<div
+				className="cursor-pointer hover:bg-accent rounded-lg p-2 w-full"
+				onClick={() => handleItemClick(itemGroup)}
+			>
+				<span>{itemGroup.name}</span>
+			</div>
+			<div className="flex">
+				<Button variant="ghost" size="icon" className="h-8 w-8">
+					<Pencil className="h-4 w-4" />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-8 w-8 text-destructive hover:text-destructive"
+				>
+					<Trash className="h-4 w-4" />
+				</Button>
+			</div>
+		</div>
+	));
+
 	return (
-		<div className="w-1/3">
-			{itemGroups.length > 0 ? (
-				itemGroups.map((itemGroup) => (
-					<div
-						key={itemGroup.id}
-						className="border p-2 mb-2 cursor-pointer hover:bg-gray-50"
-						onClick={() => handleItemClick(itemGroup)}
-					>
-						<p>{itemGroup.name}</p>
-					</div>
-				))
-			) : (
-				<div className="text-gray-500">No item groups available</div>
-			)}
+		<>
+			<Card>
+				<CardHeader>
+					<CardTitle>Sub Categories</CardTitle>
+				</CardHeader>
+				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
+			</Card>
 
 			<ItemGroupSummaryModal
 				itemGroup={selectedItemGroup}
@@ -65,6 +105,6 @@ export const ItemGroupList = ({
 				onDelete={handleDelete}
 				onUpdate={handleUpdate}
 			/>
-		</div>
+		</>
 	);
 };
