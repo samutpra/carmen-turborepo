@@ -17,8 +17,9 @@ const productSubCategorySchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	product_category_id: z.string(),
-	productItemGroups: z.array(productItemGroupSchema),
+	productItemGroups: z.array(productItemGroupSchema).optional(),
 	description: z.string(),
+	is_active: z.boolean().optional(),
 });
 
 export type ProductSubCategoryType = z.infer<typeof productSubCategorySchema>;
@@ -52,6 +53,13 @@ export interface ItemGroupFormData {
 	description: string;
 	is_active: boolean;
 	product_subcategory_id: string;
+}
+
+export interface ProductResponse {
+	name: string;
+	id: string;
+	productSubCategories: ProductSubCategoryType[];
+	description?: string;
 }
 
 

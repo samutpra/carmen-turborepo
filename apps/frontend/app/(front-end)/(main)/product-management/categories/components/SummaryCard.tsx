@@ -17,17 +17,13 @@ const SummaryCard = ({
 	disabled = false,
 }: SummaryCardProps) => {
 	return (
-		<div className="bg-white rounded-lg shadow p-4">
+		<div className="bg-background rounded-lg shadow p-4">
 			<div className="flex justify-between items-center mb-4">
 				<div className="flex items-center space-x-2">
 					{icon}
 					<h3 className="text-lg font-semibold">{title}</h3>
 				</div>
-				<Button 
-					size={'sm'} 
-					onClick={onAddData}
-					disabled={disabled}
-				>
+				<Button size={'sm'} onClick={onAddData} disabled={disabled}>
 					Add
 				</Button>
 			</div>

@@ -25,8 +25,9 @@ import SubCategoryDialog from './SubCategoryDialog';
 interface ProductResponse {
 	name: string;
 	id: string;
+	description?: string;
+	is_active?: boolean;
 	productSubCategories: ProductSubCategoryType[];
-	description: string;
 }
 
 type CategorySummary = {
@@ -248,6 +249,7 @@ const CategorieList = () => {
 					description: formData.description,
 					is_active: formData.is_active ?? true,
 					product_category_id: formData.product_category_id,
+					productItemGroups: [],
 				};
 
 				setSubProducts((prev) => [...prev, newSubCategory]);
@@ -390,10 +392,16 @@ const CategorieList = () => {
 				onOpenChange={setIsAddSubCategoryOpen}
 				onSubmit={handleAddSubCategory}
 				mode="add"
-				categories={selectedProduct ? [{
-					id: selectedProduct.id,
-					name: selectedProduct.name,
-				}] : []}
+				categories={
+					selectedProduct
+						? [
+								{
+									id: selectedProduct.id,
+									name: selectedProduct.name,
+								},
+							]
+						: []
+				}
 				defaultCategoryId={selectedProduct?.id}
 				disableCategory={true}
 			/>
