@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react'
-import { Bell, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/lib/i18n';
 import { SwitchTheme } from './SwitchTheme';
@@ -10,6 +10,7 @@ import { TenantList } from './TenantList';
 import LanguageSwitcher from './LanguageSwitcher';
 import UserProfile from './UserProfile';
 import MenuDialog from './MenuDialog';
+import Notifications from './Notifications';
 
 const Navbar = () => {
 	const { isAuthenticated } = useAuth();
@@ -21,15 +22,7 @@ const Navbar = () => {
 					<div className="flex items-center space-x-2 sm:space-x-4">
 						<MenuDialog />
 						<TenantList />
-						<Button
-							variant="ghost"
-							size="icon"
-							className="hidden md:inline-flex"
-							aria-label="Notifications"
-						>
-							<Bell size={20} />
-						</Button>
-
+						<Notifications />
 						<LanguageSwitcher />
 						<SwitchTheme />
 						{isAuthenticated ? (

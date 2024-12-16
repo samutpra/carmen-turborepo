@@ -1,10 +1,44 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogTrigger,
+} from '../ui-custom/DialogCustom';
 import { Button } from '../ui/button';
-import { LayoutPanelLeft } from 'lucide-react';
+import {
+	LayoutPanelLeft,
+	LayoutDashboard,
+	ShoppingCart,
+	Package,
+	Users,
+	MonitorCog,
+	Store,
+	CalendarClock,
+	Factory,
+	BarChart2,
+	DollarSign,
+	Settings,
+	HelpCircle,
+} from 'lucide-react';
 import { menuItems } from '@/lib/util/menuItems';
 import { Link } from '@/lib/i18n';
 import { Card, CardContent } from '../ui/card';
+
+const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } =
+	{
+		LayoutDashboard,
+		ShoppingCart,
+		Package,
+		Users,
+		MonitorCog,
+		Store,
+		CalendarClock,
+		Factory,
+		BarChart2,
+		DollarSign,
+		Settings,
+		HelpCircle,
+	};
 
 const MenuDialog = () => {
 	return (
@@ -14,17 +48,23 @@ const MenuDialog = () => {
 					<LayoutPanelLeft />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="max-h-[600px] overflow-y-auto">
-				<div className="grid grid-cols-4 gap-4">
-					{menuItems.map((item, index) => (
-						<Link key={index} href={item.path}>
-							<Card className="aspect-square flex items-center justify-center">
-								<CardContent className="flex items-center justify-center text-center">
-									<p className="font-medium text-xs">{item.title}</p>
-								</CardContent>
-							</Card>
-						</Link>
-					))}
+			<DialogContent className="max-h-[800px] overflow-y-auto max-w-[40vw]">
+				<div className="grid grid-cols-6 gap-6">
+					{menuItems.map((item, index) => {
+						const IconComponent = iconMap[item.icon];
+						return (
+							<Link key={index} href={item.path}>
+								<Card className="aspect-square flex flex-col items-center justify-center hover:bg-slate-50">
+									<CardContent className="flex flex-col items-center justify-center gap-2 p-4">
+										{IconComponent && <IconComponent className="w-12 h-12" />}
+									</CardContent>
+								</Card>
+								<p className="mt-2 font-medium text-xs text-center">
+									{item.title}
+								</p>
+							</Link>
+						);
+					})}
 				</div>
 			</DialogContent>
 		</Dialog>
