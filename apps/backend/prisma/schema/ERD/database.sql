@@ -1,18 +1,8 @@
 CREATE SCHEMA "CARMEN_SYSTEM";
 CREATE SCHEMA "TENANT_DUMMY";
 CREATE TYPE "CARMEN_SYSTEM"."enum_subscription_status" AS ENUM ('active', 'inactive', 'expired');
-CREATE TYPE "CARMEN_SYSTEM"."enum_permission_action" AS ENUM (
-  'read',
-  'read_all',
-  'create',
-  'update',
-  'delete',
-  'own_delete',
-  'print',
-  'export'
-);
 CREATE TYPE "TENANT_DUMMY"."enum_activity_action" AS ENUM (
-  'read',
+  'view',
   'create',
   'update',
   'delete',
@@ -53,6 +43,11 @@ CREATE TYPE "TENANT_DUMMY"."enum_unit_type" AS ENUM (
   'inventory_unit',
   'recipe_unit'
 );
+CREATE TYPE "TENANT_DUMMY"."enum_workflow_type" AS ENUM (
+  'purchase_request',
+  'purchase_order',
+  'store_requisition'
+);
 CREATE TYPE "TENANT_DUMMY"."enum_purchase_request_doc_status" AS ENUM ('draft', 'work_in_process', 'complete');
 CREATE TYPE "TENANT_DUMMY"."enum_purchase_request_workflow_status" AS ENUM ('draft', 'pending', 'review', 'accept');
 CREATE TYPE "TENANT_DUMMY"."enum_purchase_order_doc_status" AS ENUM (
@@ -66,16 +61,21 @@ CREATE TYPE "TENANT_DUMMY"."enum_purchase_order_doc_status" AS ENUM (
   'cancelled',
   'deleted'
 );
+CREATE TYPE "TENANT_DUMMY"."enum_vendor_contact_type" AS ENUM ('phone', 'email');
+CREATE TYPE "TENANT_DUMMY"."enum_vendor_address_type" AS ENUM (
+  'contact_address',
+  'mailing_address',
+  'register_address'
+);
 CREATE TYPE "TENANT_DUMMY"."enum_inventory_doc_type" AS ENUM (
   'good_receive_note',
   'credit_note',
   'store_requisition',
-  'issue',
-  'adjust',
   'stock_in',
-  'stock_out'
+  'stock_out',
+  'stock_take'
 );
-CREATE TABLE "CARMEN_SYSTEM"."user_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_user" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "username" varchar(30) UNIQUE NOT NULL,
   "email" varchar(255) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE "CARMEN_SYSTEM"."user_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."password_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_password" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "user_id" uuid NOT NULL,
   "hash" text NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE "CARMEN_SYSTEM"."password_table" (
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."user_profile_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_user_profile" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "user_id" uuid,
   "firstname" varchar(100) NOT NULL DEFAULT '',
@@ -108,47 +108,7 @@ CREATE TABLE "CARMEN_SYSTEM"."user_profile_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."module_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "name" varchar UNIQUE NOT NULL,
-  "description" text,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."business_unit_module_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "business_unit_id" uuid NOT NULL,
-  "module_id" uuid NOT NULL,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."subscription_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "cluster_id" uuid NOT NULL,
-  "subscription_number" varchar NOT NULL,
-  "start_date" date NOT NULL,
-  "end_date" date NOT NULL,
-  "status" "CARMEN_SYSTEM"."enum_subscription_status" NOT NULL,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."subscription_detail_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "subscription_id" uuid NOT NULL,
-  "business_unit_id" uuid NOT NULL,
-  "module_id" uuid NOT NULL,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."cluster_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_cluster" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "code" varchar(30) UNIQUE NOT NULL,
   "name" text UNIQUE NOT NULL,
@@ -159,7 +119,7 @@ CREATE TABLE "CARMEN_SYSTEM"."cluster_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."business_unit_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_business_unit" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "cluster_id" uuid NOT NULL,
   "code" varchar(30) NOT NULL,
@@ -172,7 +132,7 @@ CREATE TABLE "CARMEN_SYSTEM"."business_unit_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."user_business_unit_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "user_id" uuid,
   "business_unit_id" uuid,
@@ -182,9 +142,88 @@ CREATE TABLE "CARMEN_SYSTEM"."user_business_unit_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."notification_preference_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_module" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "user_id" uuid UNIQUE NOT NULL,
+  "name" varchar UNIQUE NOT NULL,
+  "description" text,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_business_unit_tb_module" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "business_unit_id" uuid NOT NULL,
+  "module_id" uuid NOT NULL,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_subscription" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "cluster_id" uuid NOT NULL,
+  "subscription_number" varchar NOT NULL,
+  "start_date" date NOT NULL,
+  "end_date" date NOT NULL,
+  "status" "CARMEN_SYSTEM"."enum_subscription_status" NOT NULL,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_subscription_detail" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "subscription_id" uuid NOT NULL,
+  "business_unit_id" uuid NOT NULL,
+  "module_id" uuid NOT NULL,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_application_role" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "business_unit_id" uuid NOT NULL,
+  "name" varchar UNIQUE NOT NULL,
+  "description" text,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_user_tb_application_role" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "user_id" uuid NOT NULL,
+  "application_role_id" uuid NOT NULL,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_permission" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "group" varchar NOT NULL,
+  "name" varchar NOT NULL,
+  "description" text,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_application_role_tb_permission" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "application_role_id" uuid NOT NULL,
+  "permission_id" uuid NOT NULL,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+CREATE TABLE "CARMEN_SYSTEM"."tb_message_format" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "name" varchar UNIQUE NOT NULL,
+  "message" text,
   "is_email" bool NOT NULL DEFAULT false,
   "is_sms" bool DEFAULT false,
   "is_in_app" bool DEFAULT true,
@@ -193,7 +232,7 @@ CREATE TABLE "CARMEN_SYSTEM"."notification_preference_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."notification_table" (
+CREATE TABLE "CARMEN_SYSTEM"."tb_notification" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "user_id" uuid NOT NULL,
   "message" text,
@@ -204,46 +243,7 @@ CREATE TABLE "CARMEN_SYSTEM"."notification_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "CARMEN_SYSTEM"."role_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "business_unit_id" uuid NOT NULL,
-  "name" varchar UNIQUE NOT NULL,
-  "description" text,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."permission_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "group" varchar NOT NULL,
-  "name" varchar NOT NULL,
-  "action" "CARMEN_SYSTEM"."enum_permission_action" NOT NULL,
-  "description" text,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."user_role_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "user_id" uuid NOT NULL,
-  "role_id" uuid NOT NULL,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "CARMEN_SYSTEM"."role_permission_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "role_id" uuid NOT NULL,
-  "permission_id" uuid NOT NULL,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."global_activity_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_activity" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "action" "TENANT_DUMMY"."enum_activity_action",
   "entity_type" "TENANT_DUMMY"."enum_activity_entity_type",
@@ -258,18 +258,21 @@ CREATE TABLE "TENANT_DUMMY"."global_activity_table" (
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."menu_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_menu" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "name" varchar(5) UNIQUE NOT NULL,
+  "module_id" uuid NOT NULL,
+  "name" varchar NOT NULL,
+  "url" varchar NOT NULL,
   "description" text,
-  "is_active" bool DEFAULT true,
   "is_visible" bool DEFAULT true,
+  "is_active" bool DEFAULT true,
+  "is_lock" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."currency_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_currency" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "code" varchar(3) UNIQUE NOT NULL,
   "name" varchar(100) NOT NULL,
@@ -282,7 +285,7 @@ CREATE TABLE "TENANT_DUMMY"."currency_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."exchange_rate_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_exchange_rate" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "at_date" timestamp DEFAULT (now()),
   "currency_id" uuid,
@@ -292,7 +295,7 @@ CREATE TABLE "TENANT_DUMMY"."exchange_rate_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."location_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_location" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "location_type" "TENANT_DUMMY"."enum_location_type" NOT NULL,
@@ -304,7 +307,7 @@ CREATE TABLE "TENANT_DUMMY"."location_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."delivery_point_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_delivery_point" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "is_active" bool DEFAULT true,
@@ -313,7 +316,7 @@ CREATE TABLE "TENANT_DUMMY"."delivery_point_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."unit_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_unit" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "description" text,
@@ -323,7 +326,7 @@ CREATE TABLE "TENANT_DUMMY"."unit_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."unit_conversion_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_unit_conversion" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid,
   "unit_type" "TENANT_DUMMY"."enum_unit_type" NOT NULL,
@@ -338,7 +341,7 @@ CREATE TABLE "TENANT_DUMMY"."unit_conversion_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."department_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_department" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "description" text,
@@ -348,7 +351,7 @@ CREATE TABLE "TENANT_DUMMY"."department_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "code" varchar UNIQUE NOT NULL,
   "name" varchar UNIQUE NOT NULL,
@@ -360,7 +363,7 @@ CREATE TABLE "TENANT_DUMMY"."product_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_info_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product_info" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid UNIQUE NOT NULL,
   "price" Float,
@@ -370,7 +373,7 @@ CREATE TABLE "TENANT_DUMMY"."product_info_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_category_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product_category" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "code" varchar UNIQUE NOT NULL,
   "name" varchar UNIQUE NOT NULL,
@@ -381,34 +384,34 @@ CREATE TABLE "TENANT_DUMMY"."product_category_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_sub_category_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product_sub_category" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "code" varchar UNIQUE NOT NULL,
-  "name" varchar UNIQUE NOT NULL,
+  "code" varchar NOT NULL DEFAULT '',
+  "name" varchar NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
-  "product_category_id" uuid,
+  "product_category_id" uuid NOT NULL,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_item_group_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product_item_group" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "code" varchar UNIQUE NOT NULL,
-  "name" varchar UNIQUE NOT NULL,
+  "code" varchar NOT NULL DEFAULT '',
+  "name" varchar NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
-  "product_subcategory_id" uuid,
+  "product_subcategory_id" uuid NOT NULL,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."purchase_request_type_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_workflow" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "code" varchar UNIQUE NOT NULL,
   "name" varchar UNIQUE NOT NULL,
+  "workflow_type" "TENANT_DUMMY"."enum_workflow_type" NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -416,11 +419,13 @@ CREATE TABLE "TENANT_DUMMY"."purchase_request_type_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."purchase_request_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_purchase_request" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "reference_name" varchar UNIQUE NOT NULL,
   "purchase_request_date" date,
-  "purchase_request_type_id" uuid,
+  "workflow_id" uuid,
+  "workflow_obj" json,
+  "workflow_history" json,
   "purchase_request_status" "TENANT_DUMMY"."enum_purchase_request_doc_status" DEFAULT 'draft',
   "requestor_id" uuid,
   "department_id" uuid,
@@ -430,7 +435,7 @@ CREATE TABLE "TENANT_DUMMY"."purchase_request_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."purchase_request_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_purchase_request_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "purchase_request_id" uuid,
   "location_id" uuid,
@@ -443,43 +448,39 @@ CREATE TABLE "TENANT_DUMMY"."purchase_request_detail_table" (
   "currency_rate" float,
   "price" numeric(15, 5),
   "total_price" numeric(15, 5),
+  "workflow_history" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."purchase_request_detail_workflow_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "purchase_request_detail_id" uuid,
-  "purchase_request_workflow_status" "TENANT_DUMMY"."enum_purchase_request_workflow_status" DEFAULT 'draft',
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."purchase_order_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_purchase_order" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "purchase_order_status" "TENANT_DUMMY"."enum_purchase_order_doc_status" DEFAULT 'open',
   "description" text,
   "order_date" date,
+  "history" json,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."purchase_order_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_purchase_order_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE,
   "description" text,
   "is_active" bool DEFAULT true,
   "purchase_order_id" uuid,
   "purchase_request_detail_id" uuid,
+  "history" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."vendor_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_vendor" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "description" text,
@@ -489,20 +490,10 @@ CREATE TABLE "TENANT_DUMMY"."vendor_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."contact_type_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "name" uuid UNIQUE NOT NULL,
-  "description" text,
-  "is_active" bool DEFAULT true,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."vendor_contact_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_vendor_contact" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "contact_type_id" uuid NOT NULL,
+  "contact_type" "TENANT_DUMMY"."enum_vendor_contact_type" NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "info" json,
@@ -511,20 +502,10 @@ CREATE TABLE "TENANT_DUMMY"."vendor_contact_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."address_type_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "name" uuid UNIQUE NOT NULL,
-  "description" text,
-  "is_active" bool DEFAULT true,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."vendor_address_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_vendor_address" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "address_type_id" uuid NOT NULL,
+  "address_type" "TENANT_DUMMY"."enum_vendor_address_type",
   "address" json,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -532,10 +513,11 @@ CREATE TABLE "TENANT_DUMMY"."vendor_address_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."product_vendor_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_product_tb_vendor" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid,
   "vendor_id" uuid,
+  "vendor_product_name" varchar,
   "description" text,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -543,7 +525,7 @@ CREATE TABLE "TENANT_DUMMY"."product_vendor_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."inventory_transaction_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_inventory_transaction" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
   "inventory_doc_type" "TENANT_DUMMY"."enum_inventory_doc_type" NOT NULL,
@@ -552,7 +534,7 @@ CREATE TABLE "TENANT_DUMMY"."inventory_transaction_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."inventory_transaction_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_inventory_transaction_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "from_lot_name" uuid,
@@ -564,7 +546,7 @@ CREATE TABLE "TENANT_DUMMY"."inventory_transaction_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."inventory_transaction_cf_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_inventory_transaction_closing_balance" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_detail_id" uuid NOT NULL,
   "lot_name" varchar,
@@ -576,7 +558,7 @@ CREATE TABLE "TENANT_DUMMY"."inventory_transaction_cf_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."good_receive_note_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_good_receive_note" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -585,7 +567,7 @@ CREATE TABLE "TENANT_DUMMY"."good_receive_note_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."good_receive_note_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_good_receive_note_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "good_receive_note_id" uuid NOT NULL,
   "name" varchar,
@@ -595,7 +577,7 @@ CREATE TABLE "TENANT_DUMMY"."good_receive_note_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."store_requisition_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_store_requisition" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -604,7 +586,7 @@ CREATE TABLE "TENANT_DUMMY"."store_requisition_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."store_requisition_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_store_requisition_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "store_requisition_id" uuid NOT NULL,
   "name" varchar,
@@ -614,7 +596,7 @@ CREATE TABLE "TENANT_DUMMY"."store_requisition_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_in_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_in" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -623,7 +605,7 @@ CREATE TABLE "TENANT_DUMMY"."stock_in_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_in_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_in_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "stock_in_id" uuid NOT NULL,
   "name" varchar,
@@ -633,7 +615,7 @@ CREATE TABLE "TENANT_DUMMY"."stock_in_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_out_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_out" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -642,7 +624,7 @@ CREATE TABLE "TENANT_DUMMY"."stock_out_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_out_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_out_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "stock_in_id" uuid NOT NULL,
   "name" varchar,
@@ -652,7 +634,7 @@ CREATE TABLE "TENANT_DUMMY"."stock_out_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."inventory_adjustment_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_credit_note" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -661,26 +643,7 @@ CREATE TABLE "TENANT_DUMMY"."inventory_adjustment_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."inventory_adjustment_detail_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "inventory_adjustment_id" uuid NOT NULL,
-  "name" varchar,
-  "qty" decimal,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."credit_note_table" (
-  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "inventory_transaction_id" uuid NOT NULL,
-  "name" varchar,
-  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "created_by_id" uuid,
-  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
-  "updated_by_id" uuid
-);
-CREATE TABLE "TENANT_DUMMY"."credit_note_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_credit_note_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "credit_note_id" uuid NOT NULL,
   "name" varchar,
@@ -691,7 +654,7 @@ CREATE TABLE "TENANT_DUMMY"."credit_note_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_take_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_take" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
@@ -700,7 +663,7 @@ CREATE TABLE "TENANT_DUMMY"."stock_take_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE TABLE "TENANT_DUMMY"."stock_take_detail_table" (
+CREATE TABLE "TENANT_DUMMY"."tb_stock_take_detail" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "stock_take_id" uuid NOT NULL,
   "name" varchar,
@@ -710,245 +673,219 @@ CREATE TABLE "TENANT_DUMMY"."stock_take_detail_table" (
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
 );
-CREATE INDEX "user_username_idx" ON "CARMEN_SYSTEM"."user_table" ("username");
-CREATE INDEX "user_email_idx" ON "CARMEN_SYSTEM"."user_table" ("email");
-CREATE INDEX "password_user_id_idx" ON "CARMEN_SYSTEM"."password_table" ("user_id");
-CREATE INDEX "userprofile_user_id_idx" ON "CARMEN_SYSTEM"."user_profile_table" ("user_id");
-CREATE INDEX "userprofile_firstname_lastname_idx" ON "CARMEN_SYSTEM"."user_profile_table" ("firstname", "lastname");
-CREATE INDEX "module_name_id_u" ON "CARMEN_SYSTEM"."module_table" ("name");
-CREATE INDEX "businessunitmodule_business_unit_id_module_id_u" ON "CARMEN_SYSTEM"."business_unit_module_table" ("business_unit_id", "module_id");
-CREATE UNIQUE INDEX "subscription_cluster_id_subscription_number_u" ON "CARMEN_SYSTEM"."subscription_table" ("cluster_id", "subscription_number");
-CREATE UNIQUE INDEX "subscriptiondetail_subscription_id_business_unit_id_module_id_u" ON "CARMEN_SYSTEM"."subscription_detail_table" (
+CREATE INDEX "user_username_idx" ON "CARMEN_SYSTEM"."tb_user" ("username");
+CREATE INDEX "user_email_idx" ON "CARMEN_SYSTEM"."tb_user" ("email");
+CREATE INDEX "password_user_idx" ON "CARMEN_SYSTEM"."tb_password" ("user_id");
+CREATE INDEX "userprofile_user_idx" ON "CARMEN_SYSTEM"."tb_user_profile" ("user_id");
+CREATE INDEX "userprofile_firstname_lastname_idx" ON "CARMEN_SYSTEM"."tb_user_profile" ("firstname", "lastname");
+CREATE UNIQUE INDEX "cluster_code_u" ON "CARMEN_SYSTEM"."tb_cluster" ("code");
+CREATE UNIQUE INDEX "cluster_name_u" ON "CARMEN_SYSTEM"."tb_cluster" ("name");
+CREATE INDEX "businessunit_cluster_idx" ON "CARMEN_SYSTEM"."tb_business_unit" ("cluster_id");
+CREATE INDEX "businessunit_code_idx" ON "CARMEN_SYSTEM"."tb_business_unit" ("code");
+CREATE UNIQUE INDEX "businessunit_cluster_code_u" ON "CARMEN_SYSTEM"."tb_business_unit" ("cluster_id", "code");
+CREATE UNIQUE INDEX "user_businessunit_user_business_unit_u" ON "CARMEN_SYSTEM"."tb_user_tb_business_unit" ("user_id", "business_unit_id");
+CREATE INDEX "module_name_u" ON "CARMEN_SYSTEM"."tb_module" ("name");
+CREATE INDEX "businessunit_module_business_unit_module_u" ON "CARMEN_SYSTEM"."tb_business_unit_tb_module" ("business_unit_id", "module_id");
+CREATE UNIQUE INDEX "subscription_cluster_subscription_number_u" ON "CARMEN_SYSTEM"."tb_subscription" ("cluster_id", "subscription_number");
+CREATE UNIQUE INDEX "subscriptiondetail_subscription_business_unit_module_u" ON "CARMEN_SYSTEM"."tb_subscription_detail" (
   "subscription_id",
   "business_unit_id",
   "module_id"
 );
-CREATE UNIQUE INDEX "cluster_code_u" ON "CARMEN_SYSTEM"."cluster_table" ("code");
-CREATE UNIQUE INDEX "cluster_name_u" ON "CARMEN_SYSTEM"."cluster_table" ("name");
-CREATE INDEX "tenant_clusertid_idx" ON "CARMEN_SYSTEM"."business_unit_table" ("cluster_id");
-CREATE INDEX "businessunit_code_idx" ON "CARMEN_SYSTEM"."business_unit_table" ("code");
-CREATE UNIQUE INDEX "businessunit_clusertid_code_u" ON "CARMEN_SYSTEM"."business_unit_table" ("cluster_id", "code");
-CREATE UNIQUE INDEX "usertenant_user_id_business_unit_id_u" ON "CARMEN_SYSTEM"."user_business_unit_table" ("user_id", "business_unit_id");
-CREATE INDEX "notificationpreference_user_id_u" ON "CARMEN_SYSTEM"."notification_preference_table" ("user_id");
-CREATE INDEX "role_name_idx" ON "CARMEN_SYSTEM"."role_table" ("name");
-CREATE UNIQUE INDEX "role_business_unit_id_name_u" ON "CARMEN_SYSTEM"."role_table" ("business_unit_id", "name");
-CREATE UNIQUE INDEX "permission_group_name_action_u" ON "CARMEN_SYSTEM"."permission_table" ("group", "name", "action");
-CREATE UNIQUE INDEX "userrole_user_id_role_id_u" ON "CARMEN_SYSTEM"."user_role_table" ("user_id", "role_id");
-CREATE UNIQUE INDEX "rolepermission_role_id_permission_id_u" ON "CARMEN_SYSTEM"."role_permission_table" ("role_id", "permission_id");
-CREATE INDEX "global_activity_entitytype_entityid_idx" ON "TENANT_DUMMY"."global_activity_table" ("entity_type", "entity_id");
-CREATE INDEX "menu_name_u" ON "TENANT_DUMMY"."menu_table" ("name");
-CREATE INDEX "currency_code_u" ON "TENANT_DUMMY"."currency_table" ("code");
-CREATE UNIQUE INDEX "exchangerate_at_date_currency_id_u" ON "TENANT_DUMMY"."exchange_rate_table" ("at_date", "currency_id");
-CREATE INDEX "location_name_u" ON "TENANT_DUMMY"."location_table" ("name");
-CREATE INDEX "deliverypoint_name_u" ON "TENANT_DUMMY"."delivery_point_table" ("name");
-CREATE INDEX "unit_name_u" ON "TENANT_DUMMY"."unit_table" ("name");
-CREATE INDEX "unitconversion_product_id_unit_type_from_unit_id_to_unit_id_u" ON "TENANT_DUMMY"."unit_conversion_table" (
+CREATE INDEX "tb_application_role_name_idx" ON "CARMEN_SYSTEM"."tb_application_role" ("name");
+CREATE UNIQUE INDEX "applicationrole_business_unit_name_u" ON "CARMEN_SYSTEM"."tb_application_role" ("business_unit_id", "name");
+CREATE UNIQUE INDEX "user_applicationrole_user_application_role_u" ON "CARMEN_SYSTEM"."tb_user_tb_application_role" ("user_id", "application_role_id");
+CREATE UNIQUE INDEX "permission_group_name_u" ON "CARMEN_SYSTEM"."tb_permission" ("group", "name");
+CREATE UNIQUE INDEX "applicationrole_permission_application_role_permission_u" ON "CARMEN_SYSTEM"."tb_application_role_tb_permission" ("application_role_id", "permission_id");
+CREATE INDEX "messageformat_name_u" ON "CARMEN_SYSTEM"."tb_message_format" ("name");
+CREATE INDEX "activity_entitytype_entityid_idx" ON "TENANT_DUMMY"."tb_activity" ("entity_type", "entity_id");
+CREATE INDEX "menu_name_u" ON "TENANT_DUMMY"."tb_menu" ("name");
+CREATE INDEX "currency_code_u" ON "TENANT_DUMMY"."tb_currency" ("code");
+CREATE UNIQUE INDEX "exchangerate_at_date_currency_u" ON "TENANT_DUMMY"."tb_exchange_rate" ("at_date", "currency_id");
+CREATE INDEX "location_name_u" ON "TENANT_DUMMY"."tb_location" ("name");
+CREATE INDEX "deliverypoint_name_u" ON "TENANT_DUMMY"."tb_delivery_point" ("name");
+CREATE INDEX "unit_name_u" ON "TENANT_DUMMY"."tb_unit" ("name");
+CREATE INDEX "unitconversion_product_unit_type_from_unit_to_unit_u" ON "TENANT_DUMMY"."tb_unit_conversion" (
   "product_id",
   "unit_type",
   "from_unit_id",
   "to_unit_id"
 );
-CREATE INDEX "department_name_u" ON "TENANT_DUMMY"."department_table" ("name");
-CREATE INDEX "product_code_u" ON "TENANT_DUMMY"."product_table" ("code");
-CREATE INDEX "product_name_u" ON "TENANT_DUMMY"."product_table" ("name");
-CREATE INDEX "productinfo_product_id_u" ON "TENANT_DUMMY"."product_info_table" ("product_id");
-CREATE INDEX "productcategory_code_u" ON "TENANT_DUMMY"."product_category_table" ("code");
-CREATE INDEX "productcategory_name_u" ON "TENANT_DUMMY"."product_category_table" ("name");
-CREATE INDEX "productsubcategory_code_u" ON "TENANT_DUMMY"."product_sub_category_table" ("code");
-CREATE INDEX "productsubcategory_name_u" ON "TENANT_DUMMY"."product_sub_category_table" ("name");
-CREATE INDEX "productitemgroup_code_u" ON "TENANT_DUMMY"."product_item_group_table" ("code");
-CREATE INDEX "productitemgroup_name_u" ON "TENANT_DUMMY"."product_item_group_table" ("name");
-CREATE INDEX "PRtype_code_u" ON "TENANT_DUMMY"."purchase_request_type_table" ("code");
-CREATE INDEX "PRtype_name_u" ON "TENANT_DUMMY"."purchase_request_type_table" ("name");
-CREATE INDEX "PR0_reference_name_u" ON "TENANT_DUMMY"."purchase_request_table" ("reference_name");
-CREATE INDEX "PO_name_u" ON "TENANT_DUMMY"."purchase_order_table" ("name");
-CREATE INDEX "PO1_name_u" ON "TENANT_DUMMY"."purchase_order_detail_table" ("name");
-CREATE INDEX "vendor_name_u" ON "TENANT_DUMMY"."vendor_table" ("name");
-CREATE INDEX "contacttype_name_u" ON "TENANT_DUMMY"."contact_type_table" ("name");
-CREATE UNIQUE INDEX "vendorcontact_vendor_id_contact_type_id_u" ON "TENANT_DUMMY"."vendor_contact_table" ("vendor_id", "contact_type_id");
-CREATE INDEX "addresstype_name_u" ON "TENANT_DUMMY"."address_type_table" ("name");
-CREATE UNIQUE INDEX "vendorcontact_vendor_id_address_type_id_u" ON "TENANT_DUMMY"."vendor_address_table" ("vendor_id", "address_type_id");
-CREATE UNIQUE INDEX "productvendor_vendor_id_product_id_u" ON "TENANT_DUMMY"."product_vendor_table" ("vendor_id", "product_id");
-CREATE UNIQUE INDEX "inv2_lotname_lot_index_u" ON "TENANT_DUMMY"."inventory_transaction_cf_table" ("lot_name", "lot_index");
-CREATE INDEX "inventoryadjustment_name_u" ON "TENANT_DUMMY"."inventory_adjustment_table" ("name");
-CREATE UNIQUE INDEX "inventoryadjustmentdetail_inventory_adjustment_id_name_u" ON "TENANT_DUMMY"."inventory_adjustment_detail_table" ("inventory_adjustment_id", "name");
-CREATE INDEX "creditnote_name_u" ON "TENANT_DUMMY"."credit_note_table" ("name");
-CREATE UNIQUE INDEX "creditnotedetail_credit_note_id_name_u" ON "TENANT_DUMMY"."credit_note_detail_table" ("credit_note_id", "name");
-COMMENT ON TABLE "TENANT_DUMMY"."contact_type_table" IS 'contact_type_id is not unique because a vendor can have multiple contacts of the same type
-sample:
-vendor can have multiple phone numbers, email addresses, etc.
-';
-COMMENT ON TABLE "TENANT_DUMMY"."address_type_table" IS 'address_type_id is not unique because a vendor can have multiple addresses of the same type
-sample:
-vendor can have multiple physical addresses, mailing addresses, etc.
-';
-ALTER TABLE "CARMEN_SYSTEM"."user_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."password_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."password_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_profile_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_profile_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_profile_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."module_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."module_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_module_table"
-ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."business_unit_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_module_table"
-ADD FOREIGN KEY ("module_id") REFERENCES "CARMEN_SYSTEM"."module_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_module_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_module_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_table"
-ADD FOREIGN KEY ("cluster_id") REFERENCES "CARMEN_SYSTEM"."cluster_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_detail_table"
-ADD FOREIGN KEY ("subscription_id") REFERENCES "CARMEN_SYSTEM"."subscription_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_detail_table"
-ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."business_unit_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_detail_table"
-ADD FOREIGN KEY ("module_id") REFERENCES "CARMEN_SYSTEM"."module_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_detail_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."subscription_detail_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."cluster_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."cluster_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_table"
-ADD FOREIGN KEY ("cluster_id") REFERENCES "CARMEN_SYSTEM"."cluster_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."business_unit_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_business_unit_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_business_unit_table"
-ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."business_unit_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_business_unit_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_business_unit_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_preference_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_preference_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_preference_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."notification_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_table"
-ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."business_unit_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."permission_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."permission_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_role_table"
-ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_role_table"
-ADD FOREIGN KEY ("role_id") REFERENCES "CARMEN_SYSTEM"."role_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_role_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."user_role_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_permission_table"
-ADD FOREIGN KEY ("role_id") REFERENCES "CARMEN_SYSTEM"."role_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_permission_table"
-ADD FOREIGN KEY ("permission_id") REFERENCES "CARMEN_SYSTEM"."permission_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_permission_table"
-ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "CARMEN_SYSTEM"."role_permission_table"
-ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."user_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."exchange_rate_table"
-ADD FOREIGN KEY ("currency_id") REFERENCES "TENANT_DUMMY"."currency_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."location_table"
-ADD FOREIGN KEY ("delivery_point_id") REFERENCES "TENANT_DUMMY"."delivery_point_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."unit_conversion_table"
-ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."product_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."unit_conversion_table"
-ADD FOREIGN KEY ("from_unit_id") REFERENCES "TENANT_DUMMY"."unit_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."unit_conversion_table"
-ADD FOREIGN KEY ("to_unit_id") REFERENCES "TENANT_DUMMY"."unit_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_table"
-ADD FOREIGN KEY ("primary_unit") REFERENCES "TENANT_DUMMY"."unit_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_info_table"
-ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."product_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_sub_category_table"
-ADD FOREIGN KEY ("product_category_id") REFERENCES "TENANT_DUMMY"."product_category_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_item_group_table"
-ADD FOREIGN KEY ("product_subcategory_id") REFERENCES "TENANT_DUMMY"."product_sub_category_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."purchase_request_table"
-ADD FOREIGN KEY ("purchase_request_type_id") REFERENCES "TENANT_DUMMY"."purchase_request_type_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."purchase_request_detail_table"
-ADD FOREIGN KEY ("purchase_request_id") REFERENCES "TENANT_DUMMY"."purchase_request_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."purchase_request_detail_workflow_table"
-ADD FOREIGN KEY ("purchase_request_detail_id") REFERENCES "TENANT_DUMMY"."purchase_request_detail_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."purchase_order_detail_table"
-ADD FOREIGN KEY ("purchase_order_id") REFERENCES "TENANT_DUMMY"."purchase_order_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."purchase_order_detail_table"
-ADD FOREIGN KEY ("purchase_request_detail_id") REFERENCES "TENANT_DUMMY"."purchase_request_detail_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."vendor_contact_table"
-ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."vendor_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."vendor_contact_table"
-ADD FOREIGN KEY ("contact_type_id") REFERENCES "TENANT_DUMMY"."contact_type_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."vendor_address_table"
-ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."vendor_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."vendor_address_table"
-ADD FOREIGN KEY ("address_type_id") REFERENCES "TENANT_DUMMY"."address_type_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_vendor_table"
-ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."product_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."product_vendor_table"
-ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."vendor_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."inventory_transaction_detail_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."inventory_transaction_cf_table"
-ADD FOREIGN KEY ("inventory_transaction_detail_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_detail_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."good_receive_note_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."good_receive_note_detail_table"
-ADD FOREIGN KEY ("good_receive_note_id") REFERENCES "TENANT_DUMMY"."good_receive_note_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."store_requisition_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."store_requisition_detail_table"
-ADD FOREIGN KEY ("store_requisition_id") REFERENCES "TENANT_DUMMY"."store_requisition_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_in_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_in_detail_table"
-ADD FOREIGN KEY ("stock_in_id") REFERENCES "TENANT_DUMMY"."stock_in_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_out_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_out_detail_table"
-ADD FOREIGN KEY ("stock_in_id") REFERENCES "TENANT_DUMMY"."stock_out_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."inventory_adjustment_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."inventory_adjustment_detail_table"
-ADD FOREIGN KEY ("inventory_adjustment_id") REFERENCES "TENANT_DUMMY"."inventory_adjustment_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."credit_note_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."credit_note_detail_table"
-ADD FOREIGN KEY ("credit_note_id") REFERENCES "TENANT_DUMMY"."credit_note_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_take_table"
-ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."inventory_transaction_table" ("id");
-ALTER TABLE "TENANT_DUMMY"."stock_take_detail_table"
-ADD FOREIGN KEY ("stock_take_id") REFERENCES "TENANT_DUMMY"."stock_take_table" ("id");
+CREATE INDEX "department_name_u" ON "TENANT_DUMMY"."tb_department" ("name");
+CREATE INDEX "product_code_u" ON "TENANT_DUMMY"."tb_product" ("code");
+CREATE INDEX "product_name_u" ON "TENANT_DUMMY"."tb_product" ("name");
+CREATE INDEX "productinfo_product_u" ON "TENANT_DUMMY"."tb_product_info" ("product_id");
+CREATE INDEX "productcategory_code_u" ON "TENANT_DUMMY"."tb_product_category" ("code");
+CREATE INDEX "productcategory_name_u" ON "TENANT_DUMMY"."tb_product_category" ("name");
+CREATE UNIQUE INDEX "productsubcategory_code_name_product_category_u" ON "TENANT_DUMMY"."tb_product_sub_category" ("code", "name", "product_category_id");
+CREATE UNIQUE INDEX "productitemgroup_code_name_product_subcategory_u" ON "TENANT_DUMMY"."tb_product_item_group" ("code", "name", "product_subcategory_id");
+CREATE INDEX "workflow_name_u" ON "TENANT_DUMMY"."tb_workflow" ("name");
+CREATE INDEX "PR0_reference_name_u" ON "TENANT_DUMMY"."tb_purchase_request" ("reference_name");
+CREATE INDEX "PO_name_u" ON "TENANT_DUMMY"."tb_purchase_order" ("name");
+CREATE INDEX "PO1_name_u" ON "TENANT_DUMMY"."tb_purchase_order_detail" ("name");
+CREATE INDEX "vendor_name_u" ON "TENANT_DUMMY"."tb_vendor" ("name");
+CREATE INDEX "vendorcontact_vendor_contact_type_idx" ON "TENANT_DUMMY"."tb_vendor_contact" ("vendor_id", "contact_type");
+CREATE INDEX "vendoraddress_vendor_address_type_idx" ON "TENANT_DUMMY"."tb_vendor_address" ("vendor_id", "address_type");
+CREATE UNIQUE INDEX "product_vendor_vendor_product_u" ON "TENANT_DUMMY"."tb_product_tb_vendor" ("vendor_id", "product_id");
+CREATE INDEX "inventorytransaction_name_idx" ON "TENANT_DUMMY"."tb_inventory_transaction" ("name");
+CREATE UNIQUE INDEX "inventorytransactionclosingbalance_lotname_lot_index_u" ON "TENANT_DUMMY"."tb_inventory_transaction_closing_balance" ("lot_name", "lot_index");
+CREATE INDEX "creditnote_name_u" ON "TENANT_DUMMY"."tb_credit_note" ("name");
+CREATE UNIQUE INDEX "creditnotedetail_credit_note_name_u" ON "TENANT_DUMMY"."tb_credit_note_detail" ("credit_note_id", "name");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_password"
+ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_password"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_profile"
+ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_profile"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_profile"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit"
+ADD FOREIGN KEY ("cluster_id") REFERENCES "CARMEN_SYSTEM"."tb_cluster" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit"
+ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit"
+ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."tb_business_unit" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_module"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_module"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit_tb_module"
+ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."tb_business_unit" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit_tb_module"
+ADD FOREIGN KEY ("module_id") REFERENCES "CARMEN_SYSTEM"."tb_module" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit_tb_module"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit_tb_module"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription"
+ADD FOREIGN KEY ("cluster_id") REFERENCES "CARMEN_SYSTEM"."tb_cluster" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription_detail"
+ADD FOREIGN KEY ("subscription_id") REFERENCES "CARMEN_SYSTEM"."tb_subscription" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription_detail"
+ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."tb_business_unit" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription_detail"
+ADD FOREIGN KEY ("module_id") REFERENCES "CARMEN_SYSTEM"."tb_module" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription_detail"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_subscription_detail"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role"
+ADD FOREIGN KEY ("business_unit_id") REFERENCES "CARMEN_SYSTEM"."tb_business_unit" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_application_role"
+ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_application_role"
+ADD FOREIGN KEY ("application_role_id") REFERENCES "CARMEN_SYSTEM"."tb_application_role" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_application_role"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_application_role"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_permission"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_permission"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role_tb_permission"
+ADD FOREIGN KEY ("application_role_id") REFERENCES "CARMEN_SYSTEM"."tb_application_role" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role_tb_permission"
+ADD FOREIGN KEY ("permission_id") REFERENCES "CARMEN_SYSTEM"."tb_permission" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role_tb_permission"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_application_role_tb_permission"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_message_format"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_message_format"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_notification"
+ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_notification"
+ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "CARMEN_SYSTEM"."tb_notification"
+ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_exchange_rate"
+ADD FOREIGN KEY ("currency_id") REFERENCES "TENANT_DUMMY"."tb_currency" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_location"
+ADD FOREIGN KEY ("delivery_point_id") REFERENCES "TENANT_DUMMY"."tb_delivery_point" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion"
+ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."tb_product" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion"
+ADD FOREIGN KEY ("from_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion"
+ADD FOREIGN KEY ("to_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product"
+ADD FOREIGN KEY ("primary_unit") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product_info"
+ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."tb_product" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product_sub_category"
+ADD FOREIGN KEY ("product_category_id") REFERENCES "TENANT_DUMMY"."tb_product_category" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product_item_group"
+ADD FOREIGN KEY ("product_subcategory_id") REFERENCES "TENANT_DUMMY"."tb_product_sub_category" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_purchase_request"
+ADD FOREIGN KEY ("workflow_id") REFERENCES "TENANT_DUMMY"."tb_workflow" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_purchase_request_detail"
+ADD FOREIGN KEY ("purchase_request_id") REFERENCES "TENANT_DUMMY"."tb_purchase_request" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_purchase_order_detail"
+ADD FOREIGN KEY ("purchase_order_id") REFERENCES "TENANT_DUMMY"."tb_purchase_order" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_purchase_order_detail"
+ADD FOREIGN KEY ("purchase_request_detail_id") REFERENCES "TENANT_DUMMY"."tb_purchase_request_detail" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_vendor_contact"
+ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."tb_vendor" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_vendor_address"
+ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."tb_vendor" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product_tb_vendor"
+ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."tb_product" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product_tb_vendor"
+ADD FOREIGN KEY ("vendor_id") REFERENCES "TENANT_DUMMY"."tb_vendor" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_inventory_transaction_detail"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_inventory_transaction_closing_balance"
+ADD FOREIGN KEY ("inventory_transaction_detail_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction_detail" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_good_receive_note"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_good_receive_note_detail"
+ADD FOREIGN KEY ("good_receive_note_id") REFERENCES "TENANT_DUMMY"."tb_good_receive_note" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_store_requisition"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_store_requisition_detail"
+ADD FOREIGN KEY ("store_requisition_id") REFERENCES "TENANT_DUMMY"."tb_store_requisition" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_in"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_in_detail"
+ADD FOREIGN KEY ("stock_in_id") REFERENCES "TENANT_DUMMY"."tb_stock_in" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_out"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_out_detail"
+ADD FOREIGN KEY ("stock_in_id") REFERENCES "TENANT_DUMMY"."tb_stock_out" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_credit_note"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_credit_note_detail"
+ADD FOREIGN KEY ("credit_note_id") REFERENCES "TENANT_DUMMY"."tb_credit_note" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_take"
+ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_stock_take_detail"
+ADD FOREIGN KEY ("stock_take_id") REFERENCES "TENANT_DUMMY"."tb_stock_take" ("id");

@@ -1,4 +1,18 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
   CurrencyCreateDto,
   CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
@@ -9,16 +23,10 @@ import {
   NotFoundException,
   Request,
 } from '@nestjs/common';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import {
-  currency_table,
   PrismaClient as dbTenant,
+  tb_currency,
 } from '@prisma-carmen-client-tenant';
-
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
 
 @Injectable()
 export class CurrenciesService {
@@ -67,8 +75,8 @@ export class CurrenciesService {
   //   return where;
   // }
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<currency_table> {
-    const res = await db_tenant.currency_table.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<tb_currency> {
+    const res = await db_tenant.tb_currency.findUnique({
       where: {
         id: id,
       },
@@ -80,7 +88,7 @@ export class CurrenciesService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<currency_table>> {
+  ): Promise<ResponseSingle<tb_currency>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -88,7 +96,7 @@ export class CurrenciesService {
     if (!oneObj) {
       throw new NotFoundException('Currency not found');
     }
-    const res: ResponseSingle<currency_table> = {
+    const res: ResponseSingle<tb_currency> = {
       data: oneObj,
     };
     return res;
@@ -99,17 +107,17 @@ export class CurrenciesService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<currency_table>> {
+  ): Promise<ResponseList<tb_currency>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const max = await this.db_tenant.currency_table.count({
+    const max = await this.db_tenant.tb_currency.count({
       where: q.where(),
     });
 
-    const listObj = await this.db_tenant.currency_table.findMany(q.findMany());
+    const listObj = await this.db_tenant.tb_currency.findMany(q.findMany());
 
-    const res: ResponseList<currency_table> = {
+    const res: ResponseList<tb_currency> = {
       data: listObj,
       pagination: {
         total: max,
@@ -131,7 +139,7 @@ export class CurrenciesService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const found = await this.db_tenant.currency_table.findUnique({
+    const found = await this.db_tenant.tb_currency.findUnique({
       where: {
         code: createDto.code,
       },
@@ -145,7 +153,7 @@ export class CurrenciesService {
       });
     }
 
-    const createObj = await this.db_tenant.currency_table.create({
+    const createObj = await this.db_tenant.tb_currency.create({
       data: {
         ...createDto,
         // code: createDto.code ?? '',
@@ -180,7 +188,7 @@ export class CurrenciesService {
       throw new NotFoundException('Currency not found');
     }
 
-    const updateObj = await this.db_tenant.currency_table.update({
+    const updateObj = await this.db_tenant.tb_currency.update({
       where: {
         id,
       },
@@ -205,7 +213,7 @@ export class CurrenciesService {
       throw new NotFoundException('Currency not found');
     }
 
-    await this.db_tenant.currency_table.delete({
+    await this.db_tenant.tb_currency.delete({
       where: {
         id,
       },

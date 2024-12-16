@@ -1,23 +1,31 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
+  ProductCreateDto,
+  ProductUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ProductCreateDto,
-  ProductUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import {
   PrismaClient as dbTenant,
-  product_table,
+  tb_product,
 } from '@prisma-carmen-client-tenant';
-
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
 
 @Injectable()
 export class ProductsService {
@@ -30,8 +38,8 @@ export class ProductsService {
 
   logger = new Logger(ProductsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<product_table> {
-    const res = await db_tenant.product_table.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<tb_product> {
+    const res = await db_tenant.tb_product.findUnique({
       where: {
         id: id,
       },
@@ -39,10 +47,7 @@ export class ProductsService {
     return res;
   }
 
-  async findOne(
-    req: Request,
-    id: string,
-  ): Promise<ResponseSingle<product_table>> {
+  async findOne(req: Request, id: string): Promise<ResponseSingle<tb_product>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -51,7 +56,7 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    const res: ResponseSingle<product_table> = {
+    const res: ResponseSingle<tb_product> = {
       data: oneObj,
     };
     return res;
@@ -60,15 +65,15 @@ export class ProductsService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<product_table>> {
+  ): Promise<ResponseList<tb_product>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
-    const max = await this.db_tenant.product_table.count({
+    const max = await this.db_tenant.tb_product.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.product_table.findMany(q.findMany());
+    const listObj = await this.db_tenant.tb_product.findMany(q.findMany());
 
-    const res: ResponseList<product_table> = {
+    const res: ResponseList<tb_product> = {
       data: listObj,
       pagination: {
         total: max,
@@ -87,7 +92,7 @@ export class ProductsService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const found = await this.db_tenant.product_table.findUnique({
+    const found = await this.db_tenant.tb_product.findUnique({
       where: {
         name: createDto.name,
       },
@@ -100,7 +105,7 @@ export class ProductsService {
         id: found.id,
       });
     }
-    const createObj = await this.db_tenant.product_table.create({
+    const createObj = await this.db_tenant.tb_product.create({
       data: {
         ...createDto,
         primary_unit: createDto.primaryUnit || null,
@@ -135,7 +140,7 @@ export class ProductsService {
     //   // UnitConversion: updateDto.UnitConversion,
     // };
 
-    const updateObj = await this.db_tenant.product_table.update({
+    const updateObj = await this.db_tenant.tb_product.update({
       where: {
         id,
       },
@@ -158,7 +163,7 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    await this.db_tenant.product_table.delete({
+    await this.db_tenant.tb_product.delete({
       where: {
         id,
       },

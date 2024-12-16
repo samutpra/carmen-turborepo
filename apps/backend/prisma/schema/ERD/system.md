@@ -6,16 +6,26 @@
 ## default
 ```mermaid
 erDiagram
-"business_unit_module_table" {
+"tb_application_role" {
   String id PK
   String business_unit_id FK
-  String module_id FK
+  String name UK
+  String description "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"business_unit_table" {
+"tb_application_role_tb_permission" {
+  String id PK
+  String application_role_id FK
+  String permission_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"tb_business_unit" {
   String id PK
   String cluster_id FK
   String code
@@ -28,7 +38,16 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"cluster_table" {
+"tb_business_unit_tb_module" {
+  String id PK
+  String business_unit_id FK
+  String module_id FK
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"tb_cluster" {
   String id PK
   String code UK
   String name UK
@@ -39,18 +58,10 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"module_table" {
+"tb_message_format" {
   String id PK
   String name UK
-  String description "nullable"
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
-"notification_preference_table" {
-  String id PK
-  String user_id FK
+  String message "nullable"
   Boolean is_email
   Boolean is_sms "nullable"
   Boolean is_in_app "nullable"
@@ -59,7 +70,16 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"notification_table" {
+"tb_module" {
+  String id PK
+  String name UK
+  String description "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"tb_notification" {
   String id PK
   String user_id FK
   String message "nullable"
@@ -70,7 +90,7 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"password_table" {
+"tb_password" {
   String id PK
   String user_id FK
   String hash
@@ -79,28 +99,17 @@ erDiagram
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
 }
-"permission_table" {
+"tb_permission" {
   String id PK
   String group
   String name
-  enum_permission_action action
   String description "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"subscription_detail_table" {
-  String id PK
-  String subscription_id FK
-  String business_unit_id FK
-  String module_id FK
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
-"subscription_table" {
+"tb_subscription" {
   String id PK
   String cluster_id FK
   String subscription_number
@@ -112,29 +121,17 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"user_business_unit_table" {
+"tb_subscription_detail" {
   String id PK
-  String user_id FK "nullable"
-  String business_unit_id FK "nullable"
-  Boolean is_active "nullable"
+  String subscription_id FK
+  String business_unit_id FK
+  String module_id FK
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"user_profile_table" {
-  String id PK
-  String user_id FK "nullable"
-  String firstname
-  String middlename "nullable"
-  String lastname "nullable"
-  Json bio "nullable"
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
-"user_table" {
+"tb_user" {
   String id PK
   String username UK
   String email
@@ -146,26 +143,19 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"application_role_permission_table" {
+"tb_user_profile" {
   String id PK
-  String application_role_id FK
-  String permission_id FK
+  String user_id FK "nullable"
+  String firstname
+  String middlename "nullable"
+  String lastname "nullable"
+  Json bio "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"application_role_table" {
-  String id PK
-  String business_unit_id FK
-  String name UK
-  String description "nullable"
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
-"user_application_role_table" {
+"tb_user_tb_application_role" {
   String id PK
   String user_id FK
   String application_role_id FK
@@ -174,69 +164,90 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"business_unit_module_table" }o--|| "business_unit_table" : business_unit_table
-"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_created_by_idTouser_table
-"business_unit_module_table" }o--|| "module_table" : module_table
-"business_unit_module_table" }o--o| "user_table" : user_table_business_unit_module_table_updated_by_idTouser_table
-"business_unit_table" }o--|| "cluster_table" : cluster_table
-"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_created_by_idTouser_table
-"business_unit_table" }o--o| "user_table" : user_table_business_unit_table_updated_by_idTouser_table
-"cluster_table" }o--o| "user_table" : user_table_cluster_table_created_by_idTouser_table
-"cluster_table" }o--o| "user_table" : user_table_cluster_table_updated_by_idTouser_table
-"module_table" }o--o| "user_table" : user_table_module_table_created_by_idTouser_table
-"module_table" }o--o| "user_table" : user_table_module_table_updated_by_idTouser_table
-"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_created_by_idTouser_table
-"notification_preference_table" }o--o| "user_table" : user_table_notification_preference_table_updated_by_idTouser_table
-"notification_preference_table" |o--|| "user_table" : user_table_notification_preference_table_user_idTouser_table
-"notification_table" }o--o| "user_table" : user_table_notification_table_created_by_idTouser_table
-"notification_table" }o--o| "user_table" : user_table_notification_table_updated_by_idTouser_table
-"notification_table" }o--|| "user_table" : user_table_notification_table_user_idTouser_table
-"password_table" }o--o| "user_table" : user_table_password_table_created_by_idTouser_table
-"password_table" }o--|| "user_table" : user_table
-"permission_table" }o--o| "user_table" : user_table_permission_table_created_by_idTouser_table
-"permission_table" }o--o| "user_table" : user_table_permission_table_updated_by_idTouser_table
-"subscription_detail_table" }o--|| "business_unit_table" : business_unit_table
-"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_created_by_idTouser_table
-"subscription_detail_table" }o--|| "module_table" : module_table
-"subscription_detail_table" }o--|| "subscription_table" : subscription_table
-"subscription_detail_table" }o--o| "user_table" : user_table_subscription_detail_table_updated_by_idTouser_table
-"subscription_table" }o--|| "cluster_table" : cluster_table
-"subscription_table" }o--o| "user_table" : user_table_subscription_table_created_by_idTouser_table
-"subscription_table" }o--o| "user_table" : user_table_subscription_table_updated_by_idTouser_table
-"user_business_unit_table" }o--o| "business_unit_table" : business_unit_table
-"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_created_by_idTouser_table
-"user_business_unit_table" }o--o| "user_table" : user_table_user_business_unit_table_updated_by_idTouser_table
-"user_business_unit_table" }o--o| "user_table" : user_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_created_by_idTouser_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_updated_by_idTouser_table
-"user_profile_table" }o--o| "user_table" : user_table_user_profile_table_user_idTouser_table
-"user_table" }o--o| "user_table" : user_table_user_table_created_by_idTouser_table
-"user_table" }o--o| "user_table" : user_table_user_table_updated_by_idTouser_table
-"application_role_permission_table" }o--|| "application_role_table" : application_role_table
-"application_role_permission_table" }o--o| "user_table" : user_table_application_role_permission_table_created_by_idTouser_table
-"application_role_permission_table" }o--|| "permission_table" : permission_table
-"application_role_permission_table" }o--o| "user_table" : user_table_application_role_permission_table_updated_by_idTouser_table
-"application_role_table" }o--|| "business_unit_table" : business_unit_table
-"application_role_table" }o--o| "user_table" : user_table_application_role_table_created_by_idTouser_table
-"application_role_table" }o--o| "user_table" : user_table_application_role_table_updated_by_idTouser_table
-"user_application_role_table" }o--|| "application_role_table" : application_role_table
-"user_application_role_table" }o--o| "user_table" : user_table_user_application_role_table_created_by_idTouser_table
-"user_application_role_table" }o--o| "user_table" : user_table_user_application_role_table_updated_by_idTouser_table
-"user_application_role_table" }o--|| "user_table" : user_table_user_application_role_table_user_idTouser_table
+"tb_user_tb_business_unit" {
+  String id PK
+  String user_id FK "nullable"
+  String business_unit_id FK "nullable"
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
+"tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
+"tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_updated_by_idTotb_user
+"tb_application_role_tb_permission" }o--|| "tb_application_role" : tb_application_role
+"tb_application_role_tb_permission" }o--o| "tb_user" : tb_user_tb_application_role_tb_permission_created_by_idTotb_user
+"tb_application_role_tb_permission" }o--|| "tb_permission" : tb_permission
+"tb_application_role_tb_permission" }o--o| "tb_user" : tb_user_tb_application_role_tb_permission_updated_by_idTotb_user
+"tb_business_unit" }o--|| "tb_cluster" : tb_cluster
+"tb_business_unit" }o--o| "tb_user" : tb_user_tb_business_unit_created_by_idTotb_user
+"tb_business_unit" }o--o| "tb_user" : tb_user_tb_business_unit_updated_by_idTotb_user
+"tb_business_unit_tb_module" }o--|| "tb_business_unit" : tb_business_unit
+"tb_business_unit_tb_module" }o--o| "tb_user" : tb_user_tb_business_unit_tb_module_created_by_idTotb_user
+"tb_business_unit_tb_module" }o--|| "tb_module" : tb_module
+"tb_business_unit_tb_module" }o--o| "tb_user" : tb_user_tb_business_unit_tb_module_updated_by_idTotb_user
+"tb_cluster" }o--o| "tb_user" : tb_user_tb_cluster_created_by_idTotb_user
+"tb_cluster" }o--o| "tb_user" : tb_user_tb_cluster_updated_by_idTotb_user
+"tb_message_format" }o--o| "tb_user" : tb_user_tb_message_format_created_by_idTotb_user
+"tb_message_format" }o--o| "tb_user" : tb_user_tb_message_format_updated_by_idTotb_user
+"tb_module" }o--o| "tb_user" : tb_user_tb_module_created_by_idTotb_user
+"tb_module" }o--o| "tb_user" : tb_user_tb_module_updated_by_idTotb_user
+"tb_notification" }o--o| "tb_user" : tb_user_tb_notification_created_by_idTotb_user
+"tb_notification" }o--o| "tb_user" : tb_user_tb_notification_updated_by_idTotb_user
+"tb_notification" }o--|| "tb_user" : tb_user_tb_notification_user_idTotb_user
+"tb_password" }o--o| "tb_user" : tb_user_tb_password_created_by_idTotb_user
+"tb_password" }o--|| "tb_user" : tb_user_tb_password_user_idTotb_user
+"tb_permission" }o--o| "tb_user" : tb_user_tb_permission_created_by_idTotb_user
+"tb_permission" }o--o| "tb_user" : tb_user_tb_permission_updated_by_idTotb_user
+"tb_subscription" }o--|| "tb_cluster" : tb_cluster
+"tb_subscription" }o--o| "tb_user" : tb_user_tb_subscription_created_by_idTotb_user
+"tb_subscription" }o--o| "tb_user" : tb_user_tb_subscription_updated_by_idTotb_user
+"tb_subscription_detail" }o--|| "tb_business_unit" : tb_business_unit
+"tb_subscription_detail" }o--o| "tb_user" : tb_user_tb_subscription_detail_created_by_idTotb_user
+"tb_subscription_detail" }o--|| "tb_module" : tb_module
+"tb_subscription_detail" }o--|| "tb_subscription" : tb_subscription
+"tb_subscription_detail" }o--o| "tb_user" : tb_user_tb_subscription_detail_updated_by_idTotb_user
+"tb_user" }o--o| "tb_user" : tb_user_tb_user_created_by_idTotb_user
+"tb_user" }o--o| "tb_user" : tb_user_tb_user_updated_by_idTotb_user
+"tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_created_by_idTotb_user
+"tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_updated_by_idTotb_user
+"tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_user_idTotb_user
+"tb_user_tb_application_role" }o--|| "tb_application_role" : tb_application_role
+"tb_user_tb_application_role" }o--o| "tb_user" : tb_user_tb_user_tb_application_role_created_by_idTotb_user
+"tb_user_tb_application_role" }o--o| "tb_user" : tb_user_tb_user_tb_application_role_updated_by_idTotb_user
+"tb_user_tb_application_role" }o--|| "tb_user" : tb_user_tb_user_tb_application_role_user_idTotb_user
+"tb_user_tb_business_unit" }o--o| "tb_business_unit" : tb_business_unit
+"tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_created_by_idTotb_user
+"tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_updated_by_idTotb_user
+"tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_user_idTotb_user
 ```
 
-### `business_unit_module_table`
+### `tb_application_role`
 
 **Properties**
   - `id`: 
   - `business_unit_id`: 
-  - `module_id`: 
+  - `name`: 
+  - `description`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `business_unit_table`
+### `tb_application_role_tb_permission`
+
+**Properties**
+  - `id`: 
+  - `application_role_id`: 
+  - `permission_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_business_unit`
 
 **Properties**
   - `id`: 
@@ -251,7 +262,18 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `cluster_table`
+### `tb_business_unit_tb_module`
+
+**Properties**
+  - `id`: 
+  - `business_unit_id`: 
+  - `module_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_cluster`
 
 **Properties**
   - `id`: 
@@ -264,7 +286,21 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `module_table`
+### `tb_message_format`
+
+**Properties**
+  - `id`: 
+  - `name`: 
+  - `message`: 
+  - `is_email`: 
+  - `is_sms`: 
+  - `is_in_app`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_module`
 
 **Properties**
   - `id`: 
@@ -275,20 +311,7 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `notification_preference_table`
-
-**Properties**
-  - `id`: 
-  - `user_id`: 
-  - `is_email`: 
-  - `is_sms`: 
-  - `is_in_app`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `notification_table`
+### `tb_notification`
 
 **Properties**
   - `id`: 
@@ -301,7 +324,7 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `password_table`
+### `tb_password`
 
 **Properties**
   - `id`: 
@@ -312,32 +335,19 @@ erDiagram
   - `created_at`: 
   - `created_by_id`: 
 
-### `permission_table`
+### `tb_permission`
 
 **Properties**
   - `id`: 
   - `group`: 
   - `name`: 
-  - `action`: 
   - `description`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `subscription_detail_table`
-
-**Properties**
-  - `id`: 
-  - `subscription_id`: 
-  - `business_unit_id`: 
-  - `module_id`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `subscription_table`
+### `tb_subscription`
 
 **Properties**
   - `id`: 
@@ -351,33 +361,19 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `user_business_unit_table`
+### `tb_subscription_detail`
 
 **Properties**
   - `id`: 
-  - `user_id`: 
+  - `subscription_id`: 
   - `business_unit_id`: 
-  - `is_active`: 
+  - `module_id`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `user_profile_table`
-
-**Properties**
-  - `id`: 
-  - `user_id`: 
-  - `firstname`: 
-  - `middlename`: 
-  - `lastname`: 
-  - `bio`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `user_table`
+### `tb_user`
 
 **Properties**
   - `id`: 
@@ -391,35 +387,38 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `application_role_permission_table`
+### `tb_user_profile`
 
 **Properties**
   - `id`: 
-  - `application_role_id`: 
-  - `permission_id`: 
+  - `user_id`: 
+  - `firstname`: 
+  - `middlename`: 
+  - `lastname`: 
+  - `bio`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
 
-### `application_role_table`
-
-**Properties**
-  - `id`: 
-  - `business_unit_id`: 
-  - `name`: 
-  - `description`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `user_application_role_table`
+### `tb_user_tb_application_role`
 
 **Properties**
   - `id`: 
   - `user_id`: 
   - `application_role_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_user_tb_business_unit`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
+  - `business_unit_id`: 
+  - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

@@ -1,36 +1,38 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Logger,
-  Query,
-  UsePipes,
-  BadRequestException,
-} from '@nestjs/common';
-import { SystemBusinessUnitService } from './system-business-unit.service';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiHeader,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import {
-  BusinessUnitCreateSchema,
-  BusinessUnitCreateDto,
-  BusinessUnitUpdateSchema,
-  BusinessUnitUpdateDto,
-} from '@carmensoftware/shared-dtos';
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import {
+  BusinessUnitCreateDto,
+  BusinessUnitCreateSchema,
+  BusinessUnitUpdateDto,
+  BusinessUnitUpdateSchema,
+} from '@carmensoftware/shared-dtos';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { SystemBusinessUnitService } from './system-business-unit.service';
 
 @Controller('system-api/v1/business-units')
 @ApiTags('system/business-unit')
@@ -55,6 +57,7 @@ export class SystemBusinessUnitController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id: id });
     return this.systemBusinessUnitService.findOne(req, id);
   }
 
@@ -72,6 +75,15 @@ export class SystemBusinessUnitController {
   ) {
     const defaultSearchFields: string[] = ['code', 'name'];
 
+    this.logger.log({
+      page,
+      perpage,
+      search,
+      searchfields,
+      filter,
+      sort,
+      advance,
+    });
     const q = new QueryParams(
       page,
       perpage,
@@ -82,6 +94,7 @@ export class SystemBusinessUnitController {
       sort,
       advance,
     );
+    this.logger.log({ q });
     return this.systemBusinessUnitService.findAll(req, q);
   }
 
@@ -92,10 +105,13 @@ export class SystemBusinessUnitController {
   })
   @UsePipes(new ZodValidationPipe(BusinessUnitCreateSchema))
   async create(@Body() createDto: BusinessUnitCreateDto, @Req() req: Request) {
+    this.logger.log({ createDto });
     const parseObj = BusinessUnitCreateSchema.safeParse(createDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
+
+    this.logger.log({ parseObj });
     return this.systemBusinessUnitService.create(req, createDto);
   }
 
@@ -115,12 +131,15 @@ export class SystemBusinessUnitController {
     @Body() updateDto: BusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
+    this.logger.log({ updateDto });
     const parseObj = BusinessUnitUpdateSchema.safeParse(updateDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
     const updatedto = parseObj.data;
     updatedto.id = id;
+
+    this.logger.log({ updatedto });
     return this.systemBusinessUnitService.update(req, id, updatedto);
   }
 
@@ -132,6 +151,7 @@ export class SystemBusinessUnitController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemBusinessUnitService.delete(req, id);
   }
 }

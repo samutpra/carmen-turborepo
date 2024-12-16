@@ -1,0 +1,701 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../../node_modules/@prisma-carmen-client-tenant"
+  previewFeatures = ["multiSchema", "postgresqlExtensions", "relationJoins", "typedSql"]
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../ERD/tenant.md"
+  title    = "Carmen Inventory Tenant Database"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_TENANT")
+}
+
+model tb_activity {
+  id            String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action        enum_activity_action?
+  entity_type   enum_activity_entity_type?
+  entity_id     String?                    @db.Uuid
+  actor_id      String?                    @db.Uuid
+  meta_data     Json?                      @db.Json
+  old_data      Json?                      @db.Json
+  new_data      Json?                      @db.Json
+  ip_address    String?
+  user_agent    String?
+  description   String?
+  created_at    DateTime?                  @default(now()) @db.Timestamp(6)
+  created_by_id String?                    @db.Uuid
+
+  @@index([entity_type, entity_id], map: "activity_entitytype_entityid_idx")
+}
+
+model tb_credit_note {
+  id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id String                   @db.Uuid
+  name                     String?                  @db.VarChar
+  created_at               DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id            String?                  @db.Uuid
+  updated_at               DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                  @db.Uuid
+  tb_inventory_transaction tb_inventory_transaction @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_credit_note_detail    tb_credit_note_detail[]
+
+  @@index([name], map: "creditnote_name_u")
+}
+
+model tb_credit_note_detail {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  credit_note_id String         @db.Uuid
+  name           String?        @db.VarChar
+  qty            Decimal?       @db.Decimal
+  amount         Decimal?       @db.Decimal(15, 5)
+  created_at     DateTime?      @default(now()) @db.Timestamp(6)
+  created_by_id  String?        @db.Uuid
+  updated_at     DateTime?      @default(now()) @db.Timestamp(6)
+  updated_by_id  String?        @db.Uuid
+  tb_credit_note tb_credit_note @relation(fields: [credit_note_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([credit_note_id, name], map: "creditnotedetail_credit_note_name_u")
+}
+
+model tb_currency {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code             String             @unique @db.VarChar(3)
+  name             String             @db.VarChar(100)
+  symbol           String?            @db.VarChar(5)
+  description      String?            @default("")
+  is_active        Boolean?           @default(true)
+  rate             Float?             @default(1)
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  created_by_id    String?            @db.Uuid
+  updated_at       DateTime?          @default(now()) @db.Timestamp(6)
+  updated_by_id    String?            @db.Uuid
+  tb_exchange_rate tb_exchange_rate[]
+
+  @@index([code], map: "currency_code_u")
+}
+
+model tb_delivery_point {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String        @unique @db.VarChar
+  is_active     Boolean?      @default(true)
+  created_at    DateTime?     @default(now()) @db.Timestamp(6)
+  created_by_id String?       @db.Uuid
+  updated_at    DateTime?     @default(now()) @db.Timestamp(6)
+  updated_by_id String?       @db.Uuid
+  tb_location   tb_location[]
+
+  @@index([name], map: "deliverypoint_name_u")
+}
+
+model tb_department {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @unique @db.VarChar
+  description   String?
+  is_active     Boolean?  @default(true)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_by_id String?   @db.Uuid
+
+  @@index([name], map: "department_name_u")
+}
+
+model tb_exchange_rate {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  at_date       DateTime?    @default(now()) @db.Timestamp(6)
+  currency_id   String?      @db.Uuid
+  rate          Float?       @default(1)
+  created_at    DateTime?    @default(now()) @db.Timestamp(6)
+  created_by_id String?      @db.Uuid
+  updated_at    DateTime?    @default(now()) @db.Timestamp(6)
+  updated_by_id String?      @db.Uuid
+  tb_currency   tb_currency? @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([at_date, currency_id], map: "exchangerate_at_date_currency_u")
+}
+
+model tb_good_receive_note {
+  id                          String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id    String                        @db.Uuid
+  name                        String?                       @db.VarChar
+  created_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  created_by_id               String?                       @db.Uuid
+  updated_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  updated_by_id               String?                       @db.Uuid
+  tb_inventory_transaction    tb_inventory_transaction      @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_good_receive_note_detail tb_good_receive_note_detail[]
+}
+
+model tb_good_receive_note_detail {
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  good_receive_note_id String               @db.Uuid
+  name                 String?              @db.VarChar
+  qty                  Decimal?             @db.Decimal
+  created_at           DateTime?            @default(now()) @db.Timestamp(6)
+  created_by_id        String?              @db.Uuid
+  updated_at           DateTime?            @default(now()) @db.Timestamp(6)
+  updated_by_id        String?              @db.Uuid
+  tb_good_receive_note tb_good_receive_note @relation(fields: [good_receive_note_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_inventory_transaction {
+  id                              String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                            String                            @unique @db.VarChar
+  inventory_doc_type              enum_inventory_doc_type
+  created_at                      DateTime?                         @default(now()) @db.Timestamp(6)
+  created_by_id                   String?                           @db.Uuid
+  updated_at                      DateTime?                         @default(now()) @db.Timestamp(6)
+  updated_by_id                   String?                           @db.Uuid
+  tb_credit_note                  tb_credit_note[]
+  tb_good_receive_note            tb_good_receive_note[]
+  tb_inventory_transaction_detail tb_inventory_transaction_detail[]
+  tb_stock_in                     tb_stock_in[]
+  tb_stock_out                    tb_stock_out[]
+  tb_stock_take                   tb_stock_take[]
+  tb_store_requisition            tb_store_requisition[]
+
+  @@index([name], map: "inventorytransaction_name_idx")
+}
+
+model tb_inventory_transaction_closing_balance {
+  id                              String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_detail_id String                          @db.Uuid
+  lot_name                        String?                         @db.VarChar
+  lot_index                       Int                             @default(1)
+  qty                             Decimal?                        @db.Decimal
+  cost                            Decimal?                        @db.Decimal(15, 5)
+  created_at                      DateTime?                       @default(now()) @db.Timestamp(6)
+  created_by_id                   String?                         @db.Uuid
+  updated_at                      DateTime?                       @default(now()) @db.Timestamp(6)
+  updated_by_id                   String?                         @db.Uuid
+  tb_inventory_transaction_detail tb_inventory_transaction_detail @relation(fields: [inventory_transaction_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tb_inventory_transaction_clos_inventory_transaction_detail_fkey")
+
+  @@unique([lot_name, lot_index], map: "inventorytransactionclosingbalance_lotname_lot_index_u")
+}
+
+model tb_inventory_transaction_detail {
+  id                                       String                                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id                 String                                     @db.Uuid
+  from_lot_name                            String?                                    @db.Uuid
+  current_lot_name                         String?                                    @db.VarChar
+  qty                                      Decimal?                                   @db.Decimal
+  cost                                     Decimal?                                   @db.Decimal(15, 5)
+  created_at                               DateTime?                                  @default(now()) @db.Timestamp(6)
+  created_by_id                            String?                                    @db.Uuid
+  updated_at                               DateTime?                                  @default(now()) @db.Timestamp(6)
+  updated_by_id                            String?                                    @db.Uuid
+  tb_inventory_transaction_closing_balance tb_inventory_transaction_closing_balance[]
+  tb_inventory_transaction                 tb_inventory_transaction                   @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_location {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String             @unique @db.VarChar
+  location_type     enum_location_type
+  description       String?
+  is_active         Boolean?           @default(true)
+  delivery_point_id String?            @db.Uuid
+  created_at        DateTime?          @default(now()) @db.Timestamp(6)
+  created_by_id     String?            @db.Uuid
+  updated_at        DateTime?          @default(now()) @db.Timestamp(6)
+  updated_by_id     String?            @db.Uuid
+  tb_delivery_point tb_delivery_point? @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "location_name_u")
+}
+
+model tb_menu {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  module_id     String    @db.Uuid
+  name          String    @db.VarChar
+  url           String    @db.VarChar
+  description   String?
+  is_visible    Boolean?  @default(true)
+  is_active     Boolean?  @default(true)
+  is_lock       Boolean?  @default(true)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_by_id String?   @db.Uuid
+
+  @@index([name], map: "menu_name_u")
+}
+
+model tb_product {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                 String                 @unique @db.VarChar
+  name                 String                 @unique @db.VarChar
+  description          String?
+  primary_unit         String                 @db.Uuid
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_by_id        String?                @db.Uuid
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_by_id        String?                @db.Uuid
+  tb_unit              tb_unit                @relation(fields: [primary_unit], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_product_info      tb_product_info?
+  tb_product_tb_vendor tb_product_tb_vendor[]
+  tb_unit_conversion   tb_unit_conversion[]
+
+  @@index([code], map: "product_code_u")
+  @@index([name], map: "product_name_u")
+}
+
+model tb_product_category {
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                    String                    @unique @db.VarChar
+  name                    String                    @unique @db.VarChar
+  description             String?
+  is_active               Boolean?                  @default(true)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  created_by_id           String?                   @db.Uuid
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_by_id           String?                   @db.Uuid
+  tb_product_sub_category tb_product_sub_category[]
+
+  @@index([code], map: "productcategory_code_u")
+  @@index([name], map: "productcategory_name_u")
+}
+
+model tb_product_info {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id    String     @unique @db.Uuid
+  price         Float?
+  info          Json?      @db.Json
+  created_at    DateTime?  @default(now()) @db.Timestamp(6)
+  created_by_id String?    @db.Uuid
+  updated_at    DateTime?  @default(now()) @db.Timestamp(6)
+  updated_by_id String?    @db.Uuid
+  tb_product    tb_product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([product_id], map: "productinfo_product_u")
+}
+
+model tb_product_item_group {
+  id                      String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                    String                  @default("") @db.VarChar
+  name                    String                  @db.VarChar
+  description             String?
+  is_active               Boolean?                @default(true)
+  product_subcategory_id  String                  @db.Uuid
+  created_at              DateTime?               @default(now()) @db.Timestamp(6)
+  created_by_id           String?                 @db.Uuid
+  updated_at              DateTime?               @default(now()) @db.Timestamp(6)
+  updated_by_id           String?                 @db.Uuid
+  tb_product_sub_category tb_product_sub_category @relation(fields: [product_subcategory_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([code, name, product_subcategory_id], map: "productitemgroup_code_name_product_subcategory_u")
+}
+
+model tb_product_sub_category {
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                  String                  @default("") @db.VarChar
+  name                  String                  @db.VarChar
+  description           String?
+  is_active             Boolean?                @default(true)
+  product_category_id   String                  @db.Uuid
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  created_by_id         String?                 @db.Uuid
+  updated_at            DateTime?               @default(now()) @db.Timestamp(6)
+  updated_by_id         String?                 @db.Uuid
+  tb_product_item_group tb_product_item_group[]
+  tb_product_category   tb_product_category     @relation(fields: [product_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([code, name, product_category_id], map: "productsubcategory_code_name_product_category_u")
+}
+
+model tb_product_tb_vendor {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id          String?     @db.Uuid
+  vendor_id           String?     @db.Uuid
+  vendor_product_name String?     @db.VarChar
+  description         String?
+  is_active           Boolean?    @default(true)
+  created_at          DateTime?   @default(now()) @db.Timestamp(6)
+  created_by_id       String?     @db.Uuid
+  updated_at          DateTime?   @default(now()) @db.Timestamp(6)
+  updated_by_id       String?     @db.Uuid
+  tb_product          tb_product? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_vendor           tb_vendor?  @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([vendor_id, product_id], map: "product_vendor_vendor_product_u")
+}
+
+model tb_purchase_order {
+  id                       String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                     String                          @unique @db.VarChar
+  purchase_order_status    enum_purchase_order_doc_status? @default(open)
+  description              String?
+  order_date               DateTime?                       @db.Date
+  history                  Json?                           @db.Json
+  is_active                Boolean?                        @default(true)
+  created_at               DateTime?                       @default(now()) @db.Timestamp(6)
+  created_by_id            String?                         @db.Uuid
+  updated_at               DateTime?                       @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                         @db.Uuid
+  tb_purchase_order_detail tb_purchase_order_detail[]
+
+  @@index([name], map: "PO_name_u")
+}
+
+model tb_purchase_order_detail {
+  id                         String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                       String?                     @unique @db.VarChar
+  description                String?
+  is_active                  Boolean?                    @default(true)
+  purchase_order_id          String?                     @db.Uuid
+  purchase_request_detail_id String?                     @db.Uuid
+  history                    Json?                       @db.Json
+  created_at                 DateTime?                   @default(now()) @db.Timestamp(6)
+  created_by_id              String?                     @db.Uuid
+  updated_at                 DateTime?                   @default(now()) @db.Timestamp(6)
+  updated_by_id              String?                     @db.Uuid
+  tb_purchase_order          tb_purchase_order?          @relation(fields: [purchase_order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_purchase_request_detail tb_purchase_request_detail? @relation(fields: [purchase_request_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([name], map: "PO1_name_u")
+}
+
+model tb_purchase_request {
+  id                         String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reference_name             String                            @unique @db.VarChar
+  purchase_request_date      DateTime?                         @db.Date
+  workflow_id                String?                           @db.Uuid
+  workflow_obj               Json?                             @db.Json
+  workflow_history           Json?                             @db.Json
+  purchase_request_status    enum_purchase_request_doc_status? @default(draft)
+  requestor_id               String?                           @db.Uuid
+  department_id              String?                           @db.Uuid
+  is_active                  Boolean?                          @default(true)
+  created_at                 DateTime?                         @default(now()) @db.Timestamp(6)
+  created_by_id              String?                           @db.Uuid
+  updated_at                 DateTime?                         @default(now()) @db.Timestamp(6)
+  updated_by_id              String?                           @db.Uuid
+  tb_workflow                tb_workflow?                      @relation(fields: [workflow_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_purchase_request_detail tb_purchase_request_detail[]
+
+  @@index([reference_name], map: "PR0_reference_name_u")
+}
+
+model tb_purchase_request_detail {
+  id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchase_request_id      String?                    @db.Uuid
+  location_id              String?                    @db.Uuid
+  product_id               String?                    @db.Uuid
+  unit_id                  String?                    @db.Uuid
+  description              String?
+  requested_qty            Float?
+  approved_qty             Float?
+  currency_id              String?                    @db.Uuid
+  currency_rate            Float?
+  price                    Decimal?                   @db.Decimal(15, 5)
+  total_price              Decimal?                   @db.Decimal(15, 5)
+  workflow_history         Json?                      @db.Json
+  created_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  created_by_id            String?                    @db.Uuid
+  updated_at               DateTime?                  @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                    @db.Uuid
+  tb_purchase_order_detail tb_purchase_order_detail[]
+  tb_purchase_request      tb_purchase_request?       @relation(fields: [purchase_request_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_stock_in {
+  id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id String                   @db.Uuid
+  name                     String?                  @db.VarChar
+  created_at               DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id            String?                  @db.Uuid
+  updated_at               DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                  @db.Uuid
+  tb_inventory_transaction tb_inventory_transaction @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_stock_in_detail       tb_stock_in_detail[]
+}
+
+model tb_stock_in_detail {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stock_in_id   String      @db.Uuid
+  name          String?     @db.VarChar
+  qty           Decimal?    @db.Decimal
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  created_by_id String?     @db.Uuid
+  updated_at    DateTime?   @default(now()) @db.Timestamp(6)
+  updated_by_id String?     @db.Uuid
+  tb_stock_in   tb_stock_in @relation(fields: [stock_in_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_stock_out {
+  id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id String                   @db.Uuid
+  name                     String?                  @db.VarChar
+  created_at               DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id            String?                  @db.Uuid
+  updated_at               DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                  @db.Uuid
+  tb_inventory_transaction tb_inventory_transaction @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_stock_out_detail      tb_stock_out_detail[]
+}
+
+model tb_stock_out_detail {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stock_in_id   String       @db.Uuid
+  name          String?      @db.VarChar
+  qty           Decimal?     @db.Decimal
+  created_at    DateTime?    @default(now()) @db.Timestamp(6)
+  created_by_id String?      @db.Uuid
+  updated_at    DateTime?    @default(now()) @db.Timestamp(6)
+  updated_by_id String?      @db.Uuid
+  tb_stock_out  tb_stock_out @relation(fields: [stock_in_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_stock_take {
+  id                       String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id String                   @db.Uuid
+  name                     String?                  @db.VarChar
+  created_at               DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id            String?                  @db.Uuid
+  updated_at               DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id            String?                  @db.Uuid
+  tb_inventory_transaction tb_inventory_transaction @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_stock_take_detail     tb_stock_take_detail[]
+}
+
+model tb_stock_take_detail {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stock_take_id String        @db.Uuid
+  name          String?       @db.VarChar
+  qty           Decimal?      @db.Decimal
+  created_at    DateTime?     @default(now()) @db.Timestamp(6)
+  created_by_id String?       @db.Uuid
+  updated_at    DateTime?     @default(now()) @db.Timestamp(6)
+  updated_by_id String?       @db.Uuid
+  tb_stock_take tb_stock_take @relation(fields: [stock_take_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_store_requisition {
+  id                          String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventory_transaction_id    String                        @db.Uuid
+  name                        String?                       @db.VarChar
+  created_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  created_by_id               String?                       @db.Uuid
+  updated_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  updated_by_id               String?                       @db.Uuid
+  tb_inventory_transaction    tb_inventory_transaction      @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_store_requisition_detail tb_store_requisition_detail[]
+}
+
+model tb_store_requisition_detail {
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  store_requisition_id String               @db.Uuid
+  name                 String?              @db.VarChar
+  qty                  Decimal?             @db.Decimal
+  created_at           DateTime?            @default(now()) @db.Timestamp(6)
+  created_by_id        String?              @db.Uuid
+  updated_at           DateTime?            @default(now()) @db.Timestamp(6)
+  updated_by_id        String?              @db.Uuid
+  tb_store_requisition tb_store_requisition @relation(fields: [store_requisition_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_unit {
+  id                                                          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                                                        String               @unique @db.VarChar
+  description                                                 String?
+  is_active                                                   Boolean?             @default(true)
+  created_at                                                  DateTime?            @default(now()) @db.Timestamp(6)
+  created_by_id                                               String?              @db.Uuid
+  updated_at                                                  DateTime?            @default(now()) @db.Timestamp(6)
+  updated_by_id                                               String?              @db.Uuid
+  tb_product                                                  tb_product[]
+  tb_unit_conversion_tb_unit_conversion_from_unit_idTotb_unit tb_unit_conversion[] @relation("tb_unit_conversion_from_unit_idTotb_unit")
+  tb_unit_conversion_tb_unit_conversion_to_unit_idTotb_unit   tb_unit_conversion[] @relation("tb_unit_conversion_to_unit_idTotb_unit")
+
+  @@index([name], map: "unit_name_u")
+}
+
+model tb_unit_conversion {
+  id                                               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id                                       String?        @db.Uuid
+  unit_type                                        enum_unit_type
+  from_unit_id                                     String?        @db.Uuid
+  from_unit_qty                                    Float?         @default(1)
+  to_unit_id                                       String?        @db.Uuid
+  to_unit_qty                                      Float?         @default(1)
+  description                                      String?
+  is_active                                        Boolean?       @default(true)
+  created_at                                       DateTime?      @default(now()) @db.Timestamp(6)
+  created_by_id                                    String?        @db.Uuid
+  updated_at                                       DateTime?      @default(now()) @db.Timestamp(6)
+  updated_by_id                                    String?        @db.Uuid
+  tb_unit_tb_unit_conversion_from_unit_idTotb_unit tb_unit?       @relation("tb_unit_conversion_from_unit_idTotb_unit", fields: [from_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_product                                       tb_product?    @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_unit_tb_unit_conversion_to_unit_idTotb_unit   tb_unit?       @relation("tb_unit_conversion_to_unit_idTotb_unit", fields: [to_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([product_id, unit_type, from_unit_id, to_unit_id], map: "unitconversion_product_unit_type_from_unit_to_unit_u")
+}
+
+model tb_vendor {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String                 @unique @db.VarChar
+  description          String?
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_by_id        String?                @db.Uuid
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_by_id        String?                @db.Uuid
+  tb_product_tb_vendor tb_product_tb_vendor[]
+  tb_vendor_address    tb_vendor_address[]
+  tb_vendor_contact    tb_vendor_contact[]
+
+  @@index([name], map: "vendor_name_u")
+}
+
+model tb_vendor_address {
+  id            String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendor_id     String?                   @db.Uuid
+  address_type  enum_vendor_address_type?
+  address       Json?                     @db.Json
+  is_active     Boolean?                  @default(true)
+  created_at    DateTime?                 @default(now()) @db.Timestamp(6)
+  created_by_id String?                   @db.Uuid
+  updated_at    DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_by_id String?                   @db.Uuid
+  tb_vendor     tb_vendor?                @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([vendor_id, address_type], map: "vendoraddress_vendor_address_type_idx")
+}
+
+model tb_vendor_contact {
+  id            String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendor_id     String?                  @db.Uuid
+  contact_type  enum_vendor_contact_type
+  description   String?
+  is_active     Boolean?                 @default(true)
+  info          Json?                    @db.Json
+  created_at    DateTime?                @default(now()) @db.Timestamp(6)
+  created_by_id String?                  @db.Uuid
+  updated_at    DateTime?                @default(now()) @db.Timestamp(6)
+  updated_by_id String?                  @db.Uuid
+  tb_vendor     tb_vendor?               @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([vendor_id, contact_type], map: "vendorcontact_vendor_contact_type_idx")
+}
+
+model tb_workflow {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String                @unique @db.VarChar
+  workflow_type       enum_workflow_type
+  description         String?
+  is_active           Boolean?              @default(true)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  created_by_id       String?               @db.Uuid
+  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  updated_by_id       String?               @db.Uuid
+  tb_purchase_request tb_purchase_request[]
+
+  @@index([name], map: "workflow_name_u")
+}
+
+enum enum_activity_action {
+  view
+  create
+  update
+  delete
+  login
+  other
+}
+
+enum enum_inventory_doc_type {
+  good_receive_note
+  credit_note
+  store_requisition
+  stock_in
+  stock_out
+  stock_take
+}
+
+enum enum_location_type {
+  inventory
+  direct
+  consignment
+}
+
+enum enum_purchase_request_doc_status {
+  draft
+  work_in_process
+  complete
+}
+
+enum enum_purchase_request_workflow_status {
+  draft
+  pending
+  review
+  accept
+}
+
+enum enum_unit_type {
+  order_unit
+  inventory_unit
+  recipe_unit
+}
+
+enum enum_activity_entity_type {
+  user
+  business_unit
+  product
+  location
+  department
+  unit
+  currency
+  exchange_rate
+  menu
+  delivery_point
+  purchase_request
+  purchase_request_item
+  purchase_order
+  purchase_order_item
+  inventory_transaction
+  inventory_adjustment
+  store_requisition
+  store_requisition_item
+  stock_in
+  stock_out
+  stock_adjustment
+  stock_transfer
+  stock_count
+  stock_take
+  stock_take_item
+  other
+}
+
+enum enum_purchase_order_doc_status {
+  open
+  voided
+  closed
+  draft
+  sent
+  partial
+  fully_received
+  cancelled
+  deleted
+}
+
+enum enum_vendor_address_type {
+  contact_address
+  mailing_address
+  register_address
+}
+
+enum enum_vendor_contact_type {
+  phone
+  email
+}
+
+enum enum_workflow_type {
+  purchase_request
+  purchase_order
+  store_requisition
+}

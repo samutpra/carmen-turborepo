@@ -38,7 +38,7 @@ import { CreditNoteService } from './credit-note.service';
 })
 @UseGuards(JwtAuthGuard)
 export class CreditNoteController {
-	constructor(private readonly creditNoteService: CreditNoteService) {}
+	constructor(private readonly creditNoteService: CreditNoteService) { }
 
 	private readonly logger = new Logger(CreditNoteController.name);
 
@@ -66,10 +66,7 @@ export class CreditNoteController {
 		@Query('sort') sort?: string,
 		@Query('advance') advance?: QueryAdvance
 	) {
-		const defaultSearchFields: string[] = [
-			'name',
-			'description'
-		];
+		const defaultSearchFields: string[] = ['name', 'description'];
 		this.logger.debug({
 			page: page,
 			perpage: perpage,

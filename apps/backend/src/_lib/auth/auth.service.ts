@@ -1,28 +1,41 @@
 import 'dotenv/config';
 
 import {
-  AuthLoginResponseDto,
-  AuthPayloadDto,
-} from '@carmensoftware/shared-dtos';
+  ResponseId,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
 import {
   DuplicateException,
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
 import {
+  comparePassword,
+  hashPassword,
+} from 'lib/utils/password';
+import {
+  SystemUsersService,
+} from 'src/_system/system-users/system-users.service';
+
+import {
+  AuthLoginResponseDto,
+  AuthPayloadDto,
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
 } from '@carmensoftware/shared-dtos';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
-import { comparePassword, hashPassword } from 'lib/utils/password';
-
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
-import { SystemUsersService } from 'src/_system/system-users/system-users.service';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
+
 import { isWelformJWT } from '../../../lib/utils/functions';
+import {
+  PrismaClientManagerService,
+} from '../prisma-client-manager/prisma-client-manager.service';
 
 @Injectable()
 export class AuthService {
@@ -134,7 +147,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    await this.db_System.password_table.updateMany({
+    await this.db_System.tb_password.updateMany({
       where: {
         user_id: user.id,
       },
@@ -143,7 +156,7 @@ export class AuthService {
       },
     });
 
-    const passObj = await this.db_System.password_table.create({
+    const passObj = await this.db_System.tb_password.create({
       data: {
         user_id: user.id,
         hash: hashPassword(userForgotPassDto.password),
@@ -237,14 +250,14 @@ export class AuthService {
       throw new DuplicateException('User already exists');
     }
 
-    const createUserObj = await this.db_System.user_table.create({
+    const createUserObj = await this.db_System.tb_user.create({
       data: {
         username: userRegisterDto.username,
         email: userRegisterDto.email,
       },
     });
 
-    const passObj = await this.db_System.password_table.create({
+    const passObj = await this.db_System.tb_password.create({
       data: {
         user_id: createUserObj.id,
         hash: hashPassword(userRegisterDto.password),
@@ -252,7 +265,7 @@ export class AuthService {
       },
     });
 
-    const userInfoObj = await this.db_System.user_profile_table.create({
+    const userInfoObj = await this.db_System.tb_user_profile.create({
       data: {
         user_id: createUserObj.id,
         firstname: userRegisterDto.userInfo.firstName || '',
@@ -278,7 +291,7 @@ export class AuthService {
 
     if (!findUser) return null;
 
-    const lastPassword = await this.db_System.password_table.findFirst({
+    const lastPassword = await this.db_System.tb_password.findFirst({
       where: {
         user_id: findUser.id,
         is_active: true,
@@ -300,11 +313,16 @@ export class AuthService {
         ...user
       } = findUser;
 
+      const payload_refresh = {
+        ...user,
+        is_refresh: true,
+      };
+
       const res = {
         id: findUser.id,
         username: user.username,
         access_token: this.jwtService.sign(user),
-        refresh_token: this.jwtService.sign(user, {
+        refresh_token: this.jwtService.sign(payload_refresh, {
           expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
         }),
       };

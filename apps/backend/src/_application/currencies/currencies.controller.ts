@@ -33,109 +33,122 @@ import { CurrenciesService } from './currencies.service';
 @ApiTags('currencies')
 @ApiBearerAuth()
 @ApiHeader({
-	name: 'x-tenant-id',
-	description: 'tenant id'
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class CurrenciesController {
-	constructor(private readonly currenciesService: CurrenciesService) {}
+  constructor(private readonly currenciesService: CurrenciesService) {}
 
-	private readonly logger = new Logger(CurrenciesController.name);
+  private readonly logger = new Logger(CurrenciesController.name);
 
-	//#region GET ONE
-	@Get(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	async findOne(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id });
-		return this.currenciesService.findOne(req, id);
-	}
-	//#endregion GET ONE
+  //#region GET ONE
+  @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
+    return this.currenciesService.findOne(req, id);
+  }
+  //#endregion GET ONE
 
-	//#region GET ALL
-	@Get()
-	@ApiUserFilterQueries()
-	async findAll(
-		@Req() req: Request,
-		@Query('page') page?: number,
-		@Query('perpage') perpage?: number,
-		@Query('search') search?: string,
-		@Query('searchfields') searchfields?: string,
-		@Query('filter') filter?: Record<string, string>,
-		@Query('sort') sort?: string,
-		@Query('advance') advance?: QueryAdvance
-	) {
-		const defaultSearchFields: string[] = [
-			'name',
-			'code',
-			'symbol',
-			'description'
-		];
+  //#region GET ALL
+  @Get()
+  @ApiUserFilterQueries()
+  async findAll(
+    @Req() req: Request,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
+  ) {
+    const defaultSearchFields: string[] = [
+      'name',
+      'code',
+      'symbol',
+      'description',
+    ];
 
-		this.logger.debug({
-			page: page,
-			perpage: perpage,
-			search: search,
-			searchfields: searchfields,
-			filter: filter,
-			sort: sort,
-			advance: advance
-		});
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
 
-		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
 
-		this.logger.debug({ q: q });
-		return this.currenciesService.findAll(req, q);
-	}
-	//#endregion GET ALL
+    this.logger.debug({ q: q });
+    return this.currenciesService.findAll(req, q);
+  }
+  //#endregion GET ALL
 
-	//#region CREATE
-	@Post()
-	@ApiBody({
-		type: CurrencyCreateDto,
-		description: 'CurrencyCreateDto'
-	})
-	async create(@Body() createDto: any, @Req() req: Request) {
-		this.logger.debug({ createDto: createDto });
-		return this.currenciesService.create(req, createDto);
-	}
-	//#endregion CREATE
+  //#region CREATE
+  @Post()
+  @ApiBody({
+    type: CurrencyCreateDto,
+    description: 'CurrencyCreateDto',
+  })
+  async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
+    return this.currenciesService.create(req, createDto);
+  }
+  //#endregion CREATE
 
-	//#region UPDATE
-	@Patch(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	@ApiBody({
-		type: CurrencyUpdateDto,
-		description: 'CurrencyUpdateDto'
-	})
-	async update(@Param('id') id: string, @Body() updateDto: any, @Req() req: Request) {
-		const { ...updatedto } = updateDto;
-		updatedto.id = id;
-		this.logger.debug({ id: id, updatedto: updatedto });
-		return this.currenciesService.update(req, id, updatedto);
-	}
-	//#endregion UPDATE
+  //#region UPDATE
+  @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  @ApiBody({
+    type: CurrencyUpdateDto,
+    description: 'CurrencyUpdateDto',
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: any,
+    @Req() req: Request,
+  ) {
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    this.logger.debug({ id: id, updatedto: updatedto });
+    return this.currenciesService.update(req, id, updatedto);
+  }
+  //#endregion UPDATE
 
-	//#region DELETE
-	@Delete(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	async delete(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id });
-		return this.currenciesService.delete(req, id);
-	}
-	//#endregion DELETE
+  //#region DELETE
+  @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id',
+    required: true,
+    type: 'uuid',
+  })
+  async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
+    return this.currenciesService.delete(req, id);
+  }
+  //#endregion DELETE
 }

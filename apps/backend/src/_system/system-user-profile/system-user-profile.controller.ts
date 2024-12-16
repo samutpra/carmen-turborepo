@@ -1,7 +1,15 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
-  Delete,
+  UserProfileCreateDto,
+  UserProfileUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
@@ -11,19 +19,15 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-
-import { ApiBearerAuth, ApiBody, ApiParam } from '@nestjs/swagger';
-import { ApiHeader } from '@nestjs/swagger';
-import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { SystemUserProfileService } from './system-user-profile.service';
-import { QueryAdvance } from 'lib/types';
 import {
-  UserProfileCreateDto,
-  UserProfileUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import QueryParams from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { SystemUserProfileService } from './system-user-profile.service';
 
 @Controller('system-api/v1/user-profile')
 @ApiTags('system/user-profile')
@@ -48,6 +52,7 @@ export class SystemUserProfileController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUserProfileService.findOne(req, id);
   }
 
@@ -64,7 +69,15 @@ export class SystemUserProfileController {
     @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
-
+    this.logger.log({
+      page,
+      perpage,
+      search,
+      searchfields,
+      filter,
+      sort,
+      advance,
+    });
     const q = new QueryParams(
       page,
       perpage,
@@ -75,6 +88,7 @@ export class SystemUserProfileController {
       sort,
       advance,
     );
+    this.logger.log({ q });
     return this.systemUserProfileService.findAll(req, q);
   }
 
@@ -84,6 +98,7 @@ export class SystemUserProfileController {
     description: 'UserProfileCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.log({ createDto });
     return this.systemUserProfileService.create(req, createDto);
   }
 
@@ -105,6 +120,7 @@ export class SystemUserProfileController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.log({ updatedto });
     return this.systemUserProfileService.update(req, id, updatedto);
   }
 
@@ -116,6 +132,7 @@ export class SystemUserProfileController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUserProfileService.delete(req, id);
   }
 }

@@ -4,11 +4,7 @@ import { CurrenciesController } from './currencies.controller';
 import { CurrenciesService } from './currencies.service';
 
 @Module({
-	controllers: [
-		CurrenciesController
-	],
-	providers: [
-		CurrenciesService
-	]
+  controllers: [CurrenciesController],
+  providers: [CurrenciesService],
 })
 export class CurrenciesModule {}

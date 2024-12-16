@@ -1,37 +1,38 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Logger,
-  Query,
-  UsePipes,
-  BadRequestException,
-} from '@nestjs/common';
-import { SystemUsersService } from './system-users.service';
-import {
-  ApiBearerAuth,
-  ApiTags,
-  ApiBody,
-  ApiHeader,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { QueryAdvance } from 'lib/types';
+
 import {
   UserCreateDto,
   UserCreateSchema,
   UserUpdateDto,
   UserUpdateSchema,
 } from '@carmensoftware/shared-dtos';
-import QueryParams from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
-import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { SystemUsersService } from './system-users.service';
 
 @Controller('system-api/v1/users')
 @ApiTags('system/users')
@@ -54,6 +55,7 @@ export class SystemUsersController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUsersService.findOne(req, id);
   }
 
@@ -76,6 +78,16 @@ export class SystemUsersController {
       'description',
     ];
 
+    this.logger.log({
+      page,
+      perpage,
+      search,
+      searchfields,
+      filter,
+      sort,
+      advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -86,6 +98,8 @@ export class SystemUsersController {
       sort,
       advance,
     );
+
+    this.logger.log({ q });
     return this.systemUsersService.findAll(req, q);
   }
 
@@ -96,10 +110,13 @@ export class SystemUsersController {
   })
   @UsePipes(new ZodValidationPipe(UserCreateSchema))
   async create(@Body() createDto: UserCreateDto, @Req() req: Request) {
+    this.logger.log({ createDto });
     const parseObj = UserCreateSchema.safeParse(createDto);
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
+
+    this.logger.log({ createDto });
     return this.systemUsersService.create(req, createDto);
   }
 
@@ -119,6 +136,7 @@ export class SystemUsersController {
     @Body() updateDto: UserUpdateDto,
     @Req() req: Request,
   ) {
+    this.logger.log({ id, updateDto });
     const parseObj = UserUpdateSchema.safeParse(updateDto);
 
     if (!parseObj.success) {
@@ -127,6 +145,7 @@ export class SystemUsersController {
 
     const updatedto = updateDto;
     updatedto.id = id;
+    this.logger.log({ updatedto });
     return this.systemUsersService.update(req, id, updatedto);
   }
 
@@ -138,6 +157,7 @@ export class SystemUsersController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.log({ id });
     return this.systemUsersService.delete(req, id);
   }
 }
