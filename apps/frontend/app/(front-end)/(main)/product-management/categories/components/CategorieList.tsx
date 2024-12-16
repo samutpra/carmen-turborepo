@@ -122,7 +122,13 @@ const CategorieList = () => {
 			}
 		} catch (error) {
 			console.error('Error deleting category:', error);
-			toast.error('Failed to delete category');
+			toast.error(
+				error instanceof Error ? error.message : 'Failed to delete category',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 
@@ -151,7 +157,15 @@ const CategorieList = () => {
 			}
 		} catch (error) {
 			console.error('Error deleting sub-category:', error);
-			toast.error('Failed to delete sub-category');
+			toast.error(
+				error instanceof Error
+					? error.message
+					: 'Failed to delete sub-category',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 
@@ -173,11 +187,21 @@ const CategorieList = () => {
 				);
 				toast.success('Item group deleted successfully');
 			} else {
-				throw new Error('Failed to delete item group');
+				toast.error('Fail to delete item group', {
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				});
 			}
 		} catch (error) {
 			console.error('Error deleting item group:', error);
 			toast.error('Failed to delete item group');
+			toast.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 
@@ -215,11 +239,20 @@ const CategorieList = () => {
 				toast.success('Category added successfully');
 				setIsAddCategoryOpen(false);
 			} else {
-				throw new Error('Failed to add category');
+				toast.error('Failed to add category', {
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				});
 			}
 		} catch (error) {
 			console.error('Error adding category:', error);
-			toast.error('Failed to add category');
+			toast.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 
