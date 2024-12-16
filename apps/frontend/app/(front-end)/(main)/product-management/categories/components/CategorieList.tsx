@@ -3,7 +3,7 @@
 import { useAuth } from '@/app/context/AuthContext';
 import React, { useEffect, useState } from 'react';
 import {
-	categoryList,
+	fetchCategoryList,
 	fetchItemGroup,
 	fetchSubProduct,
 } from '../actions/actions';
@@ -59,7 +59,7 @@ const CategorieList = () => {
 				setLoading(true);
 				const [productResponse, subProductResponse, itemGroupResponse] =
 					await Promise.all([
-						categoryList(token, tenantId),
+						fetchCategoryList(token, tenantId),
 						fetchSubProduct(token, tenantId),
 						fetchItemGroup(token, tenantId),
 					]);

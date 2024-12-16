@@ -1,4 +1,4 @@
-export const categoryList = async (
+export const fetchCategoryList = async (
 	token: string,
 	tenantId: string = 'DUMMY'
 ) => {
