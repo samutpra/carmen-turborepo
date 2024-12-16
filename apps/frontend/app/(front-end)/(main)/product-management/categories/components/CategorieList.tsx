@@ -26,6 +26,7 @@ interface ProductResponse {
 	name: string;
 	id: string;
 	productSubCategories: ProductSubCategoryType[];
+	description: string;
 }
 
 type CategorySummary = {
@@ -207,6 +208,7 @@ const CategorieList = () => {
 					id: result.data,
 					name: formData.name,
 					productSubCategories: [],
+					description: formData.description,
 				};
 				setProducts((prev) => [...prev, newCategory]);
 				toast.success('Category added successfully');
@@ -221,38 +223,41 @@ const CategorieList = () => {
 	};
 
 	const handleAddSubCategory = async (formData: SubCategoryFormData) => {
-		console.log(formData);
+		try {
+			const response = await fetch(
+				'/api/product-management/category/product-sub-category',
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				}
+			);
 
-		// try {
-		// 	const response = await fetch(
-		// 		'/api/product-management/category/products',
-		// 		{
-		// 			method: 'POST',
-		// 			headers: {
-		// 				Authorization: `Bearer ${token}`,
-		// 				'Content-Type': 'application/json',
-		// 			},
-		// 			body: JSON.stringify(formData),
-		// 		}
-		// 	);
+			if (!response.ok) {
+				throw new Error('Failed to add sub-category');
+			}
+			const result = await response.json();
 
-		// 	if (response.ok) {
-		// 		const result = await response.json();
-		// 		const newCategory: ProductResponse = {
-		// 			id: result.data,
-		// 			name: formData.name,
-		// 			productSubCategories: [],
-		// 		};
-		// 		setProducts((prev) => [...prev, newCategory]);
-		// 		toast.success('Category added successfully');
-		// 		setIsAddCategoryOpen(false);
-		// 	} else {
-		// 		throw new Error('Failed to add category');
-		// 	}
-		// } catch (error) {
-		// 	console.error('Error adding category:', error);
-		// 	toast.error('Failed to add category');
-		// }
+			if (result.data?.id) {
+				const newSubCategory: ProductSubCategoryType = {
+					id: result.data.id,
+					name: formData.name,
+					description: formData.description,
+					is_active: formData.is_active ?? true,
+					product_category_id: formData.product_category_id,
+				};
+
+				setSubProducts((prev) => [...prev, newSubCategory]);
+				toast.success('Sub-category added successfully');
+				setIsAddSubCategoryOpen(false);
+			}
+		} catch (error) {
+			console.error('Error adding sub-category:', error);
+			toast.error('Failed to add sub-category');
+		}
 	};
 
 	const handleEditProduct = async (
@@ -343,6 +348,10 @@ const CategorieList = () => {
 	};
 
 	const onAddSubCategory = () => {
+		if (!selectedProduct) {
+			toast.error('Please select a category first');
+			return;
+		}
 		setIsAddSubCategoryOpen(true);
 	};
 
@@ -381,7 +390,12 @@ const CategorieList = () => {
 				onOpenChange={setIsAddSubCategoryOpen}
 				onSubmit={handleAddSubCategory}
 				mode="add"
-				categories={products.map(product => ({ id: product.id, name: product.name }))}
+				categories={selectedProduct ? [{
+					id: selectedProduct.id,
+					name: selectedProduct.name,
+				}] : []}
+				defaultCategoryId={selectedProduct?.id}
+				disableCategory={true}
 			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
@@ -389,6 +403,7 @@ const CategorieList = () => {
 					count={summary.totalSubCategories}
 					icon={<Tag className="w-6 h-6" />}
 					onAddData={onAddSubCategory}
+					disabled={!selectedProduct}
 				/>
 				<SubProductList
 					subProducts={filteredSubProducts}
@@ -405,6 +420,7 @@ const CategorieList = () => {
 					count={summary.totalItemGroups}
 					icon={<LayoutGrid className="w-6 h-6" />}
 					onAddData={onAddItemGroup}
+					disabled={!selectedSubProduct}
 				/>
 				<ItemGroupList
 					itemGroups={filteredItemGroups}

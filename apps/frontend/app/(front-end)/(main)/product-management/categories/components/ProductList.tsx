@@ -4,10 +4,10 @@ import {
 	CategoryFormData,
 	ProductSubCategoryType,
 } from '@carmensoftware/shared-types/dist/productCategorySchema';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash } from 'lucide-react';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -84,36 +84,38 @@ const ProductList = ({
 
 	return (
 		<>
-			<div className="w-1/3 space-y-2">
-				{products.map((category) => (
-					<Card
-						key={category.id}
-						className={cn(
-							'transition-colors cursor-pointer hover:bg-gray-50 group',
-							selectedProduct?.id === category.id &&
-								'bg-blue-100 border-blue-500'
-						)}
-						onClick={() => onSelectProduct(category)}
-						role="button"
-						tabIndex={0}
-						onKeyDown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								onSelectProduct(category);
-							}
-						}}
-						aria-label={`Select ${category.name} category`}
-						aria-selected={selectedProduct?.id === category.id}
-					>
-						<CardContent className="p-4 flex items-center justify-between">
-							<p className="text-sm font-medium">{category.name}</p>
-							<div className="flex gap-2">
+			<Card>
+				<CardHeader>
+					<CardTitle>Categories</CardTitle>
+				</CardHeader>
+				<CardContent>
+					{products.map((category) => (
+						<div
+							key={category.id}
+							className={cn(
+								'flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-accent',
+								selectedProduct?.id === category.id && 'bg-accent'
+							)}
+							onClick={() => onSelectProduct(category)}
+							role="button"
+							tabIndex={0}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									onSelectProduct(category);
+								}
+							}}
+							aria-label={`Select ${category.name} category`}
+							aria-selected={selectedProduct?.id === category.id}
+						>
+							<span>{category.name}</span>
+							<div className="flex">
 								<Button
 									variant="ghost"
 									size="icon"
 									onClick={(e) => handleEditClick(e, category)}
 									aria-label={`Edit ${category.name}`}
 								>
-									<Pencil className="h-4 w-4 text-blue-500" />
+									<Pencil className="h-4 w-4" />
 								</Button>
 								<Button
 									variant="ghost"
@@ -121,13 +123,13 @@ const ProductList = ({
 									onClick={(e) => handleDeleteClick(e, category)}
 									aria-label={`Delete ${category.name}`}
 								>
-									<Trash2 className="h-4 w-4 text-red-500" />
+									<Trash className="h-4 w-4 text-red-500" />
 								</Button>
 							</div>
-						</CardContent>
-					</Card>
-				))}
-			</div>
+						</div>
+					))}
+				</CardContent>
+			</Card>
 
 			{/* Delete Dialog */}
 			<AlertDialog

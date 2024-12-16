@@ -8,6 +8,7 @@ const productItemGroupSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	product_subcategory_id: z.string(),
+	description: z.string(),
 });
 
 export type ProductItemGroupType = z.infer<typeof productItemGroupSchema>;
@@ -17,14 +18,16 @@ const productSubCategorySchema = z.object({
 	name: z.string(),
 	product_category_id: z.string(),
 	productItemGroups: z.array(productItemGroupSchema),
+	description: z.string(),
 });
 
 export type ProductSubCategoryType = z.infer<typeof productSubCategorySchema>;
 
 const produtcCategorySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  productSubCategories: z.array(productSubCategorySchema),
+	id: z.string(),
+	name: z.string(),
+	description: z.string(),
+	productSubCategories: z.array(productSubCategorySchema),
 });
 
 export const productCategoryDataSchema = z.array(produtcCategorySchema);
