@@ -63,6 +63,9 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		console.log('data', data);
+		
+
 		const options = {
 			method: 'POST',
 			headers: {

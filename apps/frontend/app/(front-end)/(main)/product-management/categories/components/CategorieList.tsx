@@ -12,15 +12,16 @@ import {
 	ProductItemGroupType,
 	ProductSubCategoryType,
 	SubCategoryFormData,
+	SubCategoryType,
 } from '@carmensoftware/shared-types';
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import { ItemGroupList } from './ItemGroupList';
 import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
-import SubCategoryDialog from './SubCategoryDialog';
 import CategoryItemList from './CategoryItemList';
 import SubCategoryList from './SubCategoryList';
+import SubCatDialog from './SubCatDialog';
 
 interface ProductResponse {
 	name: string;
@@ -39,7 +40,7 @@ type CategorySummary = {
 const CategorieList = () => {
 	const { accessToken } = useAuth();
 	const [products, setProducts] = useState<ProductResponse[]>([]);
-	const [subProducts, setSubProducts] = useState<ProductSubCategoryType[]>([]);
+	const [subProducts, setSubProducts] = useState<SubCategoryType[]>([]);
 	const [itemGroups, setItemGroups] = useState<ProductItemGroupType[]>([]);
 	const [selectedProduct, setSelectedProduct] =
 		useState<ProductResponse | null>(null);
@@ -52,6 +53,8 @@ const CategorieList = () => {
 
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
+
+	console.log('subProducts', subProducts);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -69,9 +72,7 @@ const CategorieList = () => {
 						? productResponse.data.data
 						: ([productResponse.data.data] as ProductResponse[])
 				);
-				setSubProducts(
-					subProductResponse.data.data as ProductSubCategoryType[]
-				);
+				setSubProducts(subProductResponse.data.data as SubCategoryType[]);
 				setItemGroups(itemGroupResponse.data.data as ProductItemGroupType[]);
 			} catch (err) {
 				console.error(err);
@@ -280,13 +281,12 @@ const CategorieList = () => {
 
 			console.log('result', result);
 
-			const newSubCategory: ProductSubCategoryType = {
+			const newSubCategory: SubCategoryType = {
 				id: result.data.id,
 				name: formData.name,
 				description: formData.description,
 				product_category_id: formData.product_category_id,
 				is_active: formData.is_active,
-				productItemGroups: [],
 			};
 
 			setSubProducts((prev) => [...prev, newSubCategory]);
@@ -431,37 +431,15 @@ const CategorieList = () => {
 					onEditProduct={handleEditProduct}
 				/>
 			</div>
-			<SubCategoryDialog
+			<SubCatDialog
 				open={isAddSubCategoryOpen}
 				onOpenChange={setIsAddSubCategoryOpen}
-				onSubmit={handleAddSubCategory}
-				mode="create"
-				categories={
-					selectedProduct
-						? [
-								{
-									id: selectedProduct.id,
-									name: selectedProduct.name,
-									description: selectedProduct.description || '',
-									product_category_id: selectedProduct.id,
-									is_active: selectedProduct.is_active ?? true,
-									productItemGroups: [],
-								},
-							]
-						: []
-				}
-				initialData={
-					selectedProduct
-						? {
-								name: '',
-								description: '',
-								is_active: true,
-								product_category_id: selectedProduct.id,
-							}
-						: undefined
-				}
-				disableCategory={true}
+				mode="add"
+				product_category_id={selectedProduct?.id || ''}
+				product_category_name={selectedProduct?.name}
+				setSubProducts={setSubProducts}
 			/>
+
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Sub Categories"

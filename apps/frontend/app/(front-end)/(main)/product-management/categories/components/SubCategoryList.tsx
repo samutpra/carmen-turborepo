@@ -11,6 +11,7 @@ import {
 import {
 	ProductSubCategoryType,
 	SubCategoryFormData,
+	SubCategoryType,
 } from '@carmensoftware/shared-types';
 import { Pencil, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,7 +19,7 @@ import SubCategoryDialog from './SubCategoryDialog';
 import React, { useState, useCallback } from 'react';
 
 interface SubCategoryListProps {
-	subProducts: ProductSubCategoryType[];
+	subProducts: SubCategoryType[];
 	selectedSubProduct: ProductSubCategoryType | null;
 	onSelectSubProduct: (subProduct: ProductSubCategoryType) => void;
 	onDeleteSubProduct: (id: string) => void;

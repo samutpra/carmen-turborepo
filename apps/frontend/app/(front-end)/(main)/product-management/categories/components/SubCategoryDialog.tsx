@@ -37,15 +37,15 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import {
 	ProductSubCategoryType,
-	SubCategoryFormData,
 	subCategorySchema,
 	SubCategoryType,
 } from '@carmensoftware/shared-types';
+import { toast } from 'sonner';
 
 interface SubCategoryDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (formData: SubCategoryFormData) => Promise<void>;
+	onSubmit: (formData: SubCategoryType) => Promise<void>;
 	mode: 'create' | 'edit';
 	categories: ProductSubCategoryType[];
 	initialData?: {
@@ -92,29 +92,24 @@ const SubCategoryDialog = ({
 
 	useEffect(() => {
 		if (initialData && open) {
-			form.reset(
-				{
-					name: '',
-					description: '',
-					is_active: true,
-					product_category_id: initialData.product_category_id,
-				},
-				{
-					keepDefaultValues: true,
-				}
-			);
+			form.reset({
+				name: initialData.name,
+				description: initialData.description,
+				is_active: initialData.is_active,
+				product_category_id: initialData.product_category_id,
+			});
 		}
-	}, [open]);
+	}, [initialData, open, form.reset]);
 
 	const handleSubmit = async (values: SubCategoryType) => {
-		await onSubmit(values);
-		if (mode === 'create') {
-			form.reset({
-				name: '',
-				description: '',
-				is_active: true,
-				product_category_id: '',
-			});
+		console.log('values', values);
+
+		try {
+			await onSubmit(values);
+			onClose();
+		} catch (error) {
+			console.error('Error submitting form:', error);
+			toast.error('Error submitting form');
 		}
 	};
 
@@ -133,7 +128,7 @@ const SubCategoryDialog = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create' ? 'Add New Category' : 'Edit Category'}
+						{mode === 'create' ? 'Add New Sub Category' : 'Edit Sub Category'}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>

@@ -29,6 +29,7 @@ const CategoryDialog = ({
 	initialData,
 	mode,
 }: CategoryDialogProps) => {
+	
 	const [formData, setFormData] = useState<CategoryFormData>({
 		name: '',
 		description: '',
