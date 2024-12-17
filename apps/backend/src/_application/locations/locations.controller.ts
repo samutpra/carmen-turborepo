@@ -29,103 +29,116 @@ import {
 
 import { LocationsService } from './locations.service';
 
-@Controller('api/v1/locations')
-@ApiTags('locations')
+@Controller("api/v1/locations")
+@ApiTags("locations")
 @ApiBearerAuth()
 @ApiHeader({
-	name: 'x-tenant-id',
-	description: 'tenant id'
+  name: "x-tenant-id",
+  description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
 export class LocationsController {
-	constructor(private readonly locationsService: LocationsService) {}
+  constructor(private readonly locationsService: LocationsService) {}
 
-	private readonly logger = new Logger(LocationsController.name);
+  private readonly logger = new Logger(LocationsController.name);
 
-	@Get(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	async findOne(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id });
-		return this.locationsService.findOne(req, id);
-	}
+  @Get(":id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  async findOne(@Param("id") id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
+    return this.locationsService.findOne(req, id);
+  }
 
-	@Get()
-	@ApiUserFilterQueries()
-	async findAll(
-		@Req() req: Request,
-		@Query('page') page?: number,
-		@Query('perpage') perpage?: number,
-		@Query('search') search?: string,
-		@Query('searchfields') searchfields?: string,
-		@Query('filter') filter?: Record<string, string>,
-		@Query('sort') sort?: string,
-		@Query('advance') advance?: QueryAdvance
-	) {
-		const defaultSearchFields: string[] = [
-			'name',
-			'description',
-			'locationType',
-			'deliveryPointId'
-		];
+  @Get()
+  @ApiUserFilterQueries()
+  async findAll(
+    @Req() req: Request,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+    @Query("searchfields") searchfields?: string,
+    @Query("filter") filter?: Record<string, string>,
+    @Query("sort") sort?: string,
+    @Query("advance") advance?: QueryAdvance,
+  ) {
+    const defaultSearchFields: string[] = [
+      "name",
+      "description",
+      "locationType",
+      "deliveryPointId",
+    ];
 
-		this.logger.debug({
-			page: page,
-			perpage: perpage,
-			search: search,
-			searchfields: searchfields,
-			filter: filter,
-			sort: sort,
-			advance: advance
-		});
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
 
-		const q = new QueryParams(page, perpage, search, searchfields, defaultSearchFields, filter, sort, advance);
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
 
-		this.logger.debug({ q: q });
-		return this.locationsService.findAll(req, q);
-	}
+    this.logger.debug({ q: q });
+    return this.locationsService.findAll(req, q);
+  }
 
-	@Post()
-	@ApiBody({
-		type: LocationCreateDto,
-		description: 'LocationCreateDto'
-	})
-	async create(@Body() createDto: any, @Req() req: Request) {
-		this.logger.debug({ createDto: createDto });
-		return this.locationsService.create(req, createDto);
-	}
+  @Post()
+  @ApiBody({
+    type: LocationCreateDto,
+    description: "LocationCreateDto",
+  })
+  async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
+    return this.locationsService.create(req, createDto);
+  }
 
-	@Patch(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	@ApiBody({
-		type: LocationUpdateDto,
-		description: 'LocationUpdateDto'
-	})
-	async update(@Param('id') id: string, @Body() updateDto: any, @Req() req: Request) {
-		const { ...updatedto } = updateDto;
-		updatedto.id = id;
-		this.logger.debug({ updatedto: updatedto });
-		return this.locationsService.update(req, id, updatedto);
-	}
+  @Patch(":id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  @ApiBody({
+    type: LocationUpdateDto,
+    description: "LocationUpdateDto",
+  })
+  async update(
+    @Param("id") id: string,
+    @Body() updateDto: any,
+    @Req() req: Request,
+  ) {
+    const { ...updatedto } = updateDto;
+    updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
+    return this.locationsService.update(req, id, updatedto);
+  }
 
-	@Delete(':id')
-	@ApiParam({
-		name: 'id',
-		description: 'id',
-		required: true,
-		type: 'uuid'
-	})
-	async delete(@Param('id') id: string, @Req() req: Request) {
-		this.logger.debug({ id: id });
-		return this.locationsService.delete(req, id);
-	}
+  @Delete(":id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  async delete(@Param("id") id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
+    return this.locationsService.delete(req, id);
+  }
 }

@@ -53,7 +53,7 @@ export class UnitsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
     const res: ResponseSingle<tb_unit> = {
       data: oneObj,
@@ -97,7 +97,7 @@ export class UnitsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'Unit already exists',
+        message: "Unit already exists",
         id: found.id,
       });
     }
@@ -127,7 +127,7 @@ export class UnitsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
 
     const updateObj = await this.db_tenant.tb_unit.update({
@@ -150,7 +150,7 @@ export class UnitsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
 
     await this.db_tenant.tb_unit.delete({

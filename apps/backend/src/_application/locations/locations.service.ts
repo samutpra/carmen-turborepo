@@ -57,7 +57,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Location not found');
+      throw new NotFoundException("Location not found");
     }
 
     const res: ResponseSingle<tb_location> = {
@@ -129,13 +129,13 @@ export class LocationsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'Location already exists',
+        message: "Location already exists",
         id: found.id,
       });
     }
 
     if (!createDto.location_type) {
-      throw new NotFoundException('Location type not found');
+      throw new NotFoundException("Location type not found");
     }
 
     const location_type =
@@ -168,7 +168,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Location not found');
+      throw new NotFoundException("Location not found");
     }
 
     const location_type =
@@ -199,7 +199,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Location not found');
+      throw new NotFoundException("Location not found");
     }
 
     await this.db_tenant.tb_location.delete({

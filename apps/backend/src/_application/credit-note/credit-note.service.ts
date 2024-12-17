@@ -55,7 +55,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     const res: ResponseSingle<tb_credit_note> = {
@@ -131,7 +131,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     const updatedObj = await this.db_tenant.tb_credit_note.update({
@@ -152,7 +152,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     await this.db_tenant.tb_credit_note.delete({

@@ -6,6 +6,9 @@ import {
 } from './_application/credit-note/credit-note.module';
 import { CurrenciesModule } from './_application/currencies/currencies.module';
 import {
+  DeliveryPointModule,
+} from './_application/delivery-point/delivery-point.module';
+import {
   DepartmentsModule,
 } from './_application/departments/departments.module';
 import {
@@ -100,6 +103,7 @@ import { AppService } from './app.service';
     SystemUserBusinessUnitModule,
     UserBusinessUnitModule,
     UserPermissionModule,
+    DeliveryPointModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -34,7 +34,7 @@ export class ProductItemGroupService {
   constructor(
     private prismaClientMamager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
-  ) { }
+  ) {}
 
   logger = new Logger(ProductItemGroupService.name);
 

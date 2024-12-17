@@ -31,17 +31,17 @@ export default class QueryParams {
   constructor(
     page: number = 1,
     perpage: number = 10,
-    search: string = '',
+    search: string = "",
     searchFields: string = null,
     defaultSearchFields: string[] = [],
     filter: Record<string, string> = {},
-    sort: string = '',
+    sort: string = "",
     advance: QueryAdvance = null,
   ) {
     this.page = page;
     this.perPage = perpage;
     this.search = search;
-    this.searchFields = searchFields ? searchFields.split(',') : [];
+    this.searchFields = searchFields ? searchFields.split(",") : [];
 
     this.defaultSearchFields = defaultSearchFields;
 
@@ -49,7 +49,7 @@ export default class QueryParams {
       this.searchFields = this.defaultSearchFields;
     }
     this.filter = filter;
-    this.sort = sort.split(',');
+    this.sort = sort.split(",");
     this.advance = advance;
   }
 
@@ -63,31 +63,31 @@ export default class QueryParams {
     } else {
       if (this.filter && Object.keys(this.filter).length > 0) {
         _where.AND = Object.entries(this.filter).map(([key, value]) => {
-          const [k, f] = key.split(':');
+          const [k, f] = key.split(":");
 
           switch (f) {
-            case 'number':
-            case 'num':
+            case "number":
+            case "num":
               return {
                 [k]: value,
               };
 
-            case 'bool':
-            case 'boolean':
+            case "bool":
+            case "boolean":
               return {
                 [k]:
-                  value.toLowerCase() == 'true' || value.toLowerCase() == '1',
+                  value.toLowerCase() == "true" || value.toLowerCase() == "1",
               };
 
-            case 'date':
-            case 'datetime':
+            case "date":
+            case "datetime":
               return {
                 [k]: new Date(value),
               };
 
             default:
               return {
-                [k]: { contains: value, mode: 'insensitive' },
+                [k]: { contains: value, mode: "insensitive" },
               };
           }
         });
@@ -99,10 +99,10 @@ export default class QueryParams {
 
       let searchCol: KeyValueString[] = [];
 
-      if (this.search != '') {
+      if (this.search != "") {
         searchCol = this.searchFields.map((f) => {
-          const [k, t] = f.split(':');
-          return new KeyValueString(k.trim(), t ?? 'string');
+          const [k, t] = f.split(":");
+          return new KeyValueString(k.trim(), t ?? "string");
         });
 
         _where.OR = searchCol.map((o) => {
@@ -110,26 +110,26 @@ export default class QueryParams {
           const f = o.Value;
 
           switch (f) {
-            case 'number':
-            case 'num':
+            case "number":
+            case "num":
               return {
                 [k]: this.search,
               };
-            case 'bool':
-            case 'boolean':
+            case "bool":
+            case "boolean":
               return {
                 [k]:
-                  this.search.toLowerCase() == 'true' ||
-                  this.search.toLowerCase() == '1',
+                  this.search.toLowerCase() == "true" ||
+                  this.search.toLowerCase() == "1",
               };
-            case 'date':
-            case 'datetime':
+            case "date":
+            case "datetime":
               return {
                 [k]: new Date(this.search),
               };
             default:
               return {
-                [k]: { contains: this.search, mode: 'insensitive' },
+                [k]: { contains: this.search, mode: "insensitive" },
               };
           }
         });
@@ -145,15 +145,15 @@ export default class QueryParams {
     if (this.sort.length > 0) {
       const list = this.sort
         .map((s) => {
-          const [field, order] = s.split(':');
+          const [field, order] = s.split(":");
 
-          if (order === 'desc') {
-            return { [field.trim()]: 'desc' };
+          if (order === "desc") {
+            return { [field.trim()]: "desc" };
           } else {
-            return { [field.trim()]: 'asc' };
+            return { [field.trim()]: "asc" };
           }
         })
-        .filter((o) => Object.keys(o).toString() != '');
+        .filter((o) => Object.keys(o).toString() != "");
 
       result = list;
     } else {

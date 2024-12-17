@@ -6,7 +6,7 @@ import {
 
 export class ForbiddenException extends HttpException {
   constructor() {
-    super('Forbidden', HttpStatus.FORBIDDEN);
+    super("Forbidden", HttpStatus.FORBIDDEN);
   }
 }
 
@@ -33,12 +33,12 @@ export class InvalidTokenException extends HttpException {
 
 export class NotImplementException extends HttpException {
   constructor() {
-    super('Not Implement Yet', HttpStatus.NOT_IMPLEMENTED);
+    super("Not Implement Yet", HttpStatus.NOT_IMPLEMENTED);
   }
 }
 
 export class NullException extends HttpException {
   constructor() {
-    super('Null data', HttpStatus.BAD_REQUEST);
+    super("Null data", HttpStatus.BAD_REQUEST);
   }
 }

@@ -34,7 +34,7 @@ export class DepartmentsService {
   constructor(
     private prismaClientMamager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
-  ) { }
+  ) {}
 
   logger = new Logger(DepartmentsService.name);
 

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { SystemUserProfileController } from './system-user-profile.controller';
 import { SystemUserProfileService } from './system-user-profile.service';
 

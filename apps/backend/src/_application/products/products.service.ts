@@ -53,7 +53,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException("Product not found");
     }
 
     const res: ResponseSingle<tb_product> = {
@@ -101,7 +101,7 @@ export class ProductsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'Product already exists',
+        message: "Product already exists",
         id: found.id,
       });
     }
@@ -126,7 +126,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException("Product not found");
     }
 
     // const obj: Prisma.ProductUpdateInput = {
@@ -160,7 +160,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException("Product not found");
     }
 
     await this.db_tenant.tb_product.delete({
