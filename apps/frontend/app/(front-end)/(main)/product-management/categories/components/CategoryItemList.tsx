@@ -2,11 +2,12 @@
 
 import {
 	CategoryFormData,
+	CategoryType,
 	ProductSubCategoryType,
 } from '@carmensoftware/shared-types/dist/productCategorySchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useState } from 'react';
 import { Pencil, Trash } from 'lucide-react';
 import {
 	AlertDialog,
@@ -22,20 +23,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
 
-interface ProductResponse {
-	name: string;
-	id: string;
-	description?: string;
-	is_active?: boolean;
-	productSubCategories: ProductSubCategoryType[];
-}
-
 interface CategoryItemListtProps {
-	products: ProductResponse[];
-	selectedProduct: ProductResponse | null;
-	onSelectProduct: (product: ProductResponse) => void;
-	onDeleteProduct: (productId: string) => Promise<void>;
-	onEditProduct: (
+	products: CategoryType[];
+	selectedProduct: CategoryType | null;
+	onSelectCategory: (product: CategoryType) => void;
+	onDeleteCategory: (productId: string) => Promise<void>;
+	onEditCategory: (
 		productId: string,
 		formData: CategoryFormData
 	) => Promise<void>;
@@ -44,22 +37,22 @@ interface CategoryItemListtProps {
 const CategoryItemList = ({
 	products,
 	selectedProduct,
-	onSelectProduct,
-	onDeleteProduct,
-	onEditProduct,
+	onSelectCategory,
+	onDeleteCategory,
+	onEditCategory,
 }: CategoryItemListtProps) => {
-	const [productToDelete, setProductToDelete] =
-		React.useState<ProductResponse | null>(null);
-	const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-	const [productToEdit, setProductToEdit] =
-		React.useState<ProductResponse | null>(null);
+	const [productToDelete, setProductToDelete] = useState<CategoryType>();
+	const [editDialogOpen, setEditDialogOpen] = useState(false);
+	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
 
-	const handleDeleteClick = (e: React.MouseEvent, product: ProductResponse) => {
+	console.log('productToDelete', productToDelete);
+
+	const handleDeleteClick = (e: React.MouseEvent, product: CategoryType) => {
 		e.stopPropagation();
 		setProductToDelete(product);
 	};
 
-	const handleEditClick = (e: React.MouseEvent, product: ProductResponse) => {
+	const handleEditClick = (e: React.MouseEvent, product: CategoryType) => {
 		e.stopPropagation();
 		setProductToEdit(product);
 		setEditDialogOpen(true);
@@ -68,7 +61,7 @@ const CategoryItemList = ({
 	const handleDelete = async () => {
 		if (!productToDelete) return;
 		try {
-			await onDeleteProduct(productToDelete.id);
+			await onDeleteCategory(productToDelete.id);
 			setProductToDelete(null);
 		} catch (error) {
 			console.error('Error deleting product:', error);
@@ -76,9 +69,9 @@ const CategoryItemList = ({
 		}
 	};
 
-	const handleEdit = async (formData: CategoryFormData) => {
+	const handleEdit = async (formData: CategoryType) => {
 		if (!productToEdit) return;
-		await onEditProduct(productToEdit.id, formData);
+		await onEditCategory(productToEdit.id, formData);
 		setEditDialogOpen(false);
 	};
 
@@ -92,12 +85,12 @@ const CategoryItemList = ({
 					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
 					selectedProduct?.id === category.id && 'bg-accent'
 				)}
-				onClick={() => onSelectProduct(category)}
+				onClick={() => onSelectCategory(category)}
 				role="button"
 				tabIndex={0}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {
-						onSelectProduct(category);
+						onSelectCategory(category);
 					}
 				}}
 				aria-label={`Select ${category.name} category`}

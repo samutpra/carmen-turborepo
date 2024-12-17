@@ -4,6 +4,15 @@ import { z } from "zod";
 
 // Category
 
+export const categorySchema = z.object({
+	id: z.string().optional(),
+	name: z.string(),
+	description: z.string(),
+	is_active: z.boolean(),
+});
+
+export type CategoryType = z.infer<typeof categorySchema>;
+
 export const subCategorySchema = z.object({
 	id: z.string().optional(),
 	name: z.string(),
@@ -14,11 +23,13 @@ export const subCategorySchema = z.object({
 
 export type SubCategoryType = z.infer<typeof subCategorySchema>;
 
-const productItemGroupSchema = z.object({
+export const productItemGroupSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	product_subcategory_id: z.string(),
 	description: z.string(),
+	code: z.string(),
+	is_active: z.boolean(),
 });
 
 export type ProductItemGroupType = z.infer<typeof productItemGroupSchema>;

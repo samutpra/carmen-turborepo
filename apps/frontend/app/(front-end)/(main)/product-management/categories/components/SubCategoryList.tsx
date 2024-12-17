@@ -22,19 +22,19 @@ import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
 
 interface Props {
-	subCategories: SubCategoryType[];
-	setSelectedSubCategory: React.Dispatch<
-		React.SetStateAction<SubCategoryType[]>
-	>;
+	data: SubCategoryType[];
+	setData: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
 	categoryId: string;
 	categoryName: string;
+	onSelectSubCategory: (subCategory: SubCategoryType) => void;
 }
 
 const SubCategoryList: React.FC<Props> = ({
-	subCategories,
-	setSelectedSubCategory,
+	data,
+	setData,
 	categoryId,
 	categoryName,
+	onSelectSubCategory,
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -64,7 +64,7 @@ const SubCategoryList: React.FC<Props> = ({
 			);
 
 			if (response.ok) {
-				setSelectedSubCategory((prevSubProducts) =>
+				setData((prevSubProducts) =>
 					prevSubProducts.filter(
 						(subProduct) => subProduct.id !== subCategoryToDelete
 					)
@@ -87,7 +87,7 @@ const SubCategoryList: React.FC<Props> = ({
 		}
 	};
 
-	const subCategoryListItems = subCategories.map((subCategory) => (
+	const subCategoryListItems = data.map((subCategory) => (
 		<div
 			key={subCategory.id}
 			className="flex items-center p-2 justify-between gap-2"
@@ -98,6 +98,15 @@ const SubCategoryList: React.FC<Props> = ({
 					categoryId === subCategory.id && 'bg-accent'
 				)}
 				role="button"
+				onClick={() => onSelectSubCategory(subCategory)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						onSelectSubCategory(subCategory);
+					}
+				}}
+				aria-label={`Select ${subCategory.name} sub-category`}
+				aria-selected={categoryId === subCategory.id}
+				tabIndex={0}
 			>
 				<span>{subCategory.name}</span>
 			</div>
@@ -129,10 +138,7 @@ const SubCategoryList: React.FC<Props> = ({
 							<AlertDialogDescription>
 								This action cannot be undone. This will permanently delete the
 								sub-category &quot;
-								{
-									subCategories.find((sc) => sc.id === subCategoryToDelete)
-										?.name
-								}
+								{data.find((sc) => sc.id === subCategoryToDelete)?.name}
 								&quot;.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
@@ -166,7 +172,7 @@ const SubCategoryList: React.FC<Props> = ({
 				mode="edit"
 				product_category_id={categoryId}
 				product_category_name={categoryName}
-				setSubProducts={setSelectedSubCategory}
+				setSubProducts={setData}
 				subCategory={subCategory}
 			/>
 		</>

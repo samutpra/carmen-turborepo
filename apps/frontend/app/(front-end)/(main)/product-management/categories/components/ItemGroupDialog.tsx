@@ -1,7 +1,10 @@
-'use client';
-
-import React, { useEffect } from 'react';
+import { useAuth } from '@/app/context/AuthContext';
+import {
+	ProductItemGroupType,
+	productItemGroupSchema,
+} from '@carmensoftware/shared-types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
 	Dialog,
@@ -19,80 +22,83 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useAuth } from '@/app/context/AuthContext';
-import {
-	subCategorySchema,
-	SubCategoryType,
-} from '@carmensoftware/shared-types';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	mode: 'add' | 'edit';
-	product_category_id: string;
-	product_category_name?: string;
-	setSubProducts: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
-	subCategory?: SubCategoryType | null;
+	subcategory_id: string;
+	subcategory_name?: string;
+	setItemGroup: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
+	itemGroup?: ProductItemGroupType | null;
 }
-
-const SubCatDialog: React.FC<Props> = ({
+const ItemGroupDialog: React.FC<Props> = ({
 	open,
-	product_category_id,
-	product_category_name,
 	mode,
+	subcategory_id,
+	subcategory_name,
+	setItemGroup,
+	itemGroup,
 	onOpenChange,
-	setSubProducts,
-	subCategory,
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
+	console.log('mode itemGroupDialog', mode);
 
-	const form = useForm<SubCategoryType>({
-		resolver: zodResolver(subCategorySchema),
+	console.log('itemGroup', itemGroup);
+
+	const form = useForm<ProductItemGroupType>({
+		resolver: zodResolver(productItemGroupSchema),
 		defaultValues: {
 			id: '',
+			code: '',
 			name: '',
 			description: '',
 			is_active: true,
-			product_category_id: product_category_id,
+			product_subcategory_id: subcategory_id,
 		},
 	});
 
 	useEffect(() => {
-		if (open && mode === 'edit' && subCategory) {
+		if (open && mode === 'edit' && itemGroup) {
 			form.reset({
-				id: subCategory.id,
-				name: subCategory.name,
-				description: subCategory.description,
-				is_active: subCategory.is_active,
-				product_category_id: product_category_id,
+				id: itemGroup.id,
+				code: itemGroup.code,
+				name: itemGroup.name,
+				description: itemGroup.description,
+				is_active: itemGroup.is_active,
+				product_subcategory_id: subcategory_id,
 			});
 		} else {
 			form.reset({
 				id: '',
+				code: '',
 				name: '',
 				description: '',
 				is_active: true,
-				product_category_id: product_category_id,
+				product_subcategory_id: subcategory_id,
 			});
 		}
-	}, [open, mode, subCategory, product_category_id]);
+	}, [open, mode, itemGroup, subcategory_id]);
 
-	const handleSubmit = async (values: SubCategoryType) => {
+	const handleSubmit = async (values: ProductItemGroupType) => {
 		const payload = {
 			...values,
-			product_category_id: product_category_id,
+			product_subcategory_id: subcategory_id,
 		};
+
+		console.log('payload', payload);
+
 		try {
 			const method = mode === 'add' ? 'POST' : 'PATCH';
 			const url =
 				mode === 'add'
-					? '/api/product-management/category/product-sub-category'
-					: `/api/product-management/category/product-sub-category/${values.id}`;
+					? '/api/product-management/category/product-item-group'
+					: `/api/product-management/category/product-item-group/${values.id}`;
 
 			const response = await fetch(url, {
 				method,
@@ -104,41 +110,28 @@ const SubCatDialog: React.FC<Props> = ({
 			});
 
 			if (!response.ok) {
-				throw new Error(`Failed to ${mode} sub-category`);
+				throw new Error(`Failed to ${mode} item group`);
 			}
 
 			const result = await response.json();
-
-			console.log('result', result);
-
 			if (mode === 'add') {
-				const newSubCategory = {
+				const newItemGroup = {
 					...payload,
 					id: result.id,
 				};
-				setSubProducts((prev: SubCategoryType[]) => [...prev, newSubCategory]);
-				toast.success('Sub-category added successfully');
+				setItemGroup((prev: ProductItemGroupType[]) => [...prev, newItemGroup]);
+				toast.success('Item group added successfully');
 			} else {
-				setSubProducts((prev) =>
-					prev.map((subProduct) =>
-						subProduct.id === values.id
-							? { ...payload, id: subProduct.id }
-							: subProduct
+				setItemGroup((prev) =>
+					prev.map((itemGroup) =>
+						itemGroup.id === values.id
+							? { ...payload, id: itemGroup.id }
+							: itemGroup
 					)
 				);
-				toast.success('Sub-category updated successfully');
 			}
-
-			handleClose();
 		} catch (error) {
-			console.error(`Error ${mode}ing sub-category:`, error);
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			console.error('Error submitting form:', error);
 		}
 	};
 
@@ -149,10 +142,10 @@ const SubCatDialog: React.FC<Props> = ({
 
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Sub Category' : 'Edit Sub Category'}
+						{mode === 'add' ? 'Add New Item Group' : 'Edit Item Group'}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -162,10 +155,9 @@ const SubCatDialog: React.FC<Props> = ({
 					>
 						<Input
 							placeholder="Enter name"
-							defaultValue={product_category_name}
+							defaultValue={subcategory_name}
 							disabled
 						/>
-
 						<FormField
 							control={form.control}
 							name="name"
@@ -179,7 +171,18 @@ const SubCatDialog: React.FC<Props> = ({
 								</FormItem>
 							)}
 						/>
-
+						<FormField
+							control={form.control}
+							name="code"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Code</FormLabel>
+									<FormControl>
+										<Input placeholder="Enter code" {...field} />
+									</FormControl>
+								</FormItem>
+							)}
+						/>
 						<FormField
 							control={form.control}
 							name="description"
@@ -187,17 +190,11 @@ const SubCatDialog: React.FC<Props> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<Textarea
-											placeholder="Enter description"
-											className="resize-none"
-											{...field}
-										/>
+										<Textarea placeholder="Enter description" {...field} />
 									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>
-
 						<FormField
 							control={form.control}
 							name="is_active"
@@ -215,7 +212,6 @@ const SubCatDialog: React.FC<Props> = ({
 								</FormItem>
 							)}
 						/>
-
 						<DialogFooter>
 							<Button
 								type="button"
@@ -236,4 +232,4 @@ const SubCatDialog: React.FC<Props> = ({
 	);
 };
 
-export default SubCatDialog;
+export default ItemGroupDialog;
