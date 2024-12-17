@@ -43,7 +43,7 @@ export class UserBusinessUnitService {
         id: id,
         user_id: user_id,
       },
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       include: {
         tb_business_unit: {
           select: {
@@ -68,7 +68,7 @@ export class UserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id, user_id);
 
     if (!oneObj) {
-      throw new NotFoundException('User - BusinessUnit not found');
+      throw new NotFoundException("User - BusinessUnit not found");
     }
     const res: ResponseSingle<tb_user_tb_business_unit> = {
       data: oneObj,
@@ -97,7 +97,7 @@ export class UserBusinessUnitService {
 
     const q_include = {
       ...q.findMany(),
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       include: {
         business_unit_table: {
           select: {

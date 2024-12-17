@@ -34,12 +34,12 @@ import {
 
 import { SystemBusinessUnitService } from './system-business-unit.service';
 
-@Controller('system-api/v1/business-units')
-@ApiTags('system/business-unit')
+@Controller("system-api/v1/business-units")
+@ApiTags("system/business-unit")
 @ApiBearerAuth()
 @ApiHeader({
-  name: 'x-tenant-id',
-  description: 'tenant id',
+  name: "x-tenant-id",
+  description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
 export class SystemBusinessUnitController {
@@ -49,14 +49,14 @@ export class SystemBusinessUnitController {
 
   private readonly logger = new Logger(SystemBusinessUnitController.name);
 
-  @Get(':id')
+  @Get(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async findOne(@Param('id') id: string, @Req() req: Request) {
+  async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.log({ id: id });
     return this.systemBusinessUnitService.findOne(req, id);
   }
@@ -65,15 +65,15 @@ export class SystemBusinessUnitController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page?: number,
-    @Query('perpage') perpage?: number,
-    @Query('search') search?: string,
-    @Query('searchfields') searchfields?: string,
-    @Query('filter') filter?: Record<string, string>,
-    @Query('sort') sort?: string,
-    @Query('advance') advance?: QueryAdvance,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+    @Query("searchfields") searchfields?: string,
+    @Query("filter") filter?: Record<string, string>,
+    @Query("sort") sort?: string,
+    @Query("advance") advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ['code', 'name'];
+    const defaultSearchFields: string[] = ["code", "name"];
 
     this.logger.log({
       page,
@@ -101,7 +101,7 @@ export class SystemBusinessUnitController {
   @Post()
   @ApiBody({
     type: BusinessUnitCreateDto,
-    description: 'BusinessUnitCreateDto',
+    description: "BusinessUnitCreateDto",
   })
   @UsePipes(new ZodValidationPipe(BusinessUnitCreateSchema))
   async create(@Body() createDto: BusinessUnitCreateDto, @Req() req: Request) {
@@ -115,19 +115,19 @@ export class SystemBusinessUnitController {
     return this.systemBusinessUnitService.create(req, createDto);
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
   @ApiBody({
     type: BusinessUnitUpdateDto,
-    description: 'BusinessUnitUpdateDto',
+    description: "BusinessUnitUpdateDto",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateDto: BusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
@@ -143,14 +143,14 @@ export class SystemBusinessUnitController {
     return this.systemBusinessUnitService.update(req, id, updatedto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async delete(@Param('id') id: string, @Req() req: Request) {
+  async delete(@Param("id") id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemBusinessUnitService.delete(req, id);
   }

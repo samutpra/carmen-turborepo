@@ -51,7 +51,7 @@ export class SystemUsersService {
     db_System: dbSystem,
     username: string,
   ): Promise<tb_user> {
-    this.logger.debug({ function: 'findByUsername', username: username });
+    this.logger.debug({ function: "findByUsername", username: username });
 
     const res = await db_System.tb_user.findFirst({
       where: {
@@ -67,7 +67,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
     const res: ResponseSingle<tb_user> = {
       data: oneObj,
@@ -110,7 +110,7 @@ export class SystemUsersService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'User already exists',
+        message: "User already exists",
         id: found.id,
       });
     }
@@ -143,7 +143,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     const updateObj = await this.db_System.tb_user.update({
@@ -166,7 +166,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     //check if uses is inused

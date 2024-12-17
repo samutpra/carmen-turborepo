@@ -59,7 +59,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
     const res: ResponseSingle<tb_product_sub_category> = {
       data: oneObj,
@@ -114,7 +114,7 @@ export class ProductSubCategoryService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'ProductSubCategory already exists',
+        message: "ProductSubCategory already exists",
         id: found.id,
       });
     }
@@ -144,7 +144,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
 
     const updateObj = await this.db_tenant.tb_product_sub_category.update({
@@ -167,7 +167,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
 
     await this.db_tenant.tb_product_sub_category.delete({

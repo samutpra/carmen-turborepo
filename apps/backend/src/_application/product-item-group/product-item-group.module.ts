@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ProductItemGroupService } from './product-item-group.service';
+
 import { ProductItemGroupController } from './product-item-group.controller';
+import { ProductItemGroupService } from './product-item-group.service';
 
 @Module({
   controllers: [ProductItemGroupController],

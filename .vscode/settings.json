@@ -18,5 +18,33 @@
   "prettier.bracketSameLine": true,
   "prettier.printWidth": 120,
   "prettier.useTabs": true,
-  "Codegeex.RepoIndex": true
+  "Codegeex.RepoIndex": true,
+  "autoBarrel.language.defaultLanguage": "TypeScript",
+  "autoBarrel.files.disableRecursiveBarrelling": false,
+  "autoBarrel.files.includeExtensionOnExport": [
+    "ts",
+    "tsx",
+    "vue"
+  ],
+  "autoBarrel.files.ignoreFilePathPatternOnExport": [
+    "**/*.spec.*",
+    "**/*.test.*"
+  ],
+  "autoBarrel.files.supportsHiddenFiles": true,
+  "autoBarrel.files.preserveGitignoreSettings": false,
+  "autoBarrel.files.keepExtensionOnExport": false,
+  "autoBarrel.files.detectExportsInFiles": false,
+  "autoBarrel.files.useNamedExports": false,
+  "autoBarrel.files.exportDefaultFilename": "filename",
+  "autoBarrel.files.configuredDefaultFilename": "index",
+  "autoBarrel.formatting.headerCommentTemplate": [],
+  "autoBarrel.formatting.excludeSemiColonAtEndOfLine": false,
+  "autoBarrel.formatting.useSingleQuotes": true,
+  "autoBarrel.formatting.endOfLine": "lf",
+  "autoBarrel.formatting.insertFinalNewline": true,
+  "prettier.singleAttributePerLine": true,
+  "vs-code-prettier-eslint.prettierLast": true,
+  "eslint.format.enable": true,
+  "eslint.problems.shortenToSingleLine": true,
+  "eslint.rules.customizations": [],
 }

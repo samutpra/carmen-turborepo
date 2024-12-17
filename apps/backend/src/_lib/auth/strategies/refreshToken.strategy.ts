@@ -12,11 +12,11 @@ dotenv.config();
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
   Strategy,
-  'jwt-refresh',
+  "jwt-refresh",
 ) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromBodyField('refresh'),
+      jwtFromRequest: ExtractJwt.fromBodyField("refresh"),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });

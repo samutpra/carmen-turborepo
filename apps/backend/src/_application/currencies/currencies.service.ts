@@ -94,7 +94,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Currency not found');
+      throw new NotFoundException("Currency not found");
     }
     const res: ResponseSingle<tb_currency> = {
       data: oneObj,
@@ -148,7 +148,7 @@ export class CurrenciesService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'Currency already exists',
+        message: "Currency already exists",
         id: found.id,
       });
     }
@@ -185,7 +185,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Currency not found');
+      throw new NotFoundException("Currency not found");
     }
 
     const updateObj = await this.db_tenant.tb_currency.update({
@@ -210,7 +210,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Currency not found');
+      throw new NotFoundException("Currency not found");
     }
 
     await this.db_tenant.tb_currency.delete({

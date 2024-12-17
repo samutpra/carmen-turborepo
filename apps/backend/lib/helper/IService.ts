@@ -1,4 +1,8 @@
-import { IResponseId, IResponseList, IResponseSingle } from './iResponse';
+import {
+  IResponseId,
+  IResponseList,
+  IResponseSingle,
+} from './iResponse';
 
 export interface IService<T, C, U> {
   get: (id: string, tenantId?: string) => IResponseSingle<T> | T | string;

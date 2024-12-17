@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "../../../node_modules/@prisma-carmen-client-tenant"
-  previewFeatures = ["multiSchema", "postgresqlExtensions", "relationJoins", "typedSql"]
+  previewFeatures = ["multiSchema", "postgresqlExtensions", "relationJoins"]
 }
 
 generator markdown {

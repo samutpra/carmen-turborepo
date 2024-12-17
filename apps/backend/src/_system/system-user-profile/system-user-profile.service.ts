@@ -56,7 +56,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
     const res: ResponseSingle<tb_user_profile> = {
       data: oneObj,
@@ -105,7 +105,7 @@ export class SystemUserProfileService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'UserProfile already exists',
+        message: "UserProfile already exists",
         id: found.id,
       });
     }
@@ -142,7 +142,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
 
     const updateObj = await this.db_System.tb_user_profile.update({
@@ -173,7 +173,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
 
     await this.db_System.tb_user_profile.delete({
