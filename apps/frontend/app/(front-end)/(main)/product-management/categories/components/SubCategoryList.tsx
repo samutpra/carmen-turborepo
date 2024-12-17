@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import SubCategoryDialog from './SubCategoryDialog';
 import React, { useState, useCallback } from 'react';
 
-interface SubProductListProps {
+interface SubCategoryListProps {
 	subProducts: ProductSubCategoryType[];
 	selectedSubProduct: ProductSubCategoryType | null;
 	onSelectSubProduct: (subProduct: ProductSubCategoryType) => void;
@@ -25,13 +25,13 @@ interface SubProductListProps {
 	onEditSubProduct: (id: string, data: SubCategoryFormData) => void;
 }
 
-const SubProductList = ({
+const SubCategoryList = ({
 	subProducts,
 	selectedSubProduct,
 	onSelectSubProduct,
 	onDeleteSubProduct,
 	onEditSubProduct,
-}: SubProductListProps) => {
+}: SubCategoryListProps) => {
 	const [editingSubProduct, setEditingSubProduct] =
 		useState<ProductSubCategoryType | null>(null);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -149,4 +149,4 @@ const SubProductList = ({
 	);
 };
 
-export default SubProductList; 
+export default SubCategoryList;

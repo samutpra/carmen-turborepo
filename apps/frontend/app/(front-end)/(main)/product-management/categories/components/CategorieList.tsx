@@ -16,11 +16,11 @@ import {
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import { ItemGroupList } from './ItemGroupList';
-import SubProductList from './SubProductList';
 import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
 import SubCategoryDialog from './SubCategoryDialog';
 import CategoryItemList from './CategoryItemList';
+import SubCategoryList from './SubCategoryList';
 
 interface ProductResponse {
 	name: string;
@@ -257,6 +257,8 @@ const CategorieList = () => {
 	};
 
 	const handleAddSubCategory = async (formData: SubCategoryFormData) => {
+		console.log('formData', formData);
+
 		try {
 			const response = await fetch(
 				'/api/product-management/category/product-sub-category',
@@ -273,25 +275,34 @@ const CategorieList = () => {
 			if (!response.ok) {
 				throw new Error('Failed to add sub-category');
 			}
+
 			const result = await response.json();
 
-			if (result.data?.id) {
-				const newSubCategory: ProductSubCategoryType = {
-					id: result.data.id,
-					name: formData.name,
-					description: formData.description,
-					is_active: formData.is_active ?? true,
-					product_category_id: formData.product_category_id,
-					productItemGroups: [],
-				};
+			console.log('result', result);
 
-				setSubProducts((prev) => [...prev, newSubCategory]);
-				toast.success('Sub-category added successfully');
-				setIsAddSubCategoryOpen(false);
-			}
+			const newSubCategory: ProductSubCategoryType = {
+				id: result.data.id,
+				name: formData.name,
+				description: formData.description,
+				product_category_id: formData.product_category_id,
+				is_active: formData.is_active,
+				productItemGroups: [],
+			};
+
+			setSubProducts((prev) => [...prev, newSubCategory]);
+
+			setIsAddSubCategoryOpen(false);
+
+			toast.success('Sub-category added successfully');
 		} catch (error) {
 			console.error('Error adding sub-category:', error);
-			toast.error('Failed to add sub-category');
+			toast.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 
@@ -424,18 +435,31 @@ const CategorieList = () => {
 				open={isAddSubCategoryOpen}
 				onOpenChange={setIsAddSubCategoryOpen}
 				onSubmit={handleAddSubCategory}
-				mode="add"
+				mode="create"
 				categories={
 					selectedProduct
 						? [
 								{
 									id: selectedProduct.id,
 									name: selectedProduct.name,
+									description: selectedProduct.description || '',
+									product_category_id: selectedProduct.id,
+									is_active: selectedProduct.is_active ?? true,
+									productItemGroups: [],
 								},
 							]
 						: []
 				}
-				defaultCategoryId={selectedProduct?.id}
+				initialData={
+					selectedProduct
+						? {
+								name: '',
+								description: '',
+								is_active: true,
+								product_category_id: selectedProduct.id,
+							}
+						: undefined
+				}
 				disableCategory={true}
 			/>
 			<div className="flex flex-col space-y-4">
@@ -446,7 +470,7 @@ const CategorieList = () => {
 					onAddData={onAddSubCategory}
 					disabled={!selectedProduct}
 				/>
-				<SubProductList
+				<SubCategoryList
 					subProducts={filteredSubProducts}
 					selectedSubProduct={selectedSubProduct}
 					onSelectSubProduct={setSelectedSubProduct}

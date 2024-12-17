@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -36,24 +35,25 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { SubCategoryFormData } from '@carmensoftware/shared-types';
-
-const formSchema = z.object({
-	name: z.string().min(1, 'Name is required'),
-	description: z.string(),
-	is_active: z.boolean(),
-	product_category_id: z.string(),
-});
-
-
+import {
+	ProductSubCategoryType,
+	SubCategoryFormData,
+	subCategorySchema,
+	SubCategoryType,
+} from '@carmensoftware/shared-types';
 
 interface SubCategoryDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onSubmit: (formData: SubCategoryFormData) => Promise<void>;
-	mode: 'add' | 'edit';
-	categories: { id: string; name: string }[];
-	defaultCategoryId?: string;
+	mode: 'create' | 'edit';
+	categories: ProductSubCategoryType[];
+	initialData?: {
+		name: string;
+		description: string;
+		is_active: boolean;
+		product_category_id: string;
+	};
 	disableCategory?: boolean;
 }
 
@@ -63,18 +63,18 @@ const SubCategoryDialog = ({
 	onSubmit,
 	mode,
 	categories,
-	defaultCategoryId,
-	disableCategory,
+	initialData,
+	disableCategory = false,
 }: SubCategoryDialogProps) => {
 	const [openCombobox, setOpenCombobox] = useState(false);
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<SubCategoryType>({
+		resolver: zodResolver(subCategorySchema),
 		defaultValues: {
 			name: '',
 			description: '',
 			is_active: true,
-			product_category_id: defaultCategoryId || '',
+			product_category_id: initialData?.product_category_id || '',
 		},
 	});
 
@@ -91,13 +91,13 @@ const SubCategoryDialog = ({
 	};
 
 	useEffect(() => {
-		if (defaultCategoryId && open) {
+		if (initialData && open) {
 			form.reset(
 				{
 					name: '',
 					description: '',
 					is_active: true,
-					product_category_id: defaultCategoryId,
+					product_category_id: initialData.product_category_id,
 				},
 				{
 					keepDefaultValues: true,
@@ -106,9 +106,9 @@ const SubCategoryDialog = ({
 		}
 	}, [open]);
 
-	const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+	const handleSubmit = async (values: SubCategoryType) => {
 		await onSubmit(values);
-		if (mode === 'add') {
+		if (mode === 'create') {
 			form.reset({
 				name: '',
 				description: '',
@@ -133,7 +133,7 @@ const SubCategoryDialog = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Category' : 'Edit Category'}
+						{mode === 'create' ? 'Add New Category' : 'Edit Category'}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -258,7 +258,7 @@ const SubCategoryDialog = ({
 								Cancel
 							</Button>
 							<Button type="submit">
-								{mode === 'add' ? 'Add Sub Category' : 'Save Changes'}
+								{mode === 'create' ? 'Add Sub Category' : 'Save Changes'}
 							</Button>
 						</div>
 					</form>
