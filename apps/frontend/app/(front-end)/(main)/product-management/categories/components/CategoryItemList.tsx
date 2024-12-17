@@ -3,7 +3,6 @@
 import {
 	CategoryFormData,
 	CategoryType,
-	ProductSubCategoryType,
 } from '@carmensoftware/shared-types/dist/productCategorySchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -45,8 +44,6 @@ const CategoryItemList = ({
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
 	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
 
-	console.log('productToDelete', productToDelete);
-
 	const handleDeleteClick = (e: React.MouseEvent, product: CategoryType) => {
 		e.stopPropagation();
 		setProductToDelete(product);
@@ -59,10 +56,10 @@ const CategoryItemList = ({
 	};
 
 	const handleDelete = async () => {
-		if (!productToDelete) return;
+		if (!productToDelete?.id) return;
 		try {
 			await onDeleteCategory(productToDelete.id);
-			setProductToDelete(null);
+			setProductToDelete(undefined);
 		} catch (error) {
 			console.error('Error deleting product:', error);
 			toast.error('Failed to delete product');
@@ -70,7 +67,7 @@ const CategoryItemList = ({
 	};
 
 	const handleEdit = async (formData: CategoryType) => {
-		if (!productToEdit) return;
+		if (!productToEdit?.id) return;
 		await onEditCategory(productToEdit.id, formData);
 		setEditDialogOpen(false);
 	};
@@ -124,14 +121,20 @@ const CategoryItemList = ({
 			<Card>
 				<CardHeader>
 					<CardTitle>Categories</CardTitle>
+					{selectedProduct && (
+						<span className="text-sm text-muted-foreground">
+							Selected: {selectedProduct.name}
+						</span>
+					)}
 				</CardHeader>
 				<CardContent>{categoryListItems}</CardContent>
 			</Card>
 
-			{/* Delete Dialog */}
 			<AlertDialog
 				open={!!productToDelete}
-				onOpenChange={() => setProductToDelete(null)}
+				onOpenChange={(open) =>
+					setProductToDelete(open ? productToDelete : undefined)
+				}
 			>
 				<AlertDialogContent>
 					<AlertDialogHeader>

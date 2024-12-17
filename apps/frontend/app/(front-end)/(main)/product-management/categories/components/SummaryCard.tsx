@@ -1,5 +1,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SummaryCardProps {
 	title: string;
@@ -9,26 +12,37 @@ interface SummaryCardProps {
 	disabled?: boolean;
 }
 
-const SummaryCard = ({
+const SummaryCard: React.FC<SummaryCardProps> = ({
 	title,
 	count,
 	icon,
 	onAddData,
-	disabled = false,
-}: SummaryCardProps) => {
+	disabled,
+}) => {
 	return (
-		<div className="bg-background rounded-lg shadow p-4">
-			<div className="flex justify-between items-center mb-4">
-				<div className="flex items-center space-x-2">
-					{icon}
-					<h3 className="text-lg font-semibold">{title}</h3>
-				</div>
-				<Button size={'sm'} onClick={onAddData} disabled={disabled}>
-					Add
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between pb-2">
+				<CardTitle className="text-sm font-medium">{title}</CardTitle>
+				<Button
+					onClick={onAddData}
+					variant="ghost"
+					size="icon"
+					className={cn('h-8 w-8', disabled && 'cursor-not-allowed opacity-50')}
+					disabled={disabled}
+					aria-label={`Add new ${title}`}
+				>
+					<Plus className="h-4 w-4" />
 				</Button>
-			</div>
-			<p className="text-3xl font-bold">{count}</p>
-		</div>
+			</CardHeader>
+			<CardContent>
+				<div className="flex items-center justify-between">
+					<div className="flex items-center space-x-2">
+						{icon}
+						<span className="text-2xl font-bold">{count}</span>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
 	);
 };
 

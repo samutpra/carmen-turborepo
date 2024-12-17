@@ -2,7 +2,7 @@
 
 import { ProductItemGroupType } from '@carmensoftware/shared-types';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,7 @@ import { Pencil, Trash } from 'lucide-react';
 import ItemGroupDialog from './ItemGroupDialog';
 import { toast } from 'sonner';
 import { useAuth } from '@/app/context/AuthContext';
+import { cn } from '@/lib/utils';
 
 interface Props {
 	data: ProductItemGroupType[];
@@ -39,8 +40,14 @@ const ItemGroupList: React.FC<Props> = ({
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [itemGroup, setItemGroup] = useState<ProductItemGroupType | null>(null);
 	const [idToDelete, setIdToDelete] = useState<string | null>(null);
+	const [selectedItemGroupId, setSelectedItemGroupId] = useState<string | null>(
+		null
+	);
 
-	console.log('idToDelete', idToDelete);
+	useEffect(() => {
+		setSelectedItemGroupId(null);
+		setItemGroup(null);
+	}, [subCategoryId]);
 
 	const handleEditClick = (itemGroup: ProductItemGroupType) => {
 		setItemGroup(itemGroup);
@@ -86,7 +93,26 @@ const ItemGroupList: React.FC<Props> = ({
 			key={itemGroup.id}
 			className="flex items-center p-2 justify-between gap-2"
 		>
-			<div className="cursor-pointer hover:bg-accent rounded-lg p-2 w-full">
+			<div
+				className={cn(
+					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					selectedItemGroupId === itemGroup.id && 'bg-accent'
+				)}
+				onClick={() => {
+					setSelectedItemGroupId(itemGroup.id || null);
+					setItemGroup(itemGroup);
+				}}
+				role="button"
+				tabIndex={0}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						setSelectedItemGroupId(itemGroup.id || null);
+						setItemGroup(itemGroup);
+					}
+				}}
+				aria-label={`Select ${itemGroup.name} item group`}
+				aria-selected={selectedItemGroupId === itemGroup.id}
+			>
 				{itemGroup.name}
 			</div>
 			<div className="flex">
@@ -141,6 +167,11 @@ const ItemGroupList: React.FC<Props> = ({
 			<Card>
 				<CardHeader>
 					<CardTitle>Item Groups</CardTitle>
+					{itemGroup && (
+						<span className="text-sm text-muted-foreground">
+							Selected: {itemGroup.name}
+						</span>
+					)}
 				</CardHeader>
 				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
 			</Card>

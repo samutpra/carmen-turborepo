@@ -236,8 +236,6 @@ const CategorieList = () => {
 		setIsAddItemGroupOpen(true);
 	};
 
-	console.log('selected sub product', selectedSubCategory);
-
 	return (
 		<div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
 			<CategoryDialog
@@ -301,7 +299,7 @@ const CategorieList = () => {
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Item Groups"
-					count={summary.totalItemGroups}
+					count={filteredItemGroups.length}
 					icon={<LayoutGrid className="w-6 h-6" />}
 					onAddData={onAddItemGroup}
 					disabled={!selectedSubCategory}

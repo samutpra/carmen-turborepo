@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SubCategoryType } from '@carmensoftware/shared-types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -39,11 +39,25 @@ const SubCategoryList: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-	const [subCategory, setSubCategory] = useState<SubCategoryType | null>(null);
+	const [subCategory, setSubCategory] = useState<SubCategoryType>();
 	const [subCategoryToDelete, setSubCategoryToDelete] = useState<string | null>(
 		null
 	);
-	const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<string | null>(null);
+	const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<
+		string | null
+	>(null);
+
+	useEffect(() => {
+		setSelectedSubCategoryId(null);
+		setSubCategory(undefined);
+		onSelectSubCategory({
+			id: '',
+			name: '',
+			description: '',
+			is_active: true,
+			product_category_id: '',
+		});
+	}, [categoryId, onSelectSubCategory]);
 
 	const handleEditClick = (subCategory: SubCategoryType) => {
 		setSubCategory(subCategory);
@@ -101,11 +115,13 @@ const SubCategoryList: React.FC<Props> = ({
 				role="button"
 				onClick={() => {
 					setSelectedSubCategoryId(subCategory.id || null);
+					setSubCategory(subCategory);
 					onSelectSubCategory(subCategory);
 				}}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {
 						setSelectedSubCategoryId(subCategory.id || null);
+						setSubCategory(subCategory);
 						onSelectSubCategory(subCategory);
 					}
 				}}
@@ -166,7 +182,12 @@ const SubCategoryList: React.FC<Props> = ({
 		<>
 			<Card>
 				<CardHeader>
-					<CardTitle>Sub Categories</CardTitle>
+					<CardTitle>Sub Categories </CardTitle>
+					{subCategory && (
+						<span className="text-sm text-muted-foreground">
+							Selected: {subCategory.name}
+						</span>
+					)}
 				</CardHeader>
 				<CardContent className="space-y-2">{subCategoryListItems}</CardContent>
 			</Card>
