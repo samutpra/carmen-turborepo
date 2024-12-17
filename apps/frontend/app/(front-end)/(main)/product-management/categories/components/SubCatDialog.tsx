@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -35,13 +35,8 @@ interface Props {
 	mode: 'add' | 'edit';
 	product_category_id: string;
 	product_category_name?: string;
-	initialData?: {
-		id?: string;
-		name: string;
-		description: string;
-		is_active: boolean;
-	};
 	setSubProducts: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
+	subCategory?: SubCategoryType | null;
 }
 
 const SubCatDialog: React.FC<Props> = ({
@@ -49,28 +44,45 @@ const SubCatDialog: React.FC<Props> = ({
 	product_category_id,
 	product_category_name,
 	mode,
-	initialData,
 	onOpenChange,
 	setSubProducts,
+	subCategory,
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
+
 	const form = useForm<SubCategoryType>({
 		resolver: zodResolver(subCategorySchema),
 		defaultValues: {
-			id: initialData?.id || '',
-			name: initialData?.name || '',
-			description: initialData?.description || '',
-			is_active: initialData?.is_active ?? true,
+			id: '',
+			name: '',
+			description: '',
+			is_active: true,
 			product_category_id: product_category_id,
 		},
 	});
 
-	console.log('mode', mode, 'initialData', initialData);
-	
+	useEffect(() => {
+		if (open && mode === 'edit' && subCategory) {
+			form.reset({
+				id: subCategory.id,
+				name: subCategory.name,
+				description: subCategory.description,
+				is_active: subCategory.is_active,
+				product_category_id: product_category_id,
+			});
+		} else if (!open) {
+			form.reset({
+				id: '',
+				name: '',
+				description: '',
+				is_active: true,
+				product_category_id: product_category_id,
+			});
+		}
+	}, [open, mode, subCategory, product_category_id]);
 
 	const handleSubmit = async (values: SubCategoryType) => {
-		console.log('values', values);
 		const payload = {
 			...values,
 			product_category_id: product_category_id,

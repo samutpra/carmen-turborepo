@@ -11,7 +11,6 @@ import {
 	CategoryFormData,
 	ProductItemGroupType,
 	ProductSubCategoryType,
-	SubCategoryFormData,
 	SubCategoryType,
 } from '@carmensoftware/shared-types';
 import SummaryCard from './SummaryCard';
@@ -39,8 +38,8 @@ type CategorySummary = {
 
 const CategorieList = () => {
 	const { accessToken } = useAuth();
-	const [products, setProducts] = useState<ProductResponse[]>([]);
-	const [subProducts, setSubProducts] = useState<SubCategoryType[]>([]);
+	const [categorys, setCategorys] = useState<ProductResponse[]>([]);
+	const [subCategorys, setSubCategorys] = useState<SubCategoryType[]>([]);
 	const [itemGroups, setItemGroups] = useState<ProductItemGroupType[]>([]);
 	const [selectedProduct, setSelectedProduct] =
 		useState<ProductResponse | null>(null);
@@ -54,8 +53,6 @@ const CategorieList = () => {
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	console.log('subProducts', subProducts);
-
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -67,12 +64,12 @@ const CategorieList = () => {
 						fetchItemGroup(token, tenantId),
 					]);
 
-				setProducts(
+				setCategorys(
 					Array.isArray(productResponse.data.data)
 						? productResponse.data.data
 						: ([productResponse.data.data] as ProductResponse[])
 				);
-				setSubProducts(subProductResponse.data.data as SubCategoryType[]);
+				setSubCategorys(subProductResponse.data.data as SubCategoryType[]);
 				setItemGroups(itemGroupResponse.data.data as ProductItemGroupType[]);
 			} catch (err) {
 				console.error(err);
@@ -85,15 +82,15 @@ const CategorieList = () => {
 		fetchData();
 	}, [token, tenantId]);
 
-	const filteredSubProducts = selectedProduct
-		? subProducts.filter(
-				(sub) => sub.product_category_id === selectedProduct.id
-			)
-		: [];
-
 	const filteredItemGroups = selectedSubProduct
 		? itemGroups.filter(
 				(group) => group.product_subcategory_id === selectedSubProduct.id
+			)
+		: [];
+
+	const filteredSubCategories = selectedProduct
+		? subCategorys.filter(
+				(subCategory) => subCategory.product_category_id === selectedProduct.id
 			)
 		: [];
 
@@ -110,7 +107,7 @@ const CategorieList = () => {
 			);
 
 			if (response.ok) {
-				setProducts((prevProducts) =>
+				setCategorys((prevProducts) =>
 					prevProducts.filter((product) => product.id !== productId)
 				);
 				if (selectedProduct?.id === productId) {
@@ -125,43 +122,6 @@ const CategorieList = () => {
 			console.error('Error deleting category:', error);
 			toast.error(
 				error instanceof Error ? error.message : 'Failed to delete category',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
-		}
-	};
-
-	const handleDeleteSubProduct = async (subProductId: string) => {
-		try {
-			const response = await fetch(
-				`/api/product-management/category/product-sub-category/${subProductId}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
-			if (response.ok) {
-				setSubProducts((prevSubProducts) =>
-					prevSubProducts.filter((subProduct) => subProduct.id !== subProductId)
-				);
-				if (selectedSubProduct?.id === subProductId) {
-					setSelectedSubProduct(null);
-				}
-				toast.success('Sub-category deleted successfully');
-			} else {
-				throw new Error('Failed to delete sub-category');
-			}
-		} catch (error) {
-			console.error('Error deleting sub-category:', error);
-			toast.error(
-				error instanceof Error
-					? error.message
-					: 'Failed to delete sub-category',
 				{
 					className: 'bg-red-500 text-white border-none',
 					duration: 3000,
@@ -231,12 +191,12 @@ const CategorieList = () => {
 			if (response.ok) {
 				const result = await response.json();
 				const newCategory: ProductResponse = {
-					id: result.data,
+					id: result.id,
 					name: formData.name,
 					productSubCategories: [],
 					description: formData.description,
 				};
-				setProducts((prev) => [...prev, newCategory]);
+				setCategorys((prev) => [...prev, newCategory]);
 				toast.success('Category added successfully');
 				setIsAddCategoryOpen(false);
 			} else {
@@ -281,7 +241,7 @@ const CategorieList = () => {
 			const result = await response.json();
 			if (result.id) {
 				toast.success('Product updated successfully');
-				setProducts((prevProducts) =>
+				setCategorys((prevProducts) =>
 					prevProducts.map((product) =>
 						product.id === productId ? { ...product, ...formData } : product
 					)
@@ -289,45 +249,13 @@ const CategorieList = () => {
 			}
 		} catch (error) {
 			console.error('Error updating product:', error);
-			toast.error('Failed to update product');
-		}
-	};
-
-	const handleEditSubProduct = async (
-		subProductId: string,
-		formData: SubCategoryFormData
-	) => {
-		try {
-			const response = await fetch(
-				`/api/product-management/category/sub-products/${subProductId}`,
+			toast.error(
+				error instanceof Error ? error.message : 'Failed to update product',
 				{
-					method: 'PATCH',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
 				}
 			);
-
-			if (!response.ok) {
-				throw new Error('Failed to update sub-category');
-			}
-
-			const result = await response.json();
-			if (result.id) {
-				toast.success('Sub-category updated successfully');
-				setSubProducts((prevSubProducts) =>
-					prevSubProducts.map((subProduct) =>
-						subProduct.id === subProductId
-							? { ...subProduct, ...formData }
-							: subProduct
-					)
-				);
-			}
-		} catch (error) {
-			console.error('Error updating sub-category:', error);
-			toast.error('Failed to update sub-category');
 		}
 	};
 
@@ -335,8 +263,8 @@ const CategorieList = () => {
 	if (error) return <div>Error: {error}</div>;
 
 	const summary: CategorySummary = {
-		totalCategories: products.length,
-		totalSubCategories: subProducts.length,
+		totalCategories: categorys.length,
+		totalSubCategories: subCategorys.length,
 		totalItemGroups: itemGroups.length,
 	};
 
@@ -372,7 +300,7 @@ const CategorieList = () => {
 					onAddData={onAddCategory}
 				/>
 				<CategoryItemList
-					products={products}
+					products={categorys}
 					selectedProduct={selectedProduct}
 					onSelectProduct={(product) => {
 						setSelectedProduct(product);
@@ -388,23 +316,22 @@ const CategorieList = () => {
 				mode="add"
 				product_category_id={selectedProduct?.id || ''}
 				product_category_name={selectedProduct?.name}
-				setSubProducts={setSubProducts}
+				setSubProducts={setSubCategorys}
 			/>
 
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
 					title="Sub Categories"
-					count={summary.totalSubCategories}
+					count={filteredSubCategories.length}
 					icon={<Tag className="w-6 h-6" />}
 					onAddData={onAddSubCategory}
 					disabled={!selectedProduct}
 				/>
 				<SubCategoryList
-					subProducts={filteredSubProducts}
-					selectedSubProduct={selectedSubProduct}
-					onSelectSubProduct={setSelectedSubProduct}
-					onDeleteSubProduct={handleDeleteSubProduct}
-					onEditSubProduct={handleEditSubProduct}
+					subCategories={filteredSubCategories}
+					setSelectedSubCategory={setSubCategorys}
+					categoryId={selectedProduct?.id || ''}
+					categoryName={selectedProduct?.name || ''}
 				/>
 			</div>
 
