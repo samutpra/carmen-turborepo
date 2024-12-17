@@ -29,12 +29,12 @@ import {
 
 import { CreditNoteService } from './credit-note.service';
 
-@Controller("api/v1/credit-note")
-@ApiTags("credit-note")
+@Controller('api/v1/credit-note')
+@ApiTags('credit-note')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class CreditNoteController {
@@ -42,14 +42,14 @@ export class CreditNoteController {
 
   private readonly logger = new Logger(CreditNoteController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.creditNoteService.findOne(req, id);
   }
@@ -58,15 +58,15 @@ export class CreditNoteController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ["name", "description"];
+    const defaultSearchFields: string[] = ['name', 'description'];
     this.logger.debug({
       page: page,
       perpage: perpage,
@@ -95,26 +95,26 @@ export class CreditNoteController {
   @Post()
   @ApiBody({
     type: CreditNoteCreateDto,
-    description: "CreditNoteCreateDto",
+    description: 'CreditNoteCreateDto',
   })
   async create(@Req() req: Request, @Body() createDto: CreditNoteCreateDto) {
     this.logger.debug({ createDto: createDto });
     return this.creditNoteService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: CreditNoteUpdateDto,
-    description: "CreditNoteUpdateDto",
+    description: 'CreditNoteUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Req() req: Request,
     @Body() updateDto: any,
   ) {
@@ -124,14 +124,14 @@ export class CreditNoteController {
     return this.creditNoteService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.creditNoteService.delete(req, id);
   }

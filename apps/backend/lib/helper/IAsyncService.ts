@@ -1,8 +1,4 @@
-import {
-  IResponseId,
-  IResponseList,
-  IResponseSingle,
-} from './iResponse';
+import { IResponseId, IResponseList, IResponseSingle } from './iResponse';
 
 export interface IAsyncService<T, C, U> {
   get: (

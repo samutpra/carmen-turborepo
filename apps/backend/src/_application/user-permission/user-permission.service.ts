@@ -1,14 +1,7 @@
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 @Injectable()

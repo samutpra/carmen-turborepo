@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   ClusterCreateDto,
@@ -54,7 +46,7 @@ export class SystemClusterService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Cluster not found");
+      throw new NotFoundException('Cluster not found');
     }
     const res: ResponseSingle<tb_cluster> = {
       data: oneObj,
@@ -103,7 +95,7 @@ export class SystemClusterService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "cluster already exists",
+        message: 'cluster already exists',
         id: found.id,
       });
     }
@@ -135,7 +127,7 @@ export class SystemClusterService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Cluster not found");
+      throw new NotFoundException('Cluster not found');
     }
 
     if (oneObj.code !== updateDto.code) {
@@ -173,7 +165,7 @@ export class SystemClusterService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Cluster not found");
+      throw new NotFoundException('Cluster not found');
     }
 
     const isActiveBUs = await this.db_System.tb_business_unit.count({
@@ -183,7 +175,7 @@ export class SystemClusterService {
     });
 
     if (isActiveBUs > 0) {
-      throw new BadRequestException("Cluster is in use");
+      throw new BadRequestException('Cluster is in use');
     }
 
     const res = await this.db_System.tb_cluster.delete({
@@ -193,7 +185,7 @@ export class SystemClusterService {
     });
 
     return {
-      message: "Cluster deleted successfully",
+      message: 'Cluster deleted successfully',
       id: res.id,
     };
   }

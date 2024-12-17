@@ -2,10 +2,7 @@ import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import {
-  UnitCreateDto,
-  UnitUpdateDto,
-} from '@carmensoftware/shared-dtos';
+import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
@@ -29,12 +26,12 @@ import {
 
 import { UnitsService } from './units.service';
 
-@Controller("api/v1/units")
-@ApiTags("units")
+@Controller('api/v1/units')
+@ApiTags('units')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class UnitsController {
@@ -42,14 +39,14 @@ export class UnitsController {
 
   private readonly logger = new Logger(UnitsController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.unitsService.findOne(req, id);
   }
@@ -58,15 +55,15 @@ export class UnitsController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ["name"];
+    const defaultSearchFields: string[] = ['name'];
 
     this.logger.debug({
       page: page,
@@ -97,26 +94,26 @@ export class UnitsController {
   @Post()
   @ApiBody({
     type: UnitCreateDto,
-    description: "UnitCreateDto",
+    description: 'UnitCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({ createDto: createDto });
     return this.unitsService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: UnitUpdateDto,
-    description: "UnitUpdateDto",
+    description: 'UnitUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -126,14 +123,14 @@ export class UnitsController {
     return this.unitsService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async remove(@Param("id") id: string, @Req() req: Request) {
+  async remove(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.unitsService.delete(req, id);
   }

@@ -29,12 +29,12 @@ import {
 
 import { ExchangerateService } from './exchangerate.service';
 
-@Controller("api/v1/exchangerate")
-@ApiTags("exchangerate")
+@Controller('api/v1/exchangerate')
+@ApiTags('exchangerate')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class ExchangerateController {
@@ -43,14 +43,14 @@ export class ExchangerateController {
   private readonly logger = new Logger(ExchangerateController.name);
 
   //#region GET ONE
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.exchangerateService.findOne(req, id);
   }
@@ -61,13 +61,13 @@ export class ExchangerateController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
 
@@ -91,7 +91,7 @@ export class ExchangerateController {
   @Post()
   @ApiBody({
     type: ExchangeRateCreateDto,
-    description: "ExchangeRateCreateDto",
+    description: 'ExchangeRateCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({ createDto: createDto });
@@ -100,19 +100,19 @@ export class ExchangerateController {
   //#endregion Create
 
   //#region UPDATE
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: ExchangeRateUpdateDto,
-    description: "ExchangeRateUpdateDto",
+    description: 'ExchangeRateUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -124,14 +124,14 @@ export class ExchangerateController {
   //#endregion UPDATE
 
   //#region DELETE
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.exchangerateService.delete(req, id);
   }

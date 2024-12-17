@@ -64,7 +64,6 @@ async function main() {
   // const userBusinessUnit1 = await prisma.userBusinessUnit.create({
   //   data: businessUnit1Obj,
   // });
-
   // const permission_list: _permission_item[] = [
   //   {
   //     group: 'menu',
@@ -142,7 +141,6 @@ async function main() {
   //   //   actions: [$Enums.enum_permission_action.view],
   //   // },
   // ];
-
   // permission_list.map(async (item) => {
   //   item.actions?.map(async (action) => {
   //     const permission_tb = await db_system.permission_table.upsert({
@@ -162,7 +160,6 @@ async function main() {
   //     });
   //   });
   // });
-
   // path: "/dashboard",
   // path: "/procurement",
   //         path: "/procurement/my-approvals",

@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   BusinessUnitCreateDto,
@@ -27,9 +19,7 @@ import {
   tb_business_unit,
 } from '@prisma-carmen-client-system';
 
-import {
-  SystemBusinessUnitController,
-} from './system-business-unit.controller';
+import { SystemBusinessUnitController } from './system-business-unit.controller';
 
 @Injectable()
 export class SystemBusinessUnitService {
@@ -60,7 +50,7 @@ export class SystemBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("BusinessUnit not found");
+      throw new NotFoundException('BusinessUnit not found');
     }
     const res: ResponseSingle<tb_business_unit> = {
       data: oneObj,
@@ -114,7 +104,7 @@ export class SystemBusinessUnitService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "BusinessUnit already exists",
+        message: 'BusinessUnit already exists',
         id: found.id,
       });
     }
@@ -146,7 +136,7 @@ export class SystemBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("BusinessUnit not found");
+      throw new NotFoundException('BusinessUnit not found');
     }
 
     if (updateDto.cluster_id == null) {
@@ -198,7 +188,7 @@ export class SystemBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("BusinessUnit not found");
+      throw new NotFoundException('BusinessUnit not found');
     }
 
     await this.db_System.tb_business_unit.delete({

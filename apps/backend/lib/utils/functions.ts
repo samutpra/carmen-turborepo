@@ -11,7 +11,7 @@ export function addMonths(date: Date, months: number) {
 }
 
 export function isWelformJWT(token: string) {
-  if (token === null || token === undefined || token === "") {
+  if (token === null || token === undefined || token === '') {
     return false;
   }
   const regex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;

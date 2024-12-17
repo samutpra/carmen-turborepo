@@ -29,12 +29,12 @@ import {
 
 import { ProductSubCategoryService } from './product-sub-category.service';
 
-@Controller("api/v1/product-sub-category")
-@ApiTags("Product-sub-category")
+@Controller('api/v1/product-sub-category')
+@ApiTags('Product-sub-category')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class ProductSubCategoryController {
@@ -44,14 +44,14 @@ export class ProductSubCategoryController {
 
   private readonly logger = new Logger(ProductSubCategoryController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async fineOne(@Param("id") id: string, @Req() req: Request) {
+  async fineOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.productSubCategoryService.findOne(req, id);
   }
@@ -60,13 +60,13 @@ export class ProductSubCategoryController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
 
@@ -96,26 +96,26 @@ export class ProductSubCategoryController {
   @Post()
   @ApiBody({
     type: ProductSubCategoryCreateDto,
-    description: "ProductSubCategoryCreateDto",
+    description: 'ProductSubCategoryCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({ createDto: createDto });
     return this.productSubCategoryService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: ProductSubCategoryUpdateDto,
-    description: "ProductSubCategoryUpdateDto",
+    description: 'ProductSubCategoryUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: ProductSubCategoryUpdateDto,
     @Req() req: Request,
   ) {
@@ -125,14 +125,14 @@ export class ProductSubCategoryController {
     return this.productSubCategoryService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.productSubCategoryService.delete(req, id);
   }

@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   ProductCreateDto,
@@ -53,7 +45,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     const res: ResponseSingle<tb_product> = {
@@ -101,7 +93,7 @@ export class ProductsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Product already exists",
+        message: 'Product already exists',
         id: found.id,
       });
     }
@@ -126,7 +118,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     // const obj: Prisma.ProductUpdateInput = {
@@ -160,7 +152,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     await this.db_tenant.tb_product.delete({

@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   ExchangeRateCreateDto,
@@ -56,7 +48,7 @@ export class ExchangerateService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Exchangerate not found");
+      throw new NotFoundException('Exchangerate not found');
     }
 
     const res: ResponseSingle<tb_exchange_rate> = {
@@ -109,7 +101,7 @@ export class ExchangerateService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Exchange Rate already exists",
+        message: 'Exchange Rate already exists',
         id: found.id,
       });
     }
@@ -136,7 +128,7 @@ export class ExchangerateService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Exchangerate not found");
+      throw new NotFoundException('Exchangerate not found');
     }
 
     const updateObj = await this.db_tenant.tb_exchange_rate.update({
@@ -159,7 +151,7 @@ export class ExchangerateService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Exchangerate not found");
+      throw new NotFoundException('Exchangerate not found');
     }
 
     await this.db_tenant.tb_exchange_rate.delete({

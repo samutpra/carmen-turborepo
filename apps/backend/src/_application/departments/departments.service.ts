@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   DepartmentCreateDto,
@@ -56,7 +48,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
     const res: ResponseSingle<tb_department> = {
       data: oneObj,
@@ -108,7 +100,7 @@ export class DepartmentsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Department already exists",
+        message: 'Department already exists',
         id: found.id,
       });
     }
@@ -133,7 +125,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
 
     const updateObj = await this.db_tenant.tb_department.update({
@@ -156,7 +148,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
 
     await this.db_tenant.tb_department.delete({

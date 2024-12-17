@@ -34,12 +34,12 @@ import {
 
 import { SystemClusterService } from './system-cluster.service';
 
-@Controller("system-api/v1/clusters")
-@ApiTags("system/cluster")
+@Controller('system-api/v1/clusters')
+@ApiTags('system/cluster')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class SystemClusterController {
@@ -47,14 +47,14 @@ export class SystemClusterController {
 
   private readonly logger = new Logger(SystemClusterController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemClusterService.findOne(req, id);
   }
@@ -63,15 +63,15 @@ export class SystemClusterController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ["code", "name"];
+    const defaultSearchFields: string[] = ['code', 'name'];
 
     this.logger.log({
       page,
@@ -100,7 +100,7 @@ export class SystemClusterController {
   @Post()
   @ApiBody({
     type: ClusterCreateDto,
-    description: "ClusterCreateDto",
+    description: 'ClusterCreateDto',
   })
   @UsePipes(new ZodValidationPipe(ClusterCreateSchema))
   async create(@Body() createDto: ClusterCreateDto, @Req() req: Request) {
@@ -113,19 +113,19 @@ export class SystemClusterController {
     return this.systemClusterService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: ClusterUpdateDto,
-    description: "ClusterUpdateDto",
+    description: 'ClusterUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: ClusterUpdateDto,
     @Req() req: Request,
   ) {
@@ -142,14 +142,14 @@ export class SystemClusterController {
     return this.systemClusterService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemClusterService.delete(req, id);
   }

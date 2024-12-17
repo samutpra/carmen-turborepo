@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   LocationCreateDto,
@@ -57,7 +49,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     const res: ResponseSingle<tb_location> = {
@@ -129,13 +121,13 @@ export class LocationsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Location already exists",
+        message: 'Location already exists',
         id: found.id,
       });
     }
 
     if (!createDto.location_type) {
-      throw new NotFoundException("Location type not found");
+      throw new NotFoundException('Location type not found');
     }
 
     const location_type =
@@ -168,7 +160,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     const location_type =
@@ -199,7 +191,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     await this.db_tenant.tb_location.delete({

@@ -34,12 +34,12 @@ import {
 
 import { SystemUsersService } from './system-users.service';
 
-@Controller("system-api/v1/users")
-@ApiTags("system/users")
+@Controller('system-api/v1/users')
+@ApiTags('system/users')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class SystemUsersController {
@@ -47,14 +47,14 @@ export class SystemUsersController {
 
   private readonly logger = new Logger(SystemUsersController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUsersService.findOne(req, id);
   }
@@ -63,19 +63,19 @@ export class SystemUsersController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [
-      "name",
-      "code",
-      "symbol",
-      "description",
+      'name',
+      'code',
+      'symbol',
+      'description',
     ];
 
     this.logger.log({
@@ -106,7 +106,7 @@ export class SystemUsersController {
   @Post()
   @ApiBody({
     type: UserCreateDto,
-    description: "UserCreateDto",
+    description: 'UserCreateDto',
   })
   @UsePipes(new ZodValidationPipe(UserCreateSchema))
   async create(@Body() createDto: UserCreateDto, @Req() req: Request) {
@@ -120,19 +120,19 @@ export class SystemUsersController {
     return this.systemUsersService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: UserUpdateDto,
-    description: "UserUpdateDto",
+    description: 'UserUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: UserUpdateDto,
     @Req() req: Request,
   ) {
@@ -149,14 +149,14 @@ export class SystemUsersController {
     return this.systemUsersService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUsersService.delete(req, id);
   }

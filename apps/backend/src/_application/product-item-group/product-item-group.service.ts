@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   ProductItemGroupCreateDto,
@@ -59,7 +51,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
     const res: ResponseSingle<tb_product_item_group> = {
       data: oneObj,
@@ -113,7 +105,7 @@ export class ProductItemGroupService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "productItemGroup already exists",
+        message: 'productItemGroup already exists',
         id: found.id,
       });
     }
@@ -139,7 +131,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
 
     const updateObj = await this.db_tenant.tb_product_item_group.update({
@@ -162,7 +154,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
 
     await this.db_tenant.tb_product_item_group.delete({

@@ -29,12 +29,12 @@ import {
 
 import { DepartmentsService } from './departments.service';
 
-@Controller("api/v1/departments")
-@ApiTags("department")
+@Controller('api/v1/departments')
+@ApiTags('department')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class DepartmentsController {
@@ -42,14 +42,14 @@ export class DepartmentsController {
 
   private readonly logger = new Logger(DepartmentsController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async fineOne(@Param("id") id: string, @Req() req: Request) {
+  async fineOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.departmentsService.findOne(req, id);
   }
@@ -58,15 +58,15 @@ export class DepartmentsController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ["name", "description"];
+    const defaultSearchFields: string[] = ['name', 'description'];
 
     this.logger.debug({
       page: page,
@@ -96,26 +96,26 @@ export class DepartmentsController {
   @Post()
   @ApiBody({
     type: DepartmentCreateDto,
-    description: "DepartmentCreateDto",
+    description: 'DepartmentCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({ createDto: createDto });
     return this.departmentsService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: DepartmentUpdateDto,
-    description: "DepartmentUpdateDto",
+    description: 'DepartmentUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -125,14 +125,14 @@ export class DepartmentsController {
     return this.departmentsService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.departmentsService.delete(req, id);
   }

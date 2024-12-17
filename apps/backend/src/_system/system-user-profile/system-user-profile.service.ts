@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   UserProfileCreateDto,
@@ -56,7 +48,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("UserProfile not found");
+      throw new NotFoundException('UserProfile not found');
     }
     const res: ResponseSingle<tb_user_profile> = {
       data: oneObj,
@@ -105,7 +97,7 @@ export class SystemUserProfileService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "UserProfile already exists",
+        message: 'UserProfile already exists',
         id: found.id,
       });
     }
@@ -142,7 +134,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("UserProfile not found");
+      throw new NotFoundException('UserProfile not found');
     }
 
     const updateObj = await this.db_System.tb_user_profile.update({
@@ -173,7 +165,7 @@ export class SystemUserProfileService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("UserProfile not found");
+      throw new NotFoundException('UserProfile not found');
     }
 
     await this.db_System.tb_user_profile.delete({

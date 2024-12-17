@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   CurrencyCreateDto,
@@ -94,7 +86,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Currency not found");
+      throw new NotFoundException('Currency not found');
     }
     const res: ResponseSingle<tb_currency> = {
       data: oneObj,
@@ -148,7 +140,7 @@ export class CurrenciesService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Currency already exists",
+        message: 'Currency already exists',
         id: found.id,
       });
     }
@@ -185,7 +177,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Currency not found");
+      throw new NotFoundException('Currency not found');
     }
 
     const updateObj = await this.db_tenant.tb_currency.update({
@@ -210,7 +202,7 @@ export class CurrenciesService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Currency not found");
+      throw new NotFoundException('Currency not found');
     }
 
     await this.db_tenant.tb_currency.delete({

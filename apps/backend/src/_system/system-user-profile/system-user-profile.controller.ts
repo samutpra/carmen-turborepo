@@ -29,12 +29,12 @@ import {
 
 import { SystemUserProfileService } from './system-user-profile.service';
 
-@Controller("system-api/v1/user-profile")
-@ApiTags("system/user-profile")
+@Controller('system-api/v1/user-profile')
+@ApiTags('system/user-profile')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class SystemUserProfileController {
@@ -44,14 +44,14 @@ export class SystemUserProfileController {
 
   private readonly logger = new Logger(SystemUserProfileController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUserProfileService.findOne(req, id);
   }
@@ -60,13 +60,13 @@ export class SystemUserProfileController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
     this.logger.log({
@@ -95,26 +95,26 @@ export class SystemUserProfileController {
   @Post()
   @ApiBody({
     type: UserProfileCreateDto,
-    description: "UserProfileCreateDto",
+    description: 'UserProfileCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.log({ createDto });
     return this.systemUserProfileService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: UserProfileUpdateDto,
-    description: "UserProfileUpdateDto",
+    description: 'UserProfileUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -124,14 +124,14 @@ export class SystemUserProfileController {
     return this.systemUserProfileService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUserProfileService.delete(req, id);
   }

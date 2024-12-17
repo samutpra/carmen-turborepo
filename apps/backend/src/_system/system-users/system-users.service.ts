@@ -1,21 +1,10 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import {
-  UserCreateDto,
-  UserUpdateDto,
-} from '@carmensoftware/shared-dtos';
+import { UserCreateDto, UserUpdateDto } from '@carmensoftware/shared-dtos';
 import {
   HttpStatus,
   Injectable,
@@ -51,11 +40,14 @@ export class SystemUsersService {
     db_System: dbSystem,
     username: string,
   ): Promise<tb_user> {
-    this.logger.debug({ function: "findByUsername", username: username });
+    this.logger.debug({ function: 'findByUsername', username: username });
 
     const res = await db_System.tb_user.findFirst({
       where: {
-        username: username,
+        username: {
+          equals: username,
+          mode: 'insensitive',
+        },
       },
     });
     return res;
@@ -67,7 +59,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
     const res: ResponseSingle<tb_user> = {
       data: oneObj,
@@ -110,7 +102,7 @@ export class SystemUsersService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "User already exists",
+        message: 'User already exists',
         id: found.id,
       });
     }
@@ -143,7 +135,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     const updateObj = await this.db_System.tb_user.update({
@@ -166,7 +158,7 @@ export class SystemUsersService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     //check if uses is inused

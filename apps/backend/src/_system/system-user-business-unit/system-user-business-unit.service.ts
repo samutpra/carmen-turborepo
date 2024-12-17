@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   UserBusinessUnitCreateDto,
@@ -27,9 +19,7 @@ import {
   tb_user_tb_business_unit,
 } from '@prisma-carmen-client-system';
 
-import {
-  SystemUserBusinessUnitController,
-} from './system-user-business-unit.controller';
+import { SystemUserBusinessUnitController } from './system-user-business-unit.controller';
 
 @Injectable()
 export class SystemUserBusinessUnitService {
@@ -50,7 +40,7 @@ export class SystemUserBusinessUnitService {
       where: {
         id: id,
       },
-      relationLoadStrategy: "join",
+      relationLoadStrategy: 'join',
       include: {
         tb_business_unit: {
           select: {
@@ -83,7 +73,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User - BusinessUnit not found");
+      throw new NotFoundException('User - BusinessUnit not found');
     }
     const res: ResponseSingle<tb_user_tb_business_unit> = {
       data: oneObj,
@@ -103,7 +93,7 @@ export class SystemUserBusinessUnitService {
 
     const q_include = {
       ...q.findMany(),
-      relationLoadStrategy: "join",
+      relationLoadStrategy: 'join',
       include: {
         business_unit_table: {
           select: {
@@ -157,7 +147,7 @@ export class SystemUserBusinessUnitService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "User - BusinessUnit already exists",
+        message: 'User - BusinessUnit already exists',
         id: found.id,
       });
     }
@@ -189,7 +179,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User - BusinessUnit not found");
+      throw new NotFoundException('User - BusinessUnit not found');
     }
 
     const updateObj = await this.db_System.tb_user_tb_business_unit.update({
@@ -212,7 +202,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException("User - BusinessUnit not found");
+      throw new NotFoundException('User - BusinessUnit not found');
     }
 
     await this.db_System.tb_user_tb_business_unit.delete({

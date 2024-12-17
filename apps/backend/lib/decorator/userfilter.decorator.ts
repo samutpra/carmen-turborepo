@@ -4,40 +4,40 @@ import { ApiQuery } from '@nestjs/swagger';
 export function ApiUserFilterQueries() {
   return applyDecorators(
     ApiQuery({
-      name: "page",
-      description: "Page",
+      name: 'page',
+      description: 'Page',
       required: false,
-      type: "number",
+      type: 'number',
     }),
     ApiQuery({
-      name: "perpage",
-      description: "Perpage",
+      name: 'perpage',
+      description: 'Perpage',
       required: false,
-      type: "number",
+      type: 'number',
     }),
     ApiQuery({
-      name: "search",
-      description: "Search",
+      name: 'search',
+      description: 'Search',
       required: false,
-      type: "string",
+      type: 'string',
     }),
     ApiQuery({
-      name: "filter",
-      description: "Filter",
+      name: 'filter',
+      description: 'Filter',
       required: false,
-      type: "Record<string, string>",
+      type: 'Record<string, string>',
     }),
     ApiQuery({
-      name: "searchfields",
-      description: "searchfields",
+      name: 'searchfields',
+      description: 'searchfields',
       required: false,
-      type: "string",
+      type: 'string',
     }),
     ApiQuery({
-      name: "sort",
-      description: "sort",
+      name: 'sort',
+      description: 'sort',
       required: false,
-      type: "string",
+      type: 'string',
     }),
   );
 }
