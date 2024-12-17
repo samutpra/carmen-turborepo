@@ -104,7 +104,7 @@ const SubCatDialog: React.FC<Props> = ({
 			});
 
 			if (!response.ok) {
-				throw new Error(`Failed to ${mode} sub-category`);
+				toast.error(`Failed to ${mode} sub-category`);
 			}
 
 			const result = await response.json();

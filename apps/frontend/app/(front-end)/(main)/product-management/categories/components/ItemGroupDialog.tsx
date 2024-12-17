@@ -47,9 +47,6 @@ const ItemGroupDialog: React.FC<Props> = ({
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
-	console.log('mode itemGroupDialog', mode);
-
-	console.log('itemGroup', itemGroup);
 
 	const form = useForm<ProductItemGroupType>({
 		resolver: zodResolver(productItemGroupSchema),
@@ -91,8 +88,6 @@ const ItemGroupDialog: React.FC<Props> = ({
 			product_subcategory_id: subcategory_id,
 		};
 
-		console.log('payload', payload);
-
 		try {
 			const method = mode === 'add' ? 'POST' : 'PATCH';
 			const url =
@@ -110,7 +105,10 @@ const ItemGroupDialog: React.FC<Props> = ({
 			});
 
 			if (!response.ok) {
-				throw new Error(`Failed to ${mode} item group`);
+				toast.error(`Failed to ${mode} item group`, {
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				});
 			}
 
 			const result = await response.json();
@@ -129,9 +127,18 @@ const ItemGroupDialog: React.FC<Props> = ({
 							: itemGroup
 					)
 				);
+				toast.success('Item group updated successfully');
 			}
+			handleClose();
 		} catch (error) {
 			console.error('Error submitting form:', error);
+			toast.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
 		}
 	};
 

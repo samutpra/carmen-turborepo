@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Pencil, Trash } from 'lucide-react';
 import ItemGroupDialog from './ItemGroupDialog';
+import { toast } from 'sonner';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface Props {
 	data: ProductItemGroupType[];
@@ -32,12 +34,13 @@ const ItemGroupList: React.FC<Props> = ({
 	subCategoryId,
 	subCategoryName,
 }) => {
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [itemGroup, setItemGroup] = useState<ProductItemGroupType | null>(null);
-	const [itemGroupToDelete, setItemGroupToDelete] = useState<string | null>(
-		null
-	);
-	console.log('data item group', data);
+	const [idToDelete, setIdToDelete] = useState<string | null>(null);
+
+	console.log('idToDelete', idToDelete);
 
 	const handleEditClick = (itemGroup: ProductItemGroupType) => {
 		setItemGroup(itemGroup);
@@ -45,7 +48,37 @@ const ItemGroupList: React.FC<Props> = ({
 	};
 
 	const handleDeleteItemGroup = async () => {
-		if (!itemGroup) return;
+		if (!idToDelete) return;
+		try {
+			const response = await fetch(
+				`/api/product-management/category/product-item-group/${idToDelete}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			if (response.ok) {
+				setData((prevItemGroups) =>
+					prevItemGroups.filter((itemGroup) => itemGroup.id !== idToDelete)
+				);
+				toast.success('Item group deleted successfully');
+			} else {
+				toast.error('Failed to delete item group', {
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				});
+			}
+		} catch (error) {
+			toast.error(
+				error instanceof Error ? error.message : 'Internal Server Error',
+				{
+					className: 'bg-red-500 text-white border-none',
+					duration: 3000,
+				}
+			);
+		}
 	};
 
 	const itemGroupListItems = data.map((itemGroup) => (
@@ -73,7 +106,7 @@ const ItemGroupList: React.FC<Props> = ({
 							size="icon"
 							className="h-8 w-8 text-destructive hover:text-destructive"
 							aria-label="Delete sub category"
-							onClick={() => setItemGroupToDelete(itemGroup.id || '')}
+							onClick={() => setIdToDelete(itemGroup.id || '')}
 						>
 							<Trash className="h-4 w-4" />
 						</Button>
@@ -84,7 +117,7 @@ const ItemGroupList: React.FC<Props> = ({
 							<AlertDialogDescription>
 								This action cannot be undone. This will permanently delete the
 								sub-category &quot;
-								{data.find((sc) => sc.id === itemGroupToDelete)?.name}
+								{data.find((sc) => sc.id === idToDelete)?.name}
 								&quot;.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
