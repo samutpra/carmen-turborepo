@@ -43,6 +43,7 @@ const SubCategoryList: React.FC<Props> = ({
 	const [subCategoryToDelete, setSubCategoryToDelete] = useState<string | null>(
 		null
 	);
+	const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<string | null>(null);
 
 	const handleEditClick = (subCategory: SubCategoryType) => {
 		setSubCategory(subCategory);
@@ -95,17 +96,21 @@ const SubCategoryList: React.FC<Props> = ({
 			<div
 				className={cn(
 					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
-					categoryId === subCategory.id && 'bg-accent'
+					selectedSubCategoryId === subCategory.id && 'bg-accent'
 				)}
 				role="button"
-				onClick={() => onSelectSubCategory(subCategory)}
+				onClick={() => {
+					setSelectedSubCategoryId(subCategory.id || null);
+					onSelectSubCategory(subCategory);
+				}}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {
+						setSelectedSubCategoryId(subCategory.id || null);
 						onSelectSubCategory(subCategory);
 					}
 				}}
 				aria-label={`Select ${subCategory.name} sub-category`}
-				aria-selected={categoryId === subCategory.id}
+				aria-selected={selectedSubCategoryId === subCategory.id}
 				tabIndex={0}
 			>
 				<span>{subCategory.name}</span>
