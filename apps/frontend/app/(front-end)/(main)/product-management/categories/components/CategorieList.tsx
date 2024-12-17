@@ -257,55 +257,6 @@ const CategorieList = () => {
 		}
 	};
 
-	const handleAddSubCategory = async (formData: SubCategoryFormData) => {
-		console.log('formData', formData);
-
-		try {
-			const response = await fetch(
-				'/api/product-management/category/product-sub-category',
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error('Failed to add sub-category');
-			}
-
-			const result = await response.json();
-
-			console.log('result', result);
-
-			const newSubCategory: SubCategoryType = {
-				id: result.data.id,
-				name: formData.name,
-				description: formData.description,
-				product_category_id: formData.product_category_id,
-				is_active: formData.is_active,
-			};
-
-			setSubProducts((prev) => [...prev, newSubCategory]);
-
-			setIsAddSubCategoryOpen(false);
-
-			toast.success('Sub-category added successfully');
-		} catch (error) {
-			console.error('Error adding sub-category:', error);
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
-		}
-	};
-
 	const handleEditProduct = async (
 		productId: string,
 		formData: CategoryFormData

@@ -17,6 +17,7 @@ import { Pencil, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import SubCategoryDialog from './SubCategoryDialog';
 import React, { useState, useCallback } from 'react';
+import SubCatDialog from './SubCatDialog';
 
 interface SubCategoryListProps {
 	subProducts: SubCategoryType[];
@@ -129,7 +130,16 @@ const SubCategoryList = ({
 				<CardContent className="space-y-2">{subCategoryListItems}</CardContent>
 			</Card>
 
-			<SubCategoryDialog
+
+			<SubCatDialog
+				open={isEditDialogOpen}
+				onOpenChange={setIsEditDialogOpen}
+				mode="edit"
+				product_category_id={selectedProduct?.id || ''}
+				product_category_name={selectedProduct?.name}
+				setSubProducts={setSubProducts}
+			/>
+			{/* <SubCategoryDialog
 				open={isEditDialogOpen}
 				onOpenChange={setIsEditDialogOpen}
 				onSubmit={handleEditSubmit}
@@ -145,7 +155,7 @@ const SubCategoryList = ({
 				}
 				mode="edit"
 				categories={subProducts}
-			/>
+			/> */}
 		</>
 	);
 };

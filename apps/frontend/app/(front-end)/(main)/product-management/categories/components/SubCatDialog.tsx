@@ -66,6 +66,9 @@ const SubCatDialog: React.FC<Props> = ({
 		},
 	});
 
+	console.log('mode', mode, 'initialData', initialData);
+	
+
 	const handleSubmit = async (values: SubCategoryType) => {
 		console.log('values', values);
 		const payload = {
