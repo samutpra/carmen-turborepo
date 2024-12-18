@@ -114,39 +114,7 @@ export const menuItems = [
 			},
 		],
 	},
-	{
-		title: `${m.configuration()}`,
-		path: '/configuration',
-		icon: 'MonitorCog',
-		visible: true,
-		enabled: true,
-		subItems: [
-			{
-				name: `${m.currency()}`,
-				path: '/configuration/currency',
-				visible: true,
-				enabled: true,
-			},
-			{
-				name: `${m.delivery_point()}`,
-				path: '/configuration/delivery-point',
-				visible: true,
-				enabled: true,
-			},
-			{
-				name: `${m.store_location()}`,
-				path: '/configuration/store-location',
-				visible: true,
-				enabled: true,
-			},
-			{
-				name: `${m.department()}`,
-				path: '/configuration/department',
-				visible: true,
-				enabled: true,
-			},
-		],
-	},
+
 	{
 		title: `${m.store_operations()}`,
 		path: '/store-operations',
@@ -360,6 +328,39 @@ export const menuItems = [
 			{
 				name: `${m.budget_planning_and_control()}`,
 				path: '/finance/budget-planning-and-control',
+				visible: true,
+				enabled: true,
+			},
+		],
+	},
+	{
+		title: `${m.configuration()}`,
+		path: '/configuration',
+		icon: 'MonitorCog',
+		visible: true,
+		enabled: true,
+		subItems: [
+			{
+				name: `${m.currency()}`,
+				path: '/configuration/currency',
+				visible: true,
+				enabled: true,
+			},
+			{
+				name: `${m.delivery_point()}`,
+				path: '/configuration/delivery-point',
+				visible: true,
+				enabled: true,
+			},
+			{
+				name: `${m.store_location()}`,
+				path: '/configuration/store-location',
+				visible: true,
+				enabled: true,
+			},
+			{
+				name: `${m.department()}`,
+				path: '/configuration/department',
 				visible: true,
 				enabled: true,
 			},
