@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (Vendor 1)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/vendor
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Vendor 1",
+    "description": "vendor 1 description",
+    "is_active": true
+  }
+}
