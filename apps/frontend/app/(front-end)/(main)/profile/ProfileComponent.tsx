@@ -41,7 +41,6 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const ProfileComponent = () => {
-	// Initialize form with react-hook-form and zod validation
 	const form = useForm<ProfileFormValues>({
 		resolver: zodResolver(profileFormSchema),
 		defaultValues: {
