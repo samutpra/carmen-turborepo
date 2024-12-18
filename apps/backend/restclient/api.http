@@ -1,6 +1,6 @@
 @host=http://localhost:4000
 
-# ### welcome
+# welcome
 # GET {{host}}
 
 ### register [email-token]
@@ -20,7 +20,7 @@ Content-Type: application/json
   "username": "test@carmensoftware.com",
   "email": "test@carmensoftware.com",
   "emailToken": "{{email_register_token}}",
-  "password": "123456",
+  "password": "AABBCC123",
   "userInfo": {
     "firstName" : "TEST",
     "middleName" : "(DEVELOPER)",
@@ -36,14 +36,14 @@ Content-Type: application/json
 {"username": "test@carmensoftware.com","password": "123456"}
 
 ### get token
-@access_token={{login.response.body.access_token}}
+@old_access_token={{login.response.body.access_token}}
 @refresh_token={{login.response.body.refresh_token}}
 @user_id={{login.response.body.user.id}}
 
 
 ### get user info
 GET {{host}}/api/v1/auth/status
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{old_access_token}}
 
 
 ### Refresh token
@@ -54,7 +54,7 @@ Content-Type: application/json
   "refresh": "{{refresh_token}}"
 }
 
-### get token
+### get token after refreshtoken is set
 @access_token={{login.response.body.access_token}}
 
 ### create cluster
@@ -110,3 +110,100 @@ Content-Type: application/json
 ### get user
 GET {{host}}/system-api/v1/users/{{user_id}}
 Authorization: Bearer {{access_token}}
+
+### create department 1
+# @name create_department_1
+POST {{host}}/system-api/v1/departments
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "business_unit_id": "{{bu_id}}",
+  "code": "DEP001",
+  "name": "แผนกครัว",
+  "is_active": true
+}
+
+### get department 1 id
+@department_1_id={{create_department_1.response.body.id}}
+
+### create department 2 
+# @name create_department_2
+POST {{host}}/system-api/v1/departments
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "business_unit_id": "{{bu_id}}",
+  "code": "DEP002", 
+  "name": "แผนกบริการ",
+  "is_active": true
+}
+
+### get department 2 id
+@department_2_id={{create_department_2.response.body.id}}
+
+### create department 3
+# @name create_department_3 
+POST {{host}}/system-api/v1/departments
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "business_unit_id": "{{bu_id}}",
+  "code": "DEP003",
+  "name": "แผนกคลังสินค้า",
+  "is_active": true
+}
+
+### get department 3 id
+@department_3_id={{create_department_3.response.body.id}}
+
+
+### create delivery point
+# @name create_delivery_point
+POST {{host}}/system-api/v1/delivery-points
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "business_unit_id": "{{bu_id}}",
+  "code": "DP001", 
+  "name": "ร้านอาหารสาขาหลัก",
+  "address": "123 ถนนสุขุมวิท",
+  "contact_person": "คุณสมชาย ใจดี",
+  "contact_phone": "0812345678",
+  "is_active": true
+}
+
+### get delivery point id
+@delivery_point_id={{create_delivery_point.response.body.id}}
+
+### get delivery point
+GET {{host}}/system-api/v1/delivery-points/{{delivery_point_id}}
+Authorization: Bearer {{access_token}}
+
+
+### create location
+# @name create_location
+POST {{host}}/system-api/v1/locations
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "business_unit_id": "{{bu_id}}",
+  "code": "LOC001",
+  "name": "Main Store",
+  "address": "123 Main Street",
+  "is_active": true,
+  "delivery_point_id": "{{delivery_point_id}}"
+}
+
+### get location id
+@location_id={{create_location.response.body.id}}
+
+### get location
+GET {{host}}/system-api/v1/locations/{{location_id}}
+Authorization: Bearer {{access_token}}
+
+
