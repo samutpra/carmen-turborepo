@@ -24,7 +24,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-
+import { toast } from 'sonner';
 const fetchDeliveryPoints = async (token: string, tenantId: string) => {
 	try {
 		const url = `/api/configuration/delivery-point`;
@@ -100,6 +100,30 @@ const DeliveryPointList = () => {
 		});
 	};
 
+	const handleDelete = async (id: string) => {
+		try {
+			const response = await fetch(`/api/configuration/delivery-point/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete delivery point');
+			}
+
+			setDeliveryPoints((prev) => prev.filter((point) => point.id !== id));
+			toast.success('Delivery point deleted successfully');
+		} catch (err) {
+			console.error('Error deleting delivery point:', err);
+			toast.error('Failed to delete delivery point', {
+				description: err instanceof Error ? err.message : 'An error occurred',
+			});
+		}
+	};
+
 	if (error) {
 		return (
 			<Card className="border-destructive">
@@ -157,7 +181,7 @@ const DeliveryPointList = () => {
 											<AlertDialogFooter>
 												<AlertDialogCancel>Cancel</AlertDialogCancel>
 												<AlertDialogAction
-													onClick={() => handleSuccess(point)}
+													onClick={() => point.id && handleDelete(point.id)}
 													className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 												>
 													Delete
