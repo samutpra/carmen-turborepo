@@ -1,6 +1,8 @@
-import React from 'react';
-import { z } from 'zod';
+'use client';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import {
 	Form,
 	FormControl,
@@ -12,26 +14,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-const changePasswordSchema = z
-	.object({
-		old_password: z
-			.string()
-			.min(8, 'Old Password must be at least 8 characters'),
-		password: z.string().min(8, 'Password must be at least 8 characters'),
-		confirmPassword: z
-			.string()
-			.min(8, 'Confirm Password must be at least 8 characters'),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ['confirmPassword'],
-	});
-
-type ChangePasswordType = z.infer<typeof changePasswordSchema>;
+import {
+	changePasswordSchema,
+	ChangePasswordType,
+} from '@carmensoftware/shared-types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ChangePasswordPage: React.FC = () => {
-	// Define the form
+	const [isLoading, setIsLoading] = useState(false);
+
 	const form = useForm<ChangePasswordType>({
 		resolver: zodResolver(changePasswordSchema),
 		defaultValues: {
@@ -41,83 +32,101 @@ const ChangePasswordPage: React.FC = () => {
 		},
 	});
 
-	// Handle form submission
 	const onSubmit = async (data: ChangePasswordType) => {
+		setIsLoading(true);
 		try {
-			// TODO: Implement actual password change logic
-			console.log('Password change data:', data);
-			// Typically you would call an API endpoint here
-			alert('Password change submitted successfully!');
+			const response = await fetch('/api/auth/change-password', {
+				method: 'POST',
+				body: JSON.stringify(data),
+			});
+			const result = await response.json();
+			console.log(result);
+			form.reset();
 		} catch (error) {
 			console.error('Password change error:', error);
 			alert('Failed to change password');
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	return (
-		<div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-			<h2 className="text-2xl font-bold mb-6 text-center">Change Password</h2>
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-					<FormField
-						control={form.control}
-						name="old_password"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Current Password</FormLabel>
-								<FormControl>
-									<Input
-										type="password"
-										placeholder="Enter current password"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+		<div className="p-6">
+			<Card className="w-full max-w-md mx-auto">
+				<CardHeader>
+					<CardTitle>Change Password</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							<FormField
+								control={form.control}
+								name="old_password"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Current Password</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="Enter current password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-					<FormField
-						control={form.control}
-						name="password"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>New Password</FormLabel>
-								<FormControl>
-									<Input
-										type="password"
-										placeholder="Enter new password"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+							<FormField
+								control={form.control}
+								name="password"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>New Password</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="Enter new password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-					<FormField
-						control={form.control}
-						name="confirmPassword"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Confirm New Password</FormLabel>
-								<FormControl>
-									<Input
-										type="password"
-										placeholder="Confirm new password"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+							<FormField
+								control={form.control}
+								name="confirmPassword"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Confirm New Password</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="Confirm new password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-					<Button type="submit" className="w-full">
-						Change Password
-					</Button>
-				</form>
-			</Form>
+							<Button type="submit" className="w-full" disabled={isLoading}>
+								{isLoading ? (
+									<>
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										Changing Password...
+									</>
+								) : (
+									'Change Password'
+								)}
+							</Button>
+						</form>
+					</Form>
+				</CardContent>
+			</Card>
 		</div>
 	);
 };

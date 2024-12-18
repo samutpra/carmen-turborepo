@@ -32,25 +32,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <LanguageProvider>
-      <html lang={languageTag()}>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AuthProvider>
-              <NextTopLoader color="hsl(var(--primary))" />
-              {children}
-            </AuthProvider>
-          </ThemeProvider>
-          <Toaster />
-        </body>
-      </html>
-    </LanguageProvider>
-  );
+		<LanguageProvider>
+			<html lang={languageTag()}>
+				<body
+					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<AuthProvider>
+							<NextTopLoader color="hsl(var(--primary))" />
+							{children}
+						</AuthProvider>
+					</ThemeProvider>
+					<Toaster />
+				</body>
+			</html>
+		</LanguageProvider>
+	);
 }
