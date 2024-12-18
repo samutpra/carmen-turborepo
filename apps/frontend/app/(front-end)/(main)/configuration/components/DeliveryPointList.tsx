@@ -37,7 +37,7 @@ const fetchDeliveryPoints = async (
 		const query = new URLSearchParams();
 
 		if (params.search) {
-			query.append('filter[name]', params.search);
+			query.append('search', params.search);
 		}
 
 		if (params.status) {
