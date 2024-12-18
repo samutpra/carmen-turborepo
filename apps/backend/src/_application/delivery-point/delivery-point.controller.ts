@@ -65,7 +65,7 @@ export class DeliveryPointController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ['name', 'description'];
+    const defaultSearchFields: string[] = ["name"];
 
     this.logger.debug({
       page: page,
