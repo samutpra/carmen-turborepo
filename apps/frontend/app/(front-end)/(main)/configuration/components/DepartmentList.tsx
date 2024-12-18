@@ -200,7 +200,7 @@ const DepartmentList = () => {
 	);
 
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+		<div className="flex flex-col justify-start sm:flex-row gap-4">
 			<div className="w-full sm:w-auto flex-grow">
 				<SearchInput
 					placeholder="Search Currency..."
@@ -215,6 +215,7 @@ const DepartmentList = () => {
 						}
 					}}
 					Icon={Search}
+					className="h-9"
 				/>
 			</div>
 			<div className="flex items-center space-x-4">
@@ -228,8 +229,8 @@ const DepartmentList = () => {
 						>
 							{selectedStatus
 								? statusOptions.find(
-									(status) => status.value === selectedStatus
-								)?.label
+										(status) => status.value === selectedStatus
+									)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
