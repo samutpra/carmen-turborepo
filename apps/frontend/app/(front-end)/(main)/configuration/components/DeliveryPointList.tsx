@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { TrashIcon } from 'lucide-react';
+import { TrashIcon, Search } from 'lucide-react';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import {
 	AlertDialog,
@@ -25,9 +25,27 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-const fetchDeliveryPoints = async (token: string, tenantId: string) => {
+import { Input } from '@/components/ui/input';
+
+const fetchDeliveryPoints = async (
+	token: string,
+	tenantId: string,
+	params: { search?: string; status?: string } = {}
+) => {
 	try {
-		const url = `/api/configuration/delivery-point`;
+		const query = new URLSearchParams();
+
+		// Add search filter if exists
+		if (params.search) {
+			query.append('filter[name]', params.search);
+		}
+
+		// Add status filter if exists
+		if (params.status) {
+			query.append('filter[is_active:bool]', params.status);
+		}
+
+		const url = `/api/configuration/delivery-point?${query}`;
 
 		const options = {
 			method: 'GET',
@@ -72,12 +90,20 @@ const DeliveryPointList = () => {
 	const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointType[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [search, setSearch] = useState('');
+
+	const [status, setStatus] = useState<string>('');
+
+	console.log('search', search);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);
-				const data = await fetchDeliveryPoints(token, tenantId);
+				const data = await fetchDeliveryPoints(token, tenantId, {
+					search,
+					status,
+				});
 				setDeliveryPoints(data.data);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'An error occurred');
@@ -87,16 +113,15 @@ const DeliveryPointList = () => {
 		};
 
 		fetchData();
-	}, [token, tenantId]);
+	}, [token, tenantId, search, status]);
 
-	const handleSuccess = (point: DeliveryPointType) => {
+	const handleSuccess = (updatedPoint: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
-			if (point.id) {
-				// Update existing point
-				return prev.map((p) => (p.id === point.id ? point : p));
+			const exists = prev.some((p) => p.id === updatedPoint.id);
+			if (exists) {
+				return prev.map((p) => (p.id === updatedPoint.id ? updatedPoint : p));
 			}
-			// Add new point
-			return [...prev, point];
+			return [...prev, updatedPoint];
 		});
 	};
 
@@ -124,6 +149,22 @@ const DeliveryPointList = () => {
 		}
 	};
 
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
+
+	const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		setStatus(event.target.value);
+	};
+
 	if (error) {
 		return (
 			<Card className="border-destructive">
@@ -142,8 +183,38 @@ const DeliveryPointList = () => {
 				<h2 className="text-3xl font-bold tracking-tight">Delivery Points</h2>
 				<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
 			</div>
-
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="flex gap-4 mb-4">
+				<form onSubmit={handleSearch} className="flex gap-2 flex-1">
+					<div className="relative w-full md:w-1/4">
+						<Input
+							name="search"
+							placeholder="Search Delivery Point..."
+							className="h-10 pr-10"
+							defaultValue={search}
+							onKeyDown={handleKeyDown}
+						/>
+						<Button
+							type="submit"
+							variant="ghost"
+							size="icon"
+							className="absolute right-0 top-0 h-full px-3"
+						>
+							<Search className="h-4 w-4" />
+							<span className="sr-only">Search</span>
+						</Button>
+					</div>
+				</form>
+				<select
+					value={status}
+					onChange={handleStatusChange}
+					className="h-10 rounded-md border border-input bg-background px-3 py-2"
+				>
+					<option value="">All Status</option>
+					<option value="true">Active</option>
+					<option value="false">Inactive</option>
+				</select>
+			</div>
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				{isLoading
 					? [...Array(6)].map((_, index) => (
 							<DeliveryPointSkeleton key={index} />

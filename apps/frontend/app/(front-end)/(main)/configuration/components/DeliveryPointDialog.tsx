@@ -34,7 +34,7 @@ export type DialogMode = 'create' | 'edit';
 export interface DeliveryPointDialogProps {
 	mode: DialogMode;
 	defaultValues?: DeliveryPointType;
-	onSuccess?: (point: DeliveryPointType) => void;
+	onSuccess: (point: DeliveryPointType) => void;
 }
 
 export const DeliveryPointDialog = ({
@@ -57,10 +57,9 @@ export const DeliveryPointDialog = ({
 
 	const handleSubmit = async (data: DeliveryPointType) => {
 		try {
-			const url =
-				mode === 'create'
-					? '/api/configuration/delivery-point'
-					: `/api/configuration/delivery-point/${defaultValues?.id}`;
+			const url = mode === 'create'
+				? '/api/configuration/delivery-point'
+				: `/api/configuration/delivery-point/${defaultValues?.id}`;
 
 			const method = mode === 'create' ? 'POST' : 'PATCH';
 
@@ -84,7 +83,7 @@ export const DeliveryPointDialog = ({
 				...data,
 			};
 
-			onSuccess?.(updatedPoint);
+			onSuccess(updatedPoint);
 			setOpen(false);
 			form.reset();
 

@@ -10,6 +10,13 @@ export const GET = async (request: NextRequest) => {
 				{ status: 400 }
 			);
 		}
+
+		const searchParams = request.nextUrl.searchParams;
+		const queryString = searchParams.toString();
+		const apiUrl = queryString
+			? `${API_URL}/v1/delivery-point?${queryString}`
+			: `${API_URL}/v1/delivery-point`;
+
 		const options = {
 			method: 'GET',
 			headers: {
@@ -18,7 +25,8 @@ export const GET = async (request: NextRequest) => {
 				'Content-Type': 'application/json',
 			},
 		};
-		const response = await fetch(`${API_URL}/v1/delivery-point`, options);
+
+		const response = await fetch(apiUrl, options);
 		if (response.status === 401) {
 			return NextResponse.json(
 				{ error: 'Unauthorized access - Invalid or expired token' },
@@ -51,8 +59,15 @@ export const POST = async (request: NextRequest) => {
 				{ status: 401 }
 			);
 		}
+
+		// Get URL search params for any additional query parameters
+		const searchParams = request.nextUrl.searchParams;
+		const queryString = searchParams.toString();
+		const apiUrl = queryString
+			? `${API_URL}/v1/delivery-point?${queryString}`
+			: `${API_URL}/v1/delivery-point`;
+
 		const data = await request.json();
-		console.log('data', data);
 		const options = {
 			method: 'POST',
 			headers: {
@@ -65,7 +80,8 @@ export const POST = async (request: NextRequest) => {
 				is_active: data.is_active ?? true,
 			}),
 		};
-		const response = await fetch(`${API_URL}/v1/delivery-point`, options);
+
+		const response = await fetch(apiUrl, options);
 
 		if (!response.ok) {
 			throw new Error(
