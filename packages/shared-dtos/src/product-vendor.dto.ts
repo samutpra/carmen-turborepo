@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 export const ProductVendorCreateSchema = z.object({
 	id: z.string().uuid().optional(),
 	product_id: z.string().uuid(),
@@ -33,3 +34,4 @@ export class ProductVendorUpdateDto implements ProductVendorUpdateModel {
 	description?: string | null;
 	is_active?: boolean | null;
 }
+

@@ -111,3 +111,59 @@ export class UserProfileUpdateDto implements UserProfileUpdateModel {
 }
 
 //#endregion Zod Update
+export const mockUserProfiles: UserProfileUpdateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440011',
+		user_id: '550e8400-e29b-41d4-a716-446655440001',
+		firstname: 'จอห์น',
+		lastname: 'โด',
+		bio: {
+			age: 30,
+			occupation: 'โปรแกรมเมอร์',
+			education: 'ปริญญาตรี วิศวกรรมคอมพิวเตอร์',
+			contact: '081-234-5678',
+			address: '123 ถนนสุขุมวิท กรุงเทพฯ 10110',
+		}
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440012', 
+		user_id: '550e8400-e29b-41d4-a716-446655440002',
+		firstname: 'เจน',
+		middlename: 'แมรี่',
+		lastname: 'สมิธ',
+		bio: {
+			age: 25,
+			occupation: 'นักการตลาด',
+			education: 'ปริญญาโท บริหารธุรกิจ',
+			contact: '089-876-5432',
+			address: '456 ถนนสีลม กรุงเทพฯ 10500'
+		}
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440013',
+		user_id: '550e8400-e29b-41d4-a716-446655440003', 
+		firstname: 'บ๊อบ',
+		lastname: 'วิลสัน',
+		bio: {
+			age: 35,
+			occupation: 'ที่ปรึกษาด้านการเงิน',
+			education: 'ปริญญาตรี เศรษฐศาสตร์',
+			contact: '062-345-6789',
+			address: '789 ถนนเพชรบุรี กรุงเทพฯ 10400'
+		}
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440014',
+		user_id: '550e8400-e29b-41d4-a716-446655440004',
+		firstname: 'แอลิซ',
+		lastname: 'จอห์นสัน',
+		bio: {
+			age: 28,
+			occupation: 'นักออกแบบกราฟิก',
+			education: 'ปริญญาตรี ศิลปกรรมศาสตร์',
+			contact: '095-678-9012',
+			address: '321 ถนนรัชดาภิเษก กรุงเทพฯ 10310',
+			other: 'รับงานฟรีแลนซ์'
+		}
+	}
+];

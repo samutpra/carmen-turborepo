@@ -28,6 +28,7 @@ export * from './purchase-request-type.dto';
 export * from './purchase-request.dto';
 
 export * from './stock-in.dto';
+export * from './stock-out.dto';
 export * from './store-requisition-detail.dto';
 export * from './store-requisition.dto';
 
