@@ -16,7 +16,7 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui-custom/FormCustom';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -112,7 +112,7 @@ export const DeliveryPointDialog = ({
 					</CustomButton>
 				)}
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="w-full md:w-[500px] rounded-lg">
 				<DialogHeader>
 					<DialogTitle>
 						{mode === 'create'
@@ -137,6 +137,7 @@ export const DeliveryPointDialog = ({
 									<FormMessage />
 								</FormItem>
 							)}
+							required
 						/>
 						<FormField
 							control={form.control}

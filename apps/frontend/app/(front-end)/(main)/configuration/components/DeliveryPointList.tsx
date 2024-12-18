@@ -30,7 +30,6 @@ import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
@@ -38,6 +37,20 @@ import {
 } from '@/components/ui/table';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -102,7 +115,7 @@ const DeliveryPointList = () => {
 	const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointType[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
+	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURLState('search');
 	const [status, setStatus] = useURLState('status');
 
@@ -157,10 +170,6 @@ const DeliveryPointList = () => {
 		}
 	};
 
-	const handleStatusChange = (value: string) => {
-		setStatus(value);
-	};
-
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -192,46 +201,79 @@ const DeliveryPointList = () => {
 		);
 	}
 
-	return (
-		<div className="p-6">
-			<div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-6">
-				<h2 className="text-3xl font-bold tracking-tight">Delivery Points</h2>
-				<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
-			</div>
-			<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
-				<form onSubmit={handleSearch} className="flex gap-2 w-full">
-					<div className="relative w-full md:w-1/4">
-						<Input
-							name="search"
-							placeholder="Search Delivery Point..."
-							defaultValue={search}
-							onKeyDown={handleKeyDown}
-							className="h-10 pr-10"
-						/>
-						<Button
-							type="submit"
-							variant="ghost"
-							size="icon"
-							className="absolute right-0 top-0 h-full px-3"
-						>
-							<Search className="h-4 w-4" />
-							<span className="sr-only">Search</span>
-						</Button>
-					</div>
-				</form>
-				<div className="flex gap-2 justify-center items-center">
-					{statusOptions.map((option) => (
-						<Button
-							key={option.value}
-							onClick={() => handleStatusChange(option.value)}
-							variant={status === option.value ? 'default' : 'outline'}
-						>
-							{option.label}
-						</Button>
-					))}
-				</div>
-			</div>
+	const title = 'Delivery Points';
 
+	const actionButtons = (
+		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+			<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
+		</div>
+	);
+
+	const filter = (
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
+			<form onSubmit={handleSearch} className="flex gap-2 w-full">
+				<div className="relative w-full md:w-1/4">
+					<Input
+						name="search"
+						placeholder="Search Delivery Point..."
+						defaultValue={search}
+						onKeyDown={handleKeyDown}
+						className="h-10 pr-10"
+					/>
+					<Button
+						type="submit"
+						variant="ghost"
+						size="icon"
+						className="absolute right-0 top-0 h-full px-3"
+					>
+						<Search className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</Button>
+				</div>
+			</form>
+			<div className="flex gap-2 justify-center items-center">
+				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
+					<PopoverTrigger asChild>
+						<Button
+							variant="outline"
+							role="combobox"
+							aria-expanded={statusOpen}
+							className="w-full md:w-[200px] justify-between"
+						>
+							{status
+								? statusOptions.find((option) => option.value === status)?.label
+								: 'Select status...'}
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="p-0 w-full md:w-[200px]">
+						<Command>
+							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandList>
+								<CommandEmpty>No status found.</CommandEmpty>
+								<CommandGroup>
+									{statusOptions.map((option) => (
+										<CommandItem
+											key={option.value}
+											value={option.value}
+											onSelect={() => {
+												setStatus(option.value);
+												setStatusOpen(false);
+											}}
+										>
+											{option.label}
+										</CommandItem>
+									))}
+								</CommandGroup>
+							</CommandList>
+						</Command>
+					</PopoverContent>
+				</Popover>
+			</div>
+		</div>
+	);
+
+	const content = (
+		<>
 			<div className="block md:hidden">
 				<div className="grid grid-cols-1 gap-4">
 					{isLoading
@@ -294,7 +336,6 @@ const DeliveryPointList = () => {
 					<SkeletonTableLoading />
 				) : (
 					<Table>
-						<TableCaption>A list of delivery points</TableCaption>
 						<TableHeader>
 							<TableRow>
 								<TableHead className="w-[100px]">#</TableHead>
@@ -355,7 +396,16 @@ const DeliveryPointList = () => {
 					</Table>
 				)}
 			</div>
-		</div>
+		</>
+	);
+
+	return (
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
 	);
 };
 
