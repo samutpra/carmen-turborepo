@@ -52,6 +52,7 @@ export const POST = async (request: NextRequest) => {
 			);
 		}
 		const data = await request.json();
+		console.log('data', data);
 		const options = {
 			method: 'POST',
 			headers: {

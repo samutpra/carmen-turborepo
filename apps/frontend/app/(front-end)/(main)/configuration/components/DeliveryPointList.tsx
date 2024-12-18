@@ -2,6 +2,28 @@
 import { useAuth } from '@/app/context/AuthContext';
 import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { TrashIcon } from 'lucide-react';
+import { DeliveryPointDialog } from './DeliveryPointDialog';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 
 const fetchDeliveryPoints = async (token: string, tenantId: string) => {
 	try {
@@ -27,6 +49,22 @@ const fetchDeliveryPoints = async (token: string, tenantId: string) => {
 	}
 };
 
+const DeliveryPointSkeleton = () => {
+	return (
+		<Card className="h-[140px]">
+			<CardHeader className="pb-4">
+				<Skeleton className="h-4 w-2/3" />
+			</CardHeader>
+			<CardContent>
+				<div className="flex justify-between items-center">
+					<Skeleton className="h-4 w-1/4" />
+					<Skeleton className="h-6 w-16 rounded-full" />
+				</div>
+			</CardContent>
+		</Card>
+	);
+};
+
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -40,7 +78,6 @@ const DeliveryPointList = () => {
 			try {
 				setIsLoading(true);
 				const data = await fetchDeliveryPoints(token, tenantId);
-
 				setDeliveryPoints(data.data);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'An error occurred');
@@ -52,47 +89,85 @@ const DeliveryPointList = () => {
 		fetchData();
 	}, [token, tenantId]);
 
-	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-4">
-				<span className="text-gray-500">Loading delivery points...</span>
-			</div>
-		);
-	}
+	const handleSuccess = (point: DeliveryPointType) => {
+		setDeliveryPoints((prev) => {
+			if (point.id) {
+				// Update existing point
+				return prev.map((p) => (p.id === point.id ? point : p));
+			}
+			// Add new point
+			return [...prev, point];
+		});
+	};
 
 	if (error) {
 		return (
-			<div className="p-4 text-red-500">
-				Error loading delivery points: {error}
-			</div>
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">
+						Error loading delivery points: {error}
+					</p>
+				</CardContent>
+			</Card>
 		);
 	}
 
 	return (
-		<div className="space-y-4">
-			<h2 className="text-xl font-semibold">Delivery Points</h2>
-			<div className="grid gap-4">
-				{deliveryPoints.map((point) => (
-					<div
-						key={point.id}
-						className="p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-					>
-						<div className="flex items-center justify-between">
-							<div>
-								<h3 className="font-medium">{point.name}</h3>
-							</div>
-							<span
-								className={`px-2 py-1 rounded-full text-xs ${
-									point.is_active
-										? 'bg-green-100 text-green-800'
-										: 'bg-red-100 text-red-800'
-								}`}
-							>
-								{point.is_active ? 'Active' : 'Inactive'}
-							</span>
-						</div>
-					</div>
-				))}
+		<div className="p-6">
+			<div className="flex items-center justify-between mb-6">
+				<h2 className="text-3xl font-bold tracking-tight">Delivery Points</h2>
+				<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
+			</div>
+
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				{isLoading
+					? [...Array(6)].map((_, index) => (
+							<DeliveryPointSkeleton key={index} />
+						))
+					: deliveryPoints.map((point) => (
+							<Card key={point.id} className="hover:shadow-md transition-all">
+								<CardContent>
+									<div className="flex justify-between items-center">
+										<span className="text-base font-medium">{point.name}</span>
+										<Badge className="capitalize">
+											{point.is_active ? 'Active' : 'Inactive'}
+										</Badge>
+									</div>
+								</CardContent>
+								<CardFooter className="flex justify-end gap-2">
+									<DeliveryPointDialog
+										mode="edit"
+										defaultValues={point}
+										onSuccess={handleSuccess}
+									/>
+									<AlertDialog>
+										<AlertDialogTrigger asChild>
+											<Button variant="destructive" size="icon">
+												<TrashIcon className="w-4 h-4" />
+											</Button>
+										</AlertDialogTrigger>
+										<AlertDialogContent>
+											<AlertDialogHeader>
+												<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+												<AlertDialogDescription>
+													This action cannot be undone. This will permanently
+													delete the delivery point.
+												</AlertDialogDescription>
+											</AlertDialogHeader>
+											<AlertDialogFooter>
+												<AlertDialogCancel>Cancel</AlertDialogCancel>
+												<AlertDialogAction
+													onClick={() => handleSuccess(point)}
+													className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+												>
+													Delete
+												</AlertDialogAction>
+											</AlertDialogFooter>
+										</AlertDialogContent>
+									</AlertDialog>
+								</CardFooter>
+							</Card>
+						))}
 			</div>
 		</div>
 	);
