@@ -26,6 +26,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 import { CreditNoteService } from './credit-note.service';
 
@@ -92,6 +93,7 @@ export class CreditNoteController {
     return this.creditNoteService.findAll(req, q);
   }
 
+  @Throttle({ default: { limit: 3, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @Post()
   @ApiBody({
     type: CreditNoteCreateDto,
@@ -116,12 +118,17 @@ export class CreditNoteController {
   async update(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() updateDto: any,
+    @Body() updateDto: CreditNoteUpdateDto,
   ) {
-    const { ...updatedto } = updateDto;
-    updatedto.id = id;
-    this.logger.debug({ id: id, updatedto: updatedto });
-    return this.creditNoteService.update(req, id, updatedto);
+    try {
+      const { ...updatedto } = updateDto;
+      updatedto.id = id;
+      this.logger.debug({ id: id, updatedto: updatedto });
+      return await this.creditNoteService.update(req, id, updatedto);
+    } catch (error) {
+      this.logger.error(`Failed to update credit note: ${error.message}`);
+      throw error;
+    }
   }
 
   @Delete(':id')

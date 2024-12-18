@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { CreditNoteModule } from './_application/credit-note/credit-note.module';
 import { CurrenciesModule } from './_application/currencies/currencies.module';
@@ -37,6 +38,12 @@ import { AppService } from './app.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60, // ระยะเวลาในการรีเซ็ตจำนวนครั้ง (วินาที)
+        limit: 10, // จำนวนครั้งที่อนุญาตให้เรียก
+      },
+    ]),
     SystemUserModule,
     ProductsModule,
     SystemBusinessUnitsModule,

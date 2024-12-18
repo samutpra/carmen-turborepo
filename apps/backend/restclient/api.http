@@ -113,7 +113,7 @@ Authorization: Bearer {{access_token}}
 
 ### create department 1
 # @name create_department_1
-POST {{host}}/system-api/v1/departments
+POST {{host}}/api/v1/departments
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -129,7 +129,7 @@ Content-Type: application/json
 
 ### create department 2 
 # @name create_department_2
-POST {{host}}/system-api/v1/departments
+POST {{host}}/api/v1/departments
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -145,7 +145,7 @@ Content-Type: application/json
 
 ### create department 3
 # @name create_department_3 
-POST {{host}}/system-api/v1/departments
+POST {{host}}/api/v1/departments
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -162,7 +162,7 @@ Content-Type: application/json
 
 ### create delivery point
 # @name create_delivery_point
-POST {{host}}/system-api/v1/delivery-points
+POST {{host}}/api/v1/delivery-points
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -186,24 +186,24 @@ Authorization: Bearer {{access_token}}
 
 ### create location
 # @name create_location
-POST {{host}}/system-api/v1/locations
+POST {{host}}/api/v1/locations
 Authorization: Bearer {{access_token}}
+x-tenant-id: {{bu_id}}
 Content-Type: application/json
 
 {
-  "business_unit_id": "{{bu_id}}",
   "code": "LOC001",
   "name": "Main Store",
   "address": "123 Main Street",
-  "is_active": true,
-  "delivery_point_id": "{{delivery_point_id}}"
+  "is_active": true
 }
 
 ### get location id
 @location_id={{create_location.response.body.id}}
 
 ### get location
-GET {{host}}/system-api/v1/locations/{{location_id}}
+GET {{host}}/api/v1/locations/{{location_id}}
 Authorization: Bearer {{access_token}}
+x-tenant-id: {{bu_id}}
 
 
