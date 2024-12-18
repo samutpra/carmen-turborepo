@@ -44,3 +44,39 @@ export class LocationUpdateDto implements LocationUpdateModel {
 	location_type!: enum_location_type;
 	deliveryPointId?: string | null;
 }
+
+
+export const mockLocations: LocationCreateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440001',
+		name: 'คลังสินค้าหลัก',
+		description: 'คลังสินค้าหลักสำหรับจัดเก็บสินค้าทั่วไป',
+		is_active: true,
+		location_type: enum_location_type.inventory,
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440010'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440002', 
+		name: 'คลังสินค้าฝากขาย',
+		description: 'คลังสินค้าสำหรับสินค้าฝากขาย',
+		is_active: true,
+		location_type: enum_location_type.consignment,
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440011'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440003',
+		name: 'คลังสินค้าส่งตรง',
+		description: 'คลังสินค้าสำหรับการส่งตรงถึงลูกค้า',
+		is_active: true,
+		location_type: enum_location_type.direct,
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440012'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440004',
+		name: 'คลังสินค้าสำรอง',
+		description: 'คลังสินค้าสำรองสำหรับสินค้าคงคลัง',
+		is_active: false,
+		location_type: enum_location_type.inventory,
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440013'
+	}
+];

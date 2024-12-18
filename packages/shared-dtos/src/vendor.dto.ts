@@ -31,3 +31,30 @@ export class VendorUpdateDto implements VendorUpdateModel {
 	description?: string;
 	is_active?: boolean | null;
 }
+
+export const mockVendors: VendorCreateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440020',
+		name: 'บริษัท เอบีซี จำกัด',
+		description: 'ผู้จัดจำหน่ายอุปกรณ์อิเล็กทรอนิกส์',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440021',
+		name: 'บริษัท เอ็กซ์วาย จำกัด',
+		description: 'ผู้ผลิตชิ้นส่วนคอมพิวเตอร์',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440022',
+		name: 'บริษัท ไทยซัพพลาย จำกัด',
+		description: 'ตัวแทนจำหน่ายอุปกรณ์สำนักงาน',
+		is_active: false
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440023',
+		name: 'บริษัท เทคโนโลจี จำกัด',
+		description: 'ผู้จัดจำหน่ายซอฟต์แวร์และฮาร์ดแวร์',
+		is_active: true
+	}
+];

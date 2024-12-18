@@ -27,3 +27,56 @@ export class DepartmentUpdateDto implements DepartmentUpdateModel {
 	name?: string;
 	is_active?: boolean | null;
 }
+
+export const mockDepartments = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440000',
+		name: 'แผนกขาย',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440001',
+		name: 'แผนกการตลาด',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440002',
+		name: 'แผนกบัญชี',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440003',
+		name: 'แผนกทรัพยากรบุคคล',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440004',
+		name: 'แผนกไอที',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440005',
+		name: 'แผนกจัดซื้อ',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440006',
+		name: 'แผนกคลังสินค้า',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440007',
+		name: 'แผนกขนส่ง',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440008',
+		name: 'แผนกซ่อมบำรุง',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440009',
+		name: 'แผนกควบคุมคุณภาพ',
+		is_active: true
+	}
+];

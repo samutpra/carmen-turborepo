@@ -39,3 +39,38 @@ export class ProductItemGroupUpdateDto implements ProductItemGroupUpdateModel {
 	is_active?: boolean | null;
 	product_subcategory_id!: string;
 }
+
+export const mockProductItemGroups: ProductItemGroupCreateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440020',
+		code: 'GRP001',
+		name: 'เบียร์',
+		description: 'กลุ่มสินค้าประเภทเบียร์',
+		is_active: true,
+		product_subcategory_id: '550e8400-e29b-41d4-a716-446655440010'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440021',
+		code: 'GRP002',
+		name: 'น้ำอัดลม',
+		description: 'กลุ่มสินค้าประเภทน้ำอัดลม',
+		is_active: true,
+		product_subcategory_id: '550e8400-e29b-41d4-a716-446655440011'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440022',
+		code: 'GRP003',
+		name: 'ไมโครเวฟ',
+		description: 'กลุ่มสินค้าประเภทไมโครเวฟ',
+		is_active: true,
+		product_subcategory_id: '550e8400-e29b-41d4-a716-446655440012'
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440023',
+		code: 'GRP004',
+		name: 'พัดลม',
+		description: 'กลุ่มสินค้าประเภทพัดลม',
+		is_active: false,
+		product_subcategory_id: '550e8400-e29b-41d4-a716-446655440013'
+	}
+];

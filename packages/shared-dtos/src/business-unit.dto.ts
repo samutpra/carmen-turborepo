@@ -85,3 +85,86 @@ export class BusinessUnitUpdateDto implements BusinessUnitUpdateModel {
 }
 
 //#endregion Zod Update
+
+export const mockBusinessUnits = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440000',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440000',
+		code: 'BKK01', 
+		name: 'สำนักงานใหญ่กรุงเทพ',
+		is_hq: true,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440001',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440001', 
+		code: 'CNX01',
+		name: 'สาขาเชียงใหม่',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440002',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440002',
+		code: 'KKN01',
+		name: 'สาขาขอนแก่น',
+		is_hq: false, 
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440003',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440002',
+		code: 'UDN01',
+		name: 'สาขาอุดรธานี',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440004',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440002',
+		code: 'HYI01',
+		name: 'สาขาหาดใหญ่',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440005',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440002',
+		code: 'PKT01',
+		name: 'สาขาภูเก็ต',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440006',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440003',
+		code: 'RYG01',
+		name: 'สาขาระยอง',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440007',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440003',
+		code: 'CRI01',
+		name: 'สาขาชลบุรี',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440008',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440001',
+		code: 'NMA01',
+		name: 'สาขานครราชสีมา',
+		is_hq: false,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440009',
+		cluster_id: '550e8400-e29b-41d4-a716-446655440001',
+		code: 'BRM01',
+		name: 'สาขาบุรีรัมย์',
+		is_hq: false,
+		is_active: true
+	}
+];

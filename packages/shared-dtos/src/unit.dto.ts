@@ -31,3 +31,30 @@ export class UnitUpdateDto implements UnitUpdateModel {
 	description?: string | null;
 	is_active?: boolean | null;
 }
+
+export const mockUnits: UnitCreateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440030',
+		name: 'ชิ้น',
+		description: 'หน่วยนับเป็นชิ้น',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440031', 
+		name: 'กล่อง',
+		description: 'หน่วยนับเป็นกล่อง',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440032',
+		name: 'แพ็ค',
+		description: 'หน่วยนับเป็นแพ็ค',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440033',
+		name: 'ลัง',
+		description: 'หน่วยนับเป็นลัง', 
+		is_active: false
+	}
+];

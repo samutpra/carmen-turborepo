@@ -6,7 +6,7 @@ export const ProductCreateSchema = z.object({
 	name: z.string().min(1, 'name must be at least 1 character'),
 	description: z.string().nullable().optional(),
 	is_active: z.boolean().default(true).nullable().optional(),
-	primaryUnit: z.string().uuid().optional(),
+	primaryUnit_id: z.string().uuid().optional(),
 });
 
 export type ProductCreateModel = z.infer<typeof ProductCreateSchema>;
@@ -17,7 +17,7 @@ export class ProductCreateDto implements ProductCreateModel {
 	name!: string;
 	description?: string | null;
 	is_active?: boolean | null;
-	primaryUnit?: string;
+	primaryUnit_id?: string;
 }
 
 export const ProductUpdateSchema = ProductCreateSchema.extend({
@@ -32,7 +32,7 @@ export class ProductUpdateDto implements ProductUpdateModel {
 	name!: string;
 	description?: string | null;
 	is_active?: boolean | null;
-	primaryUnit?: string;
+	primaryUnit_id?: string;
 }
 
 export const ProductInfoCreateSchema = z.object({
@@ -60,3 +60,5 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
 	product_id!: string;
 	price?: number | null;
 }
+
+

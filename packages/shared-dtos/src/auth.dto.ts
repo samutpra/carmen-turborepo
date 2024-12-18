@@ -62,3 +62,22 @@ export class UserForgotPassDto {
 	password!: string;
 	emailToken!: string;
 }
+
+export const mockUserLogins: AuthLoginDto[] = [
+	{
+		username: 'john@example.com',
+		password: 'password123'
+	},
+	{
+		username: 'jane@example.com',
+		password: 'password123' 
+	},
+	{
+		username: 'bob@example.com',
+		password: 'password123'
+	},
+	{
+		username: 'alice@example.com',
+		password: 'password123'
+	}
+];
