@@ -26,6 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -35,12 +36,10 @@ const fetchDeliveryPoints = async (
 	try {
 		const query = new URLSearchParams();
 
-		// Add search filter if exists
 		if (params.search) {
 			query.append('filter[name]', params.search);
 		}
 
-		// Add status filter if exists
 		if (params.status) {
 			query.append('filter[is_active:bool]', params.status);
 		}
@@ -55,10 +54,12 @@ const fetchDeliveryPoints = async (
 				'Content-Type': 'application/json',
 			},
 		};
+
 		const response = await fetch(url, options);
 		if (!response.ok) {
 			throw new Error('Failed to fetch delivery points');
 		}
+
 		const result = await response.json();
 		return result.data;
 	} catch (error) {
@@ -90,30 +91,9 @@ const DeliveryPointList = () => {
 	const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointType[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [search, setSearch] = useState('');
 
-	const [status, setStatus] = useState<string>('');
-
-	console.log('search', search);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				setIsLoading(true);
-				const data = await fetchDeliveryPoints(token, tenantId, {
-					search,
-					status,
-				});
-				setDeliveryPoints(data.data);
-			} catch (err) {
-				setError(err instanceof Error ? err.message : 'An error occurred');
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchData();
-	}, [token, tenantId, search, status]);
+	const [search, setSearch] = useURLState('search');
+	const [status, setStatus] = useURLState('status');
 
 	const handleSuccess = (updatedPoint: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
@@ -164,6 +144,25 @@ const DeliveryPointList = () => {
 	const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setStatus(event.target.value);
 	};
+
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchDeliveryPoints(token, tenantId, {
+				search,
+				status,
+			});
+			setDeliveryPoints(data.data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
 
 	if (error) {
 		return (
