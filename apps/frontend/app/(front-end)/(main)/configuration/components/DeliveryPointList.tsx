@@ -1,6 +1,9 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
-import { DeliveryPointType } from '@carmensoftware/shared-types';
+import {
+	DeliveryPointLabel,
+	DeliveryPointType,
+} from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import {
 	Card,
@@ -95,6 +98,11 @@ const DeliveryPointList = () => {
 	const [search, setSearch] = useURLState('search');
 	const [status, setStatus] = useURLState('status');
 
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
+	];
 	const handleSuccess = (updatedPoint: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
 			const exists = prev.some((p) => p.id === updatedPoint.id);
@@ -141,8 +149,8 @@ const DeliveryPointList = () => {
 		}
 	};
 
-	const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setStatus(event.target.value);
+	const handleStatusChange = (value: string) => {
+		setStatus(value);
 	};
 
 	const fetchData = async () => {
@@ -176,6 +184,13 @@ const DeliveryPointList = () => {
 		);
 	}
 
+	const title = 'Delivery Point';
+
+	const columns: DeliveryPointLabel[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'is_active', label: 'Active' },
+	];
+
 	return (
 		<div className="p-6">
 			<div className="flex items-center justify-between mb-6">
@@ -203,15 +218,15 @@ const DeliveryPointList = () => {
 						</Button>
 					</div>
 				</form>
-				<select
-					value={status}
-					onChange={handleStatusChange}
-					className="h-10 rounded-md border border-input bg-background px-3 py-2"
-				>
-					<option value="">All Status</option>
-					<option value="true">Active</option>
-					<option value="false">Inactive</option>
-				</select>
+				{statusOptions.map((option) => (
+					<Button
+						key={option.value}
+						onClick={() => handleStatusChange(option.value)}
+						variant={status === option.value ? 'default' : 'outline'}
+					>
+						{option.label}
+					</Button>
+				))}
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				{isLoading
