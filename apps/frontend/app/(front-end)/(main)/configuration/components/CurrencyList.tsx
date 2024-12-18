@@ -27,7 +27,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import CurrencyForm from './form/CurrencyForm';
 import { useAuth } from '@/app/context/AuthContext';
-import EmptyData from '@/components/EmptyData';
 import {
 	CurrencyLabel,
 	CurrencySchema,
@@ -40,7 +39,6 @@ const statusOptions = [
 	{ value: 'false', label: 'Not Active' },
 ];
 
-
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +49,7 @@ const CurrencyList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState('');
 
-	const token = accessToken || ''
+	const token = accessToken || '';
 
 	const {
 		currencies: rawCurrencies,
@@ -65,13 +63,13 @@ const CurrencyList = () => {
 		previousPage,
 		setPerPage,
 		handleSearch,
-		fetchData
+		fetchData,
 	} = useCurrencies(token);
 
-	const currencies = rawCurrencies.map(currency => ({
+	const currencies = rawCurrencies.map((currency) => ({
 		...currency,
 		symbol: currency.symbol || '',
-		is_active: currency.is_active || false
+		is_active: currency.is_active || false,
 	})) as CurrencyType[];
 
 	const form = useForm<CurrencyType>({
@@ -141,16 +139,22 @@ const CurrencyList = () => {
 		try {
 			setIsLoading(true);
 			if (editingItem?.id) {
-				const updatedCurrency = await updateCurrency(token, editingItem.id, data);
+				const updatedCurrency = await updateCurrency(
+					token,
+					editingItem.id,
+					data
+				);
 				setCurrencies((prev) =>
-					prev.map((item) => item.id === editingItem.id ? updatedCurrency : item)
+					prev.map((item) =>
+						item.id === editingItem.id ? updatedCurrency : item
+					)
 				);
 			} else {
 				const newCurrency = await createCurrency(token, data);
 				const currencyWithRequiredFields: CurrencyType = {
 					...newCurrency,
 					symbol: newCurrency.symbol || '',
-					is_active: newCurrency.is_active || false
+					is_active: newCurrency.is_active || false,
 				};
 				setCurrencies((prev) => [...prev, currencyWithRequiredFields]);
 			}
@@ -243,8 +247,8 @@ const CurrencyList = () => {
 						>
 							{selectedStatus
 								? statusOptions.find(
-									(status) => status.value === selectedStatus
-								)?.label
+										(status) => status.value === selectedStatus
+									)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
@@ -313,17 +317,22 @@ const CurrencyList = () => {
 
 	const content = (
 		<>
-			<div className='block lg:hidden'>
+			<div className="block lg:hidden">
 				{loading ? (
 					<SkeltonCardLoading />
 				) : error ? (
-					<div className='text-red-500'>{error.message}</div>
+					<div className="text-red-500">{error.message}</div>
 				) : (
-					<DataCard data={currencies} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
+					<DataCard
+						data={currencies}
+						columns={columns}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
+					/>
 				)}
 			</div>
 
-			<div className='hidden lg:block'>
+			<div className="hidden lg:block">
 				{loading ? (
 					<SkeletonTableLoading />
 				) : error ? (
@@ -355,26 +364,26 @@ const CurrencyList = () => {
 				editingItem={editingItem}
 				isLoading={isLoading}
 				onOpenChange={setDialogForm}
-				onSubmit={(data) => handleSave({ ...data, symbol: data.symbol || '', is_active: data.is_active || false } as CurrencyType)}
+				onSubmit={(data) =>
+					handleSave({
+						...data,
+						symbol: data.symbol || '',
+						is_active: data.is_active || false,
+					} as CurrencyType)
+				}
 			/>
 		</>
 	);
 
 	return (
 		<>
-			{currencies.length > 0 ? (
-				<DataDisplayTemplate
-					title={title}
-					actionButtons={actionButtons}
-					filters={filter}
-					content={content}
-				/>
-			) : (
-				<EmptyData />
-			)}
+			<DataDisplayTemplate
+				title={title}
+				actionButtons={actionButtons}
+				filters={filter}
+				content={content}
+			/>
 		</>
-
-
 	);
 };
 
