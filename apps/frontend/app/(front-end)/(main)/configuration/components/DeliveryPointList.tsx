@@ -1,9 +1,6 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	DeliveryPointLabel,
-	DeliveryPointType,
-} from '@carmensoftware/shared-types';
+import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import {
 	Card,
@@ -13,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { TrashIcon, Search } from 'lucide-react';
+import { TrashIcon, Search, Trash } from 'lucide-react';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import {
 	AlertDialog,
@@ -30,6 +27,17 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { useURLState } from '@/app/(front-end)/hooks/useURLState';
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -184,28 +192,21 @@ const DeliveryPointList = () => {
 		);
 	}
 
-	const title = 'Delivery Point';
-
-	const columns: DeliveryPointLabel[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'is_active', label: 'Active' },
-	];
-
 	return (
 		<div className="p-6">
-			<div className="flex items-center justify-between mb-6">
+			<div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-6">
 				<h2 className="text-3xl font-bold tracking-tight">Delivery Points</h2>
 				<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
 			</div>
-			<div className="flex gap-4 mb-4">
-				<form onSubmit={handleSearch} className="flex gap-2 flex-1">
+			<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
+				<form onSubmit={handleSearch} className="flex gap-2 w-full">
 					<div className="relative w-full md:w-1/4">
 						<Input
 							name="search"
 							placeholder="Search Delivery Point..."
-							className="h-10 pr-10"
 							defaultValue={search}
 							onKeyDown={handleKeyDown}
+							className="h-10 pr-10"
 						/>
 						<Button
 							type="submit"
@@ -218,65 +219,143 @@ const DeliveryPointList = () => {
 						</Button>
 					</div>
 				</form>
-				{statusOptions.map((option) => (
-					<Button
-						key={option.value}
-						onClick={() => handleStatusChange(option.value)}
-						variant={status === option.value ? 'default' : 'outline'}
-					>
-						{option.label}
-					</Button>
-				))}
+				<div className="flex gap-2 justify-center items-center">
+					{statusOptions.map((option) => (
+						<Button
+							key={option.value}
+							onClick={() => handleStatusChange(option.value)}
+							variant={status === option.value ? 'default' : 'outline'}
+						>
+							{option.label}
+						</Button>
+					))}
+				</div>
 			</div>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-				{isLoading
-					? [...Array(6)].map((_, index) => (
-							<DeliveryPointSkeleton key={index} />
-						))
-					: deliveryPoints.map((point) => (
-							<Card key={point.id} className="hover:shadow-md transition-all">
-								<CardContent>
-									<div className="flex justify-between items-center">
-										<span className="text-base font-medium">{point.name}</span>
-										<Badge className="capitalize">
+
+			{/* Card view for mobile */}
+			<div className="block md:hidden">
+				<div className="grid grid-cols-1 gap-4">
+					{isLoading
+						? [...Array(6)].map((_, index) => (
+								<DeliveryPointSkeleton key={index} />
+							))
+						: deliveryPoints.map((point) => (
+								<Card key={point.id} className="hover:shadow-md transition-all">
+									<CardContent>
+										<div className="flex justify-between items-center">
+											<span className="text-base font-medium">
+												{point.name}
+											</span>
+											<Badge
+												variant={point.is_active ? 'default' : 'destructive'}
+											>
+												{point.is_active ? 'Active' : 'Inactive'}
+											</Badge>
+										</div>
+									</CardContent>
+									<CardFooter className="flex justify-end gap-2">
+										<DeliveryPointDialog
+											mode="edit"
+											defaultValues={point}
+											onSuccess={handleSuccess}
+										/>
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button variant="ghost" size="sm">
+													<TrashIcon className="w-4 h-4" />
+												</Button>
+											</AlertDialogTrigger>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone. This will permanently
+														delete the delivery point.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={() => point.id && handleDelete(point.id)}
+														className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+													>
+														Delete
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
+									</CardFooter>
+								</Card>
+							))}
+				</div>
+			</div>
+
+			{/* Table view for desktop */}
+			<div className="hidden md:block">
+				{isLoading ? (
+					<SkeletonTableLoading />
+				) : (
+					<Table>
+						<TableCaption>A list of delivery points</TableCaption>
+						<TableHeader>
+							<TableRow>
+								<TableHead className="w-[100px]">#</TableHead>
+								<TableHead>Name</TableHead>
+								<TableHead>Status</TableHead>
+								<TableHead className="text-right">Actions</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{deliveryPoints.map((point, index) => (
+								<TableRow key={point.id}>
+									<TableCell className="font-medium">{index + 1}</TableCell>
+									<TableCell>{point.name}</TableCell>
+									<TableCell>
+										<Badge
+											variant={point.is_active ? 'default' : 'destructive'}
+										>
 											{point.is_active ? 'Active' : 'Inactive'}
 										</Badge>
-									</div>
-								</CardContent>
-								<CardFooter className="flex justify-end gap-2">
-									<DeliveryPointDialog
-										mode="edit"
-										defaultValues={point}
-										onSuccess={handleSuccess}
-									/>
-									<AlertDialog>
-										<AlertDialogTrigger asChild>
-											<Button variant="destructive" size="icon">
-												<TrashIcon className="w-4 h-4" />
-											</Button>
-										</AlertDialogTrigger>
-										<AlertDialogContent>
-											<AlertDialogHeader>
-												<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-												<AlertDialogDescription>
-													This action cannot be undone. This will permanently
-													delete the delivery point.
-												</AlertDialogDescription>
-											</AlertDialogHeader>
-											<AlertDialogFooter>
-												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction
-													onClick={() => point.id && handleDelete(point.id)}
-													className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-												>
-													Delete
-												</AlertDialogAction>
-											</AlertDialogFooter>
-										</AlertDialogContent>
-									</AlertDialog>
-								</CardFooter>
-							</Card>
-						))}
+									</TableCell>
+									<TableCell className="text-right">
+										<div className="flex justify-end gap-2">
+											<DeliveryPointDialog
+												mode="edit"
+												defaultValues={point}
+												onSuccess={handleSuccess}
+											/>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<CustomButton variant="ghost" size="sm">
+														<Trash className="h-4 w-4" />
+													</CustomButton>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone. This will
+															permanently delete the delivery point.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>Cancel</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() => point.id && handleDelete(point.id)}
+															className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				)}
 			</div>
 		</div>
 	);

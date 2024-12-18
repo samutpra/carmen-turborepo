@@ -28,6 +28,7 @@ import { PencilIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
 
 export type DialogMode = 'create' | 'edit';
 
@@ -57,9 +58,10 @@ export const DeliveryPointDialog = ({
 
 	const handleSubmit = async (data: DeliveryPointType) => {
 		try {
-			const url = mode === 'create'
-				? '/api/configuration/delivery-point'
-				: `/api/configuration/delivery-point/${defaultValues?.id}`;
+			const url =
+				mode === 'create'
+					? '/api/configuration/delivery-point'
+					: `/api/configuration/delivery-point/${defaultValues?.id}`;
 
 			const method = mode === 'create' ? 'POST' : 'PATCH';
 
@@ -105,9 +107,9 @@ export const DeliveryPointDialog = ({
 						Create Delivery Point
 					</Button>
 				) : (
-					<Button variant="outline" size="icon">
+					<CustomButton variant="ghost" size="sm">
 						<PencilIcon className="w-4 h-4" />
-					</Button>
+					</CustomButton>
 				)}
 			</DialogTrigger>
 			<DialogContent>

@@ -12,5 +12,4 @@ export type DeliveryPointType = z.infer<typeof deliveryPointSchema>;
 export interface DeliveryPointLabel {
 	key: keyof DeliveryPointType;
 	label: string;
-	type: 'string' | 'boolean';
 }
