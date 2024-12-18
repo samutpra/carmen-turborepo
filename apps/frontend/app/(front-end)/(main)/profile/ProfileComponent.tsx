@@ -35,6 +35,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { useAuth } from '@/app/context/AuthContext';
+import { AvailableLanguageTag } from '@/paraglide/runtime';
+import { usePathname, useRouter } from '@/lib/i18n';
+import { Route } from 'next';
+import { useParams } from 'next/navigation';
 
 const profileFormSchema = z.object({
 	username: z.string(),
@@ -49,20 +54,38 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const ProfileComponent = () => {
+	const { authState } = useAuth();
+
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [avatarPreview, setAvatarPreview] = useState<string>(
 		'https://avatars.githubusercontent.com/u/80618380?s=400&u=8e4d51a3c01b8e3709f141cdd3e84a85a0b0cdcc&v=4'
 	);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+	const pathname = usePathname() as Route;
+	const router = useRouter();
+	const params = useParams();
+	const currentLocale = params.locale as AvailableLanguageTag;
+
+	const labels: Record<AvailableLanguageTag, string> = {
+		'en-us': 'English',
+		'th-th': 'ไทย',
+	};
+
+	const setLanguage = (lang: AvailableLanguageTag) => {
+		router.push(pathname, {
+			locale: lang,
+		});
+	};
+
 	const form = useForm<ProfileFormValues>({
 		resolver: zodResolver(profileFormSchema),
 		defaultValues: {
 			username: 'johndoe',
-			email: 'johndoe@example.com',
+			email: authState.user?.username,
 			firstName: 'John',
 			lastName: 'Doe',
-			language: 'English',
+			language: labels[currentLocale],
 			timezone: 'UTC',
 			avatar:
 				'https://avatars.githubusercontent.com/u/80618380?s=400&u=8e4d51a3c01b8e3709f141cdd3e84a85a0b0cdcc&v=4',
@@ -277,18 +300,30 @@ const ProfileComponent = () => {
 									<FormItem>
 										<FormLabel>Language</FormLabel>
 										<Select
-											onValueChange={field.onChange}
-											defaultValue={field.value}
+											onValueChange={(value: AvailableLanguageTag) => {
+												field.onChange(labels[value]);
+												setLanguage(value);
+											}}
+											value={currentLocale}
 										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select a language" />
+													<SelectValue placeholder="Select a language">
+														{labels[currentLocale]}
+													</SelectValue>
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												<SelectItem value="English">English</SelectItem>
-												<SelectItem value="Spanish">Spanish</SelectItem>
-												<SelectItem value="French">French</SelectItem>
+												{(
+													Object.entries(labels) as [
+														AvailableLanguageTag,
+														string,
+													][]
+												).map(([value, label]) => (
+													<SelectItem key={value} value={value}>
+														{label}
+													</SelectItem>
+												))}
 											</SelectContent>
 										</Select>
 										<FormMessage />
