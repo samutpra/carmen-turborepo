@@ -232,7 +232,6 @@ const DeliveryPointList = () => {
 				</div>
 			</div>
 
-			{/* Card view for mobile */}
 			<div className="block md:hidden">
 				<div className="grid grid-cols-1 gap-4">
 					{isLoading
@@ -290,7 +289,6 @@ const DeliveryPointList = () => {
 				</div>
 			</div>
 
-			{/* Table view for desktop */}
 			<div className="hidden md:block">
 				{isLoading ? (
 					<SkeletonTableLoading />
