@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/lib/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,8 +27,15 @@ import { Camera as CameraIcon } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
 
-// Form schema
 const profileFormSchema = z.object({
 	username: z.string(),
 	email: z.string().email(),
@@ -36,11 +43,18 @@ const profileFormSchema = z.object({
 	lastName: z.string().min(2),
 	language: z.string(),
 	timezone: z.string(),
+	avatar: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const ProfileComponent = () => {
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [avatarPreview, setAvatarPreview] = useState<string>(
+		'https://avatars.githubusercontent.com/u/80618380?s=400&u=8e4d51a3c01b8e3709f141cdd3e84a85a0b0cdcc&v=4'
+	);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+
 	const form = useForm<ProfileFormValues>({
 		resolver: zodResolver(profileFormSchema),
 		defaultValues: {
@@ -50,6 +64,8 @@ const ProfileComponent = () => {
 			lastName: 'Doe',
 			language: 'English',
 			timezone: 'UTC',
+			avatar:
+				'https://avatars.githubusercontent.com/u/80618380?s=400&u=8e4d51a3c01b8e3709f141cdd3e84a85a0b0cdcc&v=4',
 		},
 	});
 
@@ -61,6 +77,29 @@ const ProfileComponent = () => {
 		// Handle form submission
 	};
 
+	const handleAvatarClick = () => {
+		setIsDialogOpen(true);
+	};
+
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+
+		if (!file.type.startsWith('image/')) {
+			alert('Please upload an image file');
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onloadend = () => {
+			const base64String = reader.result as string;
+			setAvatarPreview(base64String);
+			form.setValue('avatar', base64String);
+			setIsDialogOpen(false);
+		};
+		reader.readAsDataURL(file);
+	};
+
 	return (
 		<Card className="p-4 bg-background m-6">
 			<CardHeader>
@@ -70,21 +109,75 @@ const ProfileComponent = () => {
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 						<div className="flex items-center space-x-4">
-							<Avatar className="w-24 h-24">
-								<AvatarImage src="" alt={form.getValues('username')} />
-								<AvatarFallback>
-									{form.getValues('firstName')[0]}
-									{form.getValues('lastName')[0]}
-								</AvatarFallback>
-							</Avatar>
-							<Button
-								type="button"
-								variant="secondary"
-								className="bg-blue-500 text-white hover:bg-blue-600"
-							>
-								<CameraIcon className="w-4 h-4 mr-2" />
-								Change Picture
-							</Button>
+							<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+								<DialogTrigger asChild>
+									<Avatar
+										className="w-24 h-24 cursor-pointer hover:opacity-80 transition-opacity"
+										role="button"
+										tabIndex={0}
+										onClick={handleAvatarClick}
+										onKeyDown={(e) => e.key === 'Enter' && handleAvatarClick()}
+										aria-label="Click to change avatar"
+									>
+										<AvatarImage
+											src={avatarPreview || ''}
+											alt={form.getValues('username')}
+										/>
+										<AvatarFallback>
+											{form.getValues('firstName')[0]}
+											{form.getValues('lastName')[0]}
+										</AvatarFallback>
+									</Avatar>
+								</DialogTrigger>
+								<DialogContent className="sm:max-w-md">
+									<DialogHeader>
+										<DialogTitle>Change Profile Picture</DialogTitle>
+										<DialogDescription>
+											Choose a new avatar to update your profile picture
+										</DialogDescription>
+									</DialogHeader>
+									<div className="flex flex-col items-center space-y-4 py-4">
+										<Avatar className="w-40 h-40">
+											<AvatarImage
+												src={avatarPreview || ''}
+												alt={form.getValues('username')}
+											/>
+											<AvatarFallback>
+												{form.getValues('firstName')[0]}
+												{form.getValues('lastName')[0]}
+											</AvatarFallback>
+										</Avatar>
+										<div className="flex items-center gap-4">
+											<Button
+												type="button"
+												variant="secondary"
+												className="bg-blue-500 text-white hover:bg-blue-600"
+												onClick={() => fileInputRef.current?.click()}
+											>
+												<CameraIcon className="w-4 h-4 mr-2" />
+												Choose Image
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												onClick={() => setIsDialogOpen(false)}
+											>
+												Cancel
+											</Button>
+										</div>
+									</div>
+								</DialogContent>
+							</Dialog>
+
+							<input
+								ref={fileInputRef}
+								type="file"
+								accept="image/*"
+								className="hidden"
+								onChange={handleFileChange}
+								aria-label="Upload avatar image"
+							/>
+
 							<Button asChild>
 								<Link href="/profile/change-password">Change Password</Link>
 							</Button>
