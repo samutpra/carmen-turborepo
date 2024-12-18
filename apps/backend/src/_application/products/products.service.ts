@@ -100,7 +100,7 @@ export class ProductsService {
     const createObj = await this.db_tenant.tb_product.create({
       data: {
         ...createDto,
-        primary_unit: createDto.primaryUnit || null,
+        primary_unit: createDto.primaryUnit_id || null,
         created_by_id: user_id,
         created_at: new Date(),
         updated_by_id: user_id,
