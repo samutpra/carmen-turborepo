@@ -169,7 +169,7 @@ const DeliveryPointList = () => {
 	);
 
 	const filter = (
-		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
 			<form onSubmit={handleSearch} className="flex gap-2 w-full">
 				<div className="relative w-full md:w-1/4">
 					<Input
