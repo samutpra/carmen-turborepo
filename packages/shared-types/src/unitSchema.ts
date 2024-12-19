@@ -1,4 +1,6 @@
-import { z } from "zod";
+/** @format */
+
+import { z } from 'zod';
 
 // Unit
 export const UnitSchema = z.object({
@@ -7,9 +9,9 @@ export const UnitSchema = z.object({
 	description: z.string().min(1, 'Description is required').max(100, 'Description must be less than 100 characters'),
 	is_active: z.boolean().default(true),
 });
-  
-  export type UnitType = z.infer<typeof UnitSchema>;
-  export interface UnitLabel {
-    key: keyof UnitType;
-    label: string;
-  }
+
+export type UnitType = z.infer<typeof UnitSchema>;
+export interface UnitLabel {
+	key: keyof UnitType;
+	label: string;
+}

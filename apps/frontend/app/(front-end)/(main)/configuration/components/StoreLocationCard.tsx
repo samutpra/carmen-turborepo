@@ -16,7 +16,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { StoreLocationDialog } from './StoreLocationDialog';
+import StoreLocationDialog from './StoreLocationDialog';
 import { LocationType } from '@carmensoftware/shared-types';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
