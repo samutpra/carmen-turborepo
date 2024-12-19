@@ -28,6 +28,8 @@ import CurrencyDialog from './CurrencyDialog';
 import CurrencyCard from './CurrencyCard';
 import CurrencyTable from './CurrencyTable';
 
+
+
 const fetchCurrencies = async (
 	token: string,
 	tenantId: string,

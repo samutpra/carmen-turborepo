@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import CurrencyDialog from './CurrencyDialog';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import EmptyState from '@/components/ui-custom/EmptyState';
 
 interface CurrencyTableProps {
 	currencies: CurrencyType[];
@@ -42,6 +43,15 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({
 }) => {
 	if (isLoading) {
 		return <SkeletonTableLoading />;
+	}
+
+	if (currencies.length === 0) {
+		return (
+			<EmptyState
+				title="No currencies found"
+				description="No currencies found"
+			/>
+		);
 	}
 
 	return (

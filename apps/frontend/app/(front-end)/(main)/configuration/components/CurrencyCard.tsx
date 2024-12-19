@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import CurrencyDialog from './CurrencyDialog';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import EmptyState from '@/components/ui-custom/EmptyState';
 
 interface CurrencyCardProps {
 	currencies: CurrencyType[];
@@ -40,6 +41,14 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({
 					<SkeltonCardLoading key={index} />
 				))}
 			</div>
+		);
+	}
+	if (currencies.length === 0) {
+		return (
+			<EmptyState
+				title="No currencies found"
+				description="No currencies found"
+			/>
 		);
 	}
 
