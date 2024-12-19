@@ -96,7 +96,7 @@ export const menuItems = [
 		subItems: [
 			{
 				name: `${m.manage_vendors()}`,
-				path: '/vendor-management/manage-vendors',
+				path: '/vendor-management/vendors',
 				visible: true,
 				enabled: true,
 			},
