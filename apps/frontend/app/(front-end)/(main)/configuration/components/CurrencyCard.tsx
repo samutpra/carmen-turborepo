@@ -4,12 +4,7 @@ import React from 'react';
 import { CurrencyType } from '@carmensoftware/shared-types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { TrashIcon } from 'lucide-react';
 import {
 	AlertDialog,
@@ -23,7 +18,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import CurrencyDialog from './CurrencyDialog';
-import { Skeleton } from '@/components/ui/skeleton';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 interface CurrencyCardProps {
 	currencies: CurrencyType[];
@@ -32,28 +27,17 @@ interface CurrencyCardProps {
 	isLoading?: boolean;
 }
 
-const CurrencySkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-		</Card>
-	);
-};
-
-
-const CurrencyCard = ({
+const CurrencyCard: React.FC<CurrencyCardProps> = ({
 	currencies,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: CurrencyCardProps) => {
+}) => {
 	if (isLoading) {
 		return (
 			<div className="grid grid-cols-1 gap-4">
 				{[...Array(6)].map((_, index) => (
-					<CurrencySkeleton key={index} />
+					<SkeltonCardLoading key={index} />
 				))}
 			</div>
 		);

@@ -27,6 +27,7 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentCard from './DepartmentCard';
 import DepartmentDialog from './DepartmentDialog';
 import DepartmentTable from './DepartmentTable';
+
 const fetchDepartments = async (
 	token: string,
 	tenantId: string,

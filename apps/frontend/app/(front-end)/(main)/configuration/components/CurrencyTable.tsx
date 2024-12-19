@@ -11,8 +11,6 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Card, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Trash } from 'lucide-react';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import {
@@ -27,6 +25,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import CurrencyDialog from './CurrencyDialog';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 
 interface CurrencyTableProps {
 	currencies: CurrencyType[];
@@ -35,24 +34,14 @@ interface CurrencyTableProps {
 	isLoading?: boolean;
 }
 
-const CurrencySkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-		</Card>
-	);
-};
-
-const CurrencyTable = ({
+const CurrencyTable: React.FC<CurrencyTableProps> = ({
 	currencies,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: CurrencyTableProps) => {
+}) => {
 	if (isLoading) {
-		return <CurrencySkeleton />;
+		return <SkeletonTableLoading />;
 	}
 
 	return (

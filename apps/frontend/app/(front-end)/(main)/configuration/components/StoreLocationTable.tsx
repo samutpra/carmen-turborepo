@@ -34,12 +34,12 @@ interface StoreLocationTableProps {
 	isLoading?: boolean;
 }
 
-const StoreLocationTable = ({
+const StoreLocationTable: React.FC<StoreLocationTableProps> = ({
 	storeLocations,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: StoreLocationTableProps) => {
+}) => {
 	if (isLoading) {
 		return <SkeletonTableLoading />;
 	}

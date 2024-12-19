@@ -38,11 +38,11 @@ export interface DeliveryPointDialogProps {
 	onSuccess: (point: DeliveryPointType) => void;
 }
 
-export const DeliveryPointDialog = ({
+export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	mode,
 	defaultValues,
 	onSuccess,
-}: DeliveryPointDialogProps) => {
+}) => {
 	const [open, setOpen] = useState(false);
 	const { accessToken } = useAuth();
 	const token = accessToken || '';

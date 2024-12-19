@@ -34,12 +34,12 @@ interface DeliveryPointTableProps {
 	isLoading?: boolean;
 }
 
-const DeliveryPointTable = ({
+const DeliveryPointTable: React.FC<DeliveryPointTableProps> = ({
 	deliveryPoints,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: DeliveryPointTableProps) => {
+}) => {
 	if (isLoading) {
 		return <SkeletonTableLoading />;
 	}

@@ -40,11 +40,11 @@ interface StoreLocationDialogProps {
 	onSuccess: (values: LocationType) => void;
 }
 
-export const StoreLocationDialog = ({
+export const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	mode,
 	defaultValues,
 	onSuccess,
-}: StoreLocationDialogProps) => {
+}) => {
 	const [open, setOpen] = React.useState(false);
 	const { accessToken } = useAuth();
 	const token = accessToken || '';

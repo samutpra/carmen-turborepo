@@ -1,16 +1,10 @@
 'use client';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { DepartmentType } from '@carmensoftware/shared-types/src/department';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { TrashIcon } from 'lucide-react';
 import {
 	AlertDialog,
@@ -24,6 +18,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import DepartmentDialog from './DepartmentDialog';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 interface DepartmentCardProps {
 	departments: DepartmentType[];
@@ -31,15 +26,6 @@ interface DepartmentCardProps {
 	onDelete: (id: string) => void;
 	isLoading?: boolean;
 }
-const DepartmentSkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-		</Card>
-	);
-};
 
 const DepartmentCard: React.FC<DepartmentCardProps> = ({
 	departments,
@@ -51,7 +37,7 @@ const DepartmentCard: React.FC<DepartmentCardProps> = ({
 		return (
 			<div className="grid grid-cols-1 gap-4">
 				{[...Array(6)].map((_, index) => (
-					<DepartmentSkeleton key={index} />
+					<SkeltonCardLoading key={index} />
 				))}
 			</div>
 		);

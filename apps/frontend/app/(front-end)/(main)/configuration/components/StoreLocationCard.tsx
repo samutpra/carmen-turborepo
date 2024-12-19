@@ -3,14 +3,8 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { TrashIcon } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -24,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { StoreLocationDialog } from './StoreLocationDialog';
 import { LocationType } from '@carmensoftware/shared-types';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 interface StoreLocationCardProps {
 	storeLocations: LocationType[];
@@ -32,27 +27,17 @@ interface StoreLocationCardProps {
 	isLoading?: boolean;
 }
 
-const StoreLocationSkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-		</Card>
-	);
-};
-
-const StoreLocationCard = ({
+const StoreLocationCard: React.FC<StoreLocationCardProps> = ({
 	storeLocations,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: StoreLocationCardProps) => {
+}) => {
 	if (isLoading) {
 		return (
 			<div className="grid grid-cols-1 gap-4">
 				{[...Array(6)].map((_, index) => (
-					<StoreLocationSkeleton key={index} />
+					<SkeltonCardLoading key={index} />
 				))}
 			</div>
 		);

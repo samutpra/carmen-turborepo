@@ -4,14 +4,8 @@ import React from 'react';
 import { DeliveryPointType } from '@carmensoftware/shared-types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { TrashIcon } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -24,6 +18,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 interface DeliveryPointCardProps {
 	deliveryPoints: DeliveryPointType[];
@@ -32,33 +27,17 @@ interface DeliveryPointCardProps {
 	isLoading?: boolean;
 }
 
-const DeliveryPointSkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-			<CardContent>
-				<div className="flex justify-between items-center">
-					<Skeleton className="h-4 w-1/4" />
-					<Skeleton className="h-6 w-16 rounded-full" />
-				</div>
-			</CardContent>
-		</Card>
-	);
-};
-
-const DeliveryPointCard = ({
+const DeliveryPointCard: React.FC<DeliveryPointCardProps> = ({
 	deliveryPoints,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-}: DeliveryPointCardProps) => {
+}) => {
 	if (isLoading) {
 		return (
 			<div className="grid grid-cols-1 gap-4">
 				{[...Array(6)].map((_, index) => (
-					<DeliveryPointSkeleton key={index} />
+					<SkeltonCardLoading key={index} />
 				))}
 			</div>
 		);
