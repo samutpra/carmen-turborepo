@@ -118,7 +118,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 					{mode === 'create' ? (
 						<>
 							<PlusIcon className="mr-2 h-4 w-4" />
-							Add Store Location
+							Add Department
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />
