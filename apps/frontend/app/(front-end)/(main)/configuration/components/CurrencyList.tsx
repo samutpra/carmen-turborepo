@@ -4,16 +4,11 @@ import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { CurrencyType } from '@carmensoftware/shared-types';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
-import { Search, Trash, TrashIcon } from 'lucide-react';
+import { Search } from 'lucide-react';
 import {
 	Popover,
 	PopoverContent,
@@ -27,30 +22,11 @@ import {
 	CommandItem,
 	CommandList,
 } from '@/components/ui/command';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
+
 import { toast } from 'sonner';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
 import CurrencyDialog from './CurrencyDialog';
+import CurrencyCard from './CurrencyCard';
+import CurrencyTable from './CurrencyTable';
 
 const fetchCurrencies = async (
 	token: string,
@@ -99,16 +75,6 @@ const fetchCurrencies = async (
 	}
 };
 
-const CurrencySkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-		</Card>
-	);
-};
-
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -119,8 +85,6 @@ const CurrencyList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURLState('search');
 	const [status, setStatus] = useURLState('status');
-
-	console.log('currencies', currencies);
 
 	const statusOptions = [
 		{ label: 'All Status', value: '' },
@@ -213,7 +177,7 @@ const CurrencyList = () => {
 	);
 
 	const filter = (
-		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
 			<form onSubmit={handleSearch} className="flex gap-2 w-full">
 				<div className="relative w-full md:w-1/4">
 					<Input
@@ -278,127 +242,20 @@ const CurrencyList = () => {
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<div className="grid grid-cols-1 gap-4">
-					{isLoading
-						? [...Array(6)].map((_, index) => <CurrencySkeleton key={index} />)
-						: currencies?.map((currency) => (
-								<Card
-									key={currency.id}
-									className="hover:shadow-md transition-all"
-								>
-									<CardContent>
-										<div className="flex justify-between items-center">
-											<span className="text-base font-medium">
-												{currency.name}
-											</span>
-											<Badge
-												variant={currency.is_active ? 'default' : 'destructive'}
-											>
-												{currency.is_active ? 'Active' : 'Inactive'}
-											</Badge>
-										</div>
-									</CardContent>
-									<CardFooter className="flex justify-end gap-2">
-										<CurrencyDialog
-											mode="edit"
-											defaultValues={currency}
-											onSuccess={handleSuccess}
-										/>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="ghost" size="sm">
-													<TrashIcon className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone. This will permanently
-														delete the delivery point.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction
-														onClick={() =>
-															currency.id && handleDelete(currency.id)
-														}
-														className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-													>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
-									</CardFooter>
-								</Card>
-							))}
-				</div>
+				<CurrencyCard
+					currencies={currencies}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
 			<div className="hidden md:block">
-				{isLoading ? (
-					<CurrencySkeleton />
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Name</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{currencies?.map((currency, index) => (
-								<TableRow key={currency.id}>
-									<TableCell className="font-medium">{index + 1}</TableCell>
-									<TableCell>{currency.name}</TableCell>
-									<TableCell>
-										<Badge
-											variant={currency.is_active ? 'default' : 'destructive'}
-										>
-											{currency.is_active ? 'Active' : 'Inactive'}
-										</Badge>
-									</TableCell>
-									<TableCell className="text-right">
-										<div className="flex justify-end gap-2">
-											<CurrencyDialog
-												mode="edit"
-												defaultValues={currency}
-												onSuccess={handleSuccess}
-											/>
-											<AlertDialog>
-												<AlertDialogTrigger asChild>
-													<CustomButton variant="ghost" size="sm">
-														<Trash className="h-4 w-4" />
-													</CustomButton>
-												</AlertDialogTrigger>
-												<AlertDialogContent>
-													<AlertDialogHeader>
-														<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-														<AlertDialogDescription>
-															This action cannot be undone. This will
-															permanently delete the delivery point.
-														</AlertDialogDescription>
-													</AlertDialogHeader>
-													<AlertDialogFooter>
-														<AlertDialogCancel>Cancel</AlertDialogCancel>
-														<AlertDialogAction
-															onClick={() =>
-																currency.id && handleDelete(currency.id)
-															}
-															className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-														>
-															Delete
-														</AlertDialogAction>
-													</AlertDialogFooter>
-												</AlertDialogContent>
-											</AlertDialog>
-										</div>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
+				<CurrencyTable
+					currencies={currencies}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
 		</>
 	);
