@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
-import { LocationType } from '@carmensoftware/shared-types';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { UnitType } from '@carmensoftware/shared-types';
 import { Badge } from '@/components/ui/badge';
 import {
 	Table,
@@ -24,18 +23,16 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import StoreLocationDialog from './StoreLocationDialog';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-
-interface StoreLocationTableProps {
-	storeLocations: LocationType[];
-	onSuccess: (values: LocationType) => void;
+import UnitDialog from './UnitDialog';
+interface UnitTableProps {
+	units: UnitType[];
+	onSuccess: (values: UnitType) => void;
 	onDelete: (id: string) => void;
 	isLoading?: boolean;
 }
 
-const StoreLocationTable: React.FC<StoreLocationTableProps> = ({
-	storeLocations,
+const UnitTable: React.FC<UnitTableProps> = ({
+	units,
 	onSuccess,
 	onDelete,
 	isLoading = false,
@@ -43,38 +40,33 @@ const StoreLocationTable: React.FC<StoreLocationTableProps> = ({
 	if (isLoading) {
 		return <SkeletonTableLoading />;
 	}
-
 	return (
 		<Table>
 			<TableHeader>
 				<TableRow>
 					<TableHead className="w-[100px]">#</TableHead>
 					<TableHead>Name</TableHead>
-					<TableHead>Type</TableHead>
 					<TableHead>Description</TableHead>
 					<TableHead>Status</TableHead>
 					<TableHead className="text-right">Actions</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{storeLocations?.map((location, index) => (
-					<TableRow key={location.id}>
+				{units?.map((unit, index) => (
+					<TableRow key={unit.id}>
 						<TableCell className="font-medium">{index + 1}</TableCell>
-						<TableCell>{location.name}</TableCell>
+						<TableCell>{unit.name}</TableCell>
+						<TableCell>{unit.description}</TableCell>
 						<TableCell>
-							{location.location_type === 'inventory' ? 'Inventory' : 'Direct'}
-						</TableCell>
-						<TableCell>{location.description}</TableCell>
-						<TableCell>
-							<Badge variant={location.is_active ? 'default' : 'destructive'}>
-								{location.is_active ? 'Active' : 'Inactive'}
+							<Badge variant={unit.is_active ? 'default' : 'destructive'}>
+								{unit.is_active ? 'Active' : 'Inactive'}
 							</Badge>
 						</TableCell>
 						<TableCell className="text-right">
 							<div className="flex justify-end gap-2">
-								<StoreLocationDialog
+								<UnitDialog
 									mode="edit"
-									defaultValues={location}
+									defaultValues={unit}
 									onSuccess={onSuccess}
 								/>
 								<AlertDialog>
@@ -88,13 +80,13 @@ const StoreLocationTable: React.FC<StoreLocationTableProps> = ({
 											<AlertDialogTitle>Are you sure?</AlertDialogTitle>
 											<AlertDialogDescription>
 												This action cannot be undone. This will permanently
-												delete the store location.
+												delete the unit.
 											</AlertDialogDescription>
 										</AlertDialogHeader>
 										<AlertDialogFooter>
 											<AlertDialogCancel>Cancel</AlertDialogCancel>
 											<AlertDialogAction
-												onClick={() => location.id && onDelete(location.id)}
+												onClick={() => unit.id && onDelete(unit.id)}
 												className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 											>
 												Delete
@@ -111,4 +103,4 @@ const StoreLocationTable: React.FC<StoreLocationTableProps> = ({
 	);
 };
 
-export default StoreLocationTable;
+export default UnitTable;

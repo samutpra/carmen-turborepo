@@ -21,7 +21,7 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { StoreLocationDialog } from './StoreLocationDialog';
+import StoreLocationDialog from './StoreLocationDialog';
 import StoreLocationCard from './StoreLocationCard';
 import StoreLocationTable from './StoreLocationTable';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,8 +58,6 @@ const fetchStoreLocations = async (
 			throw new Error('Failed to fetch store locations');
 		}
 		const result = await response.json();
-		console.log('result', result);
-
 		return result;
 	} catch (error) {
 		console.error('Error fetching store locations:', error);

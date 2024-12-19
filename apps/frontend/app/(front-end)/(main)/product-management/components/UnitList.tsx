@@ -1,415 +1,258 @@
-"use client";
+'use client';
 
+import { useURLState } from '@/app/(front-end)/hooks/useURLState';
+import { useAuth } from '@/app/context/AuthContext';
+import { Card, CardContent } from '@/components/ui/card';
+import { UnitType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { ArrowUpDown, Filter, PlusCircle, Printer, Sheet } from 'lucide-react';
-import { UnitLabel, UnitSchema, UnitType } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui-custom/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import DataTable from '@/components/templates/DataTable';
-import DataCard from '@/components/templates/DataCard';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { Switch } from '@/components/ui/switch';
-import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
-import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { nanoid } from 'nanoid'
-// import { unitData } from '../../configuration/data/data';
-import { useUnits } from '../unit/actions/units';
-import { accessToken } from '@/lib/currentUser';
-import ErrorDisplay from '@/components/ErrorDisplay';
+import { Search } from 'lucide-react';
+import UnitDialog from './UnitDialog';
+import UnitTable from './UnitTable';
+import UnitCard from './UnitCard';
 
+const fetchUnits = async (
+	token: string,
+	tenantId: string,
+	params: { search?: string; status?: string } = {}
+) => {
+	try {
+		const query = new URLSearchParams();
 
-const statusOptions = [
-    { value: "all", label: "All Statuses" },
-    { value: "true", label: "Active" },
-    { value: "false", label: "Not Active" }
-];
+		if (params.search) {
+			query.append('search', params.search);
+		}
 
+		if (params.status) {
+			query.append('filter[is_active:bool]', params.status);
+		}
+
+		const url = `/api/product-management/unit?${query}`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(url, options);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch store locations');
+		}
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching store locations:', error);
+		throw error;
+	}
+};
 
 const UnitList = () => {
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-    const [dialogDelete, setDialogDelete] = useState(false);
-    const [dialogForm, setDialogForm] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [editingItem, setEditingItem] = useState<UnitType | null>(null);
-    const [formError, setFormError] = useState<string | null>(null);
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [units, setUnits] = useState<UnitType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURLState('search');
+	const [status, setStatus] = useURLState('status');
 
-    const { units, setUnits, unitLoading, error } = useUnits(accessToken);
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchUnits(token, tenantId, { search, status });
+			setUnits(data.data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-    const form = useForm<UnitType>({
-        resolver: zodResolver(UnitSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            isActive: true
-        }
-    });
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
 
-    useEffect(() => {
-        if (editingItem) {
-            form.reset({
-                name: editingItem.name,
-                description: editingItem.description,
-                isActive: editingItem.isActive
-            });
-        }
-    }, [editingItem, form]);
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">Error loading units: {error}</p>
+				</CardContent>
+			</Card>
+		);
+	}
 
-    const handleEdit = (item: UnitType) => {
-        form.setValue('name', item.name);
-        form.setValue('description', item.description);
-        form.setValue('isActive', item.isActive);
-        setEditingItem(item);
-        setDialogForm(true);
-    };
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
+	];
 
-    const handleDelete = (item: UnitType) => {
-        setIdToDelete(item.id);
-        setDialogDelete(true);
-    };
+	const handleSuccess = (updatedUnit: UnitType) => {
+		setUnits((prev) => {
+			const exists = prev.some((u) => u.id === updatedUnit.id);
+			if (exists) {
+				return prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
+			}
+			return [...prev, updatedUnit];
+		});
+	};
 
-    const confirmDelete = async () => {
-        try {
-            setIsLoading(true);
-            setUnits((prev) => prev.filter((unit) => unit.id !== idToDelete));
-            setDialogDelete(false);
-        } catch (error) {
-            console.error('Error deleting unit:', error);
-        } finally {
-            setIsLoading(false);
-            setIdToDelete(null);
-        }
-    };
+	const handleDelete = async (id: string) => {
+		try {
+			const response = await fetch(`/api/product-management/unit/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+			});
 
-    const handleView = (item: UnitType) => {
-        console.log('Viewing unit:', item);
-    };
+			if (!response.ok) {
+				throw new Error('Failed to delete unit');
+			}
+			setUnits((prev) => prev.filter((u) => u.id !== id));
+			toast.success('Unit deleted successfully');
+		} catch (err) {
+			console.error('Error deleting unit:', err);
+			toast.error('Failed to delete unit', {
+				description: err instanceof Error ? err.message : 'An error occurred',
+			});
+		}
+	};
 
-    const handleSave = async (data: UnitType) => {
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
 
-        try {
-            setIsLoading(true);
-            setFormError(null);
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
 
-            const newUnit = {
-                ...data,
-                id: editingItem ? editingItem.id : nanoid(),
-            };
+	const title = 'Units';
 
-            if (editingItem) {
-                setUnits((prev) =>
-                    prev.map((unit) => (unit.id === editingItem.id ? newUnit : unit))
-                );
-            } else {
-                setUnits((prev) => [...prev, newUnit]);
-            }
+	const actionButtons = (
+		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+			<UnitDialog mode="create" onSuccess={handleSuccess} />
+		</div>
+	);
 
-            const method = editingItem ? 'PATCH' : 'POST';
-            const API_URL = '/api/product-management/unit';
+	const filter = (
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
+			<form onSubmit={handleSearch} className="flex gap-2 w-full">
+				<div className="relative w-full md:w-1/4">
+					<Input
+						name="search"
+						placeholder="Search Store Location..."
+						defaultValue={search}
+						onKeyDown={handleKeyDown}
+						className="h-10 pr-10"
+					/>
+					<Button
+						type="submit"
+						variant="ghost"
+						size="icon"
+						className="absolute right-0 top-0 h-full px-3"
+					>
+						<Search className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</Button>
+				</div>
+			</form>
+			<div className="flex gap-2 justify-center items-center">
+				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
+					<PopoverTrigger asChild>
+						<Button
+							variant="outline"
+							role="combobox"
+							aria-expanded={statusOpen}
+							className="w-full md:w-[200px] justify-between"
+						>
+							{status
+								? statusOptions.find((option) => option.value === status)?.label
+								: 'Select status...'}
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="p-0 w-full md:w-[200px]">
+						<Command>
+							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandList>
+								<CommandEmpty>No status found.</CommandEmpty>
+								<CommandGroup>
+									{statusOptions.map((option) => (
+										<CommandItem
+											key={option.value}
+											value={option.value}
+											onSelect={() => {
+												setStatus(option.value);
+												setStatusOpen(false);
+											}}
+										>
+											{option.label}
+										</CommandItem>
+									))}
+								</CommandGroup>
+							</CommandList>
+						</Command>
+					</PopoverContent>
+				</Popover>
+			</div>
+		</div>
+	);
+	const content = (
+		<>
+			<div className="block md:hidden">
+				<UnitCard
+					units={units}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
+			</div>
+			<div className="hidden md:block">
+				<UnitTable
+					units={units}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
+			</div>
+		</>
+	);
 
-            const response = await fetch(API_URL, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newUnit),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                toast.error('An error occurred');
-                throw new Error(result.error || 'An error occurred');
-            } else {
-                toast.success(`Unit has been ${editingItem ? 'edited' : 'created'}.`);
-                handleCloseDialog();
-            }
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'An error occurred');
-            setFormError(error instanceof Error ? error.message : 'An error occurred');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-
-    const handleCloseDialog = () => {
-        form.reset({
-            name: "",
-            description: "",
-            isActive: true
-        });
-        setDialogForm(false);
-        setEditingItem(null);
-    };
-
-    const title = 'Unit';
-
-    const columns: UnitLabel[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'description', label: 'Description' },
-        { key: 'isActive', label: 'Active' }
-    ];
-
-    const actionButtons = (
-        <div className="flex flex-col gap-4 md:flex-row">
-            <CustomButton
-                className='w-full md:w-20'
-                prefixIcon={<PlusCircle />}
-                onClick={() => setDialogForm(true)}
-            >
-                Add
-            </CustomButton>
-            <div className='flex flex-row md:flex-row gap-4'>
-                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Sheet />}>Export</CustomButton>
-                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Printer />}>Print</CustomButton>
-            </div>
-
-        </div>
-    );
-
-    const filter = (
-        <div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-            <div className="w-full sm:w-auto flex-grow">
-                <Input
-                    placeholder="Search Units..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <div className="flex items-center space-x-4">
-                <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={statusOpen}
-                            className="w-[200px] justify-between"
-                        >
-                            {selectedStatus
-                                ? statusOptions.find((status) => status.value === selectedStatus)?.label
-                                : "Select status..."}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                            <CommandInput placeholder="Search status..." className="h-9" />
-                            <CommandList>
-                                <CommandEmpty>No status found.</CommandEmpty>
-                                <CommandGroup>
-                                    {statusOptions.map((status) => (
-                                        <CommandItem
-                                            key={status.value}
-                                            onSelect={() => {
-                                                setSelectedStatus(status.value === selectedStatus ? "" : status.value);
-                                                setStatusOpen(false);
-                                            }}
-                                        >
-                                            {status.label}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
-
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="outline">
-                            <Filter className="h-4 w-4" />
-                            More Filters
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:w-[70vw] max-w-[60vw]">
-                        <FilterBuilder
-                            fields={[
-                                { value: 'name', label: 'Name' },
-                                { value: 'description', label: 'Description' },
-                                { value: 'isActive', label: 'Status' }
-                            ]}
-                            onFilterChange={(filters) => {
-                                console.log('Applied filters:', filters);
-                            }}
-                        />
-                    </DialogContent>
-                </Dialog>
-
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                            <ArrowUpDown className="h-4 w-4" />
-                            Sort
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem>Name</DropdownMenuItem>
-                        <DropdownMenuItem>Description</DropdownMenuItem>
-                        <DropdownMenuItem>Status</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </div>
-    );
-
-    const content = (
-        <>
-            <div className="block lg:hidden">
-                {unitLoading ? (
-                    <SkeltonCardLoading />
-                ) : error ? (
-                    <ErrorDisplay errMessage={error.message} />
-                ) : (
-                    <DataCard
-                        data={units}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onView={handleView}
-                    />
-                )}
-            </div>
-
-            <div className="hidden lg:block">
-                {unitLoading ? (
-                    <SkeletonTableLoading />
-                ) : error ? (
-                    <ErrorDisplay errMessage={error.message} />
-                ) : (
-                    <DataTable
-                        data={units}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onView={handleView}
-                    />
-                )}
-            </div>
-
-            <DialogDelete
-                open={dialogDelete}
-                onOpenChange={setDialogDelete}
-                onConfirm={confirmDelete}
-                idDelete={idToDelete}
-            />
-
-            <Dialog open={dialogForm} onOpenChange={handleCloseDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {editingItem ? `Edit ${title}` : `Add New ${title}`}
-                        </DialogTitle>
-                    </DialogHeader>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
-                            {formError && (
-                                <Alert variant="destructive">
-                                    <AlertDescription>{formError}</AlertDescription>
-                                </Alert>
-                            )}
-
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <InputCustom
-                                                placeholder="Enter unit name"
-                                                error={!!form.formState.errors.name}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                                required
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <InputCustom
-                                                placeholder="Enter unit description"
-                                                error={!!form.formState.errors.description}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                                required
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="isActive"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-2">
-                                        <FormControl>
-                                            <Switch
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel>Active</FormLabel>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={handleCloseDialog}
-                                    disabled={isLoading}
-                                    className=''
-                                >
-                                    Cancel
-                                </Button>
-                                <LoaderButton
-                                    type="submit"
-                                    disabled={isLoading}
-                                    isLoading={isLoading}
-                                >
-                                    {isLoading ? 'Saving...' : (editingItem ? 'Save Changes' : 'Add')}
-                                </LoaderButton>
-
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
-
-    return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filter}
-            content={content}
-        />
-    );
+	return (
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
+	);
 };
 
 export default UnitList;
