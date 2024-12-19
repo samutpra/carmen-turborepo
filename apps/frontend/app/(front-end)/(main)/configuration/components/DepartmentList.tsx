@@ -1,256 +1,230 @@
 'use client';
 
+import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
-import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import DataTable from '@/components/templates/DataTable';
-import DataCard from '@/components/templates/DataCard';
-import { createDepartment, deleteDepartment, updateDepartment, useDepartments } from '../actions/department';
-import ErrorDisplay from '@/components/ErrorDisplay';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { DepartmentType } from '@carmensoftware/shared-types/src/department';
+import { APIError } from '@carmensoftware/shared-types/src/pagination';
+import { Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DepartmentForm from './form/DepartmentForm';
-import { DepartmentLabel, DepartmentSchema, DepartmentType, PayloaDepartmentType } from '@carmensoftware/shared-types/src/department';
+import DepartmentCard from './DepartmentCard';
+import DepartmentDialog from './DepartmentDialog';
+import DepartmentTable from './DepartmentTable';
+const fetchDepartments = async (
+	token: string,
+	tenantId: string,
+	params: { search?: string; status?: string } = {}
+) => {
+	try {
+		if (!token) {
+			throw new Error('Access token is required');
+		}
 
-const statusOptions = [
-	{ value: 'all', label: 'All Statuses' },
-	{ value: 'true', label: 'Active' },
-	{ value: 'false', label: 'Not Active' },
-];
+		const query = new URLSearchParams();
+
+		if (params.search) {
+			query.append('search', params.search);
+		}
+
+		if (params.status) {
+			query.append('filter[is_active:bool]', params.status);
+		}
+
+		const url = `/api/configuration/department?${query}`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new APIError(
+				response.status,
+				`Failed to fetch departments: ${response.status} ${response.statusText}`
+			);
+		}
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching departments:', error);
+		throw error;
+	}
+};
 
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
-	const [editingItem, setEditingItem] = useState<DepartmentType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-	const [dialogDelete, setDialogDelete] = useState(false);
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+
+	const [departments, setDepartments] = useState<DepartmentType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState('');
+	const [search, setSearch] = useURLState('search');
+	const [status, setStatus] = useURLState('status');
 
-	const token = accessToken || ''
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
+	];
 
-	const {
-		departments,
-		setDepartments,
-		loading,
-		error,
-		pagination,
-		search,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		handleSearch,
-		fetchData
-	} = useDepartments(token);
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
 
-	const form = useForm<DepartmentType>({
-		resolver: zodResolver(DepartmentSchema),
-		defaultValues: {
-			name: '',
-			description: '',
-			is_active: true,
-		},
-	});
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
+
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchDepartments(token, tenantId, { search, status });
+			setDepartments(data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		if (editingItem) {
-			form.reset({
-				name: editingItem.name,
-				description: editingItem.description,
-				is_active: editingItem.is_active,
+		fetchData();
+	}, [token, tenantId, search, status]);
+
+	const handleDelete = async (id: string) => {
+		try {
+			const response = await fetch(`/api/configuration/department/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete department');
+			}
+
+			setDepartments((prev) =>
+				prev.filter((department) => department.id !== id)
+			);
+			toast.success('Department deleted successfully');
+		} catch (err) {
+			console.error('Error deleting department:', err);
+			toast.error('Failed to delete department', {
+				description: err instanceof Error ? err.message : 'An error occurred',
 			});
 		}
-	}, [editingItem, form]);
+	};
 
-	const handleEdit = (item: PayloaDepartmentType) => {
-		setEditingItem(item);
-		form.reset({
-			name: item.name,
-			description: item.description,
-			is_active: item.is_active,
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">Error loading departments: {error}</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	const handleSuccess = (values: DepartmentType) => {
+		setDepartments((prev) => {
+			const exists = prev.some((p) => p.id === values.id);
+			if (exists) {
+				return prev.map((p) => (p.id === values.id ? values : p));
+			}
+			return [...prev, values];
 		});
-		setDialogForm(true);
-	};
-
-	const handleDelete = (item: DepartmentType) => {
-		setIdToDelete(item.id);
-		setDialogDelete(true);
-	};
-
-	const confirmDelete = async () => {
-		try {
-			setIsLoading(true);
-			if (idToDelete) {
-				await deleteDepartment(token, idToDelete);
-				setDepartments((prev) =>
-					prev.filter((item) => item.id !== idToDelete)
-				);
-				fetchData();
-				setDialogDelete(false);
-			}
-		} catch (error) {
-			console.error('Error deleting currency:', error);
-		} finally {
-			setIsLoading(false);
-			setIdToDelete(null);
-		}
-	};
-
-	const handleSave = async (data: DepartmentType) => {
-		try {
-			setIsLoading(true);
-			if (editingItem?.id) {
-				const updatedFields: DepartmentType = { ...data };
-				const updatedCurrency = await updateDepartment(
-					token,
-					editingItem.id,
-					updatedFields
-				);
-				setDepartments((prev) =>
-					prev.map((item) =>
-						item.id === editingItem.id ? updatedCurrency : item
-					)
-				);
-			} else {
-				const newDepartment = await createDepartment(token, data);
-				setDepartments((prev: DepartmentType[]) => [...prev, newDepartment]);
-			}
-			handleCloseDialog();
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				console.error('Save error details:', {
-					error: error.message,
-					stack: error.stack,
-				});
-			} else {
-				console.error('Save error details:', {
-					error: 'Unknown error occurred',
-				});
-			}
-		} finally {
-			setIsLoading(false);
-			setDialogForm(false);
-		}
-	};
-
-
-	const handleCloseDialog = () => {
-		form.reset({
-			description: '',
-			name: '',
-			is_active: true,
-		});
-		setDialogForm(false);
-		setEditingItem(null);
 	};
 
 	const title = 'Departments';
 
-	const columns: DepartmentLabel[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Active' },
-	];
-
 	const actionButtons = (
-		<div className="flex flex-col gap-4 md:flex-row">
-			<CustomButton
-				className="w-full md:w-20"
-				prefixIcon={<PlusCircle />}
-				onClick={() => setDialogForm(true)}
-			>
-				Add
-			</CustomButton>
-			<div className="flex flex-row md:flex-row gap-4">
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Sheet />}
-				>
-					Export
-				</CustomButton>
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Printer />}
-				>
-					Print
-				</CustomButton>
-			</div>
+		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+			<DepartmentDialog mode="create" onSuccess={handleSuccess} />
 		</div>
 	);
 
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row gap-4">
-			<div className="w-full sm:w-auto flex-grow">
-				<SearchInput
-					placeholder="Search Currency..."
-					value={search}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-						handleSearch(e.target.value, false);
-					}}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							handleSearch(e.currentTarget.value, true);
-						}
-					}}
-					Icon={Search}
-					className="h-9"
-				/>
-			</div>
-			<div className="flex items-center space-x-4">
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
+			<form onSubmit={handleSearch} className="flex gap-2 w-full">
+				<div className="relative w-full md:w-1/4">
+					<Input
+						name="search"
+						placeholder="Search Delivery Point..."
+						defaultValue={search}
+						onKeyDown={handleKeyDown}
+						className="h-10 pr-10"
+					/>
+					<Button
+						type="submit"
+						variant="ghost"
+						size="icon"
+						className="absolute right-0 top-0 h-full px-3"
+					>
+						<Search className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</Button>
+				</div>
+			</form>
+			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
 						<Button
 							variant="outline"
 							role="combobox"
 							aria-expanded={statusOpen}
-							className="w-[200px] justify-between"
+							className="w-full md:w-[200px] justify-between"
 						>
-							{selectedStatus
-								? statusOptions.find(
-										(status) => status.value === selectedStatus
-									)?.label
+							{status
+								? statusOptions.find((option) => option.value === status)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="w-[200px] p-0">
+					<PopoverContent className="p-0 w-full md:w-[200px]">
 						<Command>
 							<CommandInput placeholder="Search status..." className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
-									{statusOptions.map((status) => (
+									{statusOptions.map((option) => (
 										<CommandItem
-											key={status.value}
+											key={option.value}
+											value={option.value}
 											onSelect={() => {
-												setSelectedStatus(
-													status.value === selectedStatus ? '' : status.value
-												);
+												setStatus(option.value);
 												setStatusOpen(false);
 											}}
 										>
-											{status.label}
+											{option.label}
 										</CommandItem>
 									))}
 								</CommandGroup>
@@ -258,91 +232,28 @@ const DepartmentList = () => {
 						</Command>
 					</PopoverContent>
 				</Popover>
-
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="outline">
-							<Filter className="h-4 w-4" />
-							More Filters
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
-						<FilterBuilder
-							fields={[
-								{ value: 'name', label: 'Name' },
-								{ value: 'description', label: 'Description' },
-								{ value: 'is_active', label: 'Status' },
-							]}
-							onFilterChange={(filters) => {
-								console.log('Applied filters:', filters);
-							}}
-						/>
-					</DialogContent>
-				</Dialog>
-
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline">
-							<ArrowUpDown className="h-4 w-4" />
-							Sort
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem>Name</DropdownMenuItem>
-						<DropdownMenuItem>Description</DropdownMenuItem>
-						<DropdownMenuItem>Status</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
 			</div>
 		</div>
 	);
 
 	const content = (
 		<>
-			<div className='block lg:hidden'>
-				{loading ? (
-					<SkeltonCardLoading />
-				) : error ? (
-					<div className='text-red-500'>{error.message}</div>
-				) : (
-					<DataCard data={departments} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
-				)}
+			<div className="block md:hidden">
+				<DepartmentCard
+					departments={departments}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
-
-			<div className='hidden lg:block'>
-				{loading ? (
-					<SkeletonTableLoading />
-				) : error ? (
-					<ErrorDisplay errMessage={error.message} />
-				) : (
-					<DataTable
-						data={departments}
-						columns={columns}
-						onEdit={handleEdit}
-						onDelete={handleDelete}
-						pagination={pagination}
-						goToPage={goToPage}
-						nextPage={nextPage}
-						previousPage={previousPage}
-						setPerPage={setPerPage}
-					/>
-				)}
+			<div className="hidden md:block">
+				<DepartmentTable
+					departments={departments}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
-
-			<DialogDelete
-				open={dialogDelete}
-				onOpenChange={setDialogDelete}
-				onConfirm={confirmDelete}
-				idDelete={idToDelete}
-			/>
-
-			<DepartmentForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={handleSave}
-			/>
 		</>
 	);
 
@@ -353,7 +264,7 @@ const DepartmentList = () => {
 			filters={filter}
 			content={content}
 		/>
-	)
-}
+	);
+};
 
-export default DepartmentList
+export default DepartmentList;

@@ -41,6 +41,8 @@ const CurrencySkeleton = () => {
 		</Card>
 	);
 };
+
+
 const CurrencyCard = ({
 	currencies,
 	onSuccess,
