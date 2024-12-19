@@ -1331,12 +1331,13 @@ export interface User {
 // }
 
 export interface AuthContextType extends AuthState {
-  isAuthenticated: boolean;
-  accessToken: string | null;
-  handleLogin: (data: AuthState, token: string) => void;
-  handleLogout: () => void;
-  updateAccessToken: (token: string) => void;
-  authState: AuthState;
+	isAuthenticated: boolean;
+	accessToken: string | null;
+	handleLogin: (data: AuthState, token: string) => void;
+	handleLogout: () => void;
+	updateAccessToken: (token: string) => void;
+	authState: AuthState;
+	setAccessToken: (token: string) => void;
 }
 
 

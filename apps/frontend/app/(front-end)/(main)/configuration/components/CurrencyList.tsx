@@ -27,8 +27,7 @@ import { toast } from 'sonner';
 import CurrencyDialog from './CurrencyDialog';
 import CurrencyCard from './CurrencyCard';
 import CurrencyTable from './CurrencyTable';
-
-
+import RefreshToken from '@/components/RefreshToken';
 
 const fetchCurrencies = async (
 	token: string,
@@ -62,6 +61,7 @@ const fetchCurrencies = async (
 		};
 
 		const response = await fetch(url, options);
+
 		if (!response.ok) {
 			throw new APIError(
 				response.status,
@@ -72,7 +72,7 @@ const fetchCurrencies = async (
 		const result = await response.json();
 		return result.data;
 	} catch (error) {
-		console.error('Error fetching delivery points:', error);
+		console.error('Error fetching currencies:', error);
 		throw error;
 	}
 };
@@ -87,6 +87,7 @@ const CurrencyList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURLState('search');
 	const [status, setStatus] = useURLState('status');
+	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const statusOptions = [
 		{ label: 'All Status', value: '' },
@@ -114,8 +115,18 @@ const CurrencyList = () => {
 				status,
 			});
 			setCurrencies(data);
+			setShowRefreshToken(false);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'An error occurred');
+			if (err instanceof APIError && err.status === 401) {
+				toast.error('Your session has expired. Please login again.');
+				setShowRefreshToken(true);
+				setCurrencies([]);
+			} else {
+				setError(err instanceof Error ? err.message : 'An error occurred');
+				toast.error('Failed to fetch currencies', {
+					description: err instanceof Error ? err.message : 'An error occurred',
+				});
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -134,6 +145,12 @@ const CurrencyList = () => {
 				},
 			});
 
+			if (response.status === 401) {
+				toast.error('Your session has expired. Please login again.');
+				setShowRefreshToken(true);
+				return;
+			}
+
 			if (!response.ok) {
 				throw new Error('Failed to delete currency');
 			}
@@ -147,6 +164,19 @@ const CurrencyList = () => {
 			});
 		}
 	};
+
+	if (showRefreshToken) {
+		return (
+			<Card className="border-destructive w-full md:w-1/2">
+				<CardContent className="pt-6">
+					<div className="flex flex-col items-center gap-4">
+						<p className="text-destructive">Your session has expired.</p>
+						<RefreshToken />
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
 
 	if (error) {
 		return (
