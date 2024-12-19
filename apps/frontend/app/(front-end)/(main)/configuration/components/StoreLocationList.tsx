@@ -1,253 +1,251 @@
 'use client';
-import React, { useState } from 'react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import DataTable from '@/components/templates/DataTable';
-import DataCard from '@/components/templates/DataCard';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { useRouter } from '@/lib/i18n';
-import {
-	createLocation,
-	deleteLocation,
-	updateLocation,
-	useLocations,
-} from '../actions/location';
+import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import ErrorDisplay from '@/components/ErrorDisplay';
-
-import LocationForm from './form/LocationForm';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as m from '@/paraglide/messages.js';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { LocationType } from '@carmensoftware/shared-types';
+import { Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import {
-	LocationLabel,
-	LocationSchema,
-	LocationType,
-	PayloadLocationType,
-} from '@carmensoftware/shared-types/src/locationSchema';
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import { StoreLocationDialog } from './StoreLocationDialog';
+import StoreLocationCard from './StoreLocationCard';
+import StoreLocationTable from './StoreLocationTable';
+import { Card, CardContent } from '@/components/ui/card';
 
+const fetchStoreLocations = async (
+	token: string,
+	tenantId: string,
+	params: { search?: string; status?: string } = {}
+) => {
+	try {
+		const query = new URLSearchParams();
+
+		if (params.search) {
+			query.append('search', params.search);
+		}
+
+		if (params.status) {
+			query.append('filter[is_active:bool]', params.status);
+		}
+
+		const url = `/api/configuration/store-location?${query}`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error('Failed to fetch store locations');
+		}
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching store locations:', error);
+		throw error;
+	}
+};
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
-	const router = useRouter();
-	const [dialogDelete, setDialogDelete] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-	const [editingItem, setEditingItem] = useState<LocationType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-
 	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [storeLocations, setStoreLocations] = useState<LocationType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURLState('search');
+	const [status, setStatus] = useURLState('status');
 
-	const {
-		locations,
-		setLocations,
-		loading,
-		error,
-		pagination,
-		search,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		handleSearch,
-		fetchData,
-	} = useLocations(token);
-
-	const form = useForm<PayloadLocationType>({
-		resolver: zodResolver(LocationSchema),
-		defaultValues: {
-			description: '',
-			name: '',
-			delivery_point_id: '',
-			location_type: 'inventory',
-			is_active: true,
-		},
-	});
-
-	const handleView = (item: LocationType) => {
-		router.push(`/configuration/store-location/${item.id}`);
-	};
-
-	const handleSave = async (data: LocationType) => {
-		console.log('Submitting data:', data);
+	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-
-			if (editingItem?.id) {
-				const updatedFields: LocationType = {
-					...data,
-					id: editingItem.id,
-				};
-				const updatedLocation = await updateLocation(
-					token,
-					editingItem.id,
-					updatedFields
-				);
-				setLocations((prev) =>
-					prev.map((loc) => (loc.id === editingItem.id ? updatedLocation : loc))
-				);
-			} else {
-				console.log('Creating new location with:', data);
-				const newLocation = await createLocation(token, data);
-				setLocations((prev) => [...prev, newLocation]);
-			}
-
-			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error:', error);
-			// อาจจะเพิ่ม toast หรือ alert แจ้ง error
+			const data = await fetchStoreLocations(token, tenantId, {
+				search,
+				status,
+			});
+			setStoreLocations(data.data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	const handleDelete = (item: LocationType) => {
-		setIdToDelete(item.id);
-		setDialogDelete(true);
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
+
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">
+						Error loading delivery points: {error}
+					</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
+	];
+
+	const handleSuccess = (updatedLocation: LocationType) => {
+		setStoreLocations((prev) => {
+			const exists = prev.some((l) => l.id === updatedLocation.id);
+			if (exists) {
+				return prev.map((l) =>
+					l.id === updatedLocation.id ? updatedLocation : l
+				);
+			}
+			return [...prev, updatedLocation];
+		});
 	};
 
-	const confirmDelete = async () => {
+	const handleDelete = async (id: string) => {
 		try {
-			if (idToDelete) {
-				await deleteLocation(token, idToDelete);
-				setLocations((prev) =>
-					prev.filter((location) => location.id !== idToDelete)
-				);
-				fetchData();
-				setDialogDelete(false);
+			const response = await fetch(`/api/configuration/store-location/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete store location');
 			}
-		} catch (error) {
-			console.error('Error deleting currency:', error);
-		} finally {
-			setIdToDelete(null);
+			setStoreLocations((prev) => prev.filter((l) => l.id !== id));
+			toast.success('Store location deleted successfully');
+		} catch (err) {
+			console.error('Error deleting store location:', err);
+			toast.error('Failed to delete store location', {
+				description: err instanceof Error ? err.message : 'An error occurred',
+			});
 		}
 	};
 
-	const handleCloseDialog = () => {
-		form.reset({
-			description: '',
-			name: '',
-			delivery_point_id: '',
-			location_type: 'inventory',
-			is_active: true,
-		});
-		setDialogForm(false);
-		setEditingItem(null);
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
 	};
 
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
+
+	const title = 'Store Locations';
+
 	const actionButtons = (
-		<div className="flex flex-col gap-4 md:flex-row">
-			<CustomButton
-				className="w-full md:w-20"
-				prefixIcon={<PlusCircle />}
-				onClick={() => setDialogForm(true)}
-			>
-				Add
-			</CustomButton>
-			<div className="flex flex-row md:flex-row gap-4">
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Sheet />}
-				>
-					Export
-				</CustomButton>
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Printer />}
-				>
-					Print
-				</CustomButton>
-			</div>
+		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+			<StoreLocationDialog mode="create" onSuccess={handleSuccess} />
 		</div>
 	);
-
-	const title = `${m.store_location()}`;
 
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-			<div className="w-full sm:w-auto flex-grow">
-				<SearchInput
-					placeholder="Search Currency..."
-					value={search}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-						handleSearch(e.target.value, false);
-					}}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							handleSearch(e.currentTarget.value, true);
-						}
-					}}
-					Icon={Search}
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
+			<form onSubmit={handleSearch} className="flex gap-2 w-full">
+				<Input
+					name="search"
+					placeholder="Search Store Location..."
+					defaultValue={search}
+					onKeyDown={handleKeyDown}
+					className="h-10 pr-10"
 				/>
+				<Button
+					type="submit"
+					variant="ghost"
+					size="icon"
+					className="absolute right-0 top-0 h-full px-3"
+				>
+					<Search className="h-4 w-4" />
+					<span className="sr-only">Search</span>
+				</Button>
+			</form>
+			<div className="flex gap-2 justify-center items-center">
+				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
+					<PopoverTrigger asChild>
+						<Button
+							variant="outline"
+							role="combobox"
+							aria-expanded={statusOpen}
+							className="w-full md:w-[200px] justify-between"
+						>
+							{status
+								? statusOptions.find((option) => option.value === status)?.label
+								: 'Select status...'}
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="p-0 w-full md:w-[200px]">
+						<Command>
+							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandList>
+								<CommandEmpty>No status found.</CommandEmpty>
+								<CommandGroup>
+									{statusOptions.map((option) => (
+										<CommandItem
+											key={option.value}
+											value={option.value}
+											onSelect={() => {
+												setStatus(option.value);
+												setStatusOpen(false);
+											}}
+										>
+											{option.label}
+										</CommandItem>
+									))}
+								</CommandGroup>
+							</CommandList>
+						</Command>
+					</PopoverContent>
+				</Popover>
 			</div>
 		</div>
 	);
-
-	const columns: LocationLabel[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'location_type', label: 'Location Type' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Active Status' },
-		{ key: 'delivery_point_id', label: 'Delivery Point ID' },
-	];
 
 	const content = (
 		<>
-			<div className="block lg:hidden">
-				{loading ? (
-					<SkeltonCardLoading />
-				) : error ? (
-					<div className="text-red-500">{error.message}</div>
-				) : (
-					<DataCard
-						data={locations}
-						columns={columns}
-						onView={handleView}
-						onDelete={handleDelete}
-					/>
-				)}
+			<div className="block md:hidden">
+				<StoreLocationCard
+					storeLocations={storeLocations}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
-
-			<div className="hidden lg:block">
-				{loading ? (
-					<SkeletonTableLoading />
-				) : error ? (
-					<ErrorDisplay errMessage={error.message} />
-				) : (
-					<DataTable
-						data={locations}
-						columns={columns}
-						onView={handleView}
-						onDelete={handleDelete}
-						pagination={pagination}
-						goToPage={goToPage}
-						nextPage={nextPage}
-						previousPage={previousPage}
-						setPerPage={setPerPage}
-					/>
-				)}
+			<div className="hidden md:block">
+				<StoreLocationTable
+					storeLocations={storeLocations}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
-			<LocationForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={handleSave}
-			/>
-
-			<DialogDelete
-				open={dialogDelete}
-				onOpenChange={setDialogDelete}
-				onConfirm={confirmDelete}
-				idDelete={idToDelete}
-			/>
 		</>
 	);
 

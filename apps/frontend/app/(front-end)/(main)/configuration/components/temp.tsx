@@ -1,82 +1,49 @@
 'use client';
-
-import {
-	ArrowUpDown,
-	Filter,
-	PlusCircle,
-	Printer,
-	Search,
-	Sheet,
-} from 'lucide-react';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
+import React, { useState } from 'react';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import DataTable from '@/components/templates/DataTable';
 import DataCard from '@/components/templates/DataCard';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DataTable from '@/components/templates/DataTable';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
+import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import { useRouter } from '@/lib/i18n';
 import {
-	useCurrencies,
-	updateCurrency,
-	deleteCurrency,
-	createCurrency,
-} from '../currency/actions/currency';
+	createLocation,
+	deleteLocation,
+	updateLocation,
+	useLocations,
+} from '../actions/location';
+import { useAuth } from '@/app/context/AuthContext';
+import SearchInput from '@/components/ui-custom/SearchInput';
+import ErrorDisplay from '@/components/ErrorDisplay';
+
+import LocationForm from './form/LocationForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ErrorDisplay from '@/components/ErrorDisplay';
-import CurrencyForm from './form/CurrencyForm';
-import { useAuth } from '@/app/context/AuthContext';
+import * as m from '@/paraglide/messages.js';
 import {
-	CurrencyLabel,
-	CurrencySchema,
-	CurrencyType,
-} from '@carmensoftware/shared-types/dist/currencySchema';
+	LocationLabel,
+	LocationSchema,
+	LocationType,
+	PayloadLocationType,
+} from '@carmensoftware/shared-types/src/locationSchema';
 
-const statusOptions = [
-	{ value: 'all', label: 'All Statuses' },
-	{ value: 'true', label: 'Active' },
-	{ value: 'false', label: 'Not Active' },
-];
-
-const CurrencyList = () => {
+const StoreLocationList = () => {
 	const { accessToken } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
-	const [editingItem, setEditingItem] = useState<CurrencyType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
+	const router = useRouter();
 	const [dialogDelete, setDialogDelete] = useState(false);
-	const [statusOpen, setStatusOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState('');
+	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
+	const [editingItem, setEditingItem] = useState<LocationType | null>(null);
+	const [dialogForm, setDialogForm] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const token = accessToken || '';
 
 	const {
-		currencies: rawCurrencies,
-		setCurrencies,
+		locations,
+		setLocations,
 		loading,
 		error,
 		pagination,
@@ -87,65 +54,67 @@ const CurrencyList = () => {
 		setPerPage,
 		handleSearch,
 		fetchData,
-	} = useCurrencies(token);
+	} = useLocations(token);
 
-	const currencies = rawCurrencies.map((currency) => ({
-		...currency,
-		symbol: currency.symbol || '',
-		is_active: currency.is_active || false,
-	})) as CurrencyType[];
-
-	const form = useForm<CurrencyType>({
-		resolver: zodResolver(CurrencySchema),
+	const form = useForm<PayloadLocationType>({
+		resolver: zodResolver(LocationSchema),
 		defaultValues: {
-			code: '',
-			name: '',
-			symbol: '',
 			description: '',
-			rate: 0,
+			name: '',
+			delivery_point_id: '',
+			location_type: 'inventory',
 			is_active: true,
 		},
 	});
 
-	useEffect(() => {
-		if (editingItem) {
-			form.reset({
-				code: editingItem.code,
-				name: editingItem.name,
-				symbol: editingItem.symbol,
-				description: editingItem.description,
-				rate: editingItem.rate,
-				is_active: editingItem.is_active,
-			});
-		}
-	}, [editingItem, form]);
-
-	const handleEdit = (item: CurrencyType) => {
-		setEditingItem(item);
-		form.reset({
-			id: item.id,
-			code: item.code,
-			name: item.name,
-			symbol: item.symbol,
-			description: item.description,
-			rate: item.rate,
-			is_active: item.is_active,
-		});
-		setDialogForm(true);
+	const handleView = (item: LocationType) => {
+		router.push(`/configuration/store-location/${item.id}`);
 	};
 
-	const handleDelete = (item: CurrencyType) => {
+	const handleSave = async (data: LocationType) => {
+		console.log('Submitting data:', data);
+		try {
+			setIsLoading(true);
+
+			if (editingItem?.id) {
+				const updatedFields: LocationType = {
+					...data,
+					id: editingItem.id,
+				};
+				const updatedLocation = await updateLocation(
+					token,
+					editingItem.id,
+					updatedFields
+				);
+				setLocations((prev) =>
+					prev.map((loc) => (loc.id === editingItem.id ? updatedLocation : loc))
+				);
+			} else {
+				console.log('Creating new location with:', data);
+				const newLocation = await createLocation(token, data);
+				setLocations((prev) => [...prev, newLocation]);
+			}
+
+			handleCloseDialog();
+		} catch (error) {
+			console.error('Save error:', error);
+			// อาจจะเพิ่ม toast หรือ alert แจ้ง error
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleDelete = (item: LocationType) => {
 		setIdToDelete(item.id);
 		setDialogDelete(true);
 	};
 
 	const confirmDelete = async () => {
 		try {
-			setIsLoading(true);
 			if (idToDelete) {
-				await deleteCurrency(token, idToDelete);
-				setCurrencies((prev) =>
-					prev.filter((currency) => currency.id !== idToDelete)
+				await deleteLocation(token, idToDelete);
+				setLocations((prev) =>
+					prev.filter((location) => location.id !== idToDelete)
 				);
 				fetchData();
 				setDialogDelete(false);
@@ -153,65 +122,21 @@ const CurrencyList = () => {
 		} catch (error) {
 			console.error('Error deleting currency:', error);
 		} finally {
-			setIsLoading(false);
 			setIdToDelete(null);
-		}
-	};
-
-	const handleSave = async (data: CurrencyType) => {
-		try {
-			setIsLoading(true);
-			if (editingItem?.id) {
-				const updatedCurrency = await updateCurrency(
-					token,
-					editingItem.id,
-					data
-				);
-				setCurrencies((prev) =>
-					prev.map((item) =>
-						item.id === editingItem.id ? updatedCurrency : item
-					)
-				);
-			} else {
-				const newCurrency = await createCurrency(token, data);
-				const currencyWithRequiredFields: CurrencyType = {
-					...newCurrency,
-					symbol: newCurrency.symbol || '',
-					is_active: newCurrency.is_active || false,
-				};
-				setCurrencies((prev) => [...prev, currencyWithRequiredFields]);
-			}
-			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error:', error);
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
 	const handleCloseDialog = () => {
 		form.reset({
-			code: '',
 			description: '',
 			name: '',
-			symbol: '',
-			rate: 0,
+			delivery_point_id: '',
+			location_type: 'inventory',
 			is_active: true,
 		});
 		setDialogForm(false);
 		setEditingItem(null);
 	};
-
-	const title = 'Currency';
-
-	const columns: CurrencyLabel[] = [
-		{ key: 'code', label: 'Code' },
-		{ key: 'name', label: 'Name' },
-		{ key: 'symbol', label: 'Symbol' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'rate', label: 'Rate' },
-		{ key: 'is_active', label: 'Active' },
-	];
 
 	const actionButtons = (
 		<div className="flex flex-col gap-4 md:flex-row">
@@ -241,6 +166,8 @@ const CurrencyList = () => {
 		</div>
 	);
 
+	const title = `${m.store_location()}`;
+
 	const filter = (
 		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
 			<div className="w-full sm:w-auto flex-grow">
@@ -259,84 +186,16 @@ const CurrencyList = () => {
 					Icon={Search}
 				/>
 			</div>
-			<div className="flex items-center space-x-4">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="w-[200px] justify-between"
-						>
-							{selectedStatus
-								? statusOptions.find(
-										(status) => status.value === selectedStatus
-									)?.label
-								: 'Select status...'}
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="w-[200px] p-0">
-						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((status) => (
-										<CommandItem
-											key={status.value}
-											onSelect={() => {
-												setSelectedStatus(
-													status.value === selectedStatus ? '' : status.value
-												);
-												setStatusOpen(false);
-											}}
-										>
-											{status.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="outline">
-							<Filter className="h-4 w-4" />
-							More Filters
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
-						<FilterBuilder
-							fields={[
-								{ value: 'name', label: 'Name' },
-								{ value: 'description', label: 'Description' },
-								{ value: 'is_active', label: 'Status' },
-							]}
-							onFilterChange={(filters) => {
-								console.log('Applied filters:', filters);
-							}}
-						/>
-					</DialogContent>
-				</Dialog>
-
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline">
-							<ArrowUpDown className="h-4 w-4" />
-							Sort
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem>Name</DropdownMenuItem>
-						<DropdownMenuItem>Description</DropdownMenuItem>
-						<DropdownMenuItem>Status</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
 		</div>
 	);
+
+	const columns: LocationLabel[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'location_type', label: 'Location Type' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'is_active', label: 'Active Status' },
+		{ key: 'delivery_point_id', label: 'Delivery Point ID' },
+	];
 
 	const content = (
 		<>
@@ -347,9 +206,9 @@ const CurrencyList = () => {
 					<div className="text-red-500">{error.message}</div>
 				) : (
 					<DataCard
-						data={currencies}
+						data={locations}
 						columns={columns}
-						onEdit={handleEdit}
+						onView={handleView}
 						onDelete={handleDelete}
 					/>
 				)}
@@ -362,9 +221,9 @@ const CurrencyList = () => {
 					<ErrorDisplay errMessage={error.message} />
 				) : (
 					<DataTable
-						data={currencies}
+						data={locations}
 						columns={columns}
-						onEdit={handleEdit}
+						onView={handleView}
 						onDelete={handleDelete}
 						pagination={pagination}
 						goToPage={goToPage}
@@ -374,6 +233,13 @@ const CurrencyList = () => {
 					/>
 				)}
 			</div>
+			<LocationForm
+				open={dialogForm}
+				editingItem={editingItem}
+				isLoading={isLoading}
+				onOpenChange={setDialogForm}
+				onSubmit={handleSave}
+			/>
 
 			<DialogDelete
 				open={dialogDelete}
@@ -381,33 +247,17 @@ const CurrencyList = () => {
 				onConfirm={confirmDelete}
 				idDelete={idToDelete}
 			/>
-
-			<CurrencyForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={(data) =>
-					handleSave({
-						...data,
-						symbol: data.symbol || '',
-						is_active: data.is_active || false,
-					} as CurrencyType)
-				}
-			/>
 		</>
 	);
 
 	return (
-		<>
-			<DataDisplayTemplate
-				title={title}
-				actionButtons={actionButtons}
-				filters={filter}
-				content={content}
-			/>
-		</>
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
 	);
 };
 
-export default CurrencyList;
+export default StoreLocationList;
