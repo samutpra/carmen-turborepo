@@ -58,10 +58,12 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			rate: defaultValues?.rate || 0,
 			is_active: defaultValues?.is_active ?? true,
 		},
+		mode: 'onChange',
 	});
 
 	const onSubmit = async (data: CurrencyType) => {
 		setIsLoading(true);
+
 		try {
 			const url =
 				mode === 'create'
@@ -151,6 +153,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 										<FormMessage />
 									</FormItem>
 								)}
+								required
 							/>
 
 							<FormField
@@ -169,6 +172,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 										<FormMessage />
 									</FormItem>
 								)}
+								required
 							/>
 						</div>
 
@@ -190,6 +194,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 										<FormMessage />
 									</FormItem>
 								)}
+								required
 							/>
 
 							<FormField
@@ -203,15 +208,13 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 												placeholder="Enter Rate"
 												error={!!form.formState.errors.rate}
 												{...field}
-												value={field.value.toString()} // Convert number to string
-												onChange={(e) =>
-													field.onChange(parseFloat(e.target.value) || '')
-												}
+												value={field.value?.toString() ?? ''}
 											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
+								required
 							/>
 						</div>
 
@@ -231,6 +234,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									<FormMessage />
 								</FormItem>
 							)}
+							required
 						/>
 
 						<FormField
