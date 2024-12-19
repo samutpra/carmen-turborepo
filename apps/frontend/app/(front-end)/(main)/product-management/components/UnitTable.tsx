@@ -24,6 +24,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import UnitDialog from './UnitDialog';
+import EmptyState from '@/components/ui-custom/EmptyState';
 interface UnitTableProps {
 	units: UnitType[];
 	onSuccess: (values: UnitType) => void;
@@ -40,6 +41,11 @@ const UnitTable: React.FC<UnitTableProps> = ({
 	if (isLoading) {
 		return <SkeletonTableLoading />;
 	}
+
+	if (units.length === 0) {
+		return <EmptyState title="No units found" description="No units found" />;
+	}
+
 	return (
 		<Table>
 			<TableHeader>

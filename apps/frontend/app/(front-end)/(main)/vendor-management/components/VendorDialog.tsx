@@ -78,6 +78,7 @@ const VendorDialog: React.FC<VendorDialogProps> = ({
 			};
 			onSuccess(data);
 			setOpen(false);
+			form.reset();
 			toast.success(
 				`Vendor ${defaultValues?.id ? 'updated' : 'created'} successfully`
 			);

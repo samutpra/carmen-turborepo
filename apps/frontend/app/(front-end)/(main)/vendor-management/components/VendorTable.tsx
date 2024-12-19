@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { Trash } from 'lucide-react';
+import EmptyState from '@/components/ui-custom/EmptyState';
+
 interface VendorTableProps {
 	vendors: vendor_type[];
 	onSuccess: (vendor: vendor_type) => void;
@@ -38,6 +40,11 @@ const VendorTable: React.FC<VendorTableProps> = ({
 }) => {
 	if (isLoading) {
 		return <SkeletonTableLoading />;
+	}
+	if (vendors.length === 0) {
+		return (
+			<EmptyState title="No vendors found" description="No vendors found" />
+		);
 	}
 	return (
 		<Table>
