@@ -59,8 +59,8 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 		setIsLoading(true);
 		try {
 			const url = defaultValues?.id
-				? `/api/product-management/units/${defaultValues.id}`
-				: '/api/product-management/units';
+				? `/api/product-management/unit/${defaultValues.id}`
+				: '/api/product-management/unit';
 
 			const method = mode === 'create' ? 'POST' : 'PATCH';
 
@@ -90,8 +90,8 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 				`Unit ${defaultValues?.id ? 'updated' : 'created'} successfully`
 			);
 		} catch (error) {
-			console.error('Error saving store location:', error);
-			toast.error('Failed to save store location', {
+			console.error('Error saving unit:', error);
+			toast.error('Failed to save unit', {
 				description:
 					error instanceof Error ? error.message : 'An error occurred',
 			});

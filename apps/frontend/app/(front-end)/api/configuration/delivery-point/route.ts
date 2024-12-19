@@ -59,15 +59,8 @@ export const POST = async (request: NextRequest) => {
 				{ status: 401 }
 			);
 		}
-
-		// Get URL search params for any additional query parameters
-		const searchParams = request.nextUrl.searchParams;
-		const queryString = searchParams.toString();
-		const apiUrl = queryString
-			? `${API_URL}/v1/delivery-point?${queryString}`
-			: `${API_URL}/v1/delivery-point`;
-
-		const data = await request.json();
+		const body = await request.json();
+		const apiUrl = `${API_URL}/v1/delivery-point`;
 		const options = {
 			method: 'POST',
 			headers: {
@@ -76,8 +69,8 @@ export const POST = async (request: NextRequest) => {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				name: data.name,
-				is_active: data.is_active ?? true,
+				name: body.name,
+				is_active: body.is_active ?? true,
 			}),
 		};
 
