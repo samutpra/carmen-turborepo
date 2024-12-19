@@ -2,41 +2,13 @@
 import { useAuth } from '@/app/context/AuthContext';
 import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrashIcon, Search, Trash } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { useURLState } from '@/app/(front-end)/hooks/useURLState';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
 import {
 	Popover,
 	PopoverContent,
@@ -51,6 +23,8 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import DeliveryPointCard from './DeliveryPointCard';
+import DeliveryPointTable from './DeliveryPointTable';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -92,22 +66,6 @@ const fetchDeliveryPoints = async (
 	}
 };
 
-const DeliveryPointSkeleton = () => {
-	return (
-		<Card className="h-[140px]">
-			<CardHeader className="pb-4">
-				<Skeleton className="h-4 w-2/3" />
-			</CardHeader>
-			<CardContent>
-				<div className="flex justify-between items-center">
-					<Skeleton className="h-4 w-1/4" />
-					<Skeleton className="h-6 w-16 rounded-full" />
-				</div>
-			</CardContent>
-		</Card>
-	);
-};
-
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -124,6 +82,7 @@ const DeliveryPointList = () => {
 		{ label: 'Active', value: 'true' },
 		{ label: 'Inactive', value: 'false' },
 	];
+
 	const handleSuccess = (updatedPoint: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
 			const exists = prev.some((p) => p.id === updatedPoint.id);
@@ -275,126 +234,20 @@ const DeliveryPointList = () => {
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<div className="grid grid-cols-1 gap-4">
-					{isLoading
-						? [...Array(6)].map((_, index) => (
-								<DeliveryPointSkeleton key={index} />
-							))
-						: deliveryPoints.map((point) => (
-								<Card key={point.id} className="hover:shadow-md transition-all">
-									<CardContent>
-										<div className="flex justify-between items-center">
-											<span className="text-base font-medium">
-												{point.name}
-											</span>
-											<Badge
-												variant={point.is_active ? 'default' : 'destructive'}
-											>
-												{point.is_active ? 'Active' : 'Inactive'}
-											</Badge>
-										</div>
-									</CardContent>
-									<CardFooter className="flex justify-end gap-2">
-										<DeliveryPointDialog
-											mode="edit"
-											defaultValues={point}
-											onSuccess={handleSuccess}
-										/>
-										<AlertDialog>
-											<AlertDialogTrigger asChild>
-												<Button variant="ghost" size="sm">
-													<TrashIcon className="w-4 h-4" />
-												</Button>
-											</AlertDialogTrigger>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-													<AlertDialogDescription>
-														This action cannot be undone. This will permanently
-														delete the delivery point.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction
-														onClick={() => point.id && handleDelete(point.id)}
-														className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-													>
-														Delete
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
-									</CardFooter>
-								</Card>
-							))}
-				</div>
+				<DeliveryPointCard
+					deliveryPoints={deliveryPoints}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
-
 			<div className="hidden md:block">
-				{isLoading ? (
-					<SkeletonTableLoading />
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[100px]">#</TableHead>
-								<TableHead>Name</TableHead>
-								<TableHead>Status</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{deliveryPoints.map((point, index) => (
-								<TableRow key={point.id}>
-									<TableCell className="font-medium">{index + 1}</TableCell>
-									<TableCell>{point.name}</TableCell>
-									<TableCell>
-										<Badge
-											variant={point.is_active ? 'default' : 'destructive'}
-										>
-											{point.is_active ? 'Active' : 'Inactive'}
-										</Badge>
-									</TableCell>
-									<TableCell className="text-right">
-										<div className="flex justify-end gap-2">
-											<DeliveryPointDialog
-												mode="edit"
-												defaultValues={point}
-												onSuccess={handleSuccess}
-											/>
-											<AlertDialog>
-												<AlertDialogTrigger asChild>
-													<CustomButton variant="ghost" size="sm">
-														<Trash className="h-4 w-4" />
-													</CustomButton>
-												</AlertDialogTrigger>
-												<AlertDialogContent>
-													<AlertDialogHeader>
-														<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-														<AlertDialogDescription>
-															This action cannot be undone. This will
-															permanently delete the delivery point.
-														</AlertDialogDescription>
-													</AlertDialogHeader>
-													<AlertDialogFooter>
-														<AlertDialogCancel>Cancel</AlertDialogCancel>
-														<AlertDialogAction
-															onClick={() => point.id && handleDelete(point.id)}
-															className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-														>
-															Delete
-														</AlertDialogAction>
-													</AlertDialogFooter>
-												</AlertDialogContent>
-											</AlertDialog>
-										</div>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
+				<DeliveryPointTable
+					deliveryPoints={deliveryPoints}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+				/>
 			</div>
 		</>
 	);
