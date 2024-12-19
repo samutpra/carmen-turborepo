@@ -1,274 +1,258 @@
 'use client';
-
-import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import DataCard from '@/components/templates/DataCard';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DataTable from '@/components/templates/DataTable';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '../currency/actions/currency';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import ErrorDisplay from '@/components/ErrorDisplay';
-import CurrencyForm from './form/CurrencyForm';
+import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import { Button } from '@/components/ui/button';
 import {
-	CurrencyLabel,
-	CurrencySchema,
-	CurrencyType,
-} from '@carmensoftware/shared-types/dist/currencySchema';
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { CurrencyType } from '@carmensoftware/shared-types';
+import { APIError } from '@carmensoftware/shared-types/src/pagination';
+import { Search, Trash, TrashIcon } from 'lucide-react';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+import { toast } from 'sonner';
+import { CustomButton } from '@/components/ui-custom/CustomButton';
 
-const statusOptions = [
-	{ value: 'all', label: 'All Statuses' },
-	{ value: 'true', label: 'Active' },
-	{ value: 'false', label: 'Not Active' },
-];
+const fetchCurrencies = async (
+	token: string,
+	tenantId: string,
+	params: { search?: string; status?: string } = {}
+) => {
+	try {
+		if (!token) {
+			throw new Error('Access token is required');
+		}
+
+		const query = new URLSearchParams();
+
+		if (params.search) {
+			query.append('search', params.search);
+		}
+
+		if (params.status) {
+			query.append('filter[is_active:bool]', params.status);
+		}
+
+		const url = `/api/configuration/currency?${query}`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new APIError(
+				response.status,
+				`Failed to fetch currencies: ${response.status} ${response.statusText}`
+			);
+		}
+
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching delivery points:', error);
+		throw error;
+	}
+};
+
+const CurrencySkeleton = () => {
+	return (
+		<Card className="h-[140px]">
+			<CardHeader className="pb-4">
+				<Skeleton className="h-4 w-2/3" />
+			</CardHeader>
+		</Card>
+	);
+};
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
-	const [editingItem, setEditingItem] = useState<CurrencyType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-	const [dialogDelete, setDialogDelete] = useState(false);
-	const [statusOpen, setStatusOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState('');
-
 	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURLState('search');
+	const [status, setStatus] = useURLState('status');
 
-	const {
-		currencies: rawCurrencies,
-		setCurrencies,
-		loading,
-		error,
-		pagination,
-		search,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		handleSearch,
-		fetchData,
-	} = useCurrencies(token);
+	console.log('currencies', currencies);
 
-	const currencies = rawCurrencies.map((currency) => ({
-		...currency,
-		symbol: currency.symbol || '',
-		is_active: currency.is_active || false,
-	})) as CurrencyType[];
-
-	const form = useForm<CurrencyType>({
-		resolver: zodResolver(CurrencySchema),
-		defaultValues: {
-			code: '',
-			name: '',
-			symbol: '',
-			description: '',
-			rate: 0,
-			is_active: true,
-		},
-	});
-
-	useEffect(() => {
-		if (editingItem) {
-			form.reset({
-				code: editingItem.code,
-				name: editingItem.name,
-				symbol: editingItem.symbol,
-				description: editingItem.description,
-				rate: editingItem.rate,
-				is_active: editingItem.is_active,
-			});
-		}
-	}, [editingItem, form]);
-
-	const handleEdit = (item: CurrencyType) => {
-		setEditingItem(item);
-		form.reset({
-			id: item.id,
-			code: item.code,
-			name: item.name,
-			symbol: item.symbol,
-			description: item.description,
-			rate: item.rate,
-			is_active: item.is_active,
-		});
-		setDialogForm(true);
-	};
-
-	const handleDelete = (item: CurrencyType) => {
-		setIdToDelete(item.id);
-		setDialogDelete(true);
-	};
-
-	const confirmDelete = async () => {
-		try {
-			setIsLoading(true);
-			if (idToDelete) {
-				await deleteCurrency(token, idToDelete);
-				setCurrencies((prev) =>
-					prev.filter((currency) => currency.id !== idToDelete)
-				);
-				fetchData();
-				setDialogDelete(false);
-			}
-		} catch (error) {
-			console.error('Error deleting currency:', error);
-		} finally {
-			setIsLoading(false);
-			setIdToDelete(null);
-		}
-	};
-
-	const handleSave = async (data: CurrencyType) => {
-		try {
-			setIsLoading(true);
-			if (editingItem?.id) {
-				const updatedCurrency = await updateCurrency(
-					token,
-					editingItem.id,
-					data
-				);
-				setCurrencies((prev) =>
-					prev.map((item) =>
-						item.id === editingItem.id ? updatedCurrency : item
-					)
-				);
-			} else {
-				const newCurrency = await createCurrency(token, data);
-				const currencyWithRequiredFields: CurrencyType = {
-					...newCurrency,
-					symbol: newCurrency.symbol || '',
-					is_active: newCurrency.is_active || false,
-				};
-				setCurrencies((prev) => [...prev, currencyWithRequiredFields]);
-			}
-			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error:', error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const handleCloseDialog = () => {
-		form.reset({
-			code: '',
-			description: '',
-			name: '',
-			symbol: '',
-			rate: 0,
-			is_active: true,
-		});
-		setDialogForm(false);
-		setEditingItem(null);
-	};
-
-	const title = 'Currency';
-
-	const columns: CurrencyLabel[] = [
-		{ key: 'code', label: 'Code' },
-		{ key: 'name', label: 'Name' },
-		{ key: 'symbol', label: 'Symbol' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'rate', label: 'Rate' },
-		{ key: 'is_active', label: 'Active' },
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
 	];
 
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
+
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchCurrencies(token, tenantId, {
+				search,
+				status,
+			});
+			setCurrencies(data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
+
+	const handleDelete = async (id: string) => {
+		try {
+			const response = await fetch(`/api/configuration/currency/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete currency');
+			}
+
+			setCurrencies((prev) => prev.filter((currency) => currency.id !== id));
+			toast.success('Currency deleted successfully');
+		} catch (err) {
+			console.error('Error deleting currency:', err);
+			toast.error('Failed to delete currency', {
+				description: err instanceof Error ? err.message : 'An error occurred',
+			});
+		}
+	};
+
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">
+						Error loading delivery points: {error}
+					</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	const title = 'Currencies';
+
 	const actionButtons = (
-		<div className="flex flex-col gap-4 md:flex-row">
-			<CustomButton
-				className="w-full md:w-20"
-				prefixIcon={<PlusCircle />}
-				onClick={() => setDialogForm(true)}
-			>
-				Add
-			</CustomButton>
-			<div className="flex flex-row md:flex-row gap-4">
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Sheet />}
-				>
-					Export
-				</CustomButton>
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Printer />}
-				>
-					Print
-				</CustomButton>
-			</div>
+		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+			<Button>add</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-			<div className="w-full sm:w-auto flex-grow">
-				<SearchInput
-					placeholder="Search Currency..."
-					value={search}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-						handleSearch(e.target.value, false);
-					}}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							handleSearch(e.currentTarget.value, true);
-						}
-					}}
-					Icon={Search}
-				/>
-			</div>
-			<div className="flex items-center space-x-4">
+		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between">
+			<form onSubmit={handleSearch} className="flex gap-2 w-full">
+				<div className="relative w-full md:w-1/4">
+					<Input
+						name="search"
+						placeholder="Search Delivery Point..."
+						defaultValue={search}
+						onKeyDown={handleKeyDown}
+						className="h-10 pr-10"
+					/>
+					<Button
+						type="submit"
+						variant="ghost"
+						size="icon"
+						className="absolute right-0 top-0 h-full px-3"
+					>
+						<Search className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</Button>
+				</div>
+			</form>
+			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
 						<Button
 							variant="outline"
 							role="combobox"
 							aria-expanded={statusOpen}
-							className="w-[200px] justify-between"
+							className="w-full md:w-[200px] justify-between"
 						>
-							{selectedStatus
-								? statusOptions.find(
-										(status) => status.value === selectedStatus
-									)?.label
+							{status
+								? statusOptions.find((option) => option.value === status)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="w-[200px] p-0">
+					<PopoverContent className="p-0 w-full md:w-[200px]">
 						<Command>
 							<CommandInput placeholder="Search status..." className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
-									{statusOptions.map((status) => (
+									{statusOptions.map((option) => (
 										<CommandItem
-											key={status.value}
+											key={option.value}
+											value={option.value}
 											onSelect={() => {
-												setSelectedStatus(
-													status.value === selectedStatus ? '' : status.value
-												);
+												setStatus(option.value);
 												setStatusOpen(false);
 											}}
 										>
-											{status.label}
+											{option.label}
 										</CommandItem>
 									))}
 								</CommandGroup>
@@ -276,118 +260,138 @@ const CurrencyList = () => {
 						</Command>
 					</PopoverContent>
 				</Popover>
-
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="outline">
-							<Filter className="h-4 w-4" />
-							More Filters
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
-						<FilterBuilder
-							fields={[
-								{ value: 'name', label: 'Name' },
-								{ value: 'description', label: 'Description' },
-								{ value: 'is_active', label: 'Status' },
-							]}
-							onFilterChange={(filters) => {
-								console.log('Applied filters:', filters);
-							}}
-						/>
-					</DialogContent>
-				</Dialog>
-
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline">
-							<ArrowUpDown className="h-4 w-4" />
-							Sort
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem>Name</DropdownMenuItem>
-						<DropdownMenuItem>Description</DropdownMenuItem>
-						<DropdownMenuItem>Status</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
 			</div>
 		</div>
 	);
 
 	const content = (
 		<>
-			<div className="block lg:hidden">
-				{loading ? (
-					<SkeltonCardLoading />
-				) : error ? (
-					<div className="text-red-500">{error.message}</div>
+			<div className="block md:hidden">
+				<div className="grid grid-cols-1 gap-4">
+					{isLoading
+						? [...Array(6)].map((_, index) => <CurrencySkeleton key={index} />)
+						: currencies?.map((currency) => (
+								<Card
+									key={currency.id}
+									className="hover:shadow-md transition-all"
+								>
+									<CardContent>
+										<div className="flex justify-between items-center">
+											<span className="text-base font-medium">
+												{currency.name}
+											</span>
+											<Badge
+												variant={currency.is_active ? 'default' : 'destructive'}
+											>
+												{currency.is_active ? 'Active' : 'Inactive'}
+											</Badge>
+										</div>
+									</CardContent>
+									<CardFooter className="flex justify-end gap-2">
+										<Button>Edit</Button>
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button variant="ghost" size="sm">
+													<TrashIcon className="w-4 h-4" />
+												</Button>
+											</AlertDialogTrigger>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone. This will permanently
+														delete the delivery point.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={() =>
+															currency.id && handleDelete(currency.id)
+														}
+														className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+													>
+														Delete
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
+									</CardFooter>
+								</Card>
+							))}
+				</div>
+			</div>
+			<div className="hidden md:block">
+				{isLoading ? (
+					<CurrencySkeleton />
 				) : (
-					<DataCard
-						data={currencies}
-						columns={columns}
-						onEdit={handleEdit}
-						onDelete={handleDelete}
-					/>
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Name</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{currencies?.map((currency, index) => (
+								<TableRow key={currency.id}>
+									<TableCell className="font-medium">{index + 1}</TableCell>
+									<TableCell>{currency.name}</TableCell>
+									<TableCell>
+										<Badge
+											variant={currency.is_active ? 'default' : 'destructive'}
+										>
+											{currency.is_active ? 'Active' : 'Inactive'}
+										</Badge>
+									</TableCell>
+									<TableCell className="text-right">
+										<div className="flex justify-end gap-2">
+											<Button>Edit</Button>
+											<AlertDialog>
+												<AlertDialogTrigger asChild>
+													<CustomButton variant="ghost" size="sm">
+														<Trash className="h-4 w-4" />
+													</CustomButton>
+												</AlertDialogTrigger>
+												<AlertDialogContent>
+													<AlertDialogHeader>
+														<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+														<AlertDialogDescription>
+															This action cannot be undone. This will
+															permanently delete the delivery point.
+														</AlertDialogDescription>
+													</AlertDialogHeader>
+													<AlertDialogFooter>
+														<AlertDialogCancel>Cancel</AlertDialogCancel>
+														<AlertDialogAction
+															onClick={() =>
+																currency.id && handleDelete(currency.id)
+															}
+															className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+														>
+															Delete
+														</AlertDialogAction>
+													</AlertDialogFooter>
+												</AlertDialogContent>
+											</AlertDialog>
+										</div>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
 				)}
 			</div>
-
-			<div className="hidden lg:block">
-				{loading ? (
-					<SkeletonTableLoading />
-				) : error ? (
-					<ErrorDisplay errMessage={error.message} />
-				) : (
-					<DataTable
-						data={currencies}
-						columns={columns}
-						onEdit={handleEdit}
-						onDelete={handleDelete}
-						pagination={pagination}
-						goToPage={goToPage}
-						nextPage={nextPage}
-						previousPage={previousPage}
-						setPerPage={setPerPage}
-					/>
-				)}
-			</div>
-
-			<DialogDelete
-				open={dialogDelete}
-				onOpenChange={setDialogDelete}
-				onConfirm={confirmDelete}
-				idDelete={idToDelete}
-			/>
-
-			<CurrencyForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={(data) =>
-					handleSave({
-						...data,
-						symbol: data.symbol || '',
-						is_active: data.is_active || false,
-					} as CurrencyType)
-				}
-			/>
 		</>
 	);
 
 	return (
-		<>
-			<DataDisplayTemplate
-				title={title}
-				actionButtons={actionButtons}
-				filters={filter}
-				content={content}
-			/>
-		</>
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
 	);
 };
 
 export default CurrencyList;
-
-
-
