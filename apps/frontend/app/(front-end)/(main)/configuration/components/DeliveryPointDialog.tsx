@@ -89,7 +89,7 @@ export const DeliveryPointDialog = ({
 			setOpen(false);
 			form.reset();
 
-			toast.success(`Delivery point ${mode}d successfully`);
+			toast.success(`Delivery point ${mode} successfully`);
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);
 			toast.error(`Failed to ${mode} delivery point`, {

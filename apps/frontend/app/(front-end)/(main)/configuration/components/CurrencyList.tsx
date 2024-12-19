@@ -50,6 +50,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
+import CurrencyDialog from './CurrencyDialog';
 
 const fetchCurrencies = async (
 	token: string,
@@ -193,11 +194,21 @@ const CurrencyList = () => {
 		);
 	}
 
+	const handleSuccess = (values: CurrencyType) => {
+		setCurrencies((prev) => {
+			const exists = prev.some((p) => p.id === values.id);
+			if (exists) {
+				return prev.map((p) => (p.id === values.id ? values : p));
+			}
+			return [...prev, values];
+		});
+	};
+
 	const title = 'Currencies';
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<Button>add</Button>
+			<CurrencyDialog mode="create" onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -288,7 +299,11 @@ const CurrencyList = () => {
 										</div>
 									</CardContent>
 									<CardFooter className="flex justify-end gap-2">
-										<Button>Edit</Button>
+										<CurrencyDialog
+											mode="edit"
+											defaultValues={currency}
+											onSuccess={handleSuccess}
+										/>
 										<AlertDialog>
 											<AlertDialogTrigger asChild>
 												<Button variant="ghost" size="sm">
@@ -345,7 +360,11 @@ const CurrencyList = () => {
 									</TableCell>
 									<TableCell className="text-right">
 										<div className="flex justify-end gap-2">
-											<Button>Edit</Button>
+											<CurrencyDialog
+												mode="edit"
+												defaultValues={currency}
+												onSuccess={handleSuccess}
+											/>
 											<AlertDialog>
 												<AlertDialogTrigger asChild>
 													<CustomButton variant="ghost" size="sm">
