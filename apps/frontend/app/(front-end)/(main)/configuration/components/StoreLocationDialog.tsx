@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LocationType } from '@carmensoftware/shared-types';
+import { LocationType, LocationSchema } from '@carmensoftware/shared-types';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
 	Form,
 	FormControl,
@@ -26,7 +25,7 @@ import {
 import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Settings2 } from 'lucide-react';
+import { PencilIcon, PlusIcon } from 'lucide-react';
 import {
 	Select,
 	SelectContent,
@@ -34,14 +33,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-
-const formSchema = z.object({
-	name: z.string().min(1, 'Name is required'),
-	location_type: z.enum(['inventory', 'direct']),
-	description: z.string().min(1, 'Description is required'),
-	is_active: z.boolean().default(true),
-	delivery_point_id: z.string().optional().nullable(),
-});
 
 interface StoreLocationDialogProps {
 	mode: 'create' | 'edit';
@@ -59,8 +50,8 @@ export const StoreLocationDialog = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<LocationType>({
+		resolver: zodResolver(LocationSchema),
 		defaultValues: {
 			name: defaultValues?.name || '',
 			location_type: defaultValues?.location_type || 'inventory',
@@ -70,28 +61,35 @@ export const StoreLocationDialog = ({
 		},
 	});
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	const onSubmit = async (values: LocationType) => {
 		try {
 			const url = defaultValues?.id
-				? `/api/configuration/store-location/${defaultValues.id}`
-				: '/api/configuration/store-location';
+				? `/api/configuration/locations/${defaultValues.id}`
+				: '/api/configuration/locations';
+
+			const method = mode === 'create' ? 'POST' : 'PATCH';
 
 			const response = await fetch(url, {
-				method: defaultValues?.id ? 'PUT' : 'POST',
+				method,
 				headers: {
-					'Content-Type': 'application/json',
 					Authorization: `Bearer ${token}`,
 					'x-tenant-id': tenantId,
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(values),
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to save store location');
+				throw new Error(`Failed to ${mode} Store location`);
 			}
 
 			const result = await response.json();
-			onSuccess(result.data);
+
+			const data: LocationType = {
+				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
+				...values,
+			};
+			onSuccess(data);
 			setOpen(false);
 			toast.success(
 				`Store location ${defaultValues?.id ? 'updated' : 'created'} successfully`
@@ -114,11 +112,11 @@ export const StoreLocationDialog = ({
 				>
 					{mode === 'create' ? (
 						<>
-							<PlusCircle className="mr-2 h-4 w-4" />
+							<PlusIcon className="mr-2 h-4 w-4" />
 							Add Store Location
 						</>
 					) : (
-						<Settings2 className="h-4 w-4" />
+						<PencilIcon className="w-4 h-4" />
 					)}
 				</Button>
 			</DialogTrigger>
@@ -196,6 +194,16 @@ export const StoreLocationDialog = ({
 							)}
 						/>
 						<DialogFooter>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => {
+									setOpen(false);
+									form.reset();
+								}}
+							>
+								Cancel
+							</Button>
 							<Button type="submit">
 								{mode === 'create' ? 'Create' : 'Update'}
 							</Button>

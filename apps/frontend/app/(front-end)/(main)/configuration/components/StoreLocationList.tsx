@@ -42,7 +42,7 @@ const fetchStoreLocations = async (
 			query.append('filter[is_active:bool]', params.status);
 		}
 
-		const url = `/api/configuration/store-location?${query}`;
+		const url = `/api/configuration/locations?${query}`;
 
 		const options = {
 			method: 'GET',
@@ -53,11 +53,14 @@ const fetchStoreLocations = async (
 			},
 		};
 		const response = await fetch(url, options);
+
 		if (!response.ok) {
 			throw new Error('Failed to fetch store locations');
 		}
 		const result = await response.json();
-		return result.data;
+		console.log('result', result);
+
+		return result;
 	} catch (error) {
 		console.error('Error fetching store locations:', error);
 		throw error;
@@ -126,7 +129,7 @@ const StoreLocationList = () => {
 
 	const handleDelete = async (id: string) => {
 		try {
-			const response = await fetch(`/api/configuration/store-location/${id}`, {
+			const response = await fetch(`/api/configuration/locations/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -170,22 +173,24 @@ const StoreLocationList = () => {
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
 			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<Input
-					name="search"
-					placeholder="Search Store Location..."
-					defaultValue={search}
-					onKeyDown={handleKeyDown}
-					className="h-10 pr-10"
-				/>
-				<Button
-					type="submit"
-					variant="ghost"
-					size="icon"
-					className="absolute right-0 top-0 h-full px-3"
-				>
-					<Search className="h-4 w-4" />
-					<span className="sr-only">Search</span>
-				</Button>
+				<div className="relative w-full md:w-1/4">
+					<Input
+						name="search"
+						placeholder="Search Store Location..."
+						defaultValue={search}
+						onKeyDown={handleKeyDown}
+						className="h-10 pr-10"
+					/>
+					<Button
+						type="submit"
+						variant="ghost"
+						size="icon"
+						className="absolute right-0 top-0 h-full px-3"
+					>
+						<Search className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</Button>
+				</div>
 			</form>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
