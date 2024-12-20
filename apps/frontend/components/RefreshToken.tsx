@@ -33,7 +33,7 @@ const RefreshToken = () => {
 					'x-tenant-id': 'DUMMY',
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ refresh_token }),
+				body: JSON.stringify({ refresh_token: refresh_token }),
 			});
 
 			if (!response.ok) {
