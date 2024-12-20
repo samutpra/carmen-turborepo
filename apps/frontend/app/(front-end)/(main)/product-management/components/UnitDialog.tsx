@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import { Textarea } from '@/components/ui/textarea';
 
 interface UnitDialogProps {
 	mode: 'create' | 'edit';
@@ -155,11 +156,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<InputCustom
-											placeholder="Enter Description"
-											error={!!form.formState.errors.description}
-											{...field}
-										/>
+										<Textarea placeholder="Enter description" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -170,18 +167,18 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex items-center space-x-2">
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+									<div className="space-y-0.5">
+										<FormLabel className="text-base">Active</FormLabel>
+									</div>
 									<FormControl>
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
 										/>
 									</FormControl>
-									<FormLabel>Active</FormLabel>
-									<FormMessage />
 								</FormItem>
 							)}
-							required
 						/>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={handleClose}>

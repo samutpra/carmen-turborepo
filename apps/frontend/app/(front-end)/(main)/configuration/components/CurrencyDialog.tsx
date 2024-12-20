@@ -28,6 +28,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { Textarea } from '@/components/ui/textarea';
 
 export type CurrencyDialogMode = 'create' | 'edit';
 
@@ -225,9 +226,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<InputCustom
-											placeholder="Enter unit description"
-											error={!!form.formState.errors.description}
+										<Textarea placeholder="Enter description"
 											{...field}
 										/>
 									</FormControl>

@@ -17,7 +17,6 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui-custom/FormCustom';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
 	deliveryPointSchema,
@@ -30,6 +29,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 export type DialogMode = 'create' | 'edit';
 
@@ -137,7 +137,11 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter delivery point name" {...field} />
+										<InputCustom
+											placeholder="Enter delivery point name"
+											error={!!form.formState.errors.name}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -148,8 +152,10 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex items-center justify-between">
-									<FormLabel>Active Status</FormLabel>
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+									<div className="space-y-0.5">
+										<FormLabel className="text-base">Active</FormLabel>
+									</div>
 									<FormControl>
 										<Switch
 											checked={field.value}

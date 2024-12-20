@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -33,6 +32,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 interface StoreLocationDialogProps {
 	mode: 'create' | 'edit';
@@ -135,7 +136,11 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<InputCustom
+											placeholder="Enter delivery point name"
+											error={!!form.formState.errors.name}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -151,8 +156,9 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
+
 									>
-										<SelectTrigger>
+										<SelectTrigger className='h-8'>
 											<SelectValue placeholder="Select type" />
 										</SelectTrigger>
 										<SelectContent>
@@ -172,7 +178,9 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Textarea placeholder="Enter description"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -183,7 +191,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base">Active</FormLabel>
 									</div>
