@@ -29,6 +29,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
 export type DialogMode = 'create' | 'edit';
 
@@ -47,7 +48,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-
+	const [isLoading, setIsLoading] = useState(false);
 	const form = useForm<DeliveryPointType>({
 		resolver: zodResolver(deliveryPointSchema),
 		defaultValues: {
@@ -57,7 +58,9 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	});
 
 	const handleSubmit = async (data: DeliveryPointType) => {
+		setIsLoading(true);
 		try {
+
 			const url =
 				mode === 'create'
 					? '/api/configuration/delivery-point'
@@ -95,6 +98,8 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 			toast.error(`Failed to ${mode} delivery point`, {
 				description: err instanceof Error ? err.message : 'An error occurred',
 			});
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -165,9 +170,15 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							>
 								Cancel
 							</Button>
-							<Button type="submit">
-								{mode === 'create' ? 'Create' : 'Save Changes'}
-							</Button>
+							<LoaderButton
+								type="submit"
+								disabled={isLoading}
+								isLoading={isLoading}
+							>
+								{isLoading
+									? 'Saving...'
+									: mode === 'create' ? 'Create' : 'Save Changes'}
+							</LoaderButton>
 						</div>
 					</form>
 				</Form>
