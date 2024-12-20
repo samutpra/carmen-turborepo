@@ -22,6 +22,7 @@ import SubCategoryList from './SubCategoryList';
 import SubCatDialog from './SubCatDialog';
 import ItemGroupList from './ItemGroupList';
 import ItemGroupDialog from './ItemGroupDialog';
+import SkeltonCategory from '@/components/ui-custom/Loading/SkeltonCategory';
 
 type CategorySummary = {
 	totalCategories: number;
@@ -82,14 +83,14 @@ const CategorieList = () => {
 
 	const filteredItemGroups = selectedSubCategory
 		? itemGroups.filter(
-				(group) => group.product_subcategory_id === selectedSubCategory.id
-			)
+			(group) => group.product_subcategory_id === selectedSubCategory.id
+		)
 		: [];
 
 	const filteredSubCategories = selectedCategory
 		? subCategorys.filter(
-				(subCategory) => subCategory.product_category_id === selectedCategory.id
-			)
+			(subCategory) => subCategory.product_category_id === selectedCategory.id
+		)
 		: [];
 
 	const handleDeleteProduct = async (productId: string) => {
@@ -211,7 +212,8 @@ const CategorieList = () => {
 		}
 	};
 
-	if (loading) return <div>Loading...</div>;
+	if (loading) return <SkeltonCategory />
+
 	if (error) return <div>Error: {error}</div>;
 
 	const summary: CategorySummary = {
