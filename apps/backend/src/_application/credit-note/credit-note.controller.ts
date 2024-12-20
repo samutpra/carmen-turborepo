@@ -1,5 +1,6 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { RateLimitException } from 'lib/utils';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
 import {
@@ -44,6 +45,7 @@ export class CreditNoteController {
   private readonly logger = new Logger(CreditNoteController.name);
 
   @Get(':id')
+  @Throttle({ default: { limit: 1, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @ApiParam({
     name: 'id',
     description: 'id',
@@ -51,11 +53,20 @@ export class CreditNoteController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
-    this.logger.debug({ id: id });
-    return this.creditNoteService.findOne(req, id);
+    try {
+      this.logger.debug({ id: id });
+      return this.creditNoteService.findOne(req, id);
+    } catch (err) {
+      this.logger.error({ function: this.findOne.name, error: err });
+      if (err.name === 'ThrottlerException') {
+        throw new RateLimitException();
+      }
+      throw err;
+    }
   }
 
   @Get()
+  @Throttle({ default: { limit: 1, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
@@ -67,44 +78,61 @@ export class CreditNoteController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ['name', 'description'];
-    this.logger.debug({
-      page: page,
-      perpage: perpage,
-      search: search,
-      searchfields: searchfields,
-      filter: filter,
-      sort: sort,
-      advance: advance,
-    });
+    try {
+      const defaultSearchFields: string[] = ['name', 'description'];
+      this.logger.debug({
+        page: page,
+        perpage: perpage,
+        search: search,
+        searchfields: searchfields,
+        filter: filter,
+        sort: sort,
+        advance: advance,
+      });
 
-    const q = new QueryParams(
-      page,
-      perpage,
-      search,
-      searchfields,
-      defaultSearchFields,
-      filter,
-      sort,
-      advance,
-    );
+      const q = new QueryParams(
+        page,
+        perpage,
+        search,
+        searchfields,
+        defaultSearchFields,
+        filter,
+        sort,
+        advance,
+      );
 
-    this.logger.debug({ q: q });
-    return this.creditNoteService.findAll(req, q);
+      this.logger.debug({ q: q });
+      return this.creditNoteService.findAll(req, q);
+    } catch (err) {
+      this.logger.error({ function: this.findAll.name, error: err });
+      if (err.name === 'ThrottlerException') {
+        throw new RateLimitException();
+      }
+      throw err;
+    }
   }
 
-  @Throttle({ default: { limit: 3, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @Post()
+  @Throttle({ default: { limit: 3, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @ApiBody({
     type: CreditNoteCreateDto,
     description: 'CreditNoteCreateDto',
   })
   async create(@Req() req: Request, @Body() createDto: CreditNoteCreateDto) {
-    this.logger.debug({ createDto: createDto });
-    return this.creditNoteService.create(req, createDto);
+    try {
+      this.logger.debug({ createDto: createDto });
+      return this.creditNoteService.create(req, createDto);
+    } catch (err) {
+      this.logger.error({ function: this.create.name, error: err });
+      if (err.name === 'ThrottlerException') {
+        throw new RateLimitException();
+      }
+      throw err;
+    }
   }
 
   @Patch(':id')
+  @Throttle({ default: { limit: 3, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @ApiParam({
     name: 'id',
     description: 'id',
@@ -125,13 +153,17 @@ export class CreditNoteController {
       updatedto.id = id;
       this.logger.debug({ id: id, updatedto: updatedto });
       return await this.creditNoteService.update(req, id, updatedto);
-    } catch (error) {
-      this.logger.error(`Failed to update credit note: ${error.message}`);
-      throw error;
+    } catch (err) {
+      this.logger.error({ function: this.update.name, error: err });
+      if (err.name === 'ThrottlerException') {
+        throw new RateLimitException();
+      }
+      throw err;
     }
   }
 
   @Delete(':id')
+  @Throttle({ default: { limit: 3, ttl: 60 } }) // อนุญาต 3 ครั้งต่อ 60 วินาที
   @ApiParam({
     name: 'id',
     description: 'id',
@@ -139,7 +171,15 @@ export class CreditNoteController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
-    this.logger.debug({ id: id });
-    return this.creditNoteService.delete(req, id);
+    try {
+      this.logger.debug({ id: id });
+      return this.creditNoteService.delete(req, id);
+    } catch (err) {
+      this.logger.error({ function: this.delete.name, error: err });
+      if (err.name === 'ThrottlerException') {
+        throw new RateLimitException();
+      }
+      throw err;
+    }
   }
 }

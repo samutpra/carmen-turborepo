@@ -1,0 +1,17 @@
+meta {
+  name: 04 - Update
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/v1/credit-note/97c9689d-d0ec-429b-a64a-d7bc2c6dd0c3
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "is_active": false
+  }
+}

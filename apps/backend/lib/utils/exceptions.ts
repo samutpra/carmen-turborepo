@@ -42,3 +42,15 @@ export class NullException extends HttpException {
     super('Null data', HttpStatus.BAD_REQUEST);
   }
 }
+
+export class ToomanyException extends HttpException {
+  constructor() {
+    super('Too many request', HttpStatus.TOO_MANY_REQUESTS);
+  }
+}
+
+export class RateLimitException extends HttpException {
+  constructor() {
+    super('Rate limit exceeded', HttpStatus.TOO_MANY_REQUESTS);
+  }
+}

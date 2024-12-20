@@ -6,22 +6,29 @@ import {
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
+import { isWelformJWT } from 'lib/utils/functions';
 import { comparePassword, hashPassword } from 'lib/utils/password';
 import { SystemUsersService } from 'src/_system/system-users/system-users.service';
 
 import {
+  AuthChangePasswordDto,
   AuthLoginResponseDto,
   AuthPayloadDto,
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
 } from '@carmensoftware/shared-dtos';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
-import { isWelformJWT } from '../../../lib/utils/functions';
 import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from './extract-req/extract-req.service';
 
 @Injectable()
 export class AuthService {
@@ -29,11 +36,69 @@ export class AuthService {
     private prismaClientMamager: PrismaClientManagerService,
     private jwtService: JwtService,
     private systemUsersService: SystemUsersService,
+    private extractReqService: ExtractReqService,
   ) {}
 
   private db_System: dbSystem;
 
   private readonly logger = new Logger(AuthService.name);
+
+  async changePassword(userChangePassDto: AuthChangePasswordDto, req: any) {
+    this.db_System = this.prismaClientMamager.getSystemDB();
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+
+    if (!userChangePassDto.old_pass || !userChangePassDto.new_pass) {
+      throw new DuplicateException('Old and new password are required');
+    }
+
+    const lastPassword = await this.db_System.tb_password.findFirst({
+      where: {
+        user_id: user_id,
+        is_active: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    const isMatch = comparePassword(
+      userChangePassDto.old_pass,
+      lastPassword.hash,
+    );
+
+    if (!isMatch) {
+      throw new HttpException('Old password does not match', 401);
+    }
+
+    if (!user_id) {
+      throw new NotFoundException('User not found');
+    }
+
+    const x = await this.db_System.tb_password.updateMany({
+      where: {
+        user_id: user_id,
+      },
+      data: {
+        is_active: false,
+      },
+    });
+
+    const passObj = await this.db_System.tb_password.create({
+      data: {
+        user_id: user_id,
+        hash: hashPassword(userChangePassDto.new_pass),
+        is_active: true,
+      },
+    });
+
+    this.logger.debug(passObj);
+
+    const res: ResponseId<string> = {
+      id: user_id,
+    };
+
+    return res;
+  }
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
     const isWelformJWT_ = isWelformJWT(token);

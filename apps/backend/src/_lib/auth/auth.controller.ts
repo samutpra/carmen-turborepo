@@ -1,4 +1,5 @@
 import {
+  AuthChangePasswordDto,
   AuthLoginResponseDto,
   EmailDto,
   UserForgotPassDto,
@@ -105,5 +106,20 @@ export class AuthController {
   async forgot_confirm(@Body() userForgotPassDto: any, @Request() req) {
     this.logger.debug({ userForgotPassDto: userForgotPassDto });
     return this.authService.forgotPasswordConfirm(userForgotPassDto, req);
+  }
+
+  @Post('change-password')
+  @ApiTags('Change Password')
+  @ApiBody({
+    type: AuthChangePasswordDto,
+    description: 'AuthChangePasswordDto',
+  })
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Body() userChangePassDto: AuthChangePasswordDto,
+    @Request() req,
+  ) {
+    this.logger.debug({ userChangePassDto: userChangePassDto });
+    return this.authService.changePassword(userChangePassDto, req);
   }
 }
