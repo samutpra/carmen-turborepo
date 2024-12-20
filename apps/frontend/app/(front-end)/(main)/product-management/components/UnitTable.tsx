@@ -1,5 +1,4 @@
 import React from 'react';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import { UnitType } from '@carmensoftware/shared-types';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -24,28 +23,17 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import UnitDialog from './UnitDialog';
-import EmptyState from '@/components/ui-custom/EmptyState';
 interface UnitTableProps {
 	units: UnitType[];
 	onSuccess: (values: UnitType) => void;
 	onDelete: (id: string) => void;
-	isLoading?: boolean;
 }
 
 const UnitTable: React.FC<UnitTableProps> = ({
 	units,
 	onSuccess,
 	onDelete,
-	isLoading = false,
 }) => {
-	if (isLoading) {
-		return <SkeletonTableLoading />;
-	}
-
-	if (units.length === 0) {
-		return <EmptyState title="No units found" description="No units found" />;
-	}
-
 	return (
 		<Table>
 			<TableHeader>

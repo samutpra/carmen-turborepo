@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { TrashIcon } from 'lucide-react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import UnitDialog from './UnitDialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -23,22 +22,9 @@ interface UnitCardProps {
 	units: UnitType[];
 	onSuccess: (values: UnitType) => void;
 	onDelete: (id: string) => void;
-	isLoading?: boolean;
 }
 
-const UnitCard: React.FC<UnitCardProps> = ({
-	units,
-	onSuccess,
-	onDelete,
-	isLoading = false,
-}) => {
-	if (isLoading) {
-		<div className="grid grid-cols-1 gap-4">
-			{[...Array(6)].map((_, index) => (
-				<SkeltonCardLoading key={index} />
-			))}
-		</div>;
-	}
+const UnitCard: React.FC<UnitCardProps> = ({ units, onSuccess, onDelete }) => {
 	return (
 		<div className="grid grid-cols-1 gap-4">
 			{units?.map((unit) => (

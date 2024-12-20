@@ -181,20 +181,22 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							)}
 						/>
 						<DialogFooter>
-							<Button type="button" variant="outline" onClick={handleClose}>
-								Cancel
-							</Button>
-							<LoaderButton
-								type="submit"
-								disabled={isLoading}
-								isLoading={isLoading}
-							>
-								{isLoading
-									? 'Saving...'
-									: mode === 'edit'
-										? 'Save Changes'
-										: 'Add'}
-							</LoaderButton>
+							<div className="flex items-center justify-end gap-2">
+								<Button type="button" variant="outline" onClick={handleClose}>
+									Cancel
+								</Button>
+								<LoaderButton
+									type="submit"
+									disabled={isLoading}
+									isLoading={isLoading}
+								>
+									{isLoading
+										? 'Saving...'
+										: mode === 'edit'
+											? 'Save Changes'
+											: 'Add'}
+								</LoaderButton>
+							</div>
 						</DialogFooter>
 					</form>
 				</Form>

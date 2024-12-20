@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
 interface StoreLocationDialogProps {
 	mode: 'create' | 'edit';
@@ -50,7 +51,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-
+	const [isLoading, setIsLoading] = useState(false);
 	const form = useForm<LocationType>({
 		resolver: zodResolver(LocationSchema),
 		defaultValues: {
@@ -63,6 +64,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	});
 
 	const onSubmit = async (values: LocationType) => {
+		setIsLoading(true);
 		try {
 			const url = defaultValues?.id
 				? `/api/configuration/locations/${defaultValues.id}`
@@ -101,7 +103,14 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 				description:
 					error instanceof Error ? error.message : 'An error occurred',
 			});
+		} finally {
+			setIsLoading(false);
 		}
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+		form.reset();
 	};
 
 	return (
@@ -156,9 +165,8 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
-
 									>
-										<SelectTrigger className='h-8'>
+										<SelectTrigger className="h-8">
 											<SelectValue placeholder="Select type" />
 										</SelectTrigger>
 										<SelectContent>
@@ -178,9 +186,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description"
-											{...field}
-										/>
+										<Textarea placeholder="Enter description" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -205,19 +211,22 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							)}
 						/>
 						<DialogFooter>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => {
-									setOpen(false);
-									form.reset();
-								}}
-							>
-								Cancel
-							</Button>
-							<Button type="submit">
-								{mode === 'create' ? 'Create' : 'Update'}
-							</Button>
+							<div className="flex items-center justify-end gap-2">
+								<Button type="button" variant="outline" onClick={handleClose}>
+									Cancel
+								</Button>
+								<LoaderButton
+									type="submit"
+									disabled={isLoading}
+									isLoading={isLoading}
+								>
+									{isLoading
+										? 'Saving...'
+										: mode === 'edit'
+											? 'Save Changes'
+											: 'Add'}
+								</LoaderButton>
+							</div>
 						</DialogFooter>
 					</form>
 				</Form>

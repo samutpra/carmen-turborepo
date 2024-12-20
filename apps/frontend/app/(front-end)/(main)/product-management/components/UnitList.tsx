@@ -26,6 +26,8 @@ import { Search } from 'lucide-react';
 import UnitDialog from './UnitDialog';
 import UnitTable from './UnitTable';
 import UnitCard from './UnitCard';
+import EmptyState from '@/components/ui-custom/EmptyState';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 
 const fetchUnits = async (
 	token: string,
@@ -224,6 +226,7 @@ const UnitList = () => {
 			</div>
 		</div>
 	);
+
 	const content = (
 		<>
 			<div className="block md:hidden">
@@ -231,7 +234,6 @@ const UnitList = () => {
 					units={units}
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
 				/>
 			</div>
 			<div className="hidden md:block">
@@ -239,11 +241,25 @@ const UnitList = () => {
 					units={units}
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
 				/>
 			</div>
 		</>
 	);
+
+	if (isLoading) {
+		return <SkeltonLoad />;
+	}
+
+	if (units.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description="No units found"
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate

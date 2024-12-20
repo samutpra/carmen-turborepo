@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogContent,
+	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
@@ -60,7 +61,6 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	const handleSubmit = async (data: DeliveryPointType) => {
 		setIsLoading(true);
 		try {
-
 			const url =
 				mode === 'create'
 					? '/api/configuration/delivery-point'
@@ -101,6 +101,11 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 		} finally {
 			setIsLoading(false);
 		}
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+		form.reset();
 	};
 
 	return (
@@ -165,27 +170,24 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 								</FormItem>
 							)}
 						/>
-						<div className="flex justify-end gap-2">
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => {
-									setOpen(false);
-									form.reset();
-								}}
-							>
-								Cancel
-							</Button>
-							<LoaderButton
-								type="submit"
-								disabled={isLoading}
-								isLoading={isLoading}
-							>
-								{isLoading
-									? 'Saving...'
-									: mode === 'create' ? 'Create' : 'Save Changes'}
-							</LoaderButton>
-						</div>
+						<DialogFooter>
+							<div className="flex items-center justify-end gap-2">
+								<Button type="button" variant="outline" onClick={handleClose}>
+									Cancel
+								</Button>
+								<LoaderButton
+									type="submit"
+									disabled={isLoading}
+									isLoading={isLoading}
+								>
+									{isLoading
+										? 'Saving...'
+										: mode === 'edit'
+											? 'Save Changes'
+											: 'Add'}
+								</LoaderButton>
+							</div>
+						</DialogFooter>
 					</form>
 				</Form>
 			</DialogContent>
