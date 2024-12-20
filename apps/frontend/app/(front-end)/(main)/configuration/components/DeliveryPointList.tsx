@@ -240,6 +240,18 @@ const DeliveryPointList = () => {
 					onDelete={handleDelete}
 					isLoading={isLoading}
 				/>
+				{/* <DataCard<DeliveryPointType>
+					items={deliveryPoints}
+					fields={fields}
+					onSuccess={handleSuccess}
+					onDelete={handleDelete}
+					isLoading={isLoading}
+					DialogComponent={DeliveryPointDialog}
+					emptyStateProps={{
+						title: "No currencies found",
+						description: "No currencies found"
+					}}
+				/> */}
 			</div>
 			<div className="hidden md:block">
 				<DeliveryPointTable

@@ -241,15 +241,16 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex items-center space-x-2">
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+									<div className="space-y-0.5">
+										<FormLabel className="text-base">Active</FormLabel>
+									</div>
 									<FormControl>
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
 										/>
 									</FormControl>
-									<FormLabel>Active</FormLabel>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -267,7 +268,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									? 'Saving...'
 									: mode === 'edit'
 										? 'Save Changes'
-										: 'Add'}
+										: 'Create'}
 							</LoaderButton>
 						</DialogFooter>
 					</form>

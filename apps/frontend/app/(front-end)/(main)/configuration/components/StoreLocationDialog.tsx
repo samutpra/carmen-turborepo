@@ -21,7 +21,7 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui-custom/FormCustom';
 import { useAuth } from '@/app/context/AuthContext';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -140,6 +140,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									<FormMessage />
 								</FormItem>
 							)}
+							required
 						/>
 						<FormField
 							control={form.control}
@@ -162,6 +163,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									<FormMessage />
 								</FormItem>
 							)}
+							required
 						/>
 						<FormField
 							control={form.control}
@@ -175,6 +177,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									<FormMessage />
 								</FormItem>
 							)}
+							required
 						/>
 						<FormField
 							control={form.control}
