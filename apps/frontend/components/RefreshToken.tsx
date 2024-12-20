@@ -24,7 +24,7 @@ const RefreshToken = () => {
 	const handleRefreshToken = async () => {
 		try {
 			setIsLoading(true);
-			setOldToken(token); // Store the old token before refreshing
+			setOldToken(token);
 
 			const response = await fetch('/api/auth/refresh-token', {
 				method: 'POST',
