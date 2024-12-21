@@ -23,8 +23,8 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DeliveryPointCard from './DeliveryPointCard';
 import DeliveryPointTable from './DeliveryPointTable';
+import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -231,27 +231,28 @@ const DeliveryPointList = () => {
 		</div>
 	);
 
+	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'is_active', label: 'Status', type: 'badge' }
+	];
+
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<DeliveryPointCard
-					deliveryPoints={deliveryPoints}
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					isLoading={isLoading}
-				/>
-				{/* <DataCard<DeliveryPointType>
+				<DataCard<DeliveryPointType>
 					items={deliveryPoints}
-					fields={fields}
+					fields={deliveryPointsFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
-					DialogComponent={DeliveryPointDialog}
-					emptyStateProps={{
-						title: "No currencies found",
-						description: "No currencies found"
-					}}
-				/> */}
+					editComponent={({ item, onSuccess }) => (
+						<DeliveryPointDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
+				/>
 			</div>
 			<div className="hidden md:block">
 				<DeliveryPointTable

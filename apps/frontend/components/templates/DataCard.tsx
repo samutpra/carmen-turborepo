@@ -17,137 +17,162 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import EmptyState from '@/components/ui-custom/EmptyState';
 
-interface Field<T> {
+type FieldValue = string | number | boolean | null | undefined;
+
+export type RenderFunction<T> = (value: T[keyof T]) => React.ReactNode;
+
+type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
+
+export interface FieldConfig<T> {
 	key: keyof T;
 	label: string;
-	render?: (value: T[keyof T]) => React.ReactNode;
+	type?: 'text' | 'badge' | 'custom';
+	render?: RenderFunction<T>;
 }
 
-interface DataCardProps<T extends { id?: string }> {
+interface DeleteDialogProps {
+	title?: string;
+	description?: string;
+	confirmLabel?: string;
+}
+
+interface DataCardProps<T extends Record<string, FieldValue>> {
 	items: T[];
-	fields: Field<T>[];
-	idField?: keyof T;
-	isActiveField?: keyof T;
-	onSuccess: (values: T) => void;
-	onDelete: (id: string) => void;
+	fields: FieldConfig<T>[];
+	idField: keyof T;
+	onSuccess?: SuccessCallback<T>;
+	onDelete?: (id: string) => void;
 	isLoading?: boolean;
-	emptyStateProps?: {
-		title: string;
-		description: string;
-	};
-	DialogComponent: React.ComponentType<{
-		mode: "edit";
-		defaultValues: T;
-		onSuccess: (values: T) => void;
-	}>;
+	loadingCount?: number;
+	editComponent?: (props: {
+		item: T;
+		onSuccess: (updatedItem: T) => void;
+	}) => React.ReactNode;
+	deleteDialogProps?: DeleteDialogProps;
 }
 
-const DataCard = <T extends { id?: string; is_active?: boolean }>({
+const DataCard = <T extends Record<string, FieldValue>>({
 	items,
 	fields,
-	idField = 'id' as keyof T,
-	isActiveField = 'is_active' as keyof T,
+	idField,
 	onSuccess,
 	onDelete,
 	isLoading = false,
-	emptyStateProps = {
-		title: "No items found",
-		description: "No items found"
+	loadingCount = 6,
+	editComponent,
+	deleteDialogProps = {
+		title: 'Are you sure?',
+		description: 'This action cannot be undone. This will permanently delete this item.',
+		confirmLabel: 'Delete',
 	},
-	DialogComponent
 }: DataCardProps<T>): React.ReactElement => {
+	const renderLoadingSkeleton = (): React.ReactElement => (
+		<div className="grid grid-cols-1 gap-4">
+			{[...Array(loadingCount)].map((_, index) => (
+				<SkeltonCardLoading key={index} />
+			))}
+		</div>
+	);
+
+	const renderField = (field: FieldConfig<T>, item: T): React.ReactNode => {
+		const value = item[field.key];
+
+		if (field.render) {
+			return field.render(value);
+		}
+
+		switch (field.type) {
+			case 'badge':
+				if (typeof value === 'boolean') {
+					return (
+						<Badge variant={value ? 'default' : 'destructive'}>
+							{value ? 'Active' : 'Inactive'}
+						</Badge>
+					);
+				}
+				return <Badge>{String(value)}</Badge>;
+
+			default:
+				return (
+					<span className="text-sm font-medium">
+						{String(value)}
+					</span>
+				);
+		}
+	};
+
+	const handleDelete = (id: string): void => {
+		if (onDelete) {
+			onDelete(id);
+		}
+	};
+
+	const handleSuccess = (updatedItem: T, originalItem: T): void => {
+		if (onSuccess) {
+			onSuccess(updatedItem, originalItem);
+		}
+	};
+
 	if (isLoading) {
-		return (
-			<div className="grid grid-cols-1 gap-4">
-				{[...Array(6)].map((_, index) => (
-					<SkeltonCardLoading key={index} />
-				))}
-			</div>
-		);
+		return renderLoadingSkeleton();
 	}
-
-	if (items.length === 0) {
-		return (
-			<EmptyState
-				title={emptyStateProps.title}
-				description={emptyStateProps.description}
-			/>
-		);
-	}
-
-	const getItemId = (item: T): string => {
-		const id = item[idField];
-		return typeof id === 'string' ? id : String(id);
-	};
-
-	const isItemActive = (item: T): boolean => {
-		const isActive = item[isActiveField];
-		return typeof isActive === 'boolean' ? isActive : false;
-	};
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
-			{items.map((item) => (
-				<Card key={getItemId(item)} className="hover:shadow-md transition-all">
+			{items?.map((item) => (
+				<Card
+					key={String(item[idField])}
+					className="hover:shadow-md transition-all"
+				>
 					<CardContent className="p-4">
 						<div className="space-y-3">
-							<div className="grid gap-2">
-								{fields.map((field) => (
-									<div key={String(field.key)} className="grid grid-cols-10 gap-4">
-										<span className="text-sm text-muted-foreground col-span-3">
-											{field.label}
-										</span>
-										<div className="text-sm font-medium col-span-7">
-											{field.render ? (
-												field.render(item[field.key])
-											) : field.key === isActiveField ? (
-												<Badge
-													variant={isItemActive(item) ? 'default' : 'destructive'}
-												>
-													{isItemActive(item) ? 'Active' : 'Inactive'}
-												</Badge>
-											) : (
-												String(item[field.key])
-											)}
-										</div>
+							{fields.map((field) => (
+								<div
+									key={String(field.key)}
+									className="grid grid-cols-10 gap-4"
+								>
+									<span className="text-sm text-muted-foreground col-span-3">
+										{field.label}
+									</span>
+									<div className="col-span-7">
+										{renderField(field, item)}
 									</div>
-								))}
-							</div>
+								</div>
+							))}
 						</div>
 					</CardContent>
 					<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
-						<DialogComponent
-							mode="edit"
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<Button variant="ghost" size="sm">
-									<TrashIcon className="w-4 h-4" />
-								</Button>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-									<AlertDialogDescription>
-										This action cannot be undone. This will permanently delete
-										the item.
-									</AlertDialogDescription>
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<AlertDialogCancel>Cancel</AlertDialogCancel>
-									<AlertDialogAction
-										onClick={() => onDelete(getItemId(item))}
-										className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-									>
-										Delete
-									</AlertDialogAction>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
+						{editComponent && editComponent({
+							item,
+							onSuccess: (updatedItem: T) => handleSuccess(updatedItem, item)
+						})}
+						{onDelete && (
+							<AlertDialog>
+								<AlertDialogTrigger asChild>
+									<Button variant="ghost" size="sm">
+										<TrashIcon className="w-4 h-4" />
+									</Button>
+								</AlertDialogTrigger>
+								<AlertDialogContent>
+									<AlertDialogHeader>
+										<AlertDialogTitle>{deleteDialogProps.title}</AlertDialogTitle>
+										<AlertDialogDescription>
+											{deleteDialogProps.description}
+										</AlertDialogDescription>
+									</AlertDialogHeader>
+									<AlertDialogFooter>
+										<AlertDialogCancel>Cancel</AlertDialogCancel>
+										<AlertDialogAction
+											onClick={() => handleDelete(String(item[idField]))}
+											className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+										>
+											{deleteDialogProps.confirmLabel}
+										</AlertDialogAction>
+									</AlertDialogFooter>
+								</AlertDialogContent>
+							</AlertDialog>
+						)}
 					</CardFooter>
 				</Card>
 			))}

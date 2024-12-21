@@ -25,9 +25,9 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import UnitDialog from './UnitDialog';
 import UnitTable from './UnitTable';
-import UnitCard from './UnitCard';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 
 const fetchUnits = async (
 	token: string,
@@ -227,13 +227,28 @@ const UnitList = () => {
 		</div>
 	);
 
+	const unitFields: FieldConfig<UnitType>[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'is_active', label: 'Status', type: 'badge' }
+	];
+
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<UnitCard
-					units={units}
+				<DataCard<UnitType>
+					items={units}
+					fields={unitFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
+					editComponent={({ item, onSuccess }) => (
+						<UnitDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 			<div className="hidden md:block">

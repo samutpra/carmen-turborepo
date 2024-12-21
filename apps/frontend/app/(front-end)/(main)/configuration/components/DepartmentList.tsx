@@ -24,9 +24,9 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DepartmentCard from './DepartmentCard';
 import DepartmentDialog from './DepartmentDialog';
 import DepartmentTable from './DepartmentTable';
+import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 
 const fetchDepartments = async (
 	token: string,
@@ -237,14 +237,28 @@ const DepartmentList = () => {
 		</div>
 	);
 
+	const departmentFields: FieldConfig<DepartmentType>[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'is_active', label: 'Status', type: 'badge' }
+	];
+
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<DepartmentCard
-					departments={departments}
+				<DataCard<DepartmentType>
+					items={departments}
+					fields={departmentFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<DepartmentDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 			<div className="hidden md:block">

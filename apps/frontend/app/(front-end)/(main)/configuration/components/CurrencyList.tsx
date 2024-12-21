@@ -25,9 +25,9 @@ import {
 
 import { toast } from 'sonner';
 import CurrencyDialog from './CurrencyDialog';
-import CurrencyCard from './CurrencyCard';
 import CurrencyTable from './CurrencyTable';
 import RefreshToken from '@/components/RefreshToken';
+import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 
 const fetchCurrencies = async (
 	token: string,
@@ -271,14 +271,31 @@ const CurrencyList = () => {
 		</div>
 	);
 
+	const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+		{ key: 'code', label: 'Code' },
+		{ key: 'name', label: 'Name' },
+		{ key: 'symbol', label: 'Symbol' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'rate', label: 'Rate' },
+		{ key: 'is_active', label: 'Status', type: 'badge' },
+	]
+
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<CurrencyCard
-					currencies={currencies}
+				<DataCard<CurrencyType>
+					items={currencies}
+					fields={currenciesFiltered}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<CurrencyDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 			<div className="hidden md:block">

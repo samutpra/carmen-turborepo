@@ -22,9 +22,9 @@ import {
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
-import StoreLocationCard from './StoreLocationCard';
 import StoreLocationTable from './StoreLocationTable';
 import { Card, CardContent } from '@/components/ui/card';
+import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 
 const fetchStoreLocations = async (
 	token: string,
@@ -231,14 +231,29 @@ const StoreLocationList = () => {
 		</div>
 	);
 
+	const storeLocationFields: FieldConfig<LocationType>[] = [
+		{ key: 'name', label: 'Name' },
+		{ key: 'location_type', label: 'Type' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'is_active', label: 'Status', type: 'badge' }
+	];
+
 	const content = (
 		<>
 			<div className="block md:hidden">
-				<StoreLocationCard
-					storeLocations={storeLocations}
+				<DataCard<LocationType>
+					items={storeLocations}
+					fields={storeLocationFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<StoreLocationDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 			<div className="hidden md:block">
