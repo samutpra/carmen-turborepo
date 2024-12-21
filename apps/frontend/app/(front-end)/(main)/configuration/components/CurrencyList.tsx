@@ -25,9 +25,11 @@ import {
 
 import { toast } from 'sonner';
 import CurrencyDialog from './CurrencyDialog';
-import CurrencyTable from './CurrencyTable';
 import RefreshToken from '@/components/RefreshToken';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
+import TableData from '@/components/templates/TableData';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import EmptyState from '@/components/ui-custom/EmptyState';
 
 const fetchCurrencies = async (
 	token: string,
@@ -299,15 +301,37 @@ const CurrencyList = () => {
 				/>
 			</div>
 			<div className="hidden md:block">
-				<CurrencyTable
-					currencies={currencies}
+				<TableData<CurrencyType>
+					items={currencies}
+					fields={currenciesFiltered}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<CurrencyDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 		</>
 	);
+	if (isLoading) {
+		return <SkeltonLoad />;
+	}
+
+	if (currencies.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description="No Currency found"
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate

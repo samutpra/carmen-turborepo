@@ -22,9 +22,11 @@ import {
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
-import StoreLocationTable from './StoreLocationTable';
 import { Card, CardContent } from '@/components/ui/card';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import EmptyState from '@/components/ui-custom/EmptyState';
+import TableData from '@/components/templates/TableData';
 
 const fetchStoreLocations = async (
 	token: string,
@@ -257,15 +259,38 @@ const StoreLocationList = () => {
 				/>
 			</div>
 			<div className="hidden md:block">
-				<StoreLocationTable
-					storeLocations={storeLocations}
+				<TableData<LocationType>
+					items={storeLocations}
+					fields={storeLocationFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<StoreLocationDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 		</>
 	);
+
+	if (isLoading) {
+		return <SkeltonLoad />;
+	}
+
+	if (storeLocations.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description="No Store Location found"
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate

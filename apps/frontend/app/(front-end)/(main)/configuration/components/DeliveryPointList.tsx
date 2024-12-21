@@ -23,8 +23,10 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DeliveryPointTable from './DeliveryPointTable';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import EmptyState from '@/components/ui-custom/EmptyState';
+import TableData from '@/components/templates/TableData';
 
 const fetchDeliveryPoints = async (
 	token: string,
@@ -255,15 +257,38 @@ const DeliveryPointList = () => {
 				/>
 			</div>
 			<div className="hidden md:block">
-				<DeliveryPointTable
-					deliveryPoints={deliveryPoints}
+				<TableData<DeliveryPointType>
+					items={deliveryPoints}
+					fields={deliveryPointsFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<DeliveryPointDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 		</>
 	);
+
+	if (isLoading) {
+		return <SkeltonLoad />;
+	}
+
+	if (deliveryPoints.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description="No Delevery Points found"
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate

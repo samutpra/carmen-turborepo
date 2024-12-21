@@ -25,8 +25,10 @@ import {
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
-import DepartmentTable from './DepartmentTable';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
+import TableData from '@/components/templates/TableData';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import EmptyState from '@/components/ui-custom/EmptyState';
 
 const fetchDepartments = async (
 	token: string,
@@ -262,15 +264,38 @@ const DepartmentList = () => {
 				/>
 			</div>
 			<div className="hidden md:block">
-				<DepartmentTable
-					departments={departments}
+				<TableData<DepartmentType>
+					items={departments}
+					fields={departmentFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
-					isLoading={isLoading}
+					editComponent={({ item, onSuccess }) => (
+						<DepartmentDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 		</>
 	);
+
+	if (isLoading) {
+		return <SkeltonLoad />;
+	}
+
+	if (departments.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description="No Departments found"
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate
