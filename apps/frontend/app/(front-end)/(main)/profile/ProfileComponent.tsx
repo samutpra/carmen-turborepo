@@ -214,7 +214,7 @@ const ProfileComponent = () => {
 									<FormItem>
 										<FormLabel>Username</FormLabel>
 										<FormControl>
-											<Input {...field} disabled className="bg-gray-100" />
+											<Input {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
