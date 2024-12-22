@@ -24,10 +24,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import UnitDialog from './UnitDialog';
-import UnitTable from './UnitTable';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
+import TableData from '@/components/templates/TableData';
 
 const fetchUnits = async (
 	token: string,
@@ -252,10 +252,19 @@ const UnitList = () => {
 				/>
 			</div>
 			<div className="hidden md:block">
-				<UnitTable
-					units={units}
+				<TableData<UnitType>
+					items={units}
+					fields={unitFields}
+					idField="id"
 					onSuccess={handleSuccess}
 					onDelete={handleDelete}
+					editComponent={({ item, onSuccess }) => (
+						<UnitDialog
+							mode="edit"
+							defaultValues={item}
+							onSuccess={onSuccess}
+						/>
+					)}
 				/>
 			</div>
 		</>
