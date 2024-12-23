@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import CertificateForm from '../form/CertificateForm';
 interface Props {
     isEdit: boolean
 }
 
-interface Certification {
+export interface CertificationProps {
     id: string
     name: string
     issuer: string
@@ -15,7 +16,7 @@ interface Certification {
     status: 'active' | 'expired' | 'pending'
 }
 
-const certifications: Certification[] = [
+const data: CertificationProps[] = [
     {
         id: 'cert1',
         name: 'ISO 9001',
@@ -26,12 +27,23 @@ const certifications: Certification[] = [
 ]
 
 const CertificationsSection: React.FC<Props> = ({ isEdit }) => {
+    const [certifications, setCertifications] = useState<CertificationProps[]>(data);
+
+    const handleSuccess = (updatedUnit: CertificationProps) => {
+        setCertifications((prev) => {
+            const exists = prev.some((u) => u.id === updatedUnit.id);
+            if (exists) {
+                return prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
+            }
+            return [...prev, updatedUnit];
+        });
+    };
     return (
         <>
             <div className='flex justify-between'>
                 <h1 className='text-base font-bold'>Certification</h1>
                 {isEdit && (
-                    <Button variant='default' size={'sm'}>Add Certification</Button>
+                    <CertificateForm mode="add" onSuccess={handleSuccess} />
                 )}
             </div>
             <Table>
@@ -59,9 +71,10 @@ const CertificationsSection: React.FC<Props> = ({ isEdit }) => {
                             <TableCell>
                                 {isEdit && (
                                     <div className="flex gap-2">
-                                        <Button variant="ghost" size="sm">
-                                            <Pencil />
-                                        </Button>
+                                        <CertificateForm mode="edit"
+                                            defaultValues={cert}
+                                            onSuccess={handleSuccess} />
+
                                         <Button variant="ghost" size="sm">
                                             <Trash />
                                         </Button>

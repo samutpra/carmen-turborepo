@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash } from 'lucide-react';
+import { Trash } from 'lucide-react';
+import ContactForm from '../form/ContactForm';
 
 interface Props {
     isEdit: boolean
 }
 
-interface Contact {
+export interface ContactProps {
     id: string;
     name: string;
     position: string;
@@ -16,7 +17,7 @@ interface Contact {
     department: string;
     isPrimary: boolean;
 }
-const contacts: Contact[] = [
+const data: ContactProps[] = [
     {
         id: 'cont1',
         name: 'John Doe',
@@ -28,12 +29,23 @@ const contacts: Contact[] = [
     }
 ]
 const ContactsSection: React.FC<Props> = ({ isEdit }) => {
+    const [contacts, setContacts] = useState<ContactProps[]>(data);
+    const handleSuccess = (updatedUnit: ContactProps) => {
+        setContacts((prev) => {
+            const exists = prev.some((u) => u.id === updatedUnit.id);
+            if (exists) {
+                return prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
+            }
+            return [...prev, updatedUnit];
+        });
+    };
+
     return (
         <>
             <div className='flex justify-between'>
                 <h1 className='text-base font-bold'>Contact</h1>
                 {isEdit && (
-                    <Button variant='default' size={'sm'}>Add Contact</Button>
+                    <ContactForm mode="add" onSuccess={handleSuccess} />
                 )}
             </div>
             <Table>
@@ -43,24 +55,27 @@ const ContactsSection: React.FC<Props> = ({ isEdit }) => {
                         <TableHead>Position</TableHead>
                         <TableHead>Phone</TableHead>
                         <TableHead>Email</TableHead>
+                        <TableHead>Department</TableHead>
                         <TableHead>Primary</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {contacts.map((contact: Contact) => (
+                    {contacts.map((contact: ContactProps) => (
                         <TableRow key={contact.id}>
                             <TableCell>{contact.name}</TableCell>
                             <TableCell>{contact.position}</TableCell>
                             <TableCell>{contact.phone}</TableCell>
                             <TableCell>{contact.email}</TableCell>
+                            <TableCell>{contact.department}</TableCell>
                             <TableCell>{contact.isPrimary ? 'Yes' : 'No'}</TableCell>
                             <TableCell>
                                 {isEdit && (
                                     <div className="flex gap-2">
-                                        <Button variant="ghost" size="sm">
-                                            <Pencil />
-                                        </Button>
+                                        <ContactForm mode="edit"
+                                            defaultValues={contact}
+                                            onSuccess={handleSuccess}
+                                        />
                                         <Button variant="ghost" size="sm">
                                             <Trash />
                                         </Button>

@@ -3,17 +3,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui-custom/FormCustom';
-import { Switch } from '@/components/ui/switch';
-import { PencilIcon, PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { CertificationProps } from '../sections/CertificationsSection';
+import { z } from 'zod';
 import {
     Dialog,
     DialogContent,
@@ -22,38 +13,51 @@ import {
     DialogTrigger,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { AddressProps } from '../sections/AddressesSection';
-import { z } from 'zod';
-import { InputCustom } from '@/components/ui-custom/InputCustom';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui-custom/FormCustom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { PencilIcon, PlusIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const CertificateSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1),
+    issuer: z.string().min(1),
+    validUntil: z.string().min(1),
+    status: z.enum(['active', 'expired', 'pending'])
+});
 
 interface Props {
     mode: 'add' | 'edit';
-    defaultValues?: Partial<AddressProps>;
-    onSuccess: (values: AddressProps) => void;
+    defaultValues?: Partial<CertificationProps>;
+    onSuccess: (values: CertificationProps) => void;
 }
-
-const AddressSchema = z.object({
-    id: z.string().optional(),
-    addressType: z.enum(["MAIN", "BILLING", "SHIPPING", "BRANCH"]),
-    addressLine: z.string().min(1),
-    isPrimary: z.boolean(),
-});
-
-const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
+const CertificateForm: React.FC<Props> = ({
+    mode,
+    defaultValues,
+    onSuccess
+}) => {
     const [open, setOpen] = useState(false);
 
-    const form = useForm<AddressProps>({
-        resolver: zodResolver(AddressSchema),
+    const form = useForm<CertificationProps>({
+        resolver: zodResolver(CertificateSchema),
         defaultValues: {
             id: defaultValues?.id || '',
-            addressType: defaultValues?.addressType || 'MAIN',
-            addressLine: defaultValues?.addressLine || '',
-            isPrimary: defaultValues?.isPrimary && true,
-        },
+            name: defaultValues?.name || '',
+            issuer: defaultValues?.issuer || '',
+            validUntil: defaultValues?.validUntil || '',
+            status: defaultValues?.status || 'active'
+        }
     });
 
-    const onSubmit = async (values: AddressProps) => {
+    const onSubmit = async (values: CertificationProps) => {
         onSuccess(values);
         setOpen(false);
         form.reset();
@@ -74,7 +78,7 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
                     {mode === 'add' ? (
                         <>
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            Add Address
+                            Add Certificate
                         </>
                     ) : (
                         <PencilIcon className="w-4 h-4" />
@@ -84,21 +88,21 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === 'add' ? 'Add' : 'Edit'} Address
+                        {mode === 'add' ? 'Add' : 'Edit'} Certificate
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="addressLine"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Address Line</FormLabel>
                                     <FormControl>
                                         <InputCustom
                                             placeholder="Enter address line"
-                                            error={!!form.formState.errors.addressLine}
+                                            error={!!form.formState.errors.name}
                                             {...field}
                                         />
                                     </FormControl>
@@ -108,25 +112,16 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="addressType"
+                            name="issuer"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Postal Code</FormLabel>
+                                    <FormLabel>Issuer</FormLabel>
                                     <FormControl>
-                                        <Select
-                                            onValueChange={(value) => field.onChange(value)}
-                                            value={field.value}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select Address Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="MAIN">Main</SelectItem>
-                                                <SelectItem value="BILLING">Billing</SelectItem>
-                                                <SelectItem value="SHIPPING">Shipping</SelectItem>
-                                                <SelectItem value="BRANCH">Branch</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <InputCustom
+                                            placeholder="Enter issuer"
+                                            error={!!form.formState.errors.issuer}
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -134,18 +129,43 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="isPrimary"
+                            name="validUntil"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base">Primary</FormLabel>
-                                    </div>
+                                <FormItem>
+                                    <FormLabel>Valid Until</FormLabel>
                                     <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
+                                        <InputCustom
+                                            placeholder="Enter valid until"
+                                            error={!!form.formState.errors.validUntil}
+                                            {...field}
                                         />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="status"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Status</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(value)}
+                                            value={field.value}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="active">Active</SelectItem>
+                                                <SelectItem value="expired">Billing</SelectItem>
+                                                <SelectItem value="pending">Pending</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -166,7 +186,7 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
                 </Form>
             </DialogContent>
         </Dialog>
-    );
-};
+    )
+}
 
-export default AddressForm;
+export default CertificateForm
