@@ -10,31 +10,17 @@ import {
 import { vendor_type } from '@carmensoftware/shared-types';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { Pencil, Trash } from 'lucide-react';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
 
 interface VendorTableProps {
 	vendors: vendor_type[];
-	onDelete: (id: string) => void;
 	isLoading: boolean;
 }
 const VendorTable: React.FC<VendorTableProps> = ({
 	vendors,
-	onDelete,
 	isLoading,
 }) => {
 	if (isLoading) {
@@ -68,38 +54,11 @@ const VendorTable: React.FC<VendorTableProps> = ({
 							</Badge>
 						</TableCell>
 						<TableCell className="text-right">
-							<div className="flex justify-end gap-2">
-								<Button asChild variant="ghost">
-									<Link href={`/vendor-management/vendors/${vendor.id}`}>
-										<Pencil className="h-4 w-4" />
-									</Link>
-								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<CustomButton variant="ghost" size="sm">
-											<Trash className="h-4 w-4" />
-										</CustomButton>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-											<AlertDialogDescription>
-												This action cannot be undone. This will permanently
-												delete the vendor.
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction
-												onClick={() => vendor.id && onDelete(vendor.id)}
-												className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-											>
-												Delete
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
-							</div>
+							<Button asChild variant="ghost">
+								<Link href={`/vendor-management/vendors/${vendor.id}`}>
+									<Eye className="h-4 w-4" />
+								</Link>
+							</Button>
 						</TableCell>
 					</TableRow>
 				))}

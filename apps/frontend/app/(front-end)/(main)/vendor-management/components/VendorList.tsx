@@ -25,45 +25,7 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import VendorDialog from './VendorDialog';
 import VendorCard from './VendorCard';
 import VendorTable from './VendorTable';
-
-const fetchVendors = async (
-	token: string,
-	tenantId: string,
-	params: { search?: string; status?: string } = {}
-) => {
-	try {
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-
-		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
-		}
-
-		const url = `/api/vendor-management/vendor?${query}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-		const response = await fetch(url, options);
-
-		if (!response.ok) {
-			throw new Error('Failed to fetch vendors');
-		}
-		const result = await response.json();
-		return result.data;
-	} catch (error) {
-		console.error('Error fetching vendors:', error);
-		throw error;
-	}
-};
+import { fetchAllVendors } from './api';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -79,7 +41,7 @@ const VendorList = () => {
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchVendors(token, tenantId, { search, status });
+			const data = await fetchAllVendors(token, tenantId, { search, status });
 			setVendors(data.data);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
@@ -239,7 +201,6 @@ const VendorList = () => {
 			<div className="hidden md:block">
 				<VendorTable
 					vendors={vendors}
-					onDelete={handleDelete}
 					isLoading={isLoading}
 				/>
 			</div>

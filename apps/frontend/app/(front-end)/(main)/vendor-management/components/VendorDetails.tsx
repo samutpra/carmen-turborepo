@@ -1,44 +1,38 @@
-import React from 'react'
+import { vendor_type } from '@carmensoftware/shared-types'
+import React, { useEffect, useState } from 'react'
+import { fetchVendor } from './api'
 
 interface Props {
     id: string
     token: string
     tenantId: string
 }
+const VendorDetails: React.FC<Props> = ({ id, token, tenantId }) => {
+    const [vendor, setVendor] = useState<vendor_type | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
-const fetchVendor = async (id: string, token: string, tenantId: string) => {
-    try {
-        const URL = `/api/vendor-management/vendor/${id}`;
-        const response = await fetch(URL, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        });
-        if (response.status === 401) {
-            return { error: 'Unauthorized access - Invalid or expired token' };
+    useEffect(() => {
+        const getVendor = async () => {
+            const vendorData = await fetchVendor(id, token, tenantId);
+            if (vendorData.error) {
+                setError(vendorData.error);
+            } else {
+                setVendor(vendorData);
+            }
         }
-        if (!response.ok) {
-            throw new Error(
-                `Failed to fetch vendor: ${response.status} ${response.statusText}`
-            );
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Unexpected error:', error);
-        return { error: 'An unexpected error occurred' };
-    }
-}
-
-const VendorDetails: React.FC<Props> = async ({ id, token, tenantId }) => {
-    const vendor = await fetchVendor(id, token, tenantId);
+        getVendor();
+    }, [id, token, tenantId])
 
     return (
         <div>
-            <h1>VendorDetails {vendor}</h1>
+            {error && <p>Error: {error}</p>}
+            {vendor ? (
+                <div>
+                    <p>{vendor.name}</p>
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
     )
 }
