@@ -239,7 +239,6 @@ const VendorList = () => {
 			<div className="hidden md:block">
 				<VendorTable
 					vendors={vendors}
-					onSuccess={handleSuccess}
 					onDelete={handleDelete}
 					isLoading={isLoading}
 				/>

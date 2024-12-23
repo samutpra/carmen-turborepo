@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/table';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React from 'react';
-import VendorDialog from './VendorDialog';
 import { Badge } from '@/components/ui/badge';
 import {
 	AlertDialog,
@@ -23,18 +22,18 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { Trash } from 'lucide-react';
+import { Pencil, Trash } from 'lucide-react';
 import EmptyState from '@/components/ui-custom/EmptyState';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface VendorTableProps {
 	vendors: vendor_type[];
-	onSuccess: (vendor: vendor_type) => void;
 	onDelete: (id: string) => void;
 	isLoading: boolean;
 }
 const VendorTable: React.FC<VendorTableProps> = ({
 	vendors,
-	onSuccess,
 	onDelete,
 	isLoading,
 }) => {
@@ -70,11 +69,11 @@ const VendorTable: React.FC<VendorTableProps> = ({
 						</TableCell>
 						<TableCell className="text-right">
 							<div className="flex justify-end gap-2">
-								<VendorDialog
-									mode="edit"
-									defaultValues={vendor}
-									onSuccess={onSuccess}
-								/>
+								<Button asChild variant="ghost">
+									<Link href={`/vendor-management/vendors/${vendor.id}`}>
+										<Pencil className="h-4 w-4" />
+									</Link>
+								</Button>
 								<AlertDialog>
 									<AlertDialogTrigger asChild>
 										<CustomButton variant="ghost" size="sm">
