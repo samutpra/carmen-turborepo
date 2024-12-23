@@ -23,6 +23,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import VendorInfo from './VendorInfo';
+import { EnvironmentalProfile } from './EnvironmentalProfile';
 
 interface Props {
     vendor: vendor_type | null;
@@ -95,88 +96,143 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 
     const isInputDisabled = mode === 'edit' && !isEditing;
 
-    return (
-        <div className="container p-6 space-y-4">
-            <Card className='flex flex-col md:flex-row justify-center md:justify-between gap-4 p-4'>
-                <h1 className='text-2xl font-bold text-center md:text-left'>
-                    {mode === 'add' ? 'Create New Vendor' : vendor?.name}
-                </h1>
-                <div className='flex justify-center gap-2'>
-                    {mode === 'edit' ? (
-                        isEditing ? (
-                            <>
-                                <Button
-                                    variant="default"
-                                    onClick={form.handleSubmit(onSubmit)}
-                                >
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    onClick={handleCancelEdit}
-                                >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Cancel
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    size={'icon'}
-                                    variant={'ghost'}
-                                    onClick={handleEdit}
-                                >
-                                    <PencilIcon />
-                                </Button>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button
-                                            size={'icon'}
-                                            variant={'ghost'}
-                                        >
-                                            <Trash />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Delete Vendor</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Are you sure you want to delete this vendor?
-                                                This action cannot be undone.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={() => vendor?.id && onDelete(vendor.id)}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            >
-                                                Delete
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </>
-                        )
-                    ) : (
-                        <Button onClick={form.handleSubmit(onSubmit)}>
+
+    const title = (
+        <h1 className='text-2xl font-bold text-center md:text-left'>
+            {mode === 'add' ? 'Create New Vendor' : vendor?.name}
+        </h1>
+    )
+
+    const actionsButton = (
+        <div className='flex justify-center gap-2'>
+            {mode === 'edit' ? (
+                isEditing ? (
+                    <>
+                        <Button
+                            variant="default"
+                            onClick={form.handleSubmit(onSubmit)}
+                        >
                             <Save className="h-4 w-4 mr-2" />
                             Save
                         </Button>
-                    )}
-                </div>
+                        <Button
+                            variant="ghost"
+                            onClick={handleCancelEdit}
+                        >
+                            <X className="h-4 w-4 mr-2" />
+                            Cancel
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button
+                            size={'icon'}
+                            variant={'ghost'}
+                            onClick={handleEdit}
+                        >
+                            <PencilIcon />
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    size={'icon'}
+                                    variant={'ghost'}
+                                >
+                                    <Trash />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Vendor</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to delete this vendor?
+                                        This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => vendor?.id && onDelete(vendor.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </>
+                )
+            ) : (
+                <Button onClick={form.handleSubmit(onSubmit)}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save
+                </Button>
+            )}
+        </div>
+    )
+
+    return (
+        <div className="container p-6 space-y-4">
+            <Card className='flex flex-col md:flex-row justify-center md:justify-between gap-4 p-4'>
+                {title}
+                {actionsButton}
             </Card>
             <Card className='p-4 space-y-4'>
                 <h1 className='text-base font-bold'>Infomations</h1>
-                <Card className="p-4">
-                    <VendorInfo
-                        form={form}
-                        isInputDisabled={isInputDisabled}
-                        onSubmit={onSubmit}
+                <VendorInfo
+                    form={form}
+                    isInputDisabled={isInputDisabled}
+                    onSubmit={onSubmit}
+                />
+            </Card>
+
+            {mode === 'edit' && (
+                <Card className='p-4'>
+                    <h1 className="text-lg font-medium">Environmental Impact</h1>
+                    <EnvironmentalProfile
+                        vendorId={vendor?.id?.toString() || ''}
+                        environmentalData={{
+                            carbonFootprint: {
+                                value: 2450,
+                                unit: 'tCO2e',
+                                trend: -12
+                            },
+                            energyEfficiency: {
+                                value: 85,
+                                benchmark: 80,
+                                trend: 5
+                            },
+                            wasteReduction: {
+                                value: 45,
+                                trend: 15
+                            },
+                            complianceRate: {
+                                value: 98,
+                                trend: 3
+                            },
+                            lastUpdated: '2024-03-15',
+                            esgScore: 'A+',
+                            certifications: [
+                                {
+                                    name: 'ISO 14001',
+                                    status: 'Active',
+                                    expiry: '2025-12-31'
+                                },
+                                {
+                                    name: 'Carbon Trust',
+                                    status: 'Active',
+                                    expiry: '2024-08-15'
+                                },
+                                {
+                                    name: 'ESG Rating A+',
+                                    status: 'Active',
+                                    expiry: '2024-12-31'
+                                }
+                            ]
+                        }}
                     />
                 </Card>
-            </Card>
+            )}
         </div>
     )
 }

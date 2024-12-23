@@ -69,6 +69,7 @@ const VendorInfo: React.FC<Props> = ({
                                 <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    disabled={isInputDisabled}
                                 />
                             </FormControl>
                             <FormLabel>Active</FormLabel>
