@@ -22,11 +22,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import VendorInfo from './VendorInfo';
-import { EnvironmentalProfile } from './EnvironmentalProfile';
-import AddressesSection from './AddressesSection';
-import ContactsSection from './ContactsSection';
-import CertificationsSection from './CertificationsSection';
+import VendorInfo from './sections/VendorInfo';
+import { EnvironmentalProfile } from './sections/EnvironmentalProfile';
+import AddressesSection from './sections/AddressesSection';
+import ContactsSection from './sections/ContactsSection';
+import CertificationsSection from './sections/CertificationsSection';
 
 interface Props {
     vendor: vendor_type | null;

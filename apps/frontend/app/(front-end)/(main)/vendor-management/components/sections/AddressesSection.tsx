@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash } from 'lucide-react';
+import AddressForm from '../form/AddressForm';
+import { Trash } from 'lucide-react';
 
 enum AddressType {
     MAIN = 'MAIN',
@@ -10,27 +11,25 @@ enum AddressType {
     BRANCH = 'BRANCH'
 }
 
-interface Address {
+export interface AddressProps {
     id: string;
     addressType: "MAIN" | "BILLING" | "SHIPPING" | "BRANCH";
     addressLine: string;
-    subDistrictId: string;
-    districtId: string;
-    provinceId: string;
-    postalCode: string;
     isPrimary: boolean;
 }
 
-const addresses: Address[] = [
+const data: AddressProps[] = [
     {
         id: 'addr1',
         addressLine: '123 Main St',
-        subDistrictId: 'SD001',
-        districtId: 'D001',
-        provinceId: 'P001',
-        postalCode: '10001',
         addressType: AddressType.MAIN,
         isPrimary: true
+    },
+    {
+        id: 'addr2',
+        addressLine: '69/107',
+        addressType: AddressType.SHIPPING,
+        isPrimary: false
     }
 ]
 
@@ -38,16 +37,26 @@ interface Props {
     isEdit: boolean
 }
 
-const AddressesSection: React.FC<Props> = ({
-    isEdit
-}) => {
-    return (
+const AddressesSection: React.FC<Props> = ({ isEdit }) => {
+    const [address, setAddress] = useState<AddressProps[]>(data);
 
+    const handleSuccess = (updatedUnit: AddressProps) => {
+        setAddress((prev) => {
+            const exists = prev.some((u) => u.id === updatedUnit.id);
+            if (exists) {
+                return prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
+            }
+            return [...prev, updatedUnit];
+        });
+    };
+
+
+    return (
         <>
             <div className='flex justify-between'>
                 <h1 className='text-base font-bold'>Address</h1>
                 {isEdit && (
-                    <Button variant='default' size={'sm'}>Add Address</Button>
+                    <AddressForm mode="add" onSuccess={handleSuccess} />
                 )}
             </div>
             <Table>
@@ -60,7 +69,7 @@ const AddressesSection: React.FC<Props> = ({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {addresses.map(address => (
+                    {address.map(address => (
                         <TableRow key={address.id}>
                             <TableCell>{address.addressType}</TableCell>
                             <TableCell>{address.addressLine}</TableCell>
@@ -68,9 +77,11 @@ const AddressesSection: React.FC<Props> = ({
                             <TableCell>
                                 {isEdit && (
                                     <div className="flex gap-2">
-                                        <Button variant="ghost" size="sm">
-                                            <Pencil />
-                                        </Button>
+                                        <AddressForm
+                                            mode="edit"
+                                            defaultValues={address}
+                                            onSuccess={handleSuccess}
+                                        />
                                         <Button variant="ghost" size="sm">
                                             <Trash />
                                         </Button>
