@@ -77,8 +77,8 @@ export class VendorService {
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
+        perPage: q.perpage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
     return res;

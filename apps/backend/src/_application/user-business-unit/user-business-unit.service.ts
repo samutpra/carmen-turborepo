@@ -1,9 +1,20 @@
-import { ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   PrismaClient as dbSystem,
   tb_user_tb_business_unit,
@@ -118,8 +129,8 @@ export class UserBusinessUnitService {
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
+        perPage: q.perpage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
     return res;
