@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import VendorInfo from './VendorInfo';
 import { EnvironmentalProfile } from './EnvironmentalProfile';
+import AddressesSection from './AddressesSection';
 
 interface Props {
     vendor: vendor_type | null;
@@ -36,6 +37,9 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
     const tenantId = 'DUMMY';
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
+
+    console.log('Mode:', mode);
+
 
     const form = useForm<vendor_type>({
         resolver: zodResolver(vendor_schema),
@@ -233,6 +237,16 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                     />
                 </Card>
             )}
+
+            <Card className='p-4'>
+                <div className='flex justify-between'>
+                    <h1 className='text-base font-bold'>Address</h1>
+                    {isEditing && (
+                        <Button variant='default' size={'sm'}>Add Address</Button>
+                    )}
+                </div>
+                <AddressesSection isEdit={isEditing} />
+            </Card>
         </div>
     )
 }
