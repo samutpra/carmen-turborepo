@@ -1,70 +1,60 @@
 import React from 'react'
+import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { Pencil, Trash } from 'lucide-react';
-
-enum AddressType {
-    MAIN = 'MAIN',
-    BILLING = 'BILLING',
-    SHIPPING = 'SHIPPING',
-    BRANCH = 'BRANCH'
-}
-
-interface Address {
-    id: string;
-    addressType: "MAIN" | "BILLING" | "SHIPPING" | "BRANCH";
-    addressLine: string;
-    subDistrictId: string;
-    districtId: string;
-    provinceId: string;
-    postalCode: string;
-    isPrimary: boolean;
-}
-
-const addresses: Address[] = [
-    {
-        id: 'addr1',
-        addressLine: '123 Main St',
-        subDistrictId: 'SD001',
-        districtId: 'D001',
-        provinceId: 'P001',
-        postalCode: '10001',
-        addressType: AddressType.MAIN,
-        isPrimary: true
-    }
-]
 
 interface Props {
     isEdit: boolean
 }
 
-const AddressesSection: React.FC<Props> = ({
-    isEdit
-}) => {
+interface Contact {
+    id: string;
+    name: string;
+    position: string;
+    phone: string;
+    email: string;
+    department: string;
+    isPrimary: boolean;
+}
+const contacts: Contact[] = [
+    {
+        id: 'cont1',
+        name: 'John Doe',
+        email: 'john.doe@acme.com',
+        phone: '+1-555-0123',
+        position: 'Manager',
+        department: 'Procurement',
+        isPrimary: true
+    }
+]
+const ContactsSection: React.FC<Props> = ({ isEdit }) => {
     return (
-
         <>
             <div className='flex justify-between'>
-                <h1 className='text-base font-bold'>Address</h1>
+                <h1 className='text-base font-bold'>Contact</h1>
                 {isEdit && (
-                    <Button variant='default' size={'sm'}>Add Address</Button>
+                    <Button variant='default' size={'sm'}>Add Contact</Button>
                 )}
             </div>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Address</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Email</TableHead>
                         <TableHead>Primary</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {addresses.map(address => (
-                        <TableRow key={address.id}>
-                            <TableCell>{address.addressType}</TableCell>
-                            <TableCell>{address.addressLine}</TableCell>
-                            <TableCell>{address.isPrimary ? 'Yes' : 'No'}</TableCell>
+                    {contacts.map((contact: Contact) => (
+                        <TableRow key={contact.id}>
+                            <TableCell>{contact.name}</TableCell>
+                            <TableCell>{contact.position}</TableCell>
+                            <TableCell>{contact.phone}</TableCell>
+                            <TableCell>{contact.email}</TableCell>
+                            <TableCell>{contact.isPrimary ? 'Yes' : 'No'}</TableCell>
                             <TableCell>
                                 {isEdit && (
                                     <div className="flex gap-2">
@@ -81,10 +71,8 @@ const AddressesSection: React.FC<Props> = ({
                     ))}
                 </TableBody>
             </Table>
-
         </>
-
     )
 }
 
-export default AddressesSection
+export default ContactsSection

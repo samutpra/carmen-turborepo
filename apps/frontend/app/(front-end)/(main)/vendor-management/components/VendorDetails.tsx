@@ -25,6 +25,8 @@ import {
 import VendorInfo from './VendorInfo';
 import { EnvironmentalProfile } from './EnvironmentalProfile';
 import AddressesSection from './AddressesSection';
+import ContactsSection from './ContactsSection';
+import CertificationsSection from './CertificationsSection';
 
 interface Props {
     vendor: vendor_type | null;
@@ -239,13 +241,15 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
             )}
 
             <Card className='p-4'>
-                <div className='flex justify-between'>
-                    <h1 className='text-base font-bold'>Address</h1>
-                    {isEditing && (
-                        <Button variant='default' size={'sm'}>Add Address</Button>
-                    )}
-                </div>
                 <AddressesSection isEdit={isEditing} />
+            </Card>
+
+            <Card className='p-4'>
+                <ContactsSection isEdit={isEditing} />
+            </Card>
+
+            <Card className='p-4'>
+                <CertificationsSection isEdit={isEditing} />
             </Card>
         </div>
     )
