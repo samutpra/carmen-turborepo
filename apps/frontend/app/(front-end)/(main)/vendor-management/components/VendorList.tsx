@@ -20,12 +20,13 @@ import {
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import VendorDialog from './VendorDialog';
+// import VendorDialog from './VendorDialog';
 import VendorCard from './VendorCard';
 import VendorTable from './VendorTable';
 import { fetchAllVendors } from './api';
+import { Link } from '@/lib/i18n';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -121,7 +122,12 @@ const VendorList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<VendorDialog mode="create" onSuccess={handleSuccess} />
+			<Button asChild>
+				<Link href="/vendor-management/vendors/new">
+					<Plus className="h-4 w-4" />
+					Create vendor
+				</Link>
+			</Button>
 		</div>
 	);
 

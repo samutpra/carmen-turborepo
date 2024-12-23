@@ -1,3 +1,5 @@
+import { vendor_type } from "@carmensoftware/shared-types";
+
 export const fetchAllVendors = async (
     token: string,
     tenantId: string,
@@ -30,6 +32,7 @@ export const fetchAllVendors = async (
             throw new Error('Failed to fetch vendors');
         }
         const result = await response.json();
+
         return result.data;
     } catch (error) {
         console.error('Error fetching vendors:', error);
@@ -62,5 +65,64 @@ export const fetchVendor = async (id: string, token: string, tenantId: string) =
     } catch (error) {
         console.error('Unexpected error:', error);
         return { error: 'An unexpected error occurred' };
+    }
+}
+
+export const handleSubmit = async (
+    values: vendor_type,
+    token: string,
+    tenantId: string,
+    mode: 'add' | 'edit'
+): Promise<vendor_type | null> => {
+    try {
+        const url = values?.id
+            ? `/api/vendor-management/vendor/${values.id}`
+            : '/api/vendor-management/vendor';
+        const method = mode === 'add' ? 'POST' : 'PATCH';
+        const response = await fetch(url, {
+            method,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(values),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to ${mode} vendor`);
+        }
+
+        const result = await response.json();
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        return result;
+    } catch (error) {
+        console.error('Error submitting vendor:', error);
+        return null;
+    }
+};
+
+
+
+export const handleDelete = async (id: string, token: string, tenantId: string): Promise<boolean> => {
+    try {
+        const response = await fetch(`/api/vendor-management/vendor/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete vendor');
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Error deleting vendor:', err);
+        return false;
     }
 }
