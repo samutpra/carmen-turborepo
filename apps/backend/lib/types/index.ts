@@ -20,7 +20,7 @@ export class KeyValueString {
 
 export default class QueryParams {
   public readonly page: number;
-  public readonly perPage: number;
+  public readonly perpage: number;
   public readonly search: string;
   public searchFields: string[];
   public readonly defaultSearchFields: string[];
@@ -38,8 +38,16 @@ export default class QueryParams {
     sort: string = '',
     advance: QueryAdvance = null,
   ) {
+    if (typeof page !== 'number') {
+      page = parseInt(page);
+    }
+
+    if (typeof perpage !== 'number') {
+      perpage = parseInt(perpage);
+    }
+
     this.page = page;
-    this.perPage = perpage;
+    this.perpage = perpage;
     this.search = search;
     this.searchFields = searchFields ? searchFields.split(',') : [];
 
@@ -166,8 +174,8 @@ export default class QueryParams {
   public findMany(): any {
     const _where: any = this.where();
     const _order: any = this.orderBy();
-    const _skip: any = (this.page - 1) * this.perPage;
-    const _take: any = this.perPage;
+    const _skip: number = (this.page - 1) * this.perpage;
+    const _take: number = this.perpage;
 
     return {
       where: _where,
