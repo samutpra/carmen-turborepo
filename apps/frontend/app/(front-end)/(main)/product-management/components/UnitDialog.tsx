@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/app/context/AuthContext';
 import { UnitSchema } from '@carmensoftware/shared-types';
 import { UnitType } from '@carmensoftware/shared-types';
-import { toast } from 'sonner';
 import {
 	Form,
 	FormControl,
@@ -29,9 +28,11 @@ import {
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Textarea } from '@/components/ui/textarea';
+import { submitUnit } from '../actions/unit';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 interface UnitDialogProps {
-	mode: 'create' | 'edit';
+	mode: 'create' | 'update';
 	defaultValues?: UnitType;
 	onSuccess: (values: UnitType) => void;
 }
@@ -49,57 +50,50 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 
 	const form = useForm<UnitType>({
 		resolver: zodResolver(UnitSchema),
-		defaultValues: {
-			name: defaultValues?.name || '',
-			description: defaultValues?.description || '',
-			is_active: defaultValues?.is_active || true,
-		},
 	});
+
+	useEffect(() => {
+		if (mode === 'create') {
+			form.reset({
+				name: '',
+				description: '',
+				is_active: true,
+			});
+		} else {
+			form.reset({
+				name: defaultValues?.name,
+				description: defaultValues?.description,
+				is_active: defaultValues?.is_active,
+			});
+		}
+	}, [mode, defaultValues, form]);
+
 
 	const onSubmit = async (values: UnitType) => {
 		setIsLoading(true);
 		try {
-			const url = defaultValues?.id
-				? `/api/product-management/unit/${defaultValues.id}`
-				: '/api/product-management/unit';
-
-			const method = mode === 'create' ? 'POST' : 'PATCH';
-
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(values),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to ${mode} unit`);
-			}
-
-			const result = await response.json();
+			const url = defaultValues?.id || '';
+			const result = await submitUnit(values, mode, token, tenantId, url);
 
 			const data: UnitType = {
-				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
+				id: result.id,
 				...values,
 			};
-			onSuccess(data);
-			setOpen(false);
-			toast.success(
-				`Unit ${defaultValues?.id ? 'updated' : 'created'} successfully`
-			);
+
+			if (result) {
+				onSuccess(data);
+				setOpen(false);
+				form.reset();
+				toastSuccess({ message: `Unit ${mode === 'create' ? 'created' : 'updated'} successfully` });
+			} else {
+				toastError({ message: `Failed to ${mode} unit` });
+			}
 		} catch (error) {
-			console.error('Error saving unit:', error);
-			toast.error('Failed to save unit', {
-				description:
-					error instanceof Error ? error.message : 'An error occurred',
-			});
+			toastError({ message: error instanceof Error ? error.message : String(error) });
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}
 
 	const handleClose = () => {
 		setOpen(false);
@@ -192,7 +186,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'edit'
+										: mode === 'update'
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

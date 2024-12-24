@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { LocationType } from '@carmensoftware/shared-types';
 import { Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import {
 	Popover,
 	PopoverContent,
@@ -27,7 +26,8 @@ import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
-import { fetchStoreLocations } from '../actions/store_location';
+import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -91,24 +91,18 @@ const StoreLocationList = () => {
 
 	const handleDelete = async (id: string) => {
 		try {
-			const response = await fetch(`/api/configuration/locations/${id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to delete store location');
+			const res = await deleteStoreLocation(id, token, tenantId);
+			if (res) {
+				setStoreLocations((prev) => prev.filter((l) => l.id !== id));
+				toastSuccess({ message: 'Store location deleted successfully' });
 			}
-			setStoreLocations((prev) => prev.filter((l) => l.id !== id));
-			toast.success('Store location deleted successfully');
-		} catch (err) {
-			console.error('Error deleting store location:', err);
-			toast.error('Failed to delete store location', {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
+		} catch (error) {
+			if (error instanceof Error && error.message === 'Unauthorized') {
+				toastError({ message: 'Your session has expired. Please login again.' });
+			} else {
+				console.error('Error deleting store location:', error);
+				toastError({ message: 'Failed to delete store location' });
+			}
 		}
 	};
 
