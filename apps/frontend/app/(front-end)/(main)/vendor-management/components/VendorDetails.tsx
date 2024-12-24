@@ -2,13 +2,12 @@
 
 import { vendor_schema, vendor_type } from '@carmensoftware/shared-types'
 import React, { useEffect, useState } from 'react'
-import { handleDelete, handleSubmit } from './api'
+import { handleDelete, handleSubmit } from '../actions/vendor'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { PencilIcon, Trash, Save, X } from 'lucide-react'
-import { toast } from 'sonner'
 import { useRouter } from '@/lib/i18n'
 import { useAuth } from '@/app/context/AuthContext'
 import {
@@ -27,10 +26,12 @@ import { EnvironmentalProfile } from './sections/EnvironmentalProfile';
 import AddressesSection from './sections/AddressesSection';
 import ContactsSection from './sections/ContactsSection';
 import CertificationsSection from './sections/CertificationsSection';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 interface Props {
     vendor: vendor_type | null;
-    mode: 'add' | 'edit';
+    mode: formType;
 }
 
 const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
@@ -40,20 +41,17 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
 
-    console.log('Mode:', mode);
-
-
     const form = useForm<vendor_type>({
         resolver: zodResolver(vendor_schema),
-        defaultValues: mode === 'edit' && vendor
+        defaultValues: mode === formType.EDIT && vendor
             ? { ...vendor }
             : { name: '', description: '', is_active: true },
     });
 
     useEffect(() => {
-        if (mode === 'edit' && vendor) {
+        if (mode === formType.EDIT && vendor) {
             form.reset({ ...vendor });
-        } else if (mode === 'add') {
+        } else if (mode === formType.ADD) {
             form.reset({ name: '', description: '', is_active: true });
         }
     }, [mode, vendor, form]);
@@ -75,43 +73,39 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
             const result = await handleSubmit(values, token, tenantId, mode);
             if (result) {
                 form.reset();
-                toast.success(
-                    mode === 'add'
-                        ? 'Vendor created successfully'
-                        : 'Vendor updated successfully'
-                );
+                toastSuccess({ message: mode === formType.ADD ? 'Vendor created successfully' : 'Vendor updated successfully' });
                 router.push('/vendor-management/vendors');
             }
         } catch (error) {
             console.error('Error saving vendor:', error);
-            toast.error('Something went wrong');
+            toastError({ message: 'Failed to save vendor' });
         }
     };
 
     const onDelete = async (id: string) => {
         const success = await handleDelete(id, token, tenantId);
         if (success) {
-            toast.success('Vendor deleted successfully');
+            toastSuccess({ message: 'Vendor deleted successfully' });
             router.push('/vendor-management/vendors');
         } else {
-            toast.error('Failed to delete vendor');
+            toastError({ message: 'Failed to delete vendor' });
         }
     }
 
-    if (!vendor && mode === 'edit') return <div className='container p-6'>Loading...</div>;
+    if (!vendor && mode === formType.EDIT) return <div className='container p-6'>Loading...</div>;
 
-    const isInputDisabled = mode === 'edit' && !isEditing;
+    const isInputDisabled = mode === formType.EDIT && !isEditing;
 
 
     const title = (
         <h1 className='text-2xl font-bold text-center md:text-left'>
-            {mode === 'add' ? 'Create New Vendor' : vendor?.name}
+            {mode === formType.ADD ? 'Create New Vendor' : vendor?.name}
         </h1>
     )
 
     const actionsButton = (
         <div className='flex justify-center gap-2'>
-            {mode === 'edit' ? (
+            {mode === formType.EDIT ? (
                 isEditing ? (
                     <>
                         <Button
@@ -192,7 +186,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                 />
             </Card>
 
-            {mode === 'edit' && (
+            {mode === formType.EDIT && (
                 <Card className='p-4'>
                     <h1 className="text-lg font-medium">Environmental Impact</h1>
                     <EnvironmentalProfile

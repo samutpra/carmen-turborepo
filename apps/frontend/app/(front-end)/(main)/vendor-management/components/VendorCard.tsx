@@ -1,33 +1,18 @@
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React from 'react';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrashIcon } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import VendorDialog from './VendorDialog';
+import { Link } from '@/lib/i18n';
 
 interface VendorCardProps {
 	vendors: vendor_type[];
-	onSuccess: (vendor: vendor_type) => void;
-	onDelete: (id: string) => void;
 	isLoading: boolean;
 }
 const VendorCard: React.FC<VendorCardProps> = ({
 	vendors,
-	onSuccess,
-	onDelete,
 	isLoading,
 }) => {
 	if (isLoading) {
@@ -72,36 +57,12 @@ const VendorCard: React.FC<VendorCardProps> = ({
 						</div>
 					</CardContent>
 					<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
-						<VendorDialog
-							mode="edit"
-							defaultValues={vendor}
-							onSuccess={onSuccess}
-						/>
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<Button variant="ghost" size="sm">
-									<TrashIcon className="w-4 h-4" />
-								</Button>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<AlertDialogTitle>Are you sure?</AlertDialogTitle>
-									<AlertDialogDescription>
-										This action cannot be undone. This will permanently delete
-										the vendor.
-									</AlertDialogDescription>
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<AlertDialogCancel>Cancel</AlertDialogCancel>
-									<AlertDialogAction
-										onClick={() => vendor.id && onDelete(vendor.id)}
-										className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-									>
-										Delete
-									</AlertDialogAction>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
+						<Button asChild variant="ghost">
+							<Link href={`/vendor-management/vendors/${vendor.id}`}>
+								<Eye className="h-4 w-4" />
+							</Link>
+						</Button>
+
 					</CardFooter>
 				</Card>
 			))}

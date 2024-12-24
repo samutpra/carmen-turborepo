@@ -4,7 +4,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import {
 	Popover,
 	PopoverContent,
@@ -22,10 +21,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Search } from 'lucide-react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-// import VendorDialog from './VendorDialog';
 import VendorCard from './VendorCard';
 import VendorTable from './VendorTable';
-import { fetchAllVendors } from './api';
+import { fetchAllVendors } from '../actions/vendor';
 import { Link } from '@/lib/i18n';
 
 const VendorList = () => {
@@ -72,39 +70,6 @@ const VendorList = () => {
 		{ label: 'Active', value: 'true' },
 		{ label: 'Inactive', value: 'false' },
 	];
-
-	const handleSuccess = (updatedVendor: vendor_type) => {
-		setVendors((prev) => {
-			const exists = prev.some((v) => v.id === updatedVendor.id);
-			if (exists) {
-				return prev.map((v) => (v.id === updatedVendor.id ? updatedVendor : v));
-			}
-			return [...prev, updatedVendor];
-		});
-	};
-
-	const handleDelete = async (id: string) => {
-		try {
-			const response = await fetch(`/api/vendor-management/vendor/${id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to delete vendor');
-			}
-			setVendors((prev) => prev.filter((v) => v.id !== id));
-			toast.success('Vendor deleted successfully');
-		} catch (err) {
-			console.error('Error deleting vendor:', err);
-			toast.error('Failed to delete vendor', {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
-		}
-	};
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -199,8 +164,6 @@ const VendorList = () => {
 			<div className="block md:hidden">
 				<VendorCard
 					vendors={vendors}
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
 					isLoading={isLoading}
 				/>
 			</div>

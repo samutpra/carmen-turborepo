@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { vendor_type } from "@carmensoftware/shared-types";
 
 export const fetchAllVendors = async (
@@ -72,13 +73,15 @@ export const handleSubmit = async (
     values: vendor_type,
     token: string,
     tenantId: string,
-    mode: 'add' | 'edit'
+    mode: formType
 ): Promise<vendor_type | null> => {
     try {
         const url = values?.id
             ? `/api/vendor-management/vendor/${values.id}`
             : '/api/vendor-management/vendor';
-        const method = mode === 'add' ? 'POST' : 'PATCH';
+
+        const method = mode === formType.ADD ? 'POST' : 'PATCH'
+            ;
         const response = await fetch(url, {
             method,
             headers: {

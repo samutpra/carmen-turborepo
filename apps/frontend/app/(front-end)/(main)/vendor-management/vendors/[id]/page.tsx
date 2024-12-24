@@ -2,9 +2,10 @@
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import VendorDetails from '../../components/VendorDetails';
-import { fetchVendor } from '../../components/api';
+import { fetchVendor } from '../../actions/vendor';
 import { vendor_type } from '@carmensoftware/shared-types';
 import { useAuth } from '@/app/context/AuthContext';
+import { formType } from '@/types/form_type';
 
 const VendorIDPage = () => {
     const { id } = useParams() as { id: string }
@@ -31,7 +32,7 @@ const VendorIDPage = () => {
     }
 
     return (
-        <VendorDetails vendor={vendor} mode='edit' />
+        <VendorDetails vendor={vendor} mode={formType.EDIT} />
     )
 }
 
