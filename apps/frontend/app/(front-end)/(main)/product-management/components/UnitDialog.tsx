@@ -49,26 +49,26 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
+	const defaultUnitValues: UnitType = {
+		name: '',
+		description: '',
+		is_active: true,
+	};
+
 	const form = useForm<UnitType>({
 		resolver: zodResolver(UnitSchema),
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues }
+			: defaultUnitValues,
 	});
 
 	useEffect(() => {
-		if (mode === formType.ADD) {
-			form.reset({
-				name: '',
-				description: '',
-				is_active: true,
-			});
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
 		} else {
-			form.reset({
-				name: defaultValues?.name,
-				description: defaultValues?.description,
-				is_active: defaultValues?.is_active,
-			});
+			form.reset({ ...defaultUnitValues });
 		}
 	}, [mode, defaultValues, form]);
-
 
 	const onSubmit = async (values: UnitType) => {
 		setIsLoading(true);

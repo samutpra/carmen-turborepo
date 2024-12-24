@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import {
 	DepartmentSchema,
@@ -51,14 +51,26 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
+	const defaultDepartmentValues: DepartmentType = {
+		name: '',
+		description: '',
+		is_active: true,
+	};
+
 	const form = useForm<DepartmentType>({
 		resolver: zodResolver(DepartmentSchema),
-		defaultValues: {
-			name: defaultValues?.name || '',
-			description: defaultValues?.description || '',
-			is_active: defaultValues?.is_active ?? true,
-		},
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues }
+			: defaultDepartmentValues,
 	});
+
+	useEffect(() => {
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
+		} else {
+			form.reset({ ...defaultDepartmentValues });
+		}
+	}, [mode, defaultValues, form]);
 
 	const onSubmit = async (data: DepartmentType) => {
 		setIsLoading(true);

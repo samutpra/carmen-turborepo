@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
 import { useForm } from 'react-hook-form';
@@ -49,18 +49,29 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
+	const defaultCurrencyValues: CurrencyType = {
+		code: '',
+		name: '',
+		symbol: '',
+		description: '',
+		rate: '',
+		is_active: true,
+	};
+
 	const form = useForm<CurrencyType>({
 		resolver: zodResolver(CurrencySchema),
-		defaultValues: {
-			code: defaultValues?.code || '',
-			name: defaultValues?.name || '',
-			symbol: defaultValues?.symbol || '',
-			description: defaultValues?.description || '',
-			rate: defaultValues?.rate || '',
-			is_active: defaultValues?.is_active ?? true,
-		},
-		mode: 'onChange',
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues }
+			: defaultCurrencyValues,
 	});
+
+	useEffect(() => {
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
+		} else {
+			form.reset({ ...defaultCurrencyValues })
+		}
+	}, [mode, defaultValues, form])
 
 	const onSubmit = async (data: CurrencyType) => {
 		setIsLoading(true);

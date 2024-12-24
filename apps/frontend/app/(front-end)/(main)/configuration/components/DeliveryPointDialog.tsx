@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -50,13 +50,25 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
+
+	const defaultDeliveryPointValues: DeliveryPointType = {
+		name: '',
+		is_active: true,
+	};
+
 	const form = useForm<DeliveryPointType>({
 		resolver: zodResolver(deliveryPointSchema),
-		defaultValues: {
-			name: defaultValues?.name || '',
-			is_active: defaultValues?.is_active ?? true,
-		},
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues } : defaultDeliveryPointValues,
 	});
+
+	useEffect(() => {
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
+		} else {
+			form.reset({ ...defaultDeliveryPointValues })
+		}
+	}, [mode, defaultValues, form])
 
 	const onSubmit = async (data: DeliveryPointType) => {
 		setIsLoading(true);

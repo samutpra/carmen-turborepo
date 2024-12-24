@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LocationType, LocationSchema } from '@carmensoftware/shared-types';
 import { Button } from '@/components/ui/button';
 import {
@@ -54,16 +54,29 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
+
+	const defaultLocationValues: LocationType = {
+		name: '',
+		location_type: 'inventory',
+		description: '',
+		is_active: true,
+		delivery_point_id: null,
+	}
+
 	const form = useForm<LocationType>({
 		resolver: zodResolver(LocationSchema),
-		defaultValues: {
-			name: defaultValues?.name || '',
-			location_type: defaultValues?.location_type || 'inventory',
-			description: defaultValues?.description || '',
-			is_active: defaultValues?.is_active ?? true,
-			delivery_point_id: defaultValues?.delivery_point_id || null,
-		},
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues }
+			: defaultLocationValues,
 	});
+
+	useEffect(() => {
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
+		} else {
+			form.reset({ ...defaultLocationValues });
+		}
+	}, [mode, defaultValues, form]);
 
 	const onSubmit = async (data: LocationType) => {
 		setIsLoading(true);
