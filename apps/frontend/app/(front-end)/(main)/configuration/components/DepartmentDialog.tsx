@@ -8,7 +8,6 @@ import {
 } from '@carmensoftware/shared-types/src/department';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import {
 	Form,
 	FormControl,
@@ -31,7 +30,9 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { Switch } from '@/components/ui/switch';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Textarea } from '@/components/ui/textarea';
-export type DepartmentDialogMode = 'create' | 'edit';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { submitDepartment } from '../actions/department';
+export type DepartmentDialogMode = 'create' | 'update';
 
 export interface DepartmentDialogProps {
 	mode: DepartmentDialogMode;
@@ -59,50 +60,77 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 		},
 	});
 
+	// const onSubmit = async (data: DepartmentType) => {
+	// 	setIsLoading(true);
+	// 	try {
+	// 		const url =
+	// 			mode === 'create'
+	// 				? '/api/configuration/department'
+	// 				: `/api/configuration/department/${defaultValues?.id}`;
+	// 		const method = mode === 'create' ? 'POST' : 'PATCH';
+	// 		const response = await fetch(url, {
+	// 			method,
+	// 			headers: {
+	// 				Authorization: `Bearer ${token}`,
+	// 				'x-tenant-id': tenantId,
+	// 				'Content-Type': 'application/json',
+	// 			},
+	// 			body: JSON.stringify(data),
+	// 		});
+
+	// 		if (!response.ok) {
+	// 			const errorData = await response.json().catch(() => ({}));
+	// 			throw new Error(errorData.message || `Failed to ${mode} Department`);
+	// 		}
+
+	// 		const result = await response.json();
+	// 		const values: DepartmentType = {
+	// 			id: mode === 'create' ? result.id : defaultValues?.id || result.id,
+	// 			...data,
+	// 		};
+	// 		onSuccess(values);
+	// 		setOpen(false);
+	// 		form.reset();
+	// 		toast.success(
+	// 			`Department ${mode === 'create' ? 'created' : 'updated'} successfully`
+	// 		);
+	// 	} catch (error) {
+	// 		console.error('Error submitting department:', error);
+	// 		toast.error(`Failed to ${mode} Department`, {
+	// 			description:
+	// 				error instanceof Error ? error.message : 'An error occurred',
+	// 		});
+	// 	} finally {
+	// 		setIsLoading(false);
+	// 	}
+	// };
+
 	const onSubmit = async (data: DepartmentType) => {
 		setIsLoading(true);
 		try {
-			const url =
-				mode === 'create'
-					? '/api/configuration/department'
-					: `/api/configuration/department/${defaultValues?.id}`;
-			const method = mode === 'create' ? 'POST' : 'PATCH';
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			});
+			const id = defaultValues?.id || '';
+			const result = await submitDepartment(data, mode, token, tenantId, id);
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to ${mode} Department`);
+			if (result) {
+				const submitData: DepartmentType = {
+					id: result.id,
+					...data,
+				}
+				onSuccess(submitData);
+				setOpen(false);
+				form.reset();
+				toastSuccess({ message: `Department ${mode === 'create' ? 'created' : 'updated'} successfully` });
+			} else {
+				toastError({ message: `Failed to ${mode} department` });
 			}
 
-			const result = await response.json();
-			const values: DepartmentType = {
-				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
-				...data,
-			};
-			onSuccess(values);
-			setOpen(false);
-			form.reset();
-			toast.success(
-				`Department ${mode === 'create' ? 'created' : 'updated'} successfully`
-			);
 		} catch (error) {
-			console.error('Error submitting department:', error);
-			toast.error(`Failed to ${mode} Department`, {
-				description:
-					error instanceof Error ? error.message : 'An error occurred',
-			});
+			console.error(`Error ${mode}ing department:`, error);
+			toastError({ message: `Failed to ${mode} department` });
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}
 
 	const handleClose = () => {
 		setOpen(false);
@@ -195,7 +223,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'edit'
+										: mode === 'update'
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

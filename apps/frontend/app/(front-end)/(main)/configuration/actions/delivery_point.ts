@@ -69,10 +69,6 @@ export const submitDeliveryPoint = async (
     id: string
 ) => {
 
-    console.log('mode', mode);
-    console.log('id', id);
-
-
     const url =
         mode === 'create'
             ? '/api/configuration/delivery-point'
@@ -96,8 +92,5 @@ export const submitDeliveryPoint = async (
     }
 
     const result = await response.json();
-
-    console.log('result', result);
-
     return result;
 };

@@ -6,10 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { DepartmentType } from '@carmensoftware/shared-types/src/department';
-import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import { Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import {
 	Popover,
 	PopoverContent,
@@ -29,52 +27,8 @@ import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
-
-const fetchDepartments = async (
-	token: string,
-	tenantId: string,
-	params: { search?: string; status?: string } = {}
-) => {
-	try {
-		if (!token) {
-			throw new Error('Access token is required');
-		}
-
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-
-		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
-		}
-
-		const url = `/api/configuration/department?${query}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-
-		const response = await fetch(url, options);
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to fetch departments: ${response.status} ${response.statusText}`
-			);
-		}
-		const result = await response.json();
-		return result.data;
-	} catch (error) {
-		console.error('Error fetching departments:', error);
-		throw error;
-	}
-};
+import { deleteDepartment, fetchDepartments } from '../actions/department';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
@@ -124,29 +78,20 @@ const DepartmentList = () => {
 
 	const handleDelete = async (id: string) => {
 		try {
-			const response = await fetch(`/api/configuration/department/${id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to delete department');
+			const res = await deleteDepartment(id, token, tenantId);
+			if (res) {
+				setDepartments((prev) => prev.filter((department) => department.id !== id));
+				toastSuccess({ message: 'Department deleted successfully' });
 			}
-
-			setDepartments((prev) =>
-				prev.filter((department) => department.id !== id)
-			);
-			toast.success('Department deleted successfully');
-		} catch (err) {
-			console.error('Error deleting department:', err);
-			toast.error('Failed to delete department', {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
+		} catch (error) {
+			if (error instanceof Error && error.message === 'Unauthorized') {
+				toastError({ message: 'Your session has expired. Please login again.' });
+			} else {
+				console.error('Error deleting currency:', error);
+				toastError({ message: 'Failed to delete department' });
+			}
 		}
-	};
+	}
 
 	if (error) {
 		return (
@@ -256,7 +201,7 @@ const DepartmentList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DepartmentDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -272,7 +217,7 @@ const DepartmentList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DepartmentDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
