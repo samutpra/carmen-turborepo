@@ -39,7 +39,7 @@ const SidebarSubItems: React.FC<Props> = ({
                             variant="ghost"
                             asChild={!hasNestedItems}
                             className={cn(
-                                "w-full justify-start text-sm text-foreground tracking-wide h-8",
+                                "w-full justify-start text-xs text-foreground tracking-wide h-8",
                                 pathname === subItem.path ? "bg-primary text-white" : "",
                                 hasNestedItems ? "flex justify-between" : ""
                             )}

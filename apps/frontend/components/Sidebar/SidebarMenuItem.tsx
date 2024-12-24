@@ -32,7 +32,7 @@ const SidebarMenuItem: React.FC<Props> = ({
         <div className="px-2">
             <Button
                 variant="ghost"
-                className="w-full flex justify-between font-semibold text-gray-700text-xs"
+                className="w-full flex justify-between font-semibold text-xs"
                 onClick={() => onToggleExpand(item.title, item.path)}
             >
                 <span className="flex items-center justify-between">
