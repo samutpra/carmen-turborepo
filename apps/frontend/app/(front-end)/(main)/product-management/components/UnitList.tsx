@@ -19,9 +19,7 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
 import UnitDialog from './UnitDialog';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
@@ -30,6 +28,7 @@ import TableData from '@/components/templates/TableData';
 import { deleteUnit, fetchUnits } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -105,13 +104,6 @@ const UnitList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
-	};
-
 	const title = 'Units';
 
 	const actionButtons = (
@@ -122,26 +114,11 @@ const UnitList = () => {
 
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
-			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<div className="relative w-full md:w-1/4">
-					<Input
-						name="search"
-						placeholder="Search Store Location..."
-						defaultValue={search}
-						onKeyDown={handleKeyDown}
-						className="h-10 pr-10"
-					/>
-					<Button
-						type="submit"
-						variant="ghost"
-						size="icon"
-						className="absolute right-0 top-0 h-full px-3"
-					>
-						<Search className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</Button>
-				</div>
-			</form>
+			<SearchForm
+				onSubmit={handleSearch}
+				defaultValue={search}
+				placeholder="Search Unit..."
+			/>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
