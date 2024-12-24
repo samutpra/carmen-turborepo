@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
-import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import {
@@ -27,46 +26,8 @@ import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
-
-const fetchDeliveryPoints = async (
-	token: string,
-	tenantId: string,
-	params: { search?: string; status?: string } = {}
-) => {
-	try {
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-
-		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
-		}
-
-		const url = `/api/configuration/delivery-point?${query}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-
-		const response = await fetch(url, options);
-		if (!response.ok) {
-			throw new Error('Failed to fetch delivery points');
-		}
-
-		const result = await response.json();
-		return result.data;
-	} catch (error) {
-		console.error('Error fetching delivery points:', error);
-		throw error;
-	}
-};
+import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -84,52 +45,6 @@ const DeliveryPointList = () => {
 		{ label: 'Active', value: 'true' },
 		{ label: 'Inactive', value: 'false' },
 	];
-
-	const handleSuccess = (updatedPoint: DeliveryPointType) => {
-		setDeliveryPoints((prev) => {
-			const exists = prev.some((p) => p.id === updatedPoint.id);
-			if (exists) {
-				return prev.map((p) => (p.id === updatedPoint.id ? updatedPoint : p));
-			}
-			return [...prev, updatedPoint];
-		});
-	};
-
-	const handleDelete = async (id: string) => {
-		try {
-			const response = await fetch(`/api/configuration/delivery-point/${id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to delete delivery point');
-			}
-
-			setDeliveryPoints((prev) => prev.filter((point) => point.id !== id));
-			toast.success('Delivery point deleted successfully');
-		} catch (err) {
-			console.error('Error deleting delivery point:', err);
-			toast.error('Failed to delete delivery point', {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
-		}
-	};
-
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
-	};
 
 	const fetchData = async () => {
 		try {
@@ -149,6 +64,46 @@ const DeliveryPointList = () => {
 	useEffect(() => {
 		fetchData();
 	}, [token, tenantId, search, status]);
+
+	const handleSuccess = (updatedPoint: DeliveryPointType) => {
+		setDeliveryPoints((prev) => {
+			const exists = prev.some((p) => p.id === updatedPoint.id);
+			if (exists) {
+				return prev.map((p) => (p.id === updatedPoint.id ? updatedPoint : p));
+			}
+			return [...prev, updatedPoint];
+		});
+		fetchData();
+	};
+
+
+	const handleDelete = async (id: string) => {
+		try {
+			await deleteDeliveryPoint(id, token, tenantId);
+			setDeliveryPoints((prev) => prev.filter((p) => p.id !== id));
+			toastSuccess({ message: 'Delivery point deleted successfully' });
+			fetchData();
+		} catch (error) {
+			if (error instanceof Error && error.message === 'Unauthorized') {
+				toastError({ message: 'Your session has expired. Please login again.' });
+			} else {
+				console.error('Error deleting currency:', error);
+				toastError({ message: 'Failed to delete currency' });
+			}
+		}
+	};
+
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			setSearch(event.currentTarget.value);
+		}
+	};
 
 	if (error) {
 		return (
@@ -249,7 +204,7 @@ const DeliveryPointList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DeliveryPointDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -265,7 +220,7 @@ const DeliveryPointList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DeliveryPointDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

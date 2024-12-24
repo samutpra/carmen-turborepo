@@ -1,16 +1,11 @@
-import { CurrencyType } from "@carmensoftware/shared-types";
-import { APIError } from "@carmensoftware/shared-types/src/pagination";
+import { DeliveryPointType } from "@carmensoftware/shared-types";
 
-export const fetchCurrencies = async (
+export const fetchDeliveryPoints = async (
     token: string,
     tenantId: string,
     params: { search?: string; status?: string } = {}
 ) => {
     try {
-        if (!token) {
-            throw new Error('Access token is required');
-        }
-
         const query = new URLSearchParams();
 
         if (params.search) {
@@ -21,7 +16,7 @@ export const fetchCurrencies = async (
             query.append('filter[is_active:bool]', params.status);
         }
 
-        const url = `/api/configuration/currency?${query}`;
+        const url = `/api/configuration/delivery-point?${query}`;
 
         const options = {
             method: 'GET',
@@ -33,25 +28,21 @@ export const fetchCurrencies = async (
         };
 
         const response = await fetch(url, options);
-
         if (!response.ok) {
-            throw new APIError(
-                response.status,
-                `Failed to fetch currencies: ${response.status} ${response.statusText}`
-            );
+            throw new Error('Failed to fetch delivery points');
         }
 
         const result = await response.json();
         return result.data;
     } catch (error) {
-        console.error('Error fetching currencies:', error);
+        console.error('Error fetching delivery points:', error);
         throw error;
     }
 };
 
 
-export const deleteCurrency = async (id: string, token: string, tenantId: string) => {
-    const response = await fetch(`/api/configuration/currency/${id}`, {
+export const deleteDeliveryPoint = async (id: string, token: string, tenantId: string) => {
+    const response = await fetch(`/api/configuration/delivery-point/${id}`, {
         method: 'DELETE',
         headers: {
             Authorization: `Bearer ${token}`,
@@ -64,17 +55,28 @@ export const deleteCurrency = async (id: string, token: string, tenantId: string
     }
 
     if (!response.ok) {
-        throw new Error('Failed to delete currency');
+        throw new Error('Failed to delete delivery point');
     }
 
     return response;
 };
 
-export const submitCurrency = async (data: CurrencyType, mode: 'create' | 'update', token: string, tenantId: string, defaultValues?: CurrencyType) => {
+export const submitDeliveryPoint = async (
+    data: DeliveryPointType,
+    mode: 'create' | 'update',
+    token: string,
+    tenantId: string,
+    id: string
+) => {
+
+    console.log('mode', mode);
+    console.log('id', id);
+
+
     const url =
         mode === 'create'
-            ? '/api/configuration/currency'
-            : `/api/configuration/currency/${defaultValues?.id}`;
+            ? '/api/configuration/delivery-point'
+            : `/api/configuration/delivery-point/${id}`;
 
     const method = mode === 'create' ? 'POST' : 'PATCH';
 
@@ -94,5 +96,8 @@ export const submitCurrency = async (data: CurrencyType, mode: 'create' | 'updat
     }
 
     const result = await response.json();
+
+    console.log('result', result);
+
     return result;
 };

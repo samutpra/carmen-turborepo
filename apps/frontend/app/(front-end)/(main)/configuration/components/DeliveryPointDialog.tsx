@@ -27,12 +27,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PencilIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/app/context/AuthContext';
-import { toast } from 'sonner';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { submitDeliveryPoint } from '../actions/delivery_point';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
-export type DialogMode = 'create' | 'edit';
+export type DialogMode = 'create' | 'update';
 
 export interface DeliveryPointDialogProps {
 	mode: DialogMode;
@@ -58,46 +59,24 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 		},
 	});
 
-	const handleSubmit = async (data: DeliveryPointType) => {
+	const onSubmit = async (data: DeliveryPointType) => {
 		setIsLoading(true);
 		try {
-			const url =
-				mode === 'create'
-					? '/api/configuration/delivery-point'
-					: `/api/configuration/delivery-point/${defaultValues?.id}`;
+			const id = defaultValues?.id || '';
+			const result = await submitDeliveryPoint(data, mode, token, tenantId, id);
 
-			const method = mode === 'create' ? 'POST' : 'PATCH';
-
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to ${mode} delivery point`);
+			const submitData: DeliveryPointType = {
+				id: result.id,
+				...data,
 			}
 
-			const result = await response.json();
-			const updatedPoint: DeliveryPointType = {
-				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
-				...data,
-			};
-
-			onSuccess(updatedPoint);
+			onSuccess(submitData);
 			setOpen(false);
 			form.reset();
-
-			toast.success(`Delivery point ${mode} successfully`);
+			toastSuccess({ message: `Delivery point ${mode === 'create' ? 'created' : 'updated'} successfully` });
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);
-			toast.error(`Failed to ${mode} delivery point`, {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
+			toastError({ message: `Failed to ${mode} delivery point` });
 		} finally {
 			setIsLoading(false);
 		}
@@ -132,7 +111,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 				</DialogHeader>
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(handleSubmit)}
+						onSubmit={form.handleSubmit(onSubmit)}
 						className="space-y-4"
 					>
 						<FormField
@@ -182,7 +161,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'edit'
+										: mode === 'update'
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>
