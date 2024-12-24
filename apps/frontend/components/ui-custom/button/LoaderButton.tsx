@@ -36,37 +36,37 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-    asChild?: boolean
-    isLoading?: boolean;
+	extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+	VariantProps<typeof buttonVariants> {
+	asChild?: boolean
+	isLoading?: boolean;
 }
 
 const LoaderButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, disabled, isLoading = false, ...props }, ref) => {
-        const Comp = asChild ? Slot : "button";
+	({ className, variant, size, asChild = false, disabled, isLoading = false, ...props }, ref) => {
+		const Comp = asChild ? Slot : "button";
 
-        const disabledClass =
-            disabled && variant === "outline"
-                ? "bg-neutral-200 text-neutral-400"
-                : disabled && variant === "default"
-                    ? "bg-neutral-300 text-neutral-600"
-                    : "";
+		const disabledClass =
+			disabled && variant === "outline"
+				? "bg-neutral-200 text-neutral-400"
+				: disabled && variant === "default"
+					? "bg-neutral-300 text-neutral-600"
+					: "";
 
-        return (
-            <Comp
-                className={cn(buttonVariants({ variant, size }), disabledClass, className)}
-                ref={ref}
-                disabled={disabled || isLoading}
-                aria-busy={isLoading}
-                aria-label={isLoading ? "Loading..." : props["aria-label"]}
-                {...props}
-            >
-                {isLoading && <RotateCw className="animate-spin" />}
-                {props.children}
-            </Comp>
-        );
-    }
+		return (
+			<Comp
+				className={cn(buttonVariants({ variant, size }), disabledClass, className)}
+				ref={ref}
+				disabled={disabled || isLoading}
+				aria-busy={isLoading}
+				aria-label={isLoading ? "Loading..." : props["aria-label"]}
+				{...props}
+			>
+				{isLoading && <RotateCw className="animate-spin mr-2" />}
+				{props.children}
+			</Comp>
+		);
+	}
 );
 
 LoaderButton.displayName = "LoaderButton";

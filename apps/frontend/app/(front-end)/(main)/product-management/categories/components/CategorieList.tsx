@@ -3,10 +3,8 @@
 import { useAuth } from '@/app/context/AuthContext';
 import React, { useEffect, useState } from 'react';
 import {
-	fetchCategoryList,
 	fetchItemGroup,
-	fetchSubProduct,
-} from '../actions/actions';
+} from '../actions/item_group';
 import {
 	CategoryFormData,
 	CategoryType,
@@ -15,7 +13,6 @@ import {
 } from '@carmensoftware/shared-types';
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
-import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
 import CategoryItemList from './CategoryItemList';
 import SubCategoryList from './SubCategoryList';
@@ -23,6 +20,10 @@ import SubCatDialog from './SubCatDialog';
 import ItemGroupList from './ItemGroupList';
 import ItemGroupDialog from './ItemGroupDialog';
 import SkeltonCategory from '@/components/ui-custom/Loading/SkeltonCategory';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
+import { deleteCategory, fetchCategoryList, submitCategory } from '../actions/category';
+import { fetchSubProduct } from '../actions/sub_category';
 
 type CategorySummary = {
 	totalCategories: number;
@@ -95,120 +96,67 @@ const CategorieList = () => {
 
 	const handleDeleteProduct = async (productId: string) => {
 		try {
-			const response = await fetch(
-				`/api/product-management/category/products/${productId}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
+			const response = await deleteCategory(productId, token);
 			if (response.ok) {
-				setCategorys((prevProducts) =>
-					prevProducts.filter((product) => product.id !== productId)
+				setCategorys((prev) =>
+					prev.filter((product) => product.id !== productId)
 				);
 				if (selectedCategory?.id === productId) {
 					setSelectedCategory(null);
 					setSelectedSubCategory(null);
 				}
-				toast.success('Category deleted successfully');
+				toastSuccess({ message: 'Product deleted successfully' });
 			} else {
 				throw new Error('Failed to delete category');
 			}
 		} catch (error) {
 			console.error('Error deleting category:', error);
-			toast.error(
-				error instanceof Error ? error.message : 'Failed to delete category',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			toastError({ message: 'Failed to delete category' });
 		}
 	};
 
 	const handleAddCategory = async (formData: CategoryFormData) => {
-		console.log('formData', formData);
 		try {
-			const response = await fetch(
-				'/api/product-management/category/category-list',
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
-				}
-			);
-
-			if (response.ok) {
-				const result = await response.json();
+			const response = await submitCategory(formData, token, formType.ADD, '');
+			if (response) {
 				const newCategory: CategoryType = {
-					id: result.id,
+					id: response.id,
 					name: formData.name,
 					description: formData.description,
 					is_active: formData.is_active,
 				};
 				setCategorys((prev) => [...prev, newCategory]);
-				toast.success('Category added successfully');
+				toastSuccess({ message: 'Category added successfully' });
 				setIsAddCategoryOpen(false);
 			} else {
-				toast.error('Failed to add category', {
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				});
+				toastError({ message: response.statusText });
 			}
 		} catch (error) {
-			console.error('Error adding category:', error);
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			console.log(error);
+			toastError({ message: 'Failed to add category' });
 		}
 	};
 
 	const handleEditCategory = async (id: string, formData: CategoryFormData) => {
 		try {
-			const response = await fetch(
-				`/api/product-management/category/category-list/${id}`,
-				{
-					method: 'PATCH',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
-				}
+			const response = await submitCategory(
+				formData,
+				token,
+				formType.EDIT,
+				id
 			);
-
-			if (!response.ok) {
-				throw new Error('Failed to update product');
-			}
-
-			const result = await response.json();
-			if (result.id) {
-				toast.success('Product updated successfully');
-				setCategorys((prevProducts) =>
-					prevProducts.map((product) =>
+			if (response) {
+				setCategorys((prev) =>
+					prev.map((product) =>
 						product.id === id ? { ...product, ...formData } : product
 					)
 				);
+				toastSuccess({ message: 'Category updated successfully' });
+				setIsAddCategoryOpen(false);
 			}
 		} catch (error) {
 			console.error('Error updating product:', error);
-			toast.error(
-				error instanceof Error ? error.message : 'Failed to update product',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			toastError({ message: 'Failed to update category' });
 		}
 	};
 
@@ -228,7 +176,7 @@ const CategorieList = () => {
 
 	const onAddSubCategory = () => {
 		if (!selectedCategory) {
-			toast.error('Please select a category first');
+			toastError({ message: 'Please select a category first' });
 			return;
 		}
 		setIsAddSubCategoryOpen(true);
@@ -244,7 +192,7 @@ const CategorieList = () => {
 				open={isAddCategoryOpen}
 				onOpenChange={setIsAddCategoryOpen}
 				onSubmit={handleAddCategory}
-				mode="add"
+				mode={formType.ADD}
 			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
@@ -267,7 +215,7 @@ const CategorieList = () => {
 			<SubCatDialog
 				open={isAddSubCategoryOpen}
 				onOpenChange={setIsAddSubCategoryOpen}
-				mode="add"
+				mode={formType.ADD}
 				product_category_id={selectedCategory?.id || ''}
 				product_category_name={selectedCategory?.name}
 				setSubProducts={setSubCategorys}
@@ -292,7 +240,7 @@ const CategorieList = () => {
 			<ItemGroupDialog
 				open={isAddItemGroupOpen}
 				onOpenChange={setIsAddItemGroupOpen}
-				mode="add"
+				mode={formType.ADD}
 				subcategory_id={selectedSubCategory?.id || ''}
 				subcategory_name={selectedSubCategory?.name || ''}
 				setItemGroup={setItemGroups}

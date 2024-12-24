@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -22,17 +22,20 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
 import { useAuth } from '@/app/context/AuthContext';
 import {
 	subCategorySchema,
 	SubCategoryType,
 } from '@carmensoftware/shared-types';
+import { formType } from '@/types/form_type';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { submitSubCategory } from '../actions/sub_category';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
 interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	mode: 'add' | 'edit';
+	mode: formType;
 	product_category_id: string;
 	product_category_name?: string;
 	setSubProducts: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
@@ -50,74 +53,49 @@ const SubCatDialog: React.FC<Props> = ({
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
+	const [isLoading, setIsLoading] = useState(false);
+	const formValues: SubCategoryType = {
+		id: '',
+		name: '',
+		description: '',
+		is_active: true,
+		product_category_id: product_category_id,
+	};
 
 	const form = useForm<SubCategoryType>({
 		resolver: zodResolver(subCategorySchema),
-		defaultValues: {
-			id: '',
-			name: '',
-			description: '',
-			is_active: true,
-			product_category_id: product_category_id,
-		},
+		defaultValues: mode === formType.EDIT && subCategory ? { ...subCategory } : formValues,
 	});
 
 	useEffect(() => {
-		if (open && mode === 'edit' && subCategory) {
-			form.reset({
-				id: subCategory.id,
-				name: subCategory.name,
-				description: subCategory.description,
-				is_active: subCategory.is_active,
-				product_category_id: product_category_id,
-			});
+		if (mode === formType.EDIT && subCategory) {
+			form.reset({ ...subCategory });
 		} else {
-			form.reset({
-				id: '',
-				name: '',
-				description: '',
-				is_active: true,
-				product_category_id: product_category_id,
-			});
+			form.reset({ ...formValues });
 		}
-	}, [open, mode, subCategory, product_category_id]);
+	}, [subCategory, mode]);
 
 	const handleSubmit = async (values: SubCategoryType) => {
+		setIsLoading(true);
 		const payload = {
 			...values,
 			product_category_id: product_category_id,
 		};
+
 		try {
-			const method = mode === 'add' ? 'POST' : 'PATCH';
-			const url =
-				mode === 'add'
-					? '/api/product-management/category/product-sub-category'
-					: `/api/product-management/category/product-sub-category/${values.id}`;
+			const response = await submitSubCategory(payload, token, mode, subCategory?.id || '');
 
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(payload),
-			});
-
-			if (!response.ok) {
-				toast.error(`Failed to ${mode} sub-category`);
+			if (!response) {
+				toastError({ message: `Failed to ${mode} sub-category` });
 			}
 
-			const result = await response.json();
-
-			console.log('result', result);
-
-			if (mode === 'add') {
+			if (mode === formType.ADD) {
 				const newSubCategory = {
 					...payload,
-					id: result.id,
+					id: response.id,
 				};
 				setSubProducts((prev: SubCategoryType[]) => [...prev, newSubCategory]);
-				toast.success('Sub-category added successfully');
+				toastSuccess({ message: 'Sub-category added successfully' });
 			} else {
 				setSubProducts((prev) =>
 					prev.map((subProduct) =>
@@ -126,19 +104,15 @@ const SubCatDialog: React.FC<Props> = ({
 							: subProduct
 					)
 				);
-				toast.success('Sub-category updated successfully');
+				toastSuccess({ message: 'Sub-category updated successfully' });
 			}
 
 			handleClose();
 		} catch (error) {
 			console.error(`Error ${mode}ing sub-category:`, error);
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			toastError({ message: `Failed to ${mode} sub-category` });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -225,9 +199,17 @@ const SubCatDialog: React.FC<Props> = ({
 							>
 								Cancel
 							</Button>
-							<Button type="submit">
-								{mode === 'add' ? 'Create' : 'Update'}
-							</Button>
+							<LoaderButton
+								type="submit"
+								disabled={isLoading}
+								isLoading={isLoading}
+							>
+								{isLoading
+									? 'Saving...'
+									: mode === formType.EDIT
+										? 'Save Changes'
+										: 'Add'}
+							</LoaderButton>
 						</DialogFooter>
 					</form>
 				</Form>

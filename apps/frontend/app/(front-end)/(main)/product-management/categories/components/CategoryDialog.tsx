@@ -13,23 +13,24 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CategoryFormData } from '@carmensoftware/shared-types/dist/productCategorySchema';
+import { formType } from '@/types/form_type';
 
-interface CategoryDialogProps {
+interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onSubmit: (data: CategoryFormData) => Promise<void>;
 	initialData?: CategoryFormData;
-	mode: 'add' | 'edit';
+	mode: formType;
 }
 
-const CategoryDialog = ({
+const CategoryDialog: React.FC<Props> = ({
 	open,
 	onOpenChange,
 	onSubmit,
 	initialData,
 	mode,
-}: CategoryDialogProps) => {
-	
+}) => {
+
 	const [formData, setFormData] = useState<CategoryFormData>({
 		name: '',
 		description: '',
@@ -44,7 +45,7 @@ const CategoryDialog = ({
 
 	const handleSubmit = async () => {
 		await onSubmit(formData);
-		if (mode === 'add') {
+		if (mode === formType.ADD) {
 			setFormData({ name: '', description: '', is_active: true });
 		}
 	};
@@ -54,7 +55,7 @@ const CategoryDialog = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Category' : 'Edit Category'}
+						{mode === formType.ADD ? 'Add New Category' : 'Edit Category'}
 					</DialogTitle>
 				</DialogHeader>
 				<div className="space-y-4 py-4">
@@ -96,7 +97,7 @@ const CategoryDialog = ({
 							Cancel
 						</Button>
 						<Button onClick={handleSubmit}>
-							{mode === 'add' ? 'Add Category' : 'Save Changes'}
+							{mode === formType.ADD ? 'Add Category' : 'Save Changes'}
 						</Button>
 					</div>
 				</div>

@@ -19,10 +19,11 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import CategoryDialog from './CategoryDialog';
+import { formType } from '@/types/form_type';
+import { toastError } from '@/components/ui-custom/Toast';
 
-interface CategoryItemListtProps {
+interface Props {
 	products: CategoryType[];
 	selectedProduct: CategoryType | null;
 	onSelectCategory: (product: CategoryType) => void;
@@ -33,13 +34,13 @@ interface CategoryItemListtProps {
 	) => Promise<void>;
 }
 
-const CategoryItemList = ({
+const CategoryItemList: React.FC<Props> = ({
 	products,
 	selectedProduct,
 	onSelectCategory,
 	onDeleteCategory,
 	onEditCategory,
-}: CategoryItemListtProps) => {
+}) => {
 	const [productToDelete, setProductToDelete] = useState<CategoryType>();
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
 	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
@@ -62,7 +63,7 @@ const CategoryItemList = ({
 			setProductToDelete(undefined);
 		} catch (error) {
 			console.error('Error deleting product:', error);
-			toast.error('Failed to delete product');
+			toastError({ message: 'Failed to delete product' });
 		}
 	};
 
@@ -164,13 +165,13 @@ const CategoryItemList = ({
 				initialData={
 					productToEdit
 						? {
-								name: productToEdit.name,
-								description: productToEdit.description || '',
-								is_active: productToEdit.is_active ?? true,
-							}
+							name: productToEdit.name,
+							description: productToEdit.description || '',
+							is_active: productToEdit.is_active ?? true,
+						}
 						: undefined
 				}
-				mode="edit"
+				mode={formType.EDIT}
 			/>
 		</>
 	);

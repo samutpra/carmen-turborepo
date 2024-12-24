@@ -19,7 +19,9 @@ import {
 import { Pencil, Trash } from 'lucide-react';
 import SubCatDialog from './SubCatDialog';
 import { useAuth } from '@/app/context/AuthContext';
-import { toast } from 'sonner';
+import { formType } from '@/types/form_type';
+import { deleteSubCategory } from '../actions/sub_category';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 interface Props {
 	data: SubCategoryType[];
@@ -40,7 +42,7 @@ const SubCategoryList: React.FC<Props> = ({
 	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [subCategory, setSubCategory] = useState<SubCategoryType>();
-	const [subCategoryToDelete, setSubCategoryToDelete] = useState<string | null>(
+	const [subCategoryID, setSubCategoryID] = useState<string | null>(
 		null
 	);
 	const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<
@@ -65,40 +67,22 @@ const SubCategoryList: React.FC<Props> = ({
 	};
 
 	const handleDeleteSubCategory = async () => {
-		if (!subCategoryToDelete) return;
-
+		if (!subCategoryID) return;
 		try {
-			const response = await fetch(
-				`/api/product-management/category/product-sub-category/${subCategoryToDelete}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
+			const response = await deleteSubCategory(subCategoryID, token);
 			if (response.ok) {
 				setData((prevSubProducts) =>
 					prevSubProducts.filter(
-						(subProduct) => subProduct.id !== subCategoryToDelete
+						(subProduct) => subProduct.id !== subCategoryID
 					)
 				);
-				toast.success('Sub-category deleted successfully');
+				toastSuccess({ message: 'Sub-category deleted successfully' });
 			} else {
-				toast.error('Failed to delete sub-category', {
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				});
+				toastError({ message: 'Failed to delete sub-category' });
 			}
 		} catch (error) {
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			console.log('error try catch', error);
+			toastError({ message: 'Failed to delete sub-category' });
 		}
 	};
 
@@ -148,7 +132,7 @@ const SubCategoryList: React.FC<Props> = ({
 							size="icon"
 							className="h-8 w-8 text-destructive hover:text-destructive"
 							aria-label="Delete sub category"
-							onClick={() => setSubCategoryToDelete(subCategory.id || '')}
+							onClick={() => setSubCategoryID(subCategory.id || '')}
 						>
 							<Trash className="h-4 w-4" />
 						</Button>
@@ -159,7 +143,7 @@ const SubCategoryList: React.FC<Props> = ({
 							<AlertDialogDescription>
 								This action cannot be undone. This will permanently delete the
 								sub-category &quot;
-								{data.find((sc) => sc.id === subCategoryToDelete)?.name}
+								{data.find((sc) => sc.id === subCategoryID)?.name}
 								&quot;.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
@@ -195,7 +179,7 @@ const SubCategoryList: React.FC<Props> = ({
 			<SubCatDialog
 				open={isEditDialogOpen}
 				onOpenChange={setIsEditDialogOpen}
-				mode="edit"
+				mode={formType.EDIT}
 				product_category_id={categoryId}
 				product_category_name={categoryName}
 				setSubProducts={setData}

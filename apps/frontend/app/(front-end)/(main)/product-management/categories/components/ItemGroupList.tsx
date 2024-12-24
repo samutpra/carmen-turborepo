@@ -22,6 +22,7 @@ import ItemGroupDialog from './ItemGroupDialog';
 import { toast } from 'sonner';
 import { useAuth } from '@/app/context/AuthContext';
 import { cn } from '@/lib/utils';
+import { formType } from '@/types/form_type';
 
 interface Props {
 	data: ProductItemGroupType[];
@@ -178,7 +179,7 @@ const ItemGroupList: React.FC<Props> = ({
 			<ItemGroupDialog
 				open={isEditDialogOpen}
 				onOpenChange={setIsEditDialogOpen}
-				mode="edit"
+				mode={formType.EDIT}
 				itemGroup={itemGroup}
 				setItemGroup={setData}
 				subcategory_id={subCategoryId}

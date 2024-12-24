@@ -26,11 +26,12 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
+import { formType } from '@/types/form_type';
 
 interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	mode: 'add' | 'edit';
+	mode: formType;
 	subcategory_id: string;
 	subcategory_name?: string;
 	setItemGroup: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
