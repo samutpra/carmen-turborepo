@@ -22,7 +22,6 @@ import {
 	FormMessage,
 } from '@/components/ui-custom/FormCustom';
 import { useAuth } from '@/app/context/AuthContext';
-import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { PencilIcon, PlusIcon } from 'lucide-react';
 import {
@@ -35,9 +34,11 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { submitStoreLocation } from '../actions/store_location';
 
 interface StoreLocationDialogProps {
-	mode: 'create' | 'edit';
+	mode: 'create' | 'update';
 	defaultValues?: LocationType;
 	onSuccess: (values: LocationType) => void;
 }
@@ -63,50 +64,30 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		},
 	});
 
-	const onSubmit = async (values: LocationType) => {
+	const onSubmit = async (data: LocationType) => {
 		setIsLoading(true);
 		try {
-			const url = defaultValues?.id
-				? `/api/configuration/locations/${defaultValues.id}`
-				: '/api/configuration/locations';
-
-			const method = mode === 'create' ? 'POST' : 'PATCH';
-
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(values),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to ${mode} Store location`);
-			}
-
-			const result = await response.json();
-
-			const data: LocationType = {
-				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
-				...values,
+			const id = defaultValues?.id || '';
+			const result = await submitStoreLocation(data, mode, token, tenantId, id);
+			const submitData: LocationType = {
+				id: result.id,
+				...data,
 			};
-			onSuccess(data);
-			setOpen(false);
-			toast.success(
-				`Store location ${defaultValues?.id ? 'updated' : 'created'} successfully`
-			);
+			if (result) {
+				onSuccess(submitData);
+				setOpen(false);
+				form.reset();
+				toastSuccess({ message: `Store location ${mode === 'create' ? 'created' : 'updated'} successfully` });
+			} else {
+				toastError({ message: `Failed to ${mode} store location` });
+			}
 		} catch (error) {
-			console.error('Error saving store location:', error);
-			toast.error('Failed to save store location', {
-				description:
-					error instanceof Error ? error.message : 'An error occurred',
-			});
+			toastError({ message: error instanceof Error ? error.message : String(error) });
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}
+
 
 	const handleClose = () => {
 		setOpen(false);
@@ -222,7 +203,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'edit'
+										: mode === 'update'
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

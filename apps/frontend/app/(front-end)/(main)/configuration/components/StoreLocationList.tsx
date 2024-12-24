@@ -27,45 +27,7 @@ import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
-
-const fetchStoreLocations = async (
-	token: string,
-	tenantId: string,
-	params: { search?: string; status?: string } = {}
-) => {
-	try {
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-
-		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
-		}
-
-		const url = `/api/configuration/locations?${query}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-		const response = await fetch(url, options);
-
-		if (!response.ok) {
-			throw new Error('Failed to fetch store locations');
-		}
-		const result = await response.json();
-		return result;
-	} catch (error) {
-		console.error('Error fetching store locations:', error);
-		throw error;
-	}
-};
+import { fetchStoreLocations } from '../actions/store_location';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -251,7 +213,7 @@ const StoreLocationList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<StoreLocationDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -267,7 +229,7 @@ const StoreLocationList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<StoreLocationDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
