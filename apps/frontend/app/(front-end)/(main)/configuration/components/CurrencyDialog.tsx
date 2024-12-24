@@ -29,7 +29,7 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { submitCurrency } from '../api/currency';
+import { submitCurrency } from '../actions/currency';
 
 export type CurrencyDialogMode = 'create' | 'update';
 
@@ -62,48 +62,6 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		},
 		mode: 'onChange',
 	});
-
-	// const onSubmit = async (data: CurrencyType) => {
-	// 	setIsLoading(true);
-	// 	try {
-	// 		const url =
-	// 			mode === 'create'
-	// 				? '/api/configuration/currency'
-	// 				: `/api/configuration/currency/${defaultValues?.id}`;
-
-	// 		const method = mode === 'create' ? 'POST' : 'PATCH';
-	// 		const response = await fetch(url, {
-	// 			method,
-	// 			headers: {
-	// 				Authorization: `Bearer ${token}`,
-	// 				'x-tenant-id': tenantId,
-	// 				'Content-Type': 'application/json',
-	// 			},
-	// 			body: JSON.stringify(data),
-	// 		});
-
-	// 		if (!response.ok) {
-	// 			const errorData = await response.json().catch(() => ({}));
-	// 			throw new Error(errorData.message || `Failed to ${mode} Currency`);
-	// 		}
-
-	// 		const result = await response.json();
-	// 		const values: CurrencyType = {
-	// 			id: mode === 'create' ? result.id : defaultValues?.id || result.id,
-	// 			...data,
-	// 		};
-	// 		onSuccess(values);
-	// 		setOpen(false);
-	// 		form.reset();
-
-	// 		toastSuccess({ message: `Currency ${mode === 'create' ? 'created' : 'updated'} successfully` });
-	// 	} catch (err) {
-	// 		console.error(`Error ${mode}ing Currency:`, err);
-	// 		toastError({ message: `Failed to ${mode} Currency` });
-	// 	} finally {
-	// 		setIsLoading(false);
-	// 	}
-	// };
 
 	const onSubmit = async (data: CurrencyType) => {
 		setIsLoading(true);

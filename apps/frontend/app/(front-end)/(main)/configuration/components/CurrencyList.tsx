@@ -29,7 +29,7 @@ import TableData from '@/components/templates/TableData';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { deleteCurrency, fetchCurrencies } from '../api/currency';
+import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();

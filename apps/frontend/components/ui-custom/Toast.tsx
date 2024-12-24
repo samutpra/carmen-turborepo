@@ -10,6 +10,7 @@ export const toastSuccess = ({ message }: ToastProps) => {
     });
 };
 
+
 export const toastError = ({ message }: ToastProps) => {
     toast.error(message, {
         className: 'bg-red-500 text-white shadow-lg rounded-md',
