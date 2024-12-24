@@ -2,10 +2,8 @@
 import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { LocationType } from '@carmensoftware/shared-types';
-import { Search } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent } from 'react';
 import {
 	Popover,
 	PopoverContent,
@@ -29,6 +27,7 @@ import TableData from '@/components/templates/TableData';
 import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -107,16 +106,9 @@ const StoreLocationList = () => {
 		}
 	};
 
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setSearch(event.currentTarget.search.value);
-	};
-
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
 	};
 
 	const title = 'Store Locations';
@@ -129,26 +121,11 @@ const StoreLocationList = () => {
 
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
-			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<div className="relative w-full md:w-1/4">
-					<Input
-						name="search"
-						placeholder="Search Store Location..."
-						defaultValue={search}
-						onKeyDown={handleKeyDown}
-						className="h-10 pr-10"
-					/>
-					<Button
-						type="submit"
-						variant="ghost"
-						size="icon"
-						className="absolute right-0 top-0 h-full px-3"
-					>
-						<Search className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</Button>
-				</div>
-			</form>
+			<SearchForm
+				onSubmit={handleSearch}
+				defaultValue={search}
+				placeholder="Search Store Location..."
+			/>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>

@@ -15,7 +15,7 @@ interface SearchFormProps {
 const SearchForm: React.FC<SearchFormProps> = ({
     onSubmit,
     defaultValue = '',
-    placeholder = 'Search Store Location...',
+    placeholder = '',
     containerClassName = 'w-full md:w-1/3',
     inputClassName = 'h-10 pr-10',
     buttonClassName = 'absolute right-0 top-0 h-full px-3'

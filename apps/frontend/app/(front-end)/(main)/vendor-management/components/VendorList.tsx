@@ -17,14 +17,14 @@ import {
 	CommandItem,
 	CommandList,
 } from '@/components/ui/command';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import VendorCard from './VendorCard';
 import VendorTable from './VendorTable';
 import { fetchAllVendors } from '../actions/vendor';
 import { Link } from '@/lib/i18n';
+import SearchForm from '@/components/ui-custom/SearchForm';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -76,13 +76,6 @@ const VendorList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
-	};
-
 	const title = 'Vendors';
 
 	const actionButtons = (
@@ -98,26 +91,11 @@ const VendorList = () => {
 
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
-			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<div className="relative w-full md:w-1/4">
-					<Input
-						name="search"
-						placeholder="Search Vendors..."
-						defaultValue={search}
-						onKeyDown={handleKeyDown}
-						className="h-10 pr-10"
-					/>
-					<Button
-						type="submit"
-						variant="ghost"
-						size="icon"
-						className="absolute right-0 top-0 h-full px-3"
-					>
-						<Search className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</Button>
-				</div>
-			</form>
+			<SearchForm
+				onSubmit={handleSearch}
+				defaultValue={search}
+				placeholder="Search Vendor..."
+			/>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>

@@ -5,10 +5,8 @@ import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { CurrencyType } from '@carmensoftware/shared-types';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
-import { Search } from 'lucide-react';
 import {
 	Popover,
 	PopoverContent,
@@ -31,6 +29,7 @@ import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -43,24 +42,6 @@ const CurrencyList = () => {
 	const [search, setSearch] = useURLState('search');
 	const [status, setStatus] = useURLState('status');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
-
-	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
-	];
-
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
-	};
 
 	const fetchData = async () => {
 		try {
@@ -88,6 +69,18 @@ const CurrencyList = () => {
 	useEffect(() => {
 		fetchData();
 	}, [token, tenantId, search, status]);
+
+
+	const statusOptions = [
+		{ label: 'All Status', value: '' },
+		{ label: 'Active', value: 'true' },
+		{ label: 'Inactive', value: 'false' },
+	];
+
+	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSearch(event.currentTarget.search.value);
+	};
 
 	const handleDelete = async (id: string) => {
 		try {
@@ -151,26 +144,11 @@ const CurrencyList = () => {
 
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
-			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<div className="relative w-full md:w-1/4">
-					<Input
-						name="search"
-						placeholder="Search Delivery Point..."
-						defaultValue={search}
-						onKeyDown={handleKeyDown}
-						className="h-10 pr-10"
-					/>
-					<Button
-						type="submit"
-						variant="ghost"
-						size="icon"
-						className="absolute right-0 top-0 h-full px-3"
-					>
-						<Search className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</Button>
-				</div>
-			</form>
+			<SearchForm
+				onSubmit={handleSearch}
+				defaultValue={search}
+				placeholder="Search Currency..."
+			/>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>

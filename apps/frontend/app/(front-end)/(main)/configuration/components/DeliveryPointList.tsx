@@ -4,9 +4,7 @@ import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
-import { Input } from '@/components/ui/input';
 import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import {
 	Popover,
@@ -29,6 +27,7 @@ import TableData from '@/components/templates/TableData';
 import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -99,13 +98,6 @@ const DeliveryPointList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			setSearch(event.currentTarget.value);
-		}
-	};
-
 	if (error) {
 		return (
 			<Card className="border-destructive">
@@ -128,26 +120,11 @@ const DeliveryPointList = () => {
 
 	const filter = (
 		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
-			<form onSubmit={handleSearch} className="flex gap-2 w-full">
-				<div className="relative w-full md:w-1/4">
-					<Input
-						name="search"
-						placeholder="Search Delivery Point..."
-						defaultValue={search}
-						onKeyDown={handleKeyDown}
-						className="h-10 pr-10"
-					/>
-					<Button
-						type="submit"
-						variant="ghost"
-						size="icon"
-						className="absolute right-0 top-0 h-full px-3"
-					>
-						<Search className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</Button>
-				</div>
-			</form>
+			<SearchForm
+				onSubmit={handleSearch}
+				defaultValue={search}
+				placeholder="Search Delivery Point..."
+			/>
 			<div className="flex gap-2 justify-center items-center">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
