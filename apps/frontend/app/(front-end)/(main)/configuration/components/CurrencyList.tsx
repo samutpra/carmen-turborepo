@@ -22,62 +22,14 @@ import {
 	CommandItem,
 	CommandList,
 } from '@/components/ui/command';
-
-import { toast } from 'sonner';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
-
-const fetchCurrencies = async (
-	token: string,
-	tenantId: string,
-	params: { search?: string; status?: string } = {}
-) => {
-	try {
-		if (!token) {
-			throw new Error('Access token is required');
-		}
-
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-
-		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
-		}
-
-		const url = `/api/configuration/currency?${query}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-
-		const response = await fetch(url, options);
-
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to fetch currencies: ${response.status} ${response.statusText}`
-			);
-		}
-
-		const result = await response.json();
-		return result.data;
-	} catch (error) {
-		console.error('Error fetching currencies:', error);
-		throw error;
-	}
-};
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { deleteCurrency, fetchCurrencies } from '../api/currency';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -120,51 +72,37 @@ const CurrencyList = () => {
 			setShowRefreshToken(false);
 		} catch (err) {
 			if (err instanceof APIError && err.status === 401) {
-				toast.error('Your session has expired. Please login again.');
+				toastError({ message: 'Your session has expired. Please login again.' });
 				setShowRefreshToken(true);
 				setCurrencies([]);
 			} else {
 				setError(err instanceof Error ? err.message : 'An error occurred');
-				toast.error('Failed to fetch currencies', {
-					description: err instanceof Error ? err.message : 'An error occurred',
-				});
+				toastError({ message: 'Failed to fetch currencies' });
 			}
 		} finally {
 			setIsLoading(false);
 		}
 	};
+
 	useEffect(() => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
 	const handleDelete = async (id: string) => {
 		try {
-			const response = await fetch(`/api/configuration/currency/${id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-				},
-			});
-
-			if (response.status === 401) {
-				toast.error('Your session has expired. Please login again.');
-				setShowRefreshToken(true);
-				return;
-			}
-
-			if (!response.ok) {
-				throw new Error('Failed to delete currency');
-			}
-
+			await deleteCurrency(id, token, tenantId);
 			setCurrencies((prev) => prev.filter((currency) => currency.id !== id));
-			toast.success('Currency deleted successfully');
-		} catch (err) {
-			console.error('Error deleting currency:', err);
-			toast.error('Failed to delete currency', {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
+			toastSuccess({ message: 'Currency deleted successfully' });
+		} catch (error) {
+			if (error instanceof Error && error.message === 'Unauthorized') {
+				toastError({ message: 'Your session has expired. Please login again.' });
+				setShowRefreshToken(true);
+			} else {
+				console.error('Error deleting currency:', error);
+				toastError({ message: 'Failed to delete currency' });
+			}
 		}
+
 	};
 
 	if (showRefreshToken) {
@@ -293,7 +231,7 @@ const CurrencyList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<CurrencyDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -309,7 +247,7 @@ const CurrencyList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<CurrencyDialog
-							mode="edit"
+							mode="update"
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

@@ -5,7 +5,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import { CurrencySchema, CurrencyType } from '@carmensoftware/shared-types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import {
 	Dialog,
 	DialogContent,
@@ -29,8 +28,10 @@ import { Switch } from '@/components/ui/switch';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { Textarea } from '@/components/ui/textarea';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { submitCurrency } from '../api/currency';
 
-export type CurrencyDialogMode = 'create' | 'edit';
+export type CurrencyDialogMode = 'create' | 'update';
 
 export interface CurrencyDialogProps {
 	mode: CurrencyDialogMode;
@@ -56,38 +57,59 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			name: defaultValues?.name || '',
 			symbol: defaultValues?.symbol || '',
 			description: defaultValues?.description || '',
-			rate: defaultValues?.rate || 0,
+			rate: defaultValues?.rate || '',
 			is_active: defaultValues?.is_active ?? true,
 		},
 		mode: 'onChange',
 	});
 
+	// const onSubmit = async (data: CurrencyType) => {
+	// 	setIsLoading(true);
+	// 	try {
+	// 		const url =
+	// 			mode === 'create'
+	// 				? '/api/configuration/currency'
+	// 				: `/api/configuration/currency/${defaultValues?.id}`;
+
+	// 		const method = mode === 'create' ? 'POST' : 'PATCH';
+	// 		const response = await fetch(url, {
+	// 			method,
+	// 			headers: {
+	// 				Authorization: `Bearer ${token}`,
+	// 				'x-tenant-id': tenantId,
+	// 				'Content-Type': 'application/json',
+	// 			},
+	// 			body: JSON.stringify(data),
+	// 		});
+
+	// 		if (!response.ok) {
+	// 			const errorData = await response.json().catch(() => ({}));
+	// 			throw new Error(errorData.message || `Failed to ${mode} Currency`);
+	// 		}
+
+	// 		const result = await response.json();
+	// 		const values: CurrencyType = {
+	// 			id: mode === 'create' ? result.id : defaultValues?.id || result.id,
+	// 			...data,
+	// 		};
+	// 		onSuccess(values);
+	// 		setOpen(false);
+	// 		form.reset();
+
+	// 		toastSuccess({ message: `Currency ${mode === 'create' ? 'created' : 'updated'} successfully` });
+	// 	} catch (err) {
+	// 		console.error(`Error ${mode}ing Currency:`, err);
+	// 		toastError({ message: `Failed to ${mode} Currency` });
+	// 	} finally {
+	// 		setIsLoading(false);
+	// 	}
+	// };
+
 	const onSubmit = async (data: CurrencyType) => {
 		setIsLoading(true);
-
 		try {
-			const url =
-				mode === 'create'
-					? '/api/configuration/currency'
-					: `/api/configuration/currency/${defaultValues?.id}`;
+			const result = await submitCurrency(data, mode, token, tenantId, defaultValues);
 
-			const method = mode === 'create' ? 'POST' : 'PATCH';
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'x-tenant-id': tenantId,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to ${mode} Currency`);
-			}
-
-			const result = await response.json();
 			const values: CurrencyType = {
 				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
 				...data,
@@ -96,14 +118,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			setOpen(false);
 			form.reset();
 
-			toast.success(
-				`Currency ${mode === 'create' ? 'created' : 'updated'} successfully`
-			);
+			toastSuccess({ message: `Currency ${mode === 'create' ? 'created' : 'updated'} successfully` });
 		} catch (err) {
 			console.error(`Error ${mode}ing Currency:`, err);
-			toast.error(`Failed to ${mode} Currency`, {
-				description: err instanceof Error ? err.message : 'An error occurred',
-			});
+			toastError({ message: `Failed to ${mode} Currency` });
 		} finally {
 			setIsLoading(false);
 		}
@@ -209,7 +227,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 												placeholder="Enter Rate"
 												error={!!form.formState.errors.rate}
 												{...field}
-												value={field.value?.toString() ?? ''}
+												value={String(field.value) || ''}
+												onChange={(e) => {
+													field.onChange(e.target.value);
+												}}
 											/>
 										</FormControl>
 										<FormMessage />
@@ -264,7 +285,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'edit'
+										: mode === 'update'
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

@@ -112,7 +112,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
     };
 
     const renderActionsCell = (item: T): React.ReactNode => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end">
             {editComponent && editComponent({
                 item,
                 onSuccess: (updatedItem: T) => handleSuccess(updatedItem, item)
@@ -155,7 +155,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
             <TableHeader>
                 <TableRow>
                     {showIndex && (
-                        <TableHead className="w-[100px]">#</TableHead>
+                        <TableHead className="w-[50px]">#</TableHead>
                     )}
                     {fields.map((field) => (
                         <TableHead
@@ -186,7 +186,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
                             </TableCell>
                         ))}
                         {(editComponent || onDelete) && (
-                            <TableCell className="text-right">
+                            <TableCell className="bg-background text-right sticky right-0 shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)">
                                 {renderActionsCell(item)}
                             </TableCell>
                         )}

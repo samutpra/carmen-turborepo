@@ -20,9 +20,8 @@ export const CurrencySchema = z.object({
 		.nonempty('Currency description is required')
 		.max(255, 'Description must not exceed 255 characters'),
 	rate: z
-		.number()
-		.positive('Exchange rate must be a positive number')
-		.lte(1000000, 'Exchange rate must not exceed 1,000,000'),
+		.string()
+		.regex(/^\d+(\.\d+)?$/, 'Rate must be a valid decimal number'),
 	is_active: z.boolean().refine(
 		(val) => typeof val === 'boolean',
 		{ message: 'Active status must be true or false' }
