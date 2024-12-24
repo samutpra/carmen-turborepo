@@ -29,6 +29,7 @@ import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteDepartment, fetchDepartments } from '../actions/department';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
@@ -117,7 +118,7 @@ const DepartmentList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<DepartmentDialog mode="create" onSuccess={handleSuccess} />
+			<DepartmentDialog mode={formType.ADD} onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -201,7 +202,7 @@ const DepartmentList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DepartmentDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -217,7 +218,7 @@ const DepartmentList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DepartmentDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

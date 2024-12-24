@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { DepartmentType } from "@carmensoftware/shared-types/src/department";
 import { APIError } from "@carmensoftware/shared-types/src/pagination";
 
@@ -71,17 +72,17 @@ export const deleteDepartment = async (id: string, token: string, tenantId: stri
 
 export const submitDepartment = async (
     data: DepartmentType,
-    mode: 'create' | 'update',
+    mode: formType,
     token: string,
     tenantId: string,
     id: string
 ) => {
     const url =
-        mode === 'create'
+        mode === formType.ADD
             ? '/api/configuration/department'
             : `/api/configuration/department/${id}`;
 
-    const method = mode === 'create' ? 'POST' : 'PATCH';
+    const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
     const response = await fetch(url, {
         method,
@@ -97,6 +98,6 @@ export const submitDepartment = async (
         throw new Error(errorData.message || `Failed to ${mode} Currency`);
     }
     const result = await response.json();
-    const returnData = mode === 'create' ? result : { id: id };
+    const returnData = mode === formType.ADD ? result : { id: id };
     return returnData;
 }

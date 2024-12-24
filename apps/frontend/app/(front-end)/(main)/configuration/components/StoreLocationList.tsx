@@ -28,6 +28,7 @@ import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
 import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -122,7 +123,7 @@ const StoreLocationList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<StoreLocationDialog mode="create" onSuccess={handleSuccess} />
+			<StoreLocationDialog mode={formType.ADD} onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -207,7 +208,7 @@ const StoreLocationList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<StoreLocationDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -223,7 +224,7 @@ const StoreLocationList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<StoreLocationDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

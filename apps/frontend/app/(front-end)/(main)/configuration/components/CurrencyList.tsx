@@ -30,6 +30,7 @@ import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
+import { formType } from '@/types/form_type';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -144,7 +145,7 @@ const CurrencyList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<CurrencyDialog mode="create" onSuccess={handleSuccess} />
+			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -231,7 +232,7 @@ const CurrencyList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<CurrencyDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -247,7 +248,7 @@ const CurrencyList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<CurrencyDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

@@ -30,9 +30,10 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Textarea } from '@/components/ui/textarea';
 import { submitUnit } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 interface UnitDialogProps {
-	mode: 'create' | 'update';
+	mode: formType
 	defaultValues?: UnitType;
 	onSuccess: (values: UnitType) => void;
 }
@@ -53,7 +54,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 	});
 
 	useEffect(() => {
-		if (mode === 'create') {
+		if (mode === formType.ADD) {
 			form.reset({
 				name: '',
 				description: '',
@@ -84,7 +85,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 				onSuccess(data);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Unit ${mode === 'create' ? 'created' : 'updated'} successfully` });
+				toastSuccess({ message: `Unit  successfully` });
 			} else {
 				toastError({ message: `Failed to ${mode} unit` });
 			}
@@ -94,7 +95,6 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 			setIsLoading(false);
 		}
 	}
-
 	const handleClose = () => {
 		setOpen(false);
 		form.reset();
@@ -104,10 +104,10 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === 'create' ? 'default' : 'ghost'}
-					size={mode === 'create' ? 'default' : 'sm'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
+					size={mode === formType.ADD ? 'default' : 'sm'}
 				>
-					{mode === 'create' ? (
+					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="mr-2 h-4 w-4" />
 							Add Unit
@@ -120,7 +120,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create' ? 'Create' : 'Edit'} Unit
+						{mode === formType.ADD ? 'Create' : 'Edit'} Unit
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -186,7 +186,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'update'
+										: mode === formType.EDIT
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

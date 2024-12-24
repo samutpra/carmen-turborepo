@@ -28,6 +28,7 @@ import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
 import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -121,7 +122,7 @@ const DeliveryPointList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<DeliveryPointDialog mode="create" onSuccess={handleSuccess} />
+			<DeliveryPointDialog mode={formType.ADD} onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -204,7 +205,7 @@ const DeliveryPointList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DeliveryPointDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -220,7 +221,7 @@ const DeliveryPointList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<DeliveryPointDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

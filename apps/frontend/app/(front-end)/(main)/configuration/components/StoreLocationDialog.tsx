@@ -36,9 +36,10 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitStoreLocation } from '../actions/store_location';
+import { formType } from '@/types/form_type';
 
 interface StoreLocationDialogProps {
-	mode: 'create' | 'update';
+	mode: formType;
 	defaultValues?: LocationType;
 	onSuccess: (values: LocationType) => void;
 }
@@ -77,7 +78,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 				onSuccess(submitData);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Store location ${mode === 'create' ? 'created' : 'updated'} successfully` });
+				toastSuccess({ message: `Store location ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
 			} else {
 				toastError({ message: `Failed to ${mode} store location` });
 			}
@@ -98,10 +99,10 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === 'create' ? 'default' : 'ghost'}
-					size={mode === 'create' ? 'default' : 'sm'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
+					size={mode === formType.ADD ? 'default' : 'sm'}
 				>
-					{mode === 'create' ? (
+					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="mr-2 h-4 w-4" />
 							Add Store Location
@@ -114,7 +115,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create' ? 'Create' : 'Edit'} Store Location
+						{mode === formType.ADD ? 'Create' : 'Edit'} Store Location
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -203,7 +204,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'update'
+										: mode === formType.EDIT
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

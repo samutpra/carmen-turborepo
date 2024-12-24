@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { DeliveryPointType } from "@carmensoftware/shared-types";
 
 export const fetchDeliveryPoints = async (
@@ -63,18 +64,18 @@ export const deleteDeliveryPoint = async (id: string, token: string, tenantId: s
 
 export const submitDeliveryPoint = async (
     data: DeliveryPointType,
-    mode: 'create' | 'update',
+    mode: formType,
     token: string,
     tenantId: string,
     id: string
 ) => {
 
     const url =
-        mode === 'create'
+        mode === formType.ADD
             ? '/api/configuration/delivery-point'
             : `/api/configuration/delivery-point/${id}`;
 
-    const method = mode === 'create' ? 'POST' : 'PATCH';
+    const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
     const response = await fetch(url, {
         method,

@@ -29,6 +29,7 @@ import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
 import { deleteUnit, fetchUnits } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -115,7 +116,7 @@ const UnitList = () => {
 
 	const actionButtons = (
 		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
-			<UnitDialog mode="create" onSuccess={handleSuccess} />
+			<UnitDialog mode={formType.ADD} onSuccess={handleSuccess} />
 		</div>
 	);
 
@@ -199,7 +200,7 @@ const UnitList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<UnitDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>
@@ -215,7 +216,7 @@ const UnitList = () => {
 					onDelete={handleDelete}
 					editComponent={({ item, onSuccess }) => (
 						<UnitDialog
-							mode="update"
+							mode={formType.EDIT}
 							defaultValues={item}
 							onSuccess={onSuccess}
 						/>

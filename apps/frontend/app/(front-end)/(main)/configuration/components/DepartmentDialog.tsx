@@ -32,10 +32,10 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitDepartment } from '../actions/department';
-export type DepartmentDialogMode = 'create' | 'update';
+import { formType } from '@/types/form_type';
 
 export interface DepartmentDialogProps {
-	mode: DepartmentDialogMode;
+	mode: formType;
 	defaultValues?: DepartmentType;
 	onSuccess: (department: DepartmentType) => void;
 }
@@ -60,51 +60,6 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 		},
 	});
 
-	// const onSubmit = async (data: DepartmentType) => {
-	// 	setIsLoading(true);
-	// 	try {
-	// 		const url =
-	// 			mode === 'create'
-	// 				? '/api/configuration/department'
-	// 				: `/api/configuration/department/${defaultValues?.id}`;
-	// 		const method = mode === 'create' ? 'POST' : 'PATCH';
-	// 		const response = await fetch(url, {
-	// 			method,
-	// 			headers: {
-	// 				Authorization: `Bearer ${token}`,
-	// 				'x-tenant-id': tenantId,
-	// 				'Content-Type': 'application/json',
-	// 			},
-	// 			body: JSON.stringify(data),
-	// 		});
-
-	// 		if (!response.ok) {
-	// 			const errorData = await response.json().catch(() => ({}));
-	// 			throw new Error(errorData.message || `Failed to ${mode} Department`);
-	// 		}
-
-	// 		const result = await response.json();
-	// 		const values: DepartmentType = {
-	// 			id: mode === 'create' ? result.id : defaultValues?.id || result.id,
-	// 			...data,
-	// 		};
-	// 		onSuccess(values);
-	// 		setOpen(false);
-	// 		form.reset();
-	// 		toast.success(
-	// 			`Department ${mode === 'create' ? 'created' : 'updated'} successfully`
-	// 		);
-	// 	} catch (error) {
-	// 		console.error('Error submitting department:', error);
-	// 		toast.error(`Failed to ${mode} Department`, {
-	// 			description:
-	// 				error instanceof Error ? error.message : 'An error occurred',
-	// 		});
-	// 	} finally {
-	// 		setIsLoading(false);
-	// 	}
-	// };
-
 	const onSubmit = async (data: DepartmentType) => {
 		setIsLoading(true);
 		try {
@@ -119,7 +74,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 				onSuccess(submitData);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Department ${mode === 'create' ? 'created' : 'updated'} successfully` });
+				toastSuccess({ message: `Department ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
 			} else {
 				toastError({ message: `Failed to ${mode} department` });
 			}
@@ -141,10 +96,10 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === 'create' ? 'default' : 'ghost'}
-					size={mode === 'create' ? 'default' : 'sm'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
+					size={mode === formType.ADD ? 'default' : 'sm'}
 				>
-					{mode === 'create' ? (
+					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="mr-2 h-4 w-4" />
 							Add Department
@@ -157,7 +112,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create' ? 'Create' : 'Edit'} Department
+						{mode === formType.ADD ? 'Create' : 'Edit'} Department
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -223,7 +178,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'update'
+										: mode === formType.EDIT
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

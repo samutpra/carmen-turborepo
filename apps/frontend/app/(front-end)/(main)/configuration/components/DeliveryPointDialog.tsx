@@ -32,11 +32,10 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { submitDeliveryPoint } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-
-export type DialogMode = 'create' | 'update';
+import { formType } from '@/types/form_type';
 
 export interface DeliveryPointDialogProps {
-	mode: DialogMode;
+	mode: formType;
 	defaultValues?: DeliveryPointType;
 	onSuccess: (point: DeliveryPointType) => void;
 }
@@ -73,7 +72,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 			onSuccess(submitData);
 			setOpen(false);
 			form.reset();
-			toastSuccess({ message: `Delivery point ${mode === 'create' ? 'created' : 'updated'} successfully` });
+			toastSuccess({ message: `Delivery point ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);
 			toastError({ message: `Failed to ${mode} delivery point` });
@@ -90,7 +89,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				{mode === 'create' ? (
+				{mode === formType.ADD ? (
 					<Button className="gap-2">
 						<PlusIcon className="w-4 h-4" />
 						Create Delivery Point
@@ -104,7 +103,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 			<DialogContent className="w-full md:w-[500px] rounded-lg">
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create'
+						{mode === formType.ADD
 							? 'Create New Delivery Point'
 							: 'Edit Delivery Point'}
 					</DialogTitle>
@@ -161,7 +160,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'update'
+										: mode === formType.EDIT
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>

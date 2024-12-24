@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { LocationType } from "@carmensoftware/shared-types";
 
 export const fetchStoreLocations = async (
@@ -60,17 +61,17 @@ export const deleteStoreLocation = async (id: string, token: string, tenantId: s
 
 export const submitStoreLocation = async (
     values: LocationType,
-    mode: 'create' | 'update',
+    mode: formType,
     token: string,
     tenantId: string,
     id: string
 ) => {
     try {
-        const url = mode === 'create'
+        const url = mode === formType.ADD
             ? '/api/configuration/locations'
             : `/api/configuration/locations/${id}`;
 
-        const method = mode === 'create' ? 'POST' : 'PATCH';
+        const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
         const response = await fetch(url, {
             method,
@@ -87,7 +88,7 @@ export const submitStoreLocation = async (
             throw new Error(errorData.message || `Failed to ${mode} store location`);
         }
         const result = await response.json();
-        const returnData = mode === 'create' ? result : { id: id };
+        const returnData = mode === formType.ADD ? result : { id: id };
         return returnData;
 
     } catch (error) {

@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { CurrencyType } from "@carmensoftware/shared-types";
 import { APIError } from "@carmensoftware/shared-types/src/pagination";
 
@@ -70,13 +71,13 @@ export const deleteCurrency = async (id: string, token: string, tenantId: string
     return response;
 };
 
-export const submitCurrency = async (data: CurrencyType, mode: 'create' | 'update', token: string, tenantId: string, defaultValues?: CurrencyType) => {
+export const submitCurrency = async (data: CurrencyType, mode: formType, token: string, tenantId: string, defaultValues?: CurrencyType) => {
     const url =
-        mode === 'create'
+        mode === formType.ADD
             ? '/api/configuration/currency'
             : `/api/configuration/currency/${defaultValues?.id}`;
 
-    const method = mode === 'create' ? 'POST' : 'PATCH';
+    const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
     const response = await fetch(url, {
         method,

@@ -1,3 +1,4 @@
+import { formType } from "@/types/form_type";
 import { UnitType } from "@carmensoftware/shared-types";
 
 export const fetchUnits = async (
@@ -61,17 +62,17 @@ export const deleteUnit = async (id: string, token: string, tenantId: string) =>
 
 export const submitUnit = async (
     values: UnitType,
-    mode: 'create' | 'update',
+    mode: formType,
     token: string,
     tenantId: string,
     id: string
 ) => {
     try {
-        const url = mode === 'create'
+        const url = mode === formType.ADD
             ? '/api/product-management/unit'
             : `/api/product-management/unit/${id}`;
 
-        const method = mode === 'create' ? 'POST' : 'PATCH';
+        const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
         const response = await fetch(url, {
             method,
@@ -88,7 +89,7 @@ export const submitUnit = async (
             throw new Error(errorData.message || `Failed to ${mode} store location`);
         }
         const result = await response.json();
-        const returnData = mode === 'create' ? result : { id: id };
+        const returnData = mode === formType.ADD ? result : { id: id };
         return returnData;
     } catch (error) {
         console.error('Error submitting store location:', error);

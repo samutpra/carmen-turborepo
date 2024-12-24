@@ -30,11 +30,10 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitCurrency } from '../actions/currency';
-
-export type CurrencyDialogMode = 'create' | 'update';
+import { formType } from '@/types/form_type';
 
 export interface CurrencyDialogProps {
-	mode: CurrencyDialogMode;
+	mode: formType;
 	defaultValues?: CurrencyType;
 	onSuccess: (currency: CurrencyType) => void;
 }
@@ -69,14 +68,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			const result = await submitCurrency(data, mode, token, tenantId, defaultValues);
 
 			const values: CurrencyType = {
-				id: mode === 'create' ? result.id : defaultValues?.id || result.id,
+				id: mode === formType.ADD ? result.id : defaultValues?.id || result.id,
 				...data,
 			};
 			onSuccess(values);
 			setOpen(false);
 			form.reset();
 
-			toastSuccess({ message: `Currency ${mode === 'create' ? 'created' : 'updated'} successfully` });
+			toastSuccess({ message: `Currency ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
 		} catch (err) {
 			console.error(`Error ${mode}ing Currency:`, err);
 			toastError({ message: `Failed to ${mode} Currency` });
@@ -93,7 +92,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				{mode === 'create' ? (
+				{mode === formType.ADD ? (
 					<Button className="gap-2">
 						<PlusIcon className="w-4 h-4" />
 						Create Currency
@@ -107,7 +106,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'create' ? 'Create New Currency' : 'Edit Currency'}
+						{mode === formType.ADD ? 'Create New Currency' : 'Edit Currency'}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -243,7 +242,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								>
 									{isLoading
 										? 'Saving...'
-										: mode === 'update'
+										: mode === formType.EDIT
 											? 'Save Changes'
 											: 'Add'}
 								</LoaderButton>
