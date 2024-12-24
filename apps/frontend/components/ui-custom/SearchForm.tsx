@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, KeyboardEvent } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
@@ -20,7 +20,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
     inputClassName = 'h-10 pr-10',
     buttonClassName = 'absolute right-0 top-0 h-full px-3'
 }) => {
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
         if (e.key === 'Enter') {
             e.preventDefault();
             const formElement = e.currentTarget.closest('form');
