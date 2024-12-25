@@ -1,11 +1,9 @@
 'use client';
 
 import { ProductItemGroupType } from '@carmensoftware/shared-types';
-
 import React, { useState, useEffect } from 'react';
-
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -29,26 +27,35 @@ interface Props {
 	setData: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
 	subCategoryId: string;
 	subCategoryName: string;
+	onSelectItemGroup: (itemGroup: ProductItemGroupType) => void;
 }
+
 const ItemGroupList: React.FC<Props> = ({
 	data,
 	setData,
 	subCategoryId,
 	subCategoryName,
+	onSelectItemGroup,
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [itemGroup, setItemGroup] = useState<ProductItemGroupType | null>(null);
 	const [idToDelete, setIdToDelete] = useState<string | null>(null);
-	const [selectedItemGroupId, setSelectedItemGroupId] = useState<string | null>(
-		null
-	);
+	const [selectedItemGroupId, setSelectedItemGroupId] = useState<string | null>(null);
 
 	useEffect(() => {
 		setSelectedItemGroupId(null);
 		setItemGroup(null);
-	}, [subCategoryId]);
+		onSelectItemGroup({
+			id: '',
+			name: '',
+			code: '',
+			description: '',
+			is_active: true,
+			product_subcategory_id: '',
+		});
+	}, [subCategoryId, onSelectItemGroup]);
 
 	const handleEditClick = (itemGroup: ProductItemGroupType) => {
 		setItemGroup(itemGroup);
@@ -67,17 +74,16 @@ const ItemGroupList: React.FC<Props> = ({
 					},
 				}
 			);
-			if (response.ok) {
-				setData((prevItemGroups) =>
-					prevItemGroups.filter((itemGroup) => itemGroup.id !== idToDelete)
-				);
-				toast.success('Item group deleted successfully');
-			} else {
-				toast.error('Failed to delete item group', {
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete item group.');
 			}
+
+			setData((prevItemGroups) =>
+				prevItemGroups.filter((itemGroup) => itemGroup.id !== idToDelete)
+			);
+			toast.success('Item group deleted successfully');
+			setIdToDelete(null);
 		} catch (error) {
 			toast.error(
 				error instanceof Error ? error.message : 'Internal Server Error',
@@ -90,10 +96,7 @@ const ItemGroupList: React.FC<Props> = ({
 	};
 
 	const itemGroupListItems = data.map((itemGroup) => (
-		<div
-			key={itemGroup.id}
-			className="flex items-center p-2 justify-between gap-2"
-		>
+		<div key={itemGroup.id} className="flex items-center p-2 justify-between gap-2">
 			<div
 				className={cn(
 					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
@@ -102,13 +105,15 @@ const ItemGroupList: React.FC<Props> = ({
 				onClick={() => {
 					setSelectedItemGroupId(itemGroup.id || null);
 					setItemGroup(itemGroup);
+					onSelectItemGroup(itemGroup);
 				}}
 				role="button"
 				tabIndex={0}
 				onKeyDown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') {
+					if (['Enter', ' '].includes(e.key)) {
 						setSelectedItemGroupId(itemGroup.id || null);
 						setItemGroup(itemGroup);
+						onSelectItemGroup(itemGroup);
 					}
 				}}
 				aria-label={`Select ${itemGroup.name} item group`}
@@ -121,7 +126,7 @@ const ItemGroupList: React.FC<Props> = ({
 					variant="ghost"
 					size="icon"
 					className="h-8 w-8"
-					aria-label="Edit sub category"
+					aria-label="Edit item group"
 					onClick={() => handleEditClick(itemGroup)}
 				>
 					<Pencil className="h-4 w-4" />
@@ -132,7 +137,7 @@ const ItemGroupList: React.FC<Props> = ({
 							variant="ghost"
 							size="icon"
 							className="h-8 w-8 text-destructive hover:text-destructive"
-							aria-label="Delete sub category"
+							aria-label="Delete item group"
 							onClick={() => setIdToDelete(itemGroup.id || '')}
 						>
 							<Trash className="h-4 w-4" />
@@ -142,10 +147,8 @@ const ItemGroupList: React.FC<Props> = ({
 						<AlertDialogHeader>
 							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 							<AlertDialogDescription>
-								This action cannot be undone. This will permanently delete the
-								sub-category &quot;
-								{data.find((sc) => sc.id === idToDelete)?.name}
-								&quot;.
+								This action cannot be undone. This will permanently delete the item group
+								&quot;{data.find((sc) => sc.id === idToDelete)?.name}&quot;.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
@@ -166,14 +169,6 @@ const ItemGroupList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardHeader>
-					<CardTitle>Item Groups</CardTitle>
-					{itemGroup && (
-						<span className="text-sm text-muted-foreground">
-							Selected: {itemGroup.name}
-						</span>
-					)}
-				</CardHeader>
 				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
 			</Card>
 			<ItemGroupDialog

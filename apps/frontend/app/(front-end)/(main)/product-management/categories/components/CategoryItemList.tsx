@@ -4,9 +4,9 @@ import {
 	CategoryFormData,
 	CategoryType,
 } from '@carmensoftware/shared-types/dist/productCategorySchema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import { Pencil, Trash } from 'lucide-react';
 import {
 	AlertDialog,
@@ -45,12 +45,12 @@ const CategoryItemList: React.FC<Props> = ({
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
 	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
 
-	const handleDeleteClick = (e: React.MouseEvent, product: CategoryType) => {
+	const handleDeleteClick = (e: MouseEvent, product: CategoryType) => {
 		e.stopPropagation();
 		setProductToDelete(product);
 	};
 
-	const handleEditClick = (e: React.MouseEvent, product: CategoryType) => {
+	const handleEditClick = (e: MouseEvent, product: CategoryType) => {
 		e.stopPropagation();
 		setProductToEdit(product);
 		setEditDialogOpen(true);
@@ -120,17 +120,8 @@ const CategoryItemList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardHeader>
-					<CardTitle>Categories</CardTitle>
-					{selectedProduct && (
-						<span className="text-sm text-muted-foreground">
-							Selected: {selectedProduct.name}
-						</span>
-					)}
-				</CardHeader>
 				<CardContent>{categoryListItems}</CardContent>
 			</Card>
-
 			<AlertDialog
 				open={!!productToDelete}
 				onOpenChange={(open) =>
@@ -156,8 +147,6 @@ const CategoryItemList: React.FC<Props> = ({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-
-			{/* Edit Dialog */}
 			<CategoryDialog
 				open={editDialogOpen}
 				onOpenChange={setEditDialogOpen}

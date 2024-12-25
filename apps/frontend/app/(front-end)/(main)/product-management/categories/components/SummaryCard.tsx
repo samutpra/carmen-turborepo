@@ -10,6 +10,7 @@ interface SummaryCardProps {
 	icon: React.ReactNode;
 	onAddData: () => void;
 	disabled?: boolean;
+	nameSelect?: string;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
@@ -18,10 +19,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 	icon,
 	onAddData,
 	disabled,
+	nameSelect
 }) => {
 	return (
-		<Card>
-			<CardHeader className="flex flex-row items-center justify-between pb-2">
+		<Card className='min-h-44'>
+			<CardHeader className="flex flex-row items-center justify-between pb-0">
 				<CardTitle className="text-sm font-medium">{title}</CardTitle>
 				<Button
 					onClick={onAddData}
@@ -41,6 +43,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 						<span className="text-2xl font-bold">{count}</span>
 					</div>
 				</div>
+				<span className="text-2xl font-bold">{nameSelect}</span>
 			</CardContent>
 		</Card>
 	);

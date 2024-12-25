@@ -40,9 +40,11 @@ const CategorieList = () => {
 	const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
 		null
 	);
-
 	const [selectedSubCategory, setSelectedSubCategory] =
 		useState<SubCategoryType | null>(null);
+
+	const [selectedItemGroup, setSelectedItemGroup] =
+		useState<ProductItemGroupType | null>(null);
 
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -200,6 +202,7 @@ const CategorieList = () => {
 					count={summary.totalCategories}
 					icon={<Folder className="w-6 h-6" />}
 					onAddData={onAddCategory}
+					nameSelect={selectedCategory?.name}
 				/>
 				<CategoryItemList
 					products={categorys}
@@ -228,6 +231,7 @@ const CategorieList = () => {
 					icon={<Tag className="w-6 h-6" />}
 					onAddData={onAddSubCategory}
 					disabled={!selectedCategory}
+					nameSelect={selectedSubCategory?.name}
 				/>
 				<SubCategoryList
 					data={filteredSubCategories}
@@ -253,12 +257,14 @@ const CategorieList = () => {
 					icon={<LayoutGrid className="w-6 h-6" />}
 					onAddData={onAddItemGroup}
 					disabled={!selectedSubCategory}
+					nameSelect={selectedItemGroup?.name}
 				/>
 				<ItemGroupList
 					data={filteredItemGroups}
 					setData={setItemGroups}
 					subCategoryId={selectedSubCategory?.id || ''}
 					subCategoryName={selectedSubCategory?.name || ''}
+					onSelectItemGroup={setSelectedItemGroup}
 				/>
 			</div>
 		</div>

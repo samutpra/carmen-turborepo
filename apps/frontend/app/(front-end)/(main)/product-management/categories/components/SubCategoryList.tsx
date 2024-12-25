@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SubCategoryType } from '@carmensoftware/shared-types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -165,17 +165,8 @@ const SubCategoryList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardHeader>
-					<CardTitle>Sub Categories </CardTitle>
-					{subCategory && (
-						<span className="text-sm text-muted-foreground">
-							Selected: {subCategory.name}
-						</span>
-					)}
-				</CardHeader>
 				<CardContent className="space-y-2">{subCategoryListItems}</CardContent>
 			</Card>
-
 			<SubCatDialog
 				open={isEditDialogOpen}
 				onOpenChange={setIsEditDialogOpen}
