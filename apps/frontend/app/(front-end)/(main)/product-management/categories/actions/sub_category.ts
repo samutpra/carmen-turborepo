@@ -81,6 +81,9 @@ export const submitSubCategory = async (
         }
         const result = await response.json();
         const returnData = mode === formType.ADD ? result : { id: id };
+        console.log('mode >>>', mode);
+        console.log('returnData >>>', returnData);
+
         return returnData
     } catch (error) {
         console.error('Error submitting form:', error);

@@ -49,8 +49,6 @@ export const deleteItemGroup = async (token: string, id: string) => {
 		if (!response.ok) {
 			throw new Error('Failed to delete item group');
 		}
-		console.log('response >>>', response);
-
 		return response;
 	} catch (error) {
 		console.error('Error deleting item group:', error);
@@ -91,8 +89,8 @@ export const submitItemGroup = async (
 			);
 		}
 
-		const result = await response.json();
-		const returnData = mode === formType.ADD ? result : { id: id };
+		const res = await response.json();
+		const returnData = mode === formType.ADD ? res.result : { id: id };
 		return returnData
 	} catch (error) {
 		console.error('Error submitting form:', error);

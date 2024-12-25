@@ -4,7 +4,7 @@ import {
 	productItemGroupSchema,
 } from '@carmensoftware/shared-types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
 	Dialog,
@@ -24,11 +24,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { formType } from '@/types/form_type';
 import { submitItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
 interface Props {
 	open: boolean;
@@ -50,7 +50,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
-
+	const [isLoading, setIsLoading] = useState(false);
 	const defaultValues: ProductItemGroupType = {
 		id: '',
 		code: '',
@@ -74,6 +74,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 	}, [itemGroup, mode, form]);
 
 	const handleSubmit = async (values: ProductItemGroupType) => {
+		setIsLoading(true);
 		const payload = {
 			...values,
 			product_subcategory_id: subcategory_id,
@@ -81,17 +82,14 @@ const ItemGroupDialog: React.FC<Props> = ({
 
 		try {
 			const response = await submitItemGroup(token, payload, mode, values.id);
-			if (!response.ok) {
-				toast.error(`Failed to ${mode} item group`, {
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				});
+			if (!response) {
+				toastError({ message: `Failed to ${mode} item group` });
 			}
-			const result = await response.json();
-			if (mode === 'add') {
+
+			if (mode === formType.ADD) {
 				const newItemGroup = {
 					...payload,
-					id: result.id,
+					id: response.id,
 				};
 				setItemGroup((prev: ProductItemGroupType[]) => [...prev, newItemGroup]);
 				toastSuccess({ message: 'Item group added successfully' });
@@ -109,6 +107,8 @@ const ItemGroupDialog: React.FC<Props> = ({
 		} catch (error) {
 			console.error('Error submitting form:', error);
 			toastError({ message: 'Failed to submit form' });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -198,9 +198,13 @@ const ItemGroupDialog: React.FC<Props> = ({
 							>
 								Cancel
 							</Button>
-							<Button type="submit">
-								{mode === 'add' ? 'Create' : 'Update'}
-							</Button>
+							<LoaderButton type="submit" disabled={isLoading}>
+								{isLoading
+									? 'Processing...'
+									: mode === formType.ADD
+										? 'Add Category'
+										: 'Save Changes'}
+							</LoaderButton>
 						</DialogFooter>
 					</form>
 				</Form>
