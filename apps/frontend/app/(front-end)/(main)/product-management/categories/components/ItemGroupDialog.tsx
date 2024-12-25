@@ -27,6 +27,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { formType } from '@/types/form_type';
+import { submitItemGroup } from '../actions/item_group';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 interface Props {
 	open: boolean;
@@ -49,39 +51,27 @@ const ItemGroupDialog: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 
+	const defaultValues: ProductItemGroupType = {
+		id: '',
+		code: '',
+		name: '',
+		description: '',
+		is_active: true,
+		product_subcategory_id: subcategory_id,
+	};
+
 	const form = useForm<ProductItemGroupType>({
 		resolver: zodResolver(productItemGroupSchema),
-		defaultValues: {
-			id: '',
-			code: '',
-			name: '',
-			description: '',
-			is_active: true,
-			product_subcategory_id: subcategory_id,
-		},
+		defaultValues: mode === formType.EDIT && itemGroup ? { ...itemGroup } : defaultValues,
 	});
 
 	useEffect(() => {
-		if (open && mode === 'edit' && itemGroup) {
-			form.reset({
-				id: itemGroup.id,
-				code: itemGroup.code,
-				name: itemGroup.name,
-				description: itemGroup.description,
-				is_active: itemGroup.is_active,
-				product_subcategory_id: subcategory_id,
-			});
+		if (mode === formType.EDIT && itemGroup) {
+			form.reset(itemGroup);
 		} else {
-			form.reset({
-				id: '',
-				code: '',
-				name: '',
-				description: '',
-				is_active: true,
-				product_subcategory_id: subcategory_id,
-			});
+			form.reset(defaultValues);
 		}
-	}, [open, mode, itemGroup, subcategory_id]);
+	}, [itemGroup, mode, form]);
 
 	const handleSubmit = async (values: ProductItemGroupType) => {
 		const payload = {
@@ -90,28 +80,13 @@ const ItemGroupDialog: React.FC<Props> = ({
 		};
 
 		try {
-			const method = mode === 'add' ? 'POST' : 'PATCH';
-			const url =
-				mode === 'add'
-					? '/api/product-management/category/product-item-group'
-					: `/api/product-management/category/product-item-group/${values.id}`;
-
-			const response = await fetch(url, {
-				method,
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(payload),
-			});
-
+			const response = await submitItemGroup(token, payload, mode, values.id);
 			if (!response.ok) {
 				toast.error(`Failed to ${mode} item group`, {
 					className: 'bg-red-500 text-white border-none',
 					duration: 3000,
 				});
 			}
-
 			const result = await response.json();
 			if (mode === 'add') {
 				const newItemGroup = {
@@ -119,7 +94,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 					id: result.id,
 				};
 				setItemGroup((prev: ProductItemGroupType[]) => [...prev, newItemGroup]);
-				toast.success('Item group added successfully');
+				toastSuccess({ message: 'Item group added successfully' });
 			} else {
 				setItemGroup((prev) =>
 					prev.map((itemGroup) =>
@@ -128,18 +103,12 @@ const ItemGroupDialog: React.FC<Props> = ({
 							: itemGroup
 					)
 				);
-				toast.success('Item group updated successfully');
+				toastSuccess({ message: 'Item group updated successfully' });
 			}
 			handleClose();
 		} catch (error) {
 			console.error('Error submitting form:', error);
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			toastError({ message: 'Failed to submit form' });
 		}
 	};
 

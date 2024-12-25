@@ -54,6 +54,7 @@ const SubCatDialog: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isLoading, setIsLoading] = useState(false);
+
 	const formValues: SubCategoryType = {
 		id: '',
 		name: '',

@@ -17,10 +17,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Pencil, Trash } from 'lucide-react';
 import ItemGroupDialog from './ItemGroupDialog';
-import { toast } from 'sonner';
 import { useAuth } from '@/app/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { formType } from '@/types/form_type';
+import { deleteItemGroup } from '../actions/item_group';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 
 interface Props {
 	data: ProductItemGroupType[];
@@ -65,33 +66,19 @@ const ItemGroupList: React.FC<Props> = ({
 	const handleDeleteItemGroup = async () => {
 		if (!idToDelete) return;
 		try {
-			const response = await fetch(
-				`/api/product-management/category/product-item-group/${idToDelete}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
+			const response = await deleteItemGroup(token, idToDelete);
 			if (!response.ok) {
 				throw new Error('Failed to delete item group.');
 			}
 
-			setData((prevItemGroups) =>
-				prevItemGroups.filter((itemGroup) => itemGroup.id !== idToDelete)
+			setData((prev) =>
+				prev.filter((itemGroup) => itemGroup.id !== idToDelete)
 			);
-			toast.success('Item group deleted successfully');
+			toastSuccess({ message: 'Item group deleted successfully' });
 			setIdToDelete(null);
 		} catch (error) {
-			toast.error(
-				error instanceof Error ? error.message : 'Internal Server Error',
-				{
-					className: 'bg-red-500 text-white border-none',
-					duration: 3000,
-				}
-			);
+			console.log('Error deleting item group:', error);
+			toastError({ message: 'Failed to delete item group' });
 		}
 	};
 
