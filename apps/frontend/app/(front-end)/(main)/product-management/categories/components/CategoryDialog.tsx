@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -9,17 +9,27 @@ import {
 	DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { CategoryFormData } from '@carmensoftware/shared-types/dist/productCategorySchema';
+import { categorySchema, CategoryType } from '@carmensoftware/shared-types/dist/productCategorySchema';
 import { formType } from '@/types/form_type';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
 interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (data: CategoryFormData) => Promise<void>;
-	initialData?: CategoryFormData;
+	onSubmit: (data: CategoryType) => Promise<void>;
+	initialData?: CategoryType;
 	mode: formType;
 }
 
@@ -30,23 +40,36 @@ const CategoryDialog: React.FC<Props> = ({
 	initialData,
 	mode,
 }) => {
+	const [isLoading, setIsLoading] = useState(false);
 
-	const [formData, setFormData] = useState<CategoryFormData>({
+	const defaultValues: CategoryType = {
 		name: '',
 		description: '',
 		is_active: true,
+	};
+
+	const form = useForm<CategoryType>({
+		resolver: zodResolver(categorySchema),
+		defaultValues: mode === formType.EDIT && initialData ? initialData : defaultValues,
 	});
 
 	useEffect(() => {
-		if (initialData && open) {
-			setFormData(initialData);
+		if (mode === formType.EDIT && initialData) {
+			form.reset(initialData);
+		} else {
+			form.reset(defaultValues);
 		}
-	}, [initialData, open]);
+	}, [initialData, mode, form]);
 
-	const handleSubmit = async () => {
-		await onSubmit(formData);
-		if (mode === formType.ADD) {
-			setFormData({ name: '', description: '', is_active: true });
+	const handleSubmit = async (data: CategoryType) => {
+		setIsLoading(true);
+		try {
+			await onSubmit(data);
+			onOpenChange(false);
+		} catch (error) {
+			console.error('Error submitting form:', error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -58,49 +81,60 @@ const CategoryDialog: React.FC<Props> = ({
 						{mode === formType.ADD ? 'Add New Category' : 'Edit Category'}
 					</DialogTitle>
 				</DialogHeader>
-				<div className="space-y-4 py-4">
-					<div className="space-y-2">
-						<Label htmlFor="name">Name</Label>
-						<Input
-							id="name"
-							value={formData.name}
-							onChange={(e) =>
-								setFormData((prev) => ({ ...prev, name: e.target.value }))
-							}
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input placeholder="Category name" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="description">Description</Label>
-						<Textarea
-							id="description"
-							value={formData.description}
-							onChange={(e) =>
-								setFormData((prev) => ({
-									...prev,
-									description: e.target.value,
-								}))
-							}
+						<FormField
+							control={form.control}
+							name="description"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Description</FormLabel>
+									<FormControl>
+										<Textarea placeholder="Category description" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
-					<div className="flex items-center space-x-2">
-						<Switch
-							id="is_active"
-							checked={formData.is_active}
-							onCheckedChange={(checked) =>
-								setFormData((prev) => ({ ...prev, is_active: checked }))
-							}
+						<FormField
+							control={form.control}
+							name="is_active"
+							render={({ field }) => (
+								<FormItem className="flex items-center space-x-2">
+									<FormControl>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
+									</FormControl>
+									<FormLabel>Active</FormLabel>
+								</FormItem>
+							)}
 						/>
-						<Label htmlFor="is_active">Active</Label>
-					</div>
-					<div className="flex justify-end space-x-2">
-						<Button variant="outline" onClick={() => onOpenChange(false)}>
-							Cancel
-						</Button>
-						<Button onClick={handleSubmit}>
-							{mode === formType.ADD ? 'Add Category' : 'Save Changes'}
-						</Button>
-					</div>
-				</div>
+						<div className="flex justify-end space-x-2">
+							<Button variant="outline" onClick={() => onOpenChange(false)}>
+								Cancel
+							</Button>
+							<LoaderButton type="submit" disabled={isLoading}>
+								{isLoading
+									? 'Processing...'
+									: mode === formType.ADD
+										? 'Add Category'
+										: 'Save Changes'}
+							</LoaderButton>
+						</div>
+					</form>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);
