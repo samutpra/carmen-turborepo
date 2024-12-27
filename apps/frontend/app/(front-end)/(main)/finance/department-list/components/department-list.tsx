@@ -106,7 +106,7 @@ export function DepartmentList() {
 
 	return (
 		<div className='shadow-md rounded-lg p-6'>
-			<div className='flex justify-between items-center mb-6'>
+			<div className='flex-between mb-6'>
 				<h1 className='text-2xl font-bold'>Department List</h1>
 				<Button onClick={() => openEditModal()}>
 					<Plus className='h-4 w-4 mr-2' aria-hidden='true' />

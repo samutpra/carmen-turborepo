@@ -11,7 +11,7 @@ const WastageTable = () => {
     return (
         <Card>
             <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex-between">
                     <CardTitle>Wastage Records</CardTitle>
                     <div className="flex gap-2">
                         <div className="relative">

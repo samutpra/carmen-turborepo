@@ -16,8 +16,8 @@ export function ExchangeRateViewer() {
 	]);
 
 	return (
-		<div className=' mx-auto p-6 bg-background'>
-			<div className='flex justify-between items-center mb-6'>
+		<div className='mx-auto p-6 bg-background'>
+			<div className='flex-between mb-6'>
 				<h1 className='text-3xl font-bold'>Exchange Rate Viewer</h1>
 				<div className='space-x-2'>
 					<Button>

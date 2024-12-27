@@ -28,7 +28,7 @@ const RequestList = ({
                     <p className="text-sm text-gray-600 mb-2">
                         {request.quantity} {m.units()}, ${request.total.toLocaleString()} - {m.requested_by()} {request.requester}
                     </p>
-                    <div className="flex justify-between items-center">
+                    <div className="flex-between">
                         <div>
                             <Badge variant="secondary" className="bg-gray-100 text-gray-800 mr-2">
                                 <Users className="w-3 h-3 mr-1" />

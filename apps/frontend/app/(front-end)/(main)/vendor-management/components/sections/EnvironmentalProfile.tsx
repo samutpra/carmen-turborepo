@@ -138,7 +138,7 @@ export function EnvironmentalProfile({ vendorId, environmentalData }: VendorEnvi
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex-between">
                 <div className="flex gap-2">
                     <Badge variant="outline" className="text-sm">
                         Last Updated: {lastUpdated}

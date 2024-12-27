@@ -102,4 +102,7 @@ body {
 	.flex-end {
 		@apply flex items-center justify-end;
 	}
+	.flex-between {
+		@apply flex items-center justify-between;
+	}
 }
