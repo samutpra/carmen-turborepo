@@ -245,13 +245,19 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 
 						<DialogFooter>
 							<div className="flex-end gap-2">
-								<Button type="button" variant="outline" onClick={handleClose}>
+								<Button
+									type="button"
+									variant={'outline'}
+									onClick={handleClose}
+									size={'sm'}
+								>
 									Cancel
 								</Button>
 								<LoaderButton
 									type="submit"
 									disabled={isLoading}
 									isLoading={isLoading}
+									size={'sm'}
 								>
 									{isLoading
 										? 'Saving...'
