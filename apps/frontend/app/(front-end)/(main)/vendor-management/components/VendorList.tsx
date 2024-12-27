@@ -79,7 +79,7 @@ const VendorList = () => {
 	const title = 'Vendors';
 
 	const actionButtons = (
-		<div className="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6">
+		<div className="action-btn-container">
 			<Button asChild>
 				<Link href="/vendor-management/vendors/new">
 					<Plus className="h-4 w-4" />
@@ -90,13 +90,13 @@ const VendorList = () => {
 	);
 
 	const filter = (
-		<div className="flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background">
+		<div className="filter-container">
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
 				placeholder="Search Vendor..."
 			/>
-			<div className="flex gap-2 justify-center items-center">
+			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
 					<PopoverTrigger asChild>
 						<Button
