@@ -4,7 +4,7 @@ import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { UnitType } from '@carmensoftware/shared-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Popover,
 	PopoverContent,
@@ -73,31 +73,36 @@ const UnitList = () => {
 		{ label: 'Inactive', value: 'false' },
 	];
 
-	const handleSuccess = (updatedUnit: UnitType) => {
+	const handleSuccess = useCallback((updatedUnit: UnitType) => {
 		setUnits((prev) => {
-			const exists = prev.some((u) => u.id === updatedUnit.id);
-			if (exists) {
-				return prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
-			}
-			return [...prev, updatedUnit];
+			const unitsMap = new Map(prev.map((u) => [u.id, u])); // สร้าง Map เพื่อใช้ id เป็น key
+			unitsMap.set(updatedUnit.id, updatedUnit); // อัปเดตหรือเพิ่ม updatedUnit
+			return Array.from(unitsMap.values()); // แปลง Map กลับเป็น array
 		});
-	};
+	}, [setUnits]);
 
-	const handleDelete = async (id: string) => {
-		try {
-			const res = await deleteUnit(id, token, tenantId);
-			if (res) {
-				setUnits((prev) => prev.filter((u) => u.id !== id));
-				toastSuccess({ message: 'Unit deleted successfully' });
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteUnit(id, token, tenantId);
+				if (res) {
+					setUnits((prev) => prev.filter((u) => u.id !== id));
+					toastSuccess({ message: 'Unit deleted successfully' });
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: 'Your session has expired. Please login again.' });
+					} else {
+						toastError({ message: `Failed to delete unit: ${error.message}` });
+					}
+				} else {
+					toastError({ message: 'An unknown error occurred while deleting the unit.' });
+				}
 			}
-		} catch (error) {
-			if (error instanceof Error && error.message === 'Unauthorized') {
-				toastError({ message: 'Your session has expired. Please login again.' });
-			} else {
-				toastError({ message: 'Failed to delete unit' });
-			}
-		}
-	};
+		},
+		[token, tenantId, deleteUnit]
+	);
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
