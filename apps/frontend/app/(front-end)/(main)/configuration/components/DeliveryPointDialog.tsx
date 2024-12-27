@@ -149,7 +149,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base">Active</FormLabel>
 									</div>
