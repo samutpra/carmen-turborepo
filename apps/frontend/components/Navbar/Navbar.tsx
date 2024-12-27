@@ -16,26 +16,18 @@ import {
 	DrawerTitle,
 } from '../ui-custom/drawer';
 import MenuContent from './MenuContent';
+import useResponsive from '@/hooks/useResponsive';
 
 const Navbar = () => {
 	const { isAuthenticated } = useAuth();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const { isMobile } = useResponsive();
 
 	useEffect(() => {
-		const handleResize = () => {
-			if (window.innerWidth >= 768) {
-				setIsMenuOpen(false);
-			}
-		};
-
-		window.addEventListener('resize', handleResize);
-
-		handleResize();
-
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
+		if (!isMobile) {
+			setIsMenuOpen(false);
+		}
+	}, [isMobile]);
 
 	return (
 		<header className="fixed top-0 left-0 right-0 border-b bg-background">
