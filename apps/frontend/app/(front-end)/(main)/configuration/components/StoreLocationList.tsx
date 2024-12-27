@@ -3,7 +3,7 @@ import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LocationType } from '@carmensoftware/shared-types';
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState, FormEvent, useCallback } from 'react';
 import {
 	Popover,
 	PopoverContent,
@@ -77,34 +77,37 @@ const StoreLocationList = () => {
 		{ label: 'Inactive', value: 'false' },
 	];
 
-	const handleSuccess = (updatedLocation: LocationType) => {
-		setStoreLocations((prev) => {
-			const exists = prev.some((l) => l.id === updatedLocation.id);
-			if (exists) {
-				return prev.map((l) =>
-					l.id === updatedLocation.id ? updatedLocation : l
-				);
-			}
-			return [...prev, updatedLocation];
-		});
-	};
 
-	const handleDelete = async (id: string) => {
-		try {
-			const res = await deleteStoreLocation(id, token, tenantId);
-			if (res) {
-				setStoreLocations((prev) => prev.filter((l) => l.id !== id));
-				toastSuccess({ message: 'Store location deleted successfully' });
+	const handleSuccess = useCallback((values: LocationType) => {
+		setStoreLocations((prev) => {
+			const mapValues = new Map(prev.map((u) => [u.id, u]));
+			mapValues.set(values.id, values);
+			return Array.from(mapValues.values());
+		});
+	}, [setStoreLocations]);
+
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteStoreLocation(id, token, tenantId);
+				if (res) {
+					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
+					toastSuccess({ message: 'Store location deleted successfully' });
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: 'Your session has expired. Please login again.' });
+					} else {
+						toastError({ message: `Failed to delete store location: ${error.message}` });
+					}
+				} else {
+					toastError({ message: 'An unknown error occurred while deleting the store location.' });
+				}
 			}
-		} catch (error) {
-			if (error instanceof Error && error.message === 'Unauthorized') {
-				toastError({ message: 'Your session has expired. Please login again.' });
-			} else {
-				console.error('Error deleting store location:', error);
-				toastError({ message: 'Failed to delete store location' });
-			}
-		}
-	};
+		}, [token, tenantId, deleteStoreLocation]
+	)
+
 
 	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

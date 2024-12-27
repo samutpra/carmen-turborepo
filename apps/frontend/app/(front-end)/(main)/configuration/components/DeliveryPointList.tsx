@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
 import { DeliveryPointType } from '@carmensoftware/shared-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
@@ -65,33 +65,37 @@ const DeliveryPointList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	const handleSuccess = (updatedPoint: DeliveryPointType) => {
+
+	const handleSuccess = useCallback((values: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
-			const exists = prev.some((p) => p.id === updatedPoint.id);
-			if (exists) {
-				return prev.map((p) => (p.id === updatedPoint.id ? updatedPoint : p));
-			}
-			return [...prev, updatedPoint];
+			const mapValues = new Map(prev.map((u) => [u.id, u]));
+			mapValues.set(values.id, values);
+			return Array.from(mapValues.values());
 		});
-		fetchData();
-	};
+	}, [setDeliveryPoints]);
 
 
-	const handleDelete = async (id: string) => {
-		try {
-			await deleteDeliveryPoint(id, token, tenantId);
-			setDeliveryPoints((prev) => prev.filter((p) => p.id !== id));
-			toastSuccess({ message: 'Delivery point deleted successfully' });
-			fetchData();
-		} catch (error) {
-			if (error instanceof Error && error.message === 'Unauthorized') {
-				toastError({ message: 'Your session has expired. Please login again.' });
-			} else {
-				console.error('Error deleting currency:', error);
-				toastError({ message: 'Failed to delete currency' });
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteDeliveryPoint(id, token, tenantId);
+				if (res) {
+					setDeliveryPoints((prev) => prev.filter((p) => p.id !== id));
+					toastSuccess({ message: 'Delivery point deleted successfully' });
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: 'Your session has expired. Please login again.' });
+					} else {
+						toastError({ message: `Failed to delete delivery point: ${error.message}` });
+					}
+				} else {
+					toastError({ message: 'An unknown error occurred while deleting the delivery point.' });
+				}
 			}
-		}
-	};
+		}, [token, tenantId, deleteDeliveryPoint]
+	)
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
