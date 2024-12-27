@@ -47,7 +47,7 @@ export function TenantList() {
 				<SelectTrigger>
 					<SelectValue
 						placeholder="Business Unit"
-						className="w-full md:w-[180px]"
+						className="w-full md:w-[300px]"
 					/>
 				</SelectTrigger>
 				<SelectContent>
