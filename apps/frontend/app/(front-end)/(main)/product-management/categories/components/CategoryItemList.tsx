@@ -99,19 +99,20 @@ const CategoryItemList: React.FC<Props> = ({
 			<div className="flex">
 				<Button
 					variant="ghost"
-					size="icon"
+					size={'sm'}
 					onClick={(e) => handleEditClick(e, category)}
 					aria-label={`Edit ${category.name}`}
+
 				>
 					<Pencil className="h-4 w-4" />
 				</Button>
 				<Button
 					variant="ghost"
-					size="icon"
+					size={'sm'}
 					onClick={(e) => handleDeleteClick(e, category)}
 					aria-label={`Delete ${category.name}`}
 				>
-					<Trash className="h-4 w-4 text-red-500" />
+					<Trash />
 				</Button>
 			</div>
 		</div>
