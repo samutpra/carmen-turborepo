@@ -9,7 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     AlertDialog,
@@ -24,6 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Trash } from 'lucide-react';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { Badge } from '../ui-custom/is-active-badge';
 
 type FieldValue = string | number | boolean | null | undefined;
 
