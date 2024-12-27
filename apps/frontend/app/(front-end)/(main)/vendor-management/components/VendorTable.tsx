@@ -54,7 +54,7 @@ const VendorTable: React.FC<VendorTableProps> = ({
 							</Badge>
 						</TableCell>
 						<TableCell className="text-right">
-							<Button asChild variant="ghost">
+							<Button asChild variant="ghost" size={'sm'}>
 								<Link href={`/vendor-management/vendors/${vendor.id}`}>
 									<Eye className="h-4 w-4" />
 								</Link>
