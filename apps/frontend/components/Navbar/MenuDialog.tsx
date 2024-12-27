@@ -41,7 +41,7 @@ const MenuDialog = () => {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button className="w-full md:w-fit mr-2">
+				<Button className="w-full md:w-fit mr-2" variant={'outline'}>
 					<LayoutPanelLeft />
 				</Button>
 			</DialogTrigger>
