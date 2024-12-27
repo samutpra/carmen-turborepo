@@ -12,7 +12,6 @@ interface Props {
     onToggleExpand: (title: string, path?: string) => void;
     onToggleSubItem: (path: string) => void;
     onClose: () => void;
-    isLargeScreen: boolean;
 }
 
 const SidebarMenuItem: React.FC<Props> = ({
@@ -23,7 +22,6 @@ const SidebarMenuItem: React.FC<Props> = ({
     onToggleExpand,
     onToggleSubItem,
     onClose,
-    isLargeScreen
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const IconComponent = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
@@ -53,7 +51,6 @@ const SidebarMenuItem: React.FC<Props> = ({
                     subItems={item.subItems}
                     pathname={pathname}
                     onClose={onClose}
-                    isLargeScreen={isLargeScreen}
                     expandedItems={expandedItems}
                     onToggleExpand={onToggleSubItem}
                 />

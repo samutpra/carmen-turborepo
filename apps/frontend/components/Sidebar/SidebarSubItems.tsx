@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 import { Link } from '@/lib/i18n';
 import * as LucideIcons from "lucide-react";
 import { SubMenuItem } from '@/lib/types';
+import useResponsive from '@/hooks/useResponsive';
 interface Props {
     subItems: SubMenuItem[];
     pathname: string;
     onClose: () => void;
-    isLargeScreen: boolean;
     level?: number;
     expandedItems: string[];
     onToggleExpand: (path: string) => void;
@@ -18,13 +18,12 @@ const SidebarSubItems: React.FC<Props> = ({
     subItems,
     pathname,
     onClose,
-    isLargeScreen,
     level = 0,
     expandedItems,
     onToggleExpand
 }) => {
     const paddingLeft = `${(level + 1) * 1}rem`;
-
+    const { isDesktop } = useResponsive();
     return (
         <div className="mt-2">
             {subItems.map((subItem) => {
@@ -46,7 +45,7 @@ const SidebarSubItems: React.FC<Props> = ({
                             onClick={() => {
                                 if (hasNestedItems) {
                                     onToggleExpand(subItem.path);
-                                } else if (!isLargeScreen) {
+                                } else if (!isDesktop) {
                                     onClose();
                                 }
                             }}
@@ -82,7 +81,6 @@ const SidebarSubItems: React.FC<Props> = ({
                                 subItems={subItem.subItems}
                                 pathname={pathname}
                                 onClose={onClose}
-                                isLargeScreen={isLargeScreen}
                                 level={level + 1}
                                 expandedItems={expandedItems}
                                 onToggleExpand={onToggleExpand}

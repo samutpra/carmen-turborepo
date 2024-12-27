@@ -5,12 +5,12 @@ import SidebarLogo from './SidebarLogo';
 import { ScrollArea } from '../ui/scroll-area';
 import SidebarMenuItem from './SidebarMenuItem';
 import { cn } from '@/lib/utils';
+import useResponsive from '@/hooks/useResponsive';
 
 const Sidebar = () => {
     const {
         isSidebarOpen,
         setIsSidebarOpen,
-        isLargeScreen,
         expandedItems,
         isExpanded,
         setIsExpanded,
@@ -20,6 +20,8 @@ const Sidebar = () => {
         toggleExpand,
         toggleSubItem
     } = useSidebar();
+
+    const { isDesktop } = useResponsive();
 
     const handleMouseEnter = () => {
         if (!isPinned) {
@@ -44,14 +46,14 @@ const Sidebar = () => {
 
     return (
         <div className="top-1 z-50 flex-col gap-4 relative bg-background">
-            {isSidebarOpen && !isLargeScreen && (
+            {isSidebarOpen && !isDesktop && (
                 <div className="fixed md:sticky inset-0 z-40" onClick={onClose} />
             )}
 
             <aside
                 className={cn(
                     "fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out",
-                    isSidebarOpen || isLargeScreen ? "translate-x-0 md:sticky" : "-translate-x-full",
+                    isSidebarOpen || isDesktop ? "translate-x-0 md:sticky" : "-translate-x-full",
                     isExpanded ? "w-[280px]" : "w-[64px]"
                 )}
                 onMouseEnter={handleMouseEnter}
@@ -75,7 +77,6 @@ const Sidebar = () => {
                                 onToggleExpand={toggleExpand}
                                 onToggleSubItem={toggleSubItem}
                                 onClose={onClose}
-                                isLargeScreen={isLargeScreen}
                             />
                         ))}
                     </div>
