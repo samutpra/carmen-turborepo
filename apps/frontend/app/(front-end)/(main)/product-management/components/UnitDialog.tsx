@@ -175,7 +175,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							)}
 						/>
 						<DialogFooter>
-							<div className="flex items-center justify-end gap-2">
+							<div className="flex-end gap-2">
 								<Button type="button" variant="outline" onClick={handleClose}>
 									Cancel
 								</Button>

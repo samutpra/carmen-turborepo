@@ -205,7 +205,7 @@ const ContactForm: React.FC<Props> = ({
                             />
                         </div>
                         <DialogFooter>
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex-end gap-2">
                                 <Button type="button" variant="outline" onClick={handleClose}>
                                     Cancel
                                 </Button>
