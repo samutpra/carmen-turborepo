@@ -32,8 +32,8 @@ const Notifications = () => {
 			<DrawerTrigger asChild>
 				<Button
 					variant="ghost"
-					size="icon"
-					className="relative"
+					size={'sm'}
+					className="relative mr-2"
 					aria-label="Open notifications"
 				>
 					<Bell size={20} />

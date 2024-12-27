@@ -22,26 +22,26 @@ import { Card, CardContent } from '../ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '../ui-custom/dialog';
 
 const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } =
-	{
-		LayoutDashboard,
-		ShoppingCart,
-		Package,
-		Users,
-		MonitorCog,
-		Store,
-		CalendarClock,
-		Factory,
-		BarChart2,
-		DollarSign,
-		Settings,
-		HelpCircle,
-	};
+{
+	LayoutDashboard,
+	ShoppingCart,
+	Package,
+	Users,
+	MonitorCog,
+	Store,
+	CalendarClock,
+	Factory,
+	BarChart2,
+	DollarSign,
+	Settings,
+	HelpCircle,
+};
 
 const MenuDialog = () => {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button className="w-full md:w-fit">
+				<Button className="w-full md:w-fit mr-2">
 					<LayoutPanelLeft />
 				</Button>
 			</DialogTrigger>

@@ -91,7 +91,7 @@ body {
 		@apply flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background;
 	}
 	.action-btn-container {
-		@apply flex flex-col md:flex-row gap-4 md:items-start justify-between mb-6;
+		@apply flex flex-col md:flex-row gap-4 md:items-start justify-between mb-4;
 	}
 	.btn-combobox {
 		@apply w-full md:w-[200px] justify-between;
