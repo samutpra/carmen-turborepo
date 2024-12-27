@@ -151,7 +151,7 @@ const DataCard = <T extends Record<string, FieldValue>>({
 							<AlertDialog>
 								<AlertDialogTrigger asChild>
 									<Button variant="ghost" size="sm">
-										<TrashIcon className="w-4 h-4" />
+										<TrashIcon />
 									</Button>
 								</AlertDialogTrigger>
 								<AlertDialogContent>
