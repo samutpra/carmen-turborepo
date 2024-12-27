@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PencilIcon, PlusIcon } from 'lucide-react';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
 import {
 	Form,
 	FormControl,
@@ -103,16 +102,19 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				{mode === formType.ADD ? (
-					<Button className="gap-2">
-						<PlusIcon className="w-4 h-4" />
-						Create Currency
-					</Button>
-				) : (
-					<CustomButton variant="ghost" size="sm">
+				<Button
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
+				>
+					{mode === formType.ADD ? (
+						<>
+							<PlusIcon className="h-4 w-4" />
+							Add Currency
+						</>
+					) : (
 						<PencilIcon className="w-4 h-4" />
-					</CustomButton>
-				)}
+					)}
+				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>

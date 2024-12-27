@@ -104,12 +104,12 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'default' : 'ghost'}
-					size={mode === formType.ADD ? 'default' : 'sm'}
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
 				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="mr-2 h-4 w-4" />
+							<PlusIcon className="h-4 w-4" />
 							Add Unit
 						</>
 					) : (

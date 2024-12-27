@@ -112,13 +112,13 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'default' : 'ghost'}
-					size={mode === formType.ADD ? 'default' : 'sm'}
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
 				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="mr-2 h-4 w-4" />
-							Add Store Location
+							<PlusIcon className="h-4 w-4" />
+							Add Location
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />

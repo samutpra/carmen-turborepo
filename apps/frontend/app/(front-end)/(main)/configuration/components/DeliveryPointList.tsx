@@ -132,14 +132,15 @@ const DeliveryPointList = () => {
 							variant="outline"
 							role="combobox"
 							aria-expanded={statusOpen}
-							className="w-full md:w-[200px] justify-between"
+							className="btn-combobox"
+							size={'sm'}
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="p-0 w-full md:w-[200px]">
+					<PopoverContent className="pop-content">
 						<Command>
 							<CommandInput placeholder="Search status..." className="h-9" />
 							<CommandList>

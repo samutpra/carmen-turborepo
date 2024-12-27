@@ -17,7 +17,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
     defaultValue = '',
     placeholder = '',
     containerClassName = 'w-full md:w-1/3',
-    inputClassName = 'h-10 pr-10',
+    inputClassName = 'h-9 pr-10',
     buttonClassName = 'absolute right-0 top-0 h-full px-3'
 }) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
@@ -43,10 +43,10 @@ const SearchForm: React.FC<SearchFormProps> = ({
                 <Button
                     type="submit"
                     variant="ghost"
-                    size="icon"
+                    size={'sm'}
                     className={buttonClassName}
                 >
-                    <Search className="h-4 w-4" />
+                    <Search />
                     <span className="sr-only">Search</span>
                 </Button>
             </div>

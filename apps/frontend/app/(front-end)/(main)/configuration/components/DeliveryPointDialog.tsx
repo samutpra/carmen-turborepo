@@ -27,7 +27,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PencilIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/app/context/AuthContext';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { submitDeliveryPoint } from '../actions/delivery_point';
@@ -101,16 +100,19 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				{mode === formType.ADD ? (
-					<Button className="gap-2">
-						<PlusIcon className="w-4 h-4" />
-						Create Delivery Point
-					</Button>
-				) : (
-					<CustomButton variant="ghost" size="sm">
+				<Button
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
+				>
+					{mode === formType.ADD ? (
+						<>
+							<PlusIcon className="h-4 w-4" />
+							Add Delivery Point
+						</>
+					) : (
 						<PencilIcon className="w-4 h-4" />
-					</CustomButton>
-				)}
+					)}
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="w-full md:w-[500px] rounded-lg">
 				<DialogHeader>

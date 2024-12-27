@@ -80,7 +80,7 @@ const VendorList = () => {
 
 	const actionButtons = (
 		<div className="action-btn-container">
-			<Button asChild>
+			<Button asChild variant={'outline'} size={'sm'}>
 				<Link href="/vendor-management/vendors/new">
 					<Plus className="h-4 w-4" />
 					Create vendor
@@ -103,14 +103,15 @@ const VendorList = () => {
 							variant="outline"
 							role="combobox"
 							aria-expanded={statusOpen}
-							className="w-full md:w-[200px] justify-between"
+							className="btn-combobox"
+							size={'sm'}
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
 								: 'Select status...'}
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="p-0 w-full md:w-[200px]">
+					<PopoverContent className="pop-content">
 						<Command>
 							<CommandInput placeholder="Search status..." className="h-9" />
 							<CommandList>
