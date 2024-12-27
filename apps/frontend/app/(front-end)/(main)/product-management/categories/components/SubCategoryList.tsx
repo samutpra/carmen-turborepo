@@ -118,23 +118,21 @@ const SubCategoryList: React.FC<Props> = ({
 			<div className="flex">
 				<Button
 					variant="ghost"
-					size="icon"
-					className="h-8 w-8"
+					size={'sm'}
 					aria-label="Edit sub category"
 					onClick={() => handleEditClick(subCategory)}
 				>
-					<Pencil className="h-4 w-4" />
+					<Pencil />
 				</Button>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
 						<Button
 							variant="ghost"
-							size="icon"
-							className="h-8 w-8 text-destructive hover:text-destructive"
+							size={'sm'}
 							aria-label="Delete sub category"
 							onClick={() => setSubCategoryID(subCategory.id || '')}
 						>
-							<Trash className="h-4 w-4" />
+							<Trash />
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>

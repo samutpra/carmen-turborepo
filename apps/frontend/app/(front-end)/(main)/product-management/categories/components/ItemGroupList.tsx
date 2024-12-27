@@ -111,8 +111,7 @@ const ItemGroupList: React.FC<Props> = ({
 			<div className="flex">
 				<Button
 					variant="ghost"
-					size="icon"
-					className="h-8 w-8"
+					size={'sm'}
 					aria-label="Edit item group"
 					onClick={() => handleEditClick(itemGroup)}
 				>
@@ -122,8 +121,7 @@ const ItemGroupList: React.FC<Props> = ({
 					<AlertDialogTrigger asChild>
 						<Button
 							variant="ghost"
-							size="icon"
-							className="h-8 w-8 text-destructive hover:text-destructive"
+							size={'sm'}
 							aria-label="Delete item group"
 							onClick={() => setIdToDelete(itemGroup.id || '')}
 						>
