@@ -1,6 +1,5 @@
 'use client';
 
-import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { UnitType } from '@carmensoftware/shared-types';
@@ -29,6 +28,7 @@ import { deleteUnit, fetchUnits } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
+import { useURL } from '@/hooks/useURL';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -38,8 +38,8 @@ const UnitList = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
-	const [search, setSearch] = useURLState('search');
-	const [status, setStatus] = useURLState('status');
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
 
 	const fetchData = async () => {
 		try {

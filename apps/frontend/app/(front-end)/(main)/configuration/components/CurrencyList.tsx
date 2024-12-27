@@ -1,6 +1,5 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
@@ -30,6 +29,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
+import { useURL } from '@/hooks/useURL';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -39,8 +39,8 @@ const CurrencyList = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
-	const [search, setSearch] = useURLState('search');
-	const [status, setStatus] = useURLState('status');
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const fetchData = async () => {

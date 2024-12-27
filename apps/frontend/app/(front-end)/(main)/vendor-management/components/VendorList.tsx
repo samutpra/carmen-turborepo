@@ -1,5 +1,5 @@
 'use client';
-import { useURLState } from '@/app/(front-end)/hooks/useURLState';
+
 import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { vendor_type } from '@carmensoftware/shared-types';
@@ -25,6 +25,7 @@ import VendorTable from './VendorTable';
 import { fetchAllVendors } from '../actions/vendor';
 import { Link } from '@/lib/i18n';
 import SearchForm from '@/components/ui-custom/SearchForm';
+import { useURL } from '@/hooks/useURL';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -34,8 +35,8 @@ const VendorList = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
-	const [search, setSearch] = useURLState('search');
-	const [status, setStatus] = useURLState('status');
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
 
 	const fetchData = async () => {
 		try {

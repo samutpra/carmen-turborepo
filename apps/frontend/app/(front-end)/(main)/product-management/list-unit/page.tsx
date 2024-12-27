@@ -1,7 +1,6 @@
 'use client';
 
 import { use, useCallback, useEffect } from 'react';
-import { useURLState } from '@/app/(front-end)/hooks/useURLState';
 import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { UnitType } from '@carmensoftware/shared-types';
@@ -30,6 +29,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import UnitDialog from '../components/UnitDialog';
+import { useURL } from '@/hooks/useURL';
 
 // Component to handle data fetching
 const UnitData = ({
@@ -195,8 +195,8 @@ const UnitList = () => {
     const { accessToken } = useAuth();
     const token = accessToken || '';
     const tenantId = 'DUMMY';
-    const [search, setSearch] = useURLState('search');
-    const [status, setStatus] = useURLState('status');
+    const [search, setSearch] = useURL('search');
+    const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
 
     const statusOptions = [

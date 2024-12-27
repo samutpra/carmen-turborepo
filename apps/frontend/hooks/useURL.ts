@@ -7,7 +7,7 @@ type URLStateOptions = {
     onUpdate?: (value: string) => void;
 };
 
-export const useURLState = (paramName: string, options: URLStateOptions = {}) => {
+export const useURL = (paramName: string, options: URLStateOptions = {}) => {
     const { defaultValue = '', onUpdate } = options;
 
     const [value, setValue] = useState(() => {
@@ -19,7 +19,7 @@ export const useURLState = (paramName: string, options: URLStateOptions = {}) =>
 
     const updateValue = useCallback((newValue: string) => {
         setValue(newValue);
-        
+
         if (typeof window !== 'undefined') {
             const url = new URL(window.location.href);
             if (newValue) {
