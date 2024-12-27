@@ -269,7 +269,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
 											</Button>
 										</>
 									) : (
-										<div className='w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg'>
+										<div className='w-full h-64 bg-gray-200 all-center rounded-lg'>
 											<p>No image available</p>
 										</div>
 									)}

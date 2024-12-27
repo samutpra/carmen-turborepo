@@ -292,7 +292,7 @@ const PermissionPage = () => {
 
 			{/* Edit Modal */}
 			{editingComment && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+				<div className="fixed inset-0 bg-black bg-opacity-50 all-center">
 					<Card className="w-96 p-4">
 						<CardHeader>Edit Comment</CardHeader>
 						<CardContent>

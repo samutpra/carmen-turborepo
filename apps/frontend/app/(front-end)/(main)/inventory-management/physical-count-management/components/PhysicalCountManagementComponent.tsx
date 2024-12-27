@@ -69,7 +69,7 @@ const PhysicalCountManagementComponent = () => {
                     </div>
                 </div>
                 {showNewCountForm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 all-center z-50">
                         <NewCountForm
                             onClose={() => setShowNewCountForm(false)}
                             onSubmit={handleNewCount}
@@ -78,7 +78,7 @@ const PhysicalCountManagementComponent = () => {
                 )}
 
                 {showCountDetailForm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 all-center z-50">
                         <CountDetailForm
                             onClose={() => setShowCountDetailForm(false)}
                             onSubmit={handleCountDetailSubmit}

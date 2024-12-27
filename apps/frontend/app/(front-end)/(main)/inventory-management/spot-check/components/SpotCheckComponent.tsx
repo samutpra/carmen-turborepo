@@ -58,7 +58,7 @@ const SpotCheckComponent = () => {
                     <p className="text-muted-foreground">Random inventory spot checks for accuracy verification</p>
                 </div>
                 {showCountDetailForm && currentDetails && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 all-center z-50">
                         <CountDetailForm
                             items={[]}
                             locationName={currentDetails.store}
