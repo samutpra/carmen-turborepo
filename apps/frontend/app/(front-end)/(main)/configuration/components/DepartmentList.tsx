@@ -63,7 +63,7 @@ const DepartmentList = () => {
 	};
 
 	const fetchData = async () => {
-		setIsLoading(true); // Set loading before fetch
+		setIsLoading(true);
 		try {
 			const data = await fetchDepartments(token, tenantId, { search, status });
 			startTransition(() => {
@@ -72,7 +72,7 @@ const DepartmentList = () => {
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
-			setIsLoading(false); // Clear loading after fetch
+			setIsLoading(false);
 		}
 	};
 
@@ -227,7 +227,7 @@ const DepartmentList = () => {
 		</>
 	);
 
-	if (isLoading || isPending) {  // Check both loading states
+	if (isLoading || isPending) {
 		return <SkeltonLoad />;
 	}
 	if (departments.length === 0) {
