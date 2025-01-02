@@ -4,7 +4,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DepartmentType } from '@carmensoftware/shared-types/src/department';
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState, FormEvent, useMemo, useCallback, useTransition } from 'react';
 import {
 	Popover,
 	PopoverContent,
@@ -36,6 +36,7 @@ const DepartmentList = () => {
 	const tenantId = 'DUMMY';
 
 	const [departments, setDepartments] = useState<DepartmentType[]>([]);
+	const [isPending, startTransition] = useTransition();
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -48,43 +49,40 @@ const DepartmentList = () => {
 		{ label: 'Inactive', value: 'false' },
 	];
 
+	const departmentFields = useMemo<FieldConfig<DepartmentType>[]>(() => [
+		{ key: 'name', label: 'Name' },
+		{ key: 'description', label: 'Description' },
+		{ key: 'is_active', label: 'Status', type: 'badge' }
+	], []);
+
 	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
+		startTransition(() => {
+			setSearch(event.currentTarget.search.value);
+		});
 	};
 
 	const fetchData = async () => {
+		setIsLoading(true); // Set loading before fetch
 		try {
-			setIsLoading(true);
 			const data = await fetchDepartments(token, tenantId, { search, status });
-			setDepartments(data);
+			startTransition(() => {
+				setDepartments(data);
+			});
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
-			setIsLoading(false);
+			setIsLoading(false); // Clear loading after fetch
 		}
 	};
 
 	useEffect(() => {
-		fetchData();
+		startTransition(() => {
+			fetchData();
+		});
 	}, [token, tenantId, search, status]);
 
-	const handleDelete = async (id: string) => {
-		try {
-			const res = await deleteDepartment(id, token, tenantId);
-			if (res) {
-				setDepartments((prev) => prev.filter((department) => department.id !== id));
-				toastSuccess({ message: 'Department deleted successfully' });
-			}
-		} catch (error) {
-			if (error instanceof Error && error.message === 'Unauthorized') {
-				toastError({ message: 'Your session has expired. Please login again.' });
-			} else {
-				console.error('Error deleting currency:', error);
-				toastError({ message: 'Failed to delete department' });
-			}
-		}
-	}
+
 
 	if (error) {
 		return (
@@ -96,15 +94,39 @@ const DepartmentList = () => {
 		);
 	}
 
-	const handleSuccess = (values: DepartmentType) => {
-		setDepartments((prev) => {
-			const exists = prev.some((p) => p.id === values.id);
-			if (exists) {
-				return prev.map((p) => (p.id === values.id ? values : p));
+	const handleSuccess = useCallback((values: DepartmentType) => {
+		startTransition(() => {
+			setDepartments((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		})
+	}, [setDepartments]);
+
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				startTransition(async () => {
+					const res = await deleteDepartment(id, token, tenantId);
+					if (res) {
+						setDepartments((prev) => prev.filter((department) => department.id !== id));
+						toastSuccess({ message: 'Department deleted successfully' });
+					}
+				});
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: 'Your session has expired. Please login again.' });
+					} else {
+						toastError({ message: `Failed to delete department point: ${error.message}` });
+					}
+				} else {
+					toastError({ message: 'An unknown error occurred while deleting the department.' });
+				}
 			}
-			return [...prev, values];
-		});
-	};
+		}, [token, tenantId, deleteDepartment]
+	)
 
 	const title = 'Departments';
 
@@ -130,6 +152,7 @@ const DepartmentList = () => {
 							aria-expanded={statusOpen}
 							className="btn-combobox"
 							size={'sm'}
+							disabled={isPending}
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
@@ -147,8 +170,10 @@ const DepartmentList = () => {
 											key={option.value}
 											value={option.value}
 											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
+												startTransition(() => {
+													setStatus(option.value);
+													setStatusOpen(false);
+												});
 											}}
 										>
 											{option.label}
@@ -163,11 +188,7 @@ const DepartmentList = () => {
 		</div>
 	);
 
-	const departmentFields: FieldConfig<DepartmentType>[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Status', type: 'badge' }
-	];
+
 
 	const content = (
 		<>
@@ -206,10 +227,9 @@ const DepartmentList = () => {
 		</>
 	);
 
-	if (isLoading) {
+	if (isLoading || isPending) {  // Check both loading states
 		return <SkeltonLoad />;
 	}
-
 	if (departments.length === 0) {
 		return (
 			<EmptyState
