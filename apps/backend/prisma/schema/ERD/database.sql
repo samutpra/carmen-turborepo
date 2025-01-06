@@ -2,6 +2,11 @@ CREATE SCHEMA "CARMEN_SYSTEM";
 
 CREATE SCHEMA "TENANT_DUMMY";
 
+CREATE TYPE "CARMEN_SYSTEM"."enum_token_type" AS ENUM (
+  'access_token',
+  'refresh_token'
+);
+
 CREATE TYPE "CARMEN_SYSTEM"."enum_subscription_status" AS ENUM (
   'active',
   'inactive',
@@ -127,7 +132,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_password" (
   "user_id" uuid NOT NULL,
   "hash" text NOT NULL,
   "is_active" bool DEFAULT false,
-  "expiredOn" date NOT NULL DEFAULT (now() + '90 day'::interval),
+  "expired_on" date NOT NULL DEFAULT (now() + '90 day'::interval),
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid
 );
@@ -135,7 +140,9 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_password" (
 CREATE TABLE "CARMEN_SYSTEM"."tb_user_login_session" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "token" text UNIQUE NOT NULL,
-  "expiredOn" date NOT NULL DEFAULT (now() + '90 day'::interval)
+  "token_type" "CARMEN_SYSTEM".enum_token_type NOT NULL DEFAULT 'access_token',
+  "user_id" uuid NOT NULL,
+  "expired_on" timestamp NOT NULL DEFAULT (now() + '1 day'::interval)
 );
 
 CREATE TABLE "CARMEN_SYSTEM"."tb_user_profile" (
@@ -644,6 +651,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_good_receive_note" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -665,6 +673,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_store_requisition" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -686,6 +695,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_stock_in" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -707,6 +717,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_stock_out" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -728,6 +739,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_credit_note" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -750,6 +762,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_stock_take" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "inventory_transaction_id" uuid NOT NULL,
   "name" varchar,
+  "workflow" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -872,6 +885,8 @@ ALTER TABLE "CARMEN_SYSTEM"."tb_user" ADD FOREIGN KEY ("updated_by_id") REFERENC
 ALTER TABLE "CARMEN_SYSTEM"."tb_password" ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 
 ALTER TABLE "CARMEN_SYSTEM"."tb_password" ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+
+ALTER TABLE "CARMEN_SYSTEM"."tb_user_login_session" ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 
 ALTER TABLE "CARMEN_SYSTEM"."tb_user_profile" ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 

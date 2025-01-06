@@ -25,6 +25,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -87,6 +88,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -295,6 +297,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -314,6 +317,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -333,6 +337,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -352,6 +357,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -492,6 +498,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -566,6 +573,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -808,6 +816,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -831,6 +840,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -854,6 +864,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -877,6 +888,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

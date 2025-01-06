@@ -160,7 +160,7 @@ model tb_password {
   user_id                                    String    @db.Uuid
   hash                                       String
   is_active                                  Boolean?  @default(false)
-  expiredOn                                  DateTime  @default(dbgenerated("(now() + '90 days'::interval)")) @db.Date
+  expired_on                                 DateTime  @default(dbgenerated("(now() + '90 days'::interval)")) @db.Date
   created_at                                 DateTime? @default(now()) @db.Timestamp(6)
   created_by_id                              String?   @db.Uuid
   tb_user_tb_password_created_by_idTotb_user tb_user?  @relation("tb_password_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -262,6 +262,7 @@ model tb_user {
   other_tb_user_tb_user_created_by_idTotb_user                                               tb_user[]                           @relation("tb_user_created_by_idTotb_user")
   tb_user_tb_user_updated_by_idTotb_user                                                     tb_user?                            @relation("tb_user_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_tb_user_tb_user_updated_by_idTotb_user                                               tb_user[]                           @relation("tb_user_updated_by_idTotb_user")
+  tb_user_login_session                                                                      tb_user_login_session[]
   tb_user_profile_tb_user_profile_created_by_idTotb_user                                     tb_user_profile[]                   @relation("tb_user_profile_created_by_idTotb_user")
   tb_user_profile_tb_user_profile_updated_by_idTotb_user                                     tb_user_profile[]                   @relation("tb_user_profile_updated_by_idTotb_user")
   tb_user_profile_tb_user_profile_user_idTotb_user                                           tb_user_profile[]                   @relation("tb_user_profile_user_idTotb_user")
@@ -329,13 +330,21 @@ model tb_user_tb_business_unit {
 }
 
 model tb_user_login_session {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  token     String   @unique
-  expiredOn DateTime @default(dbgenerated("(now() + '90 days'::interval)")) @db.Date
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String          @unique
+  token_type enum_token_type @default(access_token)
+  user_id    String          @db.Uuid
+  expired_on DateTime        @default(dbgenerated("(now() + '1 day'::interval)")) @db.Timestamp(6)
+  tb_user    tb_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum enum_subscription_status {
   active
   inactive
   expired
+}
+
+enum enum_token_type {
+  access_token
+  refresh_token
 }
