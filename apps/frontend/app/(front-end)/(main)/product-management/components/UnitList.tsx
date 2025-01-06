@@ -88,7 +88,7 @@ const UnitList = () => {
 				const res = await deleteUnit(id, token, tenantId);
 				if (res) {
 					setUnits((prev) => prev.filter((u) => u.id !== id));
-					toastSuccess({ message: 'Unit deleted successfully' });
+					toastSuccess({ message: `${m.unit_delete_success()}` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {

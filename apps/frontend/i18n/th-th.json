@@ -151,5 +151,21 @@
 	"create_vendor_text": "สร้างผู้ขาย",
 	"Search": "ค้นหา",
 	"Vendor": "ผู้ขาย",
-	"no_vendors_found_text": "ไม่พบผู้ขาย"
+	"no_vendors_found_text": "ไม่พบผู้ขาย",
+	"unit_delete_success": "ลบหน่วยเรียบร้อยแล้ว",
+	"currency_delete_success": "ลบสกุลเงินสำเร็จแล้ว",
+	"code_label": "โค้ด",
+	"symbol_label": "เครื่องหมาย",
+	"rate_label": "อัตรา",
+	"no_currency_found_text": "ไม่พบสกุลเงิน",
+	"successfully": "สำเร็จ",
+	"create_new_currency": "สร้างสกุลเงินใหม่",
+	"edit_currency": "แก้ไขสกุลเงิน",
+	"description": "คําอธิบาย",
+	"currency_name": "ชื่อสกุลเงิน",
+	"placeholder_enter_code_name": "กรอกโค้ด",
+	"placeholder_currency_name": "กรอกชื่อสกุลเงิน",
+	"placeholder_symbol": "ป้อนสัญลักษณ์",
+	"placeholder_rate": "ป้อนอัตรา",
+	"placeholder_enter": "กรอกคำอธิบาย"
 }

@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitCurrency } from '../actions/currency';
 import { formType } from '@/types/form_type';
+import * as m from '@/paraglide/messages.js';
 
 export interface CurrencyDialogProps {
 	mode: formType;
@@ -85,10 +86,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			setOpen(false);
 			form.reset();
 
-			toastSuccess({ message: `Currency ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
+			toastSuccess({ message: `${m.currency()} ${mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`} ${m.successfully()}` });
 		} catch (err) {
-			console.error(`Error ${mode}ing Currency:`, err);
-			toastError({ message: `Failed to ${mode} Currency` });
+			console.error(`Error submit Currency:`, err);
+			toastError({ message: `${m.fail_to_text()} ${mode} ${m.currency()}` });
 		} finally {
 			setIsLoading(false);
 		}
@@ -109,7 +110,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="h-4 w-4" />
-							Add Currency
+							{m.add_text()} {m.currency()}
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />
@@ -119,7 +120,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? 'Create New Currency' : 'Edit Currency'}
+						{mode === formType.ADD ? `${m.create_new_currency()}` : `${m.edit_currency()}`}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -130,10 +131,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								name="code"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Code</FormLabel>
+										<FormLabel>{m.code_label()}</FormLabel>
 										<FormControl>
 											<InputCustom
-												placeholder="Enter Code name"
+												placeholder={m.placeholder_enter_code_name()}
 												error={!!form.formState.errors.code}
 												{...field}
 												maxLength={3}
@@ -150,10 +151,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Name</FormLabel>
+										<FormLabel>{m.currency_name()}</FormLabel>
 										<FormControl>
 											<InputCustom
-												placeholder="Enter Name"
+												placeholder={m.placeholder_currency_name()}
 												error={!!form.formState.errors.name}
 												{...field}
 											/>
@@ -171,10 +172,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								name="symbol"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Symbol</FormLabel>
+										<FormLabel>{m.symbol_label()}</FormLabel>
 										<FormControl>
 											<InputCustom
-												placeholder="Enter Symbol"
+												placeholder={m.placeholder_symbol()}
 												error={!!form.formState.errors.symbol}
 												{...field}
 												maxLength={3}
@@ -191,10 +192,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								name="rate"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Rate</FormLabel>
+										<FormLabel>{m.rate_label()}</FormLabel>
 										<FormControl>
 											<InputCustom
-												placeholder="Enter Rate"
+												placeholder={m.placeholder_rate()}
 												error={!!form.formState.errors.rate}
 												{...field}
 												value={String(field.value) || ''}
@@ -215,9 +216,9 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea placeholder={m.placeholder_enter()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -231,7 +232,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">Active</FormLabel>
+										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -251,7 +252,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									onClick={handleClose}
 									size={'sm'}
 								>
-									Cancel
+									{m.cancel_text()}
 								</Button>
 								<LoaderButton
 									type="submit"
@@ -260,10 +261,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									size={'sm'}
 								>
 									{isLoading
-										? 'Saving...'
+										? `${m.saving()}...`
 										: mode === formType.EDIT
-											? 'Save Changes'
-											: 'Add'}
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
 								</LoaderButton>
 							</div>
 						</DialogFooter>

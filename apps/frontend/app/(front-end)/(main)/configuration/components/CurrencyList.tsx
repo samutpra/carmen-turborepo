@@ -30,6 +30,7 @@ import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
+import * as m from '@/paraglide/messages.js';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -72,9 +73,9 @@ const CurrencyList = () => {
 
 
 	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
+		{ label: `${m.all_status()}`, value: '' },
+		{ label: `${m.status_active()}`, value: 'true' },
+		{ label: `${m.status_inactive()}`, value: 'false' },
 	];
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -106,7 +107,7 @@ const CurrencyList = () => {
 				const res = await deleteCurrency(id, token, tenantId);
 				if (res) {
 					setCurrencies((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: 'Currency deleted successfully' });
+					toastSuccess({ message: `${m.currency_delete_success()}` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {
@@ -165,9 +166,7 @@ const CurrencyList = () => {
 		);
 	}
 
-
-
-	const title = 'Currencies';
+	const title = `${m.currency()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -180,7 +179,7 @@ const CurrencyList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Currency..."
+				placeholder={`${m.Search()} ${m.currency()}..`}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -194,12 +193,12 @@ const CurrencyList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
@@ -225,12 +224,12 @@ const CurrencyList = () => {
 	);
 
 	const currenciesFiltered: FieldConfig<CurrencyType>[] = [
-		{ key: 'code', label: 'Code' },
-		{ key: 'name', label: 'Name' },
-		{ key: 'symbol', label: 'Symbol' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'rate', label: 'Rate' },
-		{ key: 'is_active', label: 'Status', type: 'badge' },
+		{ key: 'code', label: `${m.code_label()}` },
+		{ key: 'name', label: `${m.currency_name()}` },
+		{ key: 'symbol', label: `${m.symbol_label()}` },
+		{ key: 'description', label: `${m.description()}` },
+		{ key: 'rate', label: `${m.rate_label()}` },
+		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
 	]
 
 	const content = (
@@ -277,7 +276,7 @@ const CurrencyList = () => {
 		return (
 			<EmptyState
 				title={title}
-				description="No Currency found"
+				description={m.no_currency_found_text()}
 				actionButtons={actionButtons}
 				filters={filter}
 			/>

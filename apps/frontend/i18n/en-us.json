@@ -152,5 +152,21 @@
 	"create_vendor_text": "Create vendor",
 	"Search": "Search",
 	"Vendor": "Vendor",
-	"no_vendors_found_text": "No vendors found"
+	"no_vendors_found_text": "No vendors found",
+	"unit_delete_success": "Unit deleted successfully",
+	"currency_delete_success": "Currency deleted successfully",
+	"code_label": "Code",
+	"symbol_label": "Symbol",
+	"rate_label": "Rate",
+	"no_currency_found_text": "No Currency found",
+	"successfully": "Successfully",
+	"create_new_currency": "Create New Currency",
+	"edit_currency": "Edit Currency",
+	"description": "Description",
+	"currency_name": "Currency Name",
+	"placeholder_enter_code_name": "Enter Code name",
+	"placeholder_currency_name": "Enter Currency Name",
+	"placeholder_symbol": "Enter Symbol",
+	"placeholder_rate": "Enter Rate",
+	"placeholder_enter": "Enter description"
 }
