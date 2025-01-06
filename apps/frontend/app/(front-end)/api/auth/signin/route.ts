@@ -6,10 +6,6 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const result = SignInSchema.safeParse(body);
-
-        console.log(result);
-        
-
         if (!result.success) {
             console.log("Validation error:", result.error);
             return NextResponse.json(
@@ -28,6 +24,8 @@ export async function POST(request: NextRequest) {
         });
 
         const data = await response.json();
+
+        console.log('data >>>', data);
 
         if (!response.ok) {
             return NextResponse.json(

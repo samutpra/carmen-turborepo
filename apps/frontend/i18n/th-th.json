@@ -105,5 +105,18 @@
     "recent_approvals": "การอนุมัติล่าสุด",
     "recent_approvals_des": "บันทึกการดำเนินการอนุมัติล่าสุดของคุณ",
     "notification": "การแจ้งเตือน",
-    "notification_des": "การอัปเดตและการแจ้งเตือนล่าสุด"
+    "notification_des": "การอัปเดตและการแจ้งเตือนล่าสุด",
+    "Environmental_Dashboard_Title": "แผงหน้าปัดสิ่งแวดล้อม",
+    "change_password_title": "เปลี่ยนรหัสผ่าน",
+    "current_password_label": "รหัสผ่านปัจจุบัน",
+    "placeholder_current_password": "กรอกรหัสผ่านปัจจุบัน",
+    "new_password": "รหัสผ่านใหม่",
+    "placeholder_enter_new_password": "กรอกรหัสผ่านใหม่",
+    "confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+    "placeholder_enter_confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+    "change_password": "เปลี่ยนรหัสผ่าน",
+    "error_msg_old_password": "รหัสผ่านเดิมต้องมีอย่างน้อย 8 ตัวอักษร",
+    "change_password_success": "เปลี่ยนรหัสผ่านสำเร็จแล้ว",
+    "change_password_detail_success": "รหัสผ่านของคุณได้รับการอัปเดตแล้ว โปรดลงชื่อเข้าใช้ใหม่อีกครั้งเพื่อดำเนินการต่อ",
+    "back_to_sign_in": "ไปที่ลงชื่อเข้าใช้"
 }

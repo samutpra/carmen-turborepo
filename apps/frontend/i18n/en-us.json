@@ -106,5 +106,18 @@
     "recent_approvals": "Recent Approvals",
     "recent_approvals_des": "Log of your recent approval actions",
     "notification": "Notifications",
-    "notification_des": "Recent updates and alerts"
+    "notification_des": "Recent updates and alerts",
+    "Environmental_Dashboard_Title": "Environmental Dashboard",
+    "change_password_title": "Change Password",
+    "current_password_label": "Current Password",
+    "placeholder_current_password": "Enter current password",
+    "new_password": "New Password",
+    "placeholder_enter_new_password": "Enter new password",
+    "confirm_new_password": "Confirm New Password",
+    "placeholder_enter_confirm_new_password": "Enter confirm new password",
+    "change_password": "Change Password",
+    "error_msg_old_password": "Old Password must be at least 8 characters",
+    "change_password_success": "Password Changed Successfully",
+    "change_password_detail_success": "Your password has been updated. Please sign in again to continue.",
+    "back_to_sign_in": "Go to Sign-In"
 }
