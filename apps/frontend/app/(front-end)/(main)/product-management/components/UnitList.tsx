@@ -30,6 +30,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
+import { statusOptions } from '@/lib/statusOptions';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -67,12 +68,6 @@ const UnitList = () => {
 			</Card>
 		);
 	}
-
-	const statusOptions = [
-		{ label: `${m.all_status()}`, value: '' },
-		{ label: `${m.status_active()}`, value: 'true' },
-		{ label: `${m.status_inactive()}`, value: 'false' },
-	];
 
 	const handleSuccess = useCallback((updatedUnit: UnitType) => {
 		setUnits((prev) => {

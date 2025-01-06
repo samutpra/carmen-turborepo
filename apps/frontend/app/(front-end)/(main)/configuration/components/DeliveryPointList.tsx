@@ -28,6 +28,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
+import { statusOptions } from '@/lib/statusOptions';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -39,12 +40,6 @@ const DeliveryPointList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-
-	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
-	];
 
 	const fetchData = async () => {
 		try {

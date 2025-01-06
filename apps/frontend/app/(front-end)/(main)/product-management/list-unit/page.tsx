@@ -30,6 +30,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import UnitDialog from '../components/UnitDialog';
 import { useURL } from '@/hooks/useURL';
+import { statusOptions } from '@/lib/statusOptions';
 
 // Component to handle data fetching
 const UnitData = ({
@@ -198,12 +199,6 @@ const UnitList = () => {
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-
-    const statusOptions = [
-        { label: 'All Status', value: '' },
-        { label: 'Active', value: 'true' },
-        { label: 'Inactive', value: 'false' },
-    ];
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

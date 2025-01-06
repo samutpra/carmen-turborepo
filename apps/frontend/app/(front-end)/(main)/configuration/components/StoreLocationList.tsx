@@ -29,6 +29,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
+import { statusOptions } from '@/lib/statusOptions';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -71,13 +72,6 @@ const StoreLocationList = () => {
 			</Card>
 		);
 	}
-
-	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
-	];
-
 
 	const handleSuccess = useCallback((values: LocationType) => {
 		setStoreLocations((prev) => {

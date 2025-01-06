@@ -31,6 +31,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
+import { statusOptions } from '@/lib/statusOptions';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -70,13 +71,6 @@ const CurrencyList = () => {
 	useEffect(() => {
 		fetchData();
 	}, [token, tenantId, search, status]);
-
-
-	const statusOptions = [
-		{ label: `${m.all_status()}`, value: '' },
-		{ label: `${m.status_active()}`, value: 'true' },
-		{ label: `${m.status_inactive()}`, value: 'false' },
-	];
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
