@@ -38,6 +38,35 @@ export class ProductsService {
 
   logger = new Logger(ProductsService.name);
 
+  async getByItemsGroup(req: Request, q: QueryParams, id: string) {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+
+    const max = await this.db_tenant.tb_product.count({
+      where: q.where(),
+    });
+
+    const listObj = await this.db_tenant.tb_product.findMany({
+      where: {
+        itemsGroupId: id,
+        ...q.where(),
+      },
+      orderBy: q.orderBy(),
+      skip: (q.page - 1) * q.perpage,
+      take: q.perpage,
+    });
+
+    const res: ResponseList<tb_product> = {
+      data: listObj,
+      pagination: {
+        page: q.page,
+        perPage: q.perpage,
+        total: max,
+      },
+    };
+    return res;
+  }
+
   async _getById(db_tenant: dbTenant, id: string): Promise<tb_product> {
     const res = await db_tenant.tb_product.findUnique({
       where: {

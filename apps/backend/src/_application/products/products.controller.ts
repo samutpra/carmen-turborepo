@@ -93,6 +93,46 @@ export class ProductsController {
     return this.productsService.findAll(req, q);
   }
 
+  @Get('by-item-group-id/:id')
+  @ApiUserFilterQueries()
+  async getByItemsGroup(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
+  ) {
+    const defaultSearchFields: string[] = [];
+
+    this.logger.debug({
+      id: id,
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+
+    return this.productsService.getByItemsGroup(req, q, id);
+  }
+
   @Post()
   @ApiBody({
     type: ProductCreateDto,

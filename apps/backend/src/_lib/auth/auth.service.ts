@@ -1,14 +1,22 @@
 import 'dotenv/config';
 
-import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
+import {
+  ResponseId,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
 import {
   DuplicateException,
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
 import { isWelformJWT } from 'lib/utils/functions';
-import { comparePassword, hashPassword } from 'lib/utils/password';
-import { SystemUsersService } from 'src/_system/system-users/system-users.service';
+import {
+  comparePassword,
+  hashPassword,
+} from 'lib/utils/password';
+import {
+  SystemUsersService,
+} from 'src/_system/system-users/system-users.service';
 
 import {
   AuthChangePasswordDto,
@@ -27,7 +35,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
-import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
+import {
+  PrismaClientManagerService,
+} from '../prisma-client-manager/prisma-client-manager.service';
 import { ExtractReqService } from './extract-req/extract-req.service';
 
 @Injectable()
@@ -98,6 +108,22 @@ export class AuthService {
     };
 
     return res;
+  }
+
+  async checkDatabaseToken(token: string): Promise<boolean> {
+    this.logger.debug(`Checking database token`);
+    const refreshTokenList =
+      await this.db_System.tb_user_login_session.findFirst({
+        where: {
+          token: token,
+        },
+      });
+
+    if (!refreshTokenList) {
+      throw new InvalidTokenException('Invalid token');
+    }
+
+    return refreshTokenList ? true : false;
   }
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
@@ -377,6 +403,33 @@ export class AuthService {
           expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
         }),
       };
+
+      // delete session is expired
+      const deleteSessionObj =
+        await this.db_System.tb_user_login_session.deleteMany({
+          where: {
+            expiredOn: {
+              lt: new Date(),
+            },
+          },
+        });
+
+      // create a new session in db
+      const accessTokenObj = await this.db_System.tb_user_login_session.create({
+        data: {
+          token: res.access_token,
+        },
+      });
+
+      const refreshTokenObj = await this.db_System.tb_user_login_session.create(
+        {
+          data: {
+            token: res.refresh_token,
+            expiredOn: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          },
+        },
+      );
+
       return res;
     }
   }
@@ -394,6 +447,14 @@ export class AuthService {
       ...payload,
       access_token: this.jwtService.sign(payload),
     };
+
+    //create token in token table
+    const tokenObj = await this.db_System.tb_user_login_session.create({
+      data: {
+        token: res.access_token,
+      },
+    });
+
     return res;
   }
 }

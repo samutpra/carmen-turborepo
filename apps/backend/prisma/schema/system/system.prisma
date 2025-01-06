@@ -328,6 +328,12 @@ model tb_user_tb_business_unit {
   @@unique([user_id, business_unit_id], map: "user_businessunit_user_business_unit_u")
 }
 
+model tb_user_login_session {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token     String   @unique
+  expiredOn DateTime @default(dbgenerated("(now() + '90 days'::interval)")) @db.Date
+}
+
 enum enum_subscription_status {
   active
   inactive

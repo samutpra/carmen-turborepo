@@ -42,6 +42,12 @@ TABLE CARMEN_SYSTEM.tb_password {
   }
 }
 
+Table CARMEN_SYSTEM.tb_user_login_session {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  token text [not null, unique]
+  expiredOn date [not null, default: `now() + '90 day'::interval`]
+}
+
 TABLE CARMEN_SYSTEM.tb_user_profile {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   user_id uuid [ref: - CARMEN_SYSTEM.tb_user.id]

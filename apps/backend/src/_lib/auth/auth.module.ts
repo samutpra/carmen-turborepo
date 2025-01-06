@@ -6,10 +6,13 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { PrismaClientManagerModule } from '../prisma-client-manager/prisma-client-manager.module';
+import {
+  PrismaClientManagerModule,
+} from '../prisma-client-manager/prisma-client-manager.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ExtractReqModule } from './extract-req/extract-req.module';
+import { JwtAuthGuard } from './guards/jwt.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
@@ -29,6 +32,13 @@ dotenv.config();
     ExtractReqModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshJwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshJwtStrategy,
+    JwtAuthGuard,
+  ],
+  exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

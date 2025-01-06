@@ -174,6 +174,11 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
+"tb_user_login_session" {
+  String id PK
+  String token UK
+  DateTime expiredOn
+}
 "tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_updated_by_idTotb_user
@@ -423,3 +428,10 @@ erDiagram
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
+
+### `tb_user_login_session`
+
+**Properties**
+  - `id`: 
+  - `token`: 
+  - `expiredOn`: 
