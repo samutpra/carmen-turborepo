@@ -24,6 +24,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import { deleteCategory, fetchCategoryList, submitCategory } from '../actions/category';
 import { fetchSubProduct } from '../actions/sub_category';
+import * as m from '@/paraglide/messages.js';
 
 type CategorySummary = {
 	totalCategories: number;
@@ -198,7 +199,7 @@ const CategorieList = () => {
 			/>
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
-					title="Categories"
+					title={m.categories()}
 					count={summary.totalCategories}
 					icon={<Folder className="w-6 h-6" />}
 					onAddData={onAddCategory}
@@ -226,7 +227,7 @@ const CategorieList = () => {
 
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
-					title="Sub Categories"
+					title={m.sub_cattegory()}
 					count={filteredSubCategories.length}
 					icon={<Tag className="w-6 h-6" />}
 					onAddData={onAddSubCategory}
@@ -252,7 +253,7 @@ const CategorieList = () => {
 
 			<div className="flex flex-col space-y-4">
 				<SummaryCard
-					title="Item Groups"
+					title={m.item_group()}
 					count={filteredItemGroups.length}
 					icon={<LayoutGrid className="w-6 h-6" />}
 					onAddData={onAddItemGroup}

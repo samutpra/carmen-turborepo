@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import * as m from '@/paraglide/messages.js';
 interface SummaryCardProps {
 	title: string;
 	count: number;
@@ -31,7 +31,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 					size="icon"
 					className={cn('h-8 w-8', disabled && 'cursor-not-allowed opacity-50')}
 					disabled={disabled}
-					aria-label={`Add new ${title}`}
+					aria-label={`${m.add_new_title()} ${title}`}
 				>
 					<Plus className="h-4 w-4" />
 				</Button>
