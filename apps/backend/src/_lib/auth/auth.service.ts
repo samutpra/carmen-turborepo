@@ -101,6 +101,14 @@ export class AuthService {
       },
     });
 
+    // drop current token by user id
+    const deleteSessionObj =
+      await this.db_System.tb_user_login_session.deleteMany({
+        where: {
+          user_id: user_id,
+        },
+      });
+
     this.logger.debug(passObj);
 
     const res: ResponseId<string> = {
@@ -408,7 +416,7 @@ export class AuthService {
       const deleteSessionObj =
         await this.db_System.tb_user_login_session.deleteMany({
           where: {
-            expiredOn: {
+            expired_on: {
               lt: new Date(),
             },
           },
@@ -418,6 +426,11 @@ export class AuthService {
       const accessTokenObj = await this.db_System.tb_user_login_session.create({
         data: {
           token: res.access_token,
+          user_id: findUser.id,
+          expired_on: new Date(
+            new Date().getTime() + 1 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          token_type: 'access_token',
         },
       });
 
@@ -425,7 +438,11 @@ export class AuthService {
         {
           data: {
             token: res.refresh_token,
-            expiredOn: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+            user_id: findUser.id,
+            expired_on: new Date(
+              new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+            token_type: 'refresh_token',
           },
         },
       );
@@ -452,6 +469,11 @@ export class AuthService {
     const tokenObj = await this.db_System.tb_user_login_session.create({
       data: {
         token: res.access_token,
+        user_id: id,
+        expired_on: new Date(
+          new Date().getTime() + 1 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        token_type: 'access_token',
       },
     });
 

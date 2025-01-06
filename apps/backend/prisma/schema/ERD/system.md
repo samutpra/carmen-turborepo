@@ -95,7 +95,7 @@ erDiagram
   String user_id FK
   String hash
   Boolean is_active "nullable"
-  DateTime expiredOn
+  DateTime expired_on
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
 }
@@ -177,7 +177,9 @@ erDiagram
 "tb_user_login_session" {
   String id PK
   String token UK
-  DateTime expiredOn
+  enum_token_type token_type
+  String user_id FK
+  DateTime expired_on
 }
 "tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
@@ -227,6 +229,7 @@ erDiagram
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_created_by_idTotb_user
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_updated_by_idTotb_user
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_user_idTotb_user
+"tb_user_login_session" }o--|| "tb_user" : tb_user
 ```
 
 ### `tb_application_role`
@@ -336,7 +339,7 @@ erDiagram
   - `user_id`: 
   - `hash`: 
   - `is_active`: 
-  - `expiredOn`: 
+  - `expired_on`: 
   - `created_at`: 
   - `created_by_id`: 
 
@@ -434,4 +437,6 @@ erDiagram
 **Properties**
   - `id`: 
   - `token`: 
-  - `expiredOn`: 
+  - `token_type`: 
+  - `user_id`: 
+  - `expired_on`: 

@@ -32,7 +32,7 @@ TABLE CARMEN_SYSTEM.tb_password {
   user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
   hash text [not null]
   is_active bool [default: false]
-  expiredOn date [not null, default: `now() + '90 day'::interval`]
+  expired_on date [not null, default: `now() + '90 day'::interval`]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
@@ -42,10 +42,17 @@ TABLE CARMEN_SYSTEM.tb_password {
   }
 }
 
+Enum CARMEN_SYSTEM.enum_token_type {
+  access_token
+  refresh_token
+}
+
 Table CARMEN_SYSTEM.tb_user_login_session {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   token text [not null, unique]
-  expiredOn date [not null, default: `now() + '90 day'::interval`]
+  token_type CARMEN_SYSTEM.enum_token_type [not null, default: 'access_token']
+  user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
+  expired_on timestamp [not null, default: `now() + '1 day'::interval`]
 }
 
 TABLE CARMEN_SYSTEM.tb_user_profile {
@@ -970,6 +977,8 @@ TABLE TENANT_DUMMY.tb_good_receive_note {
 
   name varchar
 
+  workflow json [null]
+
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
@@ -1001,6 +1010,8 @@ TABLE TENANT_DUMMY.tb_store_requisition {
   inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
   
   name varchar
+
+  workflow json [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -1035,6 +1046,8 @@ TABLE TENANT_DUMMY.tb_stock_in {
   
   name varchar
 
+  workflow json [null]
+
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
@@ -1068,6 +1081,8 @@ TABLE TENANT_DUMMY.tb_stock_out {
   
   name varchar
 
+  workflow json [null]
+
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
@@ -1098,6 +1113,8 @@ TABLE TENANT_DUMMY.tb_credit_note {
   inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
+
+  workflow json [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
@@ -1135,6 +1152,8 @@ TABLE TENANT_DUMMY.tb_stock_take {
   inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
+
+  workflow json [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid

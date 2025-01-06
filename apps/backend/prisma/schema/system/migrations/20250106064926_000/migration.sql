@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "enum_subscription_status" AS ENUM ('active', 'inactive', 'expired');
 
+-- CreateEnum
+CREATE TYPE "enum_token_type" AS ENUM ('access_token', 'refresh_token');
+
 -- CreateTable
 CREATE TABLE "tb_application_role" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -123,7 +126,7 @@ CREATE TABLE "tb_password" (
     "user_id" UUID NOT NULL,
     "hash" TEXT NOT NULL,
     "is_active" BOOLEAN DEFAULT false,
-    "expiredOn" DATE NOT NULL DEFAULT (now() + '90 days'::interval),
+    "expired_on" DATE NOT NULL DEFAULT (now() + '90 days'::interval),
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
 
@@ -237,7 +240,9 @@ CREATE TABLE "tb_user_tb_business_unit" (
 CREATE TABLE "tb_user_login_session" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "token" TEXT NOT NULL,
-    "expiredOn" DATE NOT NULL DEFAULT (now() + '90 days'::interval),
+    "token_type" "enum_token_type" NOT NULL DEFAULT 'access_token',
+    "user_id" UUID NOT NULL,
+    "expired_on" TIMESTAMP(6) NOT NULL DEFAULT (now() + '1 day'::interval),
 
     CONSTRAINT "tb_user_login_session_pkey" PRIMARY KEY ("id")
 );
@@ -463,3 +468,6 @@ ALTER TABLE "tb_user_tb_business_unit" ADD CONSTRAINT "tb_user_tb_business_unit_
 
 -- AddForeignKey
 ALTER TABLE "tb_user_tb_business_unit" ADD CONSTRAINT "tb_user_tb_business_unit_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_user_login_session" ADD CONSTRAINT "tb_user_login_session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
