@@ -24,6 +24,7 @@ import {
 import { Trash } from 'lucide-react';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import { Badge } from '../ui-custom/is-active-badge';
+import * as m from '@/paraglide/messages.js';
 
 type FieldValue = string | number | boolean | null | undefined;
 
@@ -71,9 +72,9 @@ const DataTable = <T extends Record<string, FieldValue>>({
     showIndex = true,
     editComponent,
     deleteDialogProps = {
-        title: 'Are you sure?',
-        description: 'This action cannot be undone. This will permanently delete this item.',
-        confirmLabel: 'Delete',
+        title: `${m.are_you_sure()}`,
+        description: `${m.delete_dialog_des()}`,
+        confirmLabel: `${m.delete_text()}`,
     },
 }: DataTableProps<T>): React.ReactElement => {
     const handleDelete = (id: string): void => {
@@ -100,7 +101,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
                 if (typeof value === 'boolean') {
                     return (
                         <Badge variant={value ? 'default' : 'destructive'}>
-                            {value ? 'Active' : 'Inactive'}
+                            {value ? `${m.status_active()}` : `${m.status_inactive()}`}
                         </Badge>
                     );
                 }
@@ -132,7 +133,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>{m.cancel_text()}</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={() => handleDelete(String(item[idField]))}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -167,7 +168,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
                         </TableHead>
                     ))}
                     {(editComponent || onDelete) && (
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-right">{m.action_text()}</TableHead>
                     )}
                 </TableRow>
             </TableHeader>

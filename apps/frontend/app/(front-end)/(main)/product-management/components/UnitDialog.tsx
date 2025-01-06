@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { submitUnit } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
-
+import * as m from '@/paraglide/messages.js';
 interface UnitDialogProps {
 	mode: formType
 	defaultValues?: UnitType;
@@ -85,9 +85,9 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 				onSuccess(data);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Unit  successfully` });
+				toastSuccess({ message: `${m.add_unit_success_msg()}` });
 			} else {
-				toastError({ message: `Failed to ${mode} unit` });
+				toastError({ message: `${m.fail_to_text()} ${mode} ${m.unit()}` });
 			}
 		} catch (error) {
 			toastError({ message: error instanceof Error ? error.message : String(error) });
@@ -110,7 +110,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="h-4 w-4" />
-							Add Unit
+							{m.add_unit()}
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />
@@ -120,7 +120,10 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? 'Create' : 'Edit'} Unit
+						{mode === formType.ADD
+							? `${m.create_txt()}`
+							: `${m.edit_txt()}`}
+						{m.unit()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -130,10 +133,10 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.unit_name_label()}</FormLabel>
 									<FormControl>
 										<InputCustom
-											placeholder="Enter Name"
+											placeholder={m.placeholder_unit_name()}
 											error={!!form.formState.errors.name}
 											{...field}
 										/>
@@ -148,9 +151,9 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.unit_des_label()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea placeholder={m.placeholder_unit_des()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -162,7 +165,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							name="is_active"
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
-									<FormLabel className="text-base">Active</FormLabel>
+									<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
@@ -180,7 +183,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 									onClick={handleClose}
 									size={'sm'}
 								>
-									Cancel
+									{m.cancel_text()}
 								</Button>
 								<LoaderButton
 									type="submit"
@@ -189,10 +192,10 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 									size={'sm'}
 								>
 									{isLoading
-										? 'Saving...'
+										? `${m.saving()}...`
 										: mode === formType.EDIT
-											? 'Save Changes'
-											: 'Add'}
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
 								</LoaderButton>
 							</div>
 						</DialogFooter>

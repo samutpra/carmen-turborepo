@@ -14,7 +14,7 @@ import EmptyState from '@/components/ui-custom/EmptyState';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
-
+import * as m from '@/paraglide/messages.js';
 interface VendorTableProps {
 	vendors: vendor_type[];
 	isLoading: boolean;
@@ -28,7 +28,7 @@ const VendorTable: React.FC<VendorTableProps> = ({
 	}
 	if (vendors.length === 0) {
 		return (
-			<EmptyState title="No vendors found" description="No vendors found" />
+			<EmptyState title={m.no_vendors_found_text()} description={m.no_vendors_found_text()} />
 		);
 	}
 	return (

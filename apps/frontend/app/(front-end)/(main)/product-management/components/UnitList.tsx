@@ -29,6 +29,7 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
+import * as m from '@/paraglide/messages.js';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -68,9 +69,9 @@ const UnitList = () => {
 	}
 
 	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
+		{ label: `${m.all_status()}`, value: '' },
+		{ label: `${m.status_active()}`, value: 'true' },
+		{ label: `${m.status_inactive()}`, value: 'false' },
 	];
 
 	const handleSuccess = useCallback((updatedUnit: UnitType) => {
@@ -109,7 +110,7 @@ const UnitList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const title = 'Units';
+	const title = `${m.units()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -122,7 +123,7 @@ const UnitList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Unit..."
+				placeholder={m.placeholder_search_unit()}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -136,14 +137,14 @@ const UnitList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
 							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
+								<CommandEmpty>{m.not_found_unit()}</CommandEmpty>
 								<CommandGroup>
 									{statusOptions.map((option) => (
 										<CommandItem
@@ -167,9 +168,9 @@ const UnitList = () => {
 	);
 
 	const unitFields: FieldConfig<UnitType>[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Status', type: 'badge' }
+		{ key: 'name', label: `${m.unit_name_label()}` },
+		{ key: 'description', label: `${m.unit_des_label()}` },
+		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
 	];
 
 	const content = (
@@ -217,7 +218,7 @@ const UnitList = () => {
 		return (
 			<EmptyState
 				title={title}
-				description="No units found"
+				description={m.not_found_unit()}
 				actionButtons={actionButtons}
 				filters={filter}
 			/>

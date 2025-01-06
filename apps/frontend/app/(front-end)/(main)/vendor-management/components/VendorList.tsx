@@ -26,6 +26,7 @@ import { fetchAllVendors } from '../actions/vendor';
 import { Link } from '@/lib/i18n';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
+import * as m from '@/paraglide/messages.js';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -67,9 +68,9 @@ const VendorList = () => {
 	}
 
 	const statusOptions = [
-		{ label: 'All Status', value: '' },
-		{ label: 'Active', value: 'true' },
-		{ label: 'Inactive', value: 'false' },
+		{ label: `${m.all_status()}`, value: '' },
+		{ label: `${m.status_active()}`, value: 'true' },
+		{ label: `${m.status_inactive()}`, value: 'false' },
 	];
 
 	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -77,14 +78,14 @@ const VendorList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const title = 'Vendors';
+	const title = `${m.vendors_title()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
 			<Button asChild variant={'outline'} size={'sm'}>
 				<Link href="/vendor-management/vendors/new">
 					<Plus className="h-4 w-4" />
-					Create vendor
+					{m.create_vendor_text()}
 				</Link>
 			</Button>
 		</div>
@@ -95,7 +96,7 @@ const VendorList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Vendor..."
+				placeholder={`${m.Search()} ${m.Vendor()}...`}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -109,12 +110,12 @@ const VendorList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
