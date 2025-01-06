@@ -12,21 +12,6 @@ export enum RecoveryPasswordForm {
 	FORGOT,
 }
 
-// export const changePasswordSchema = z
-// 	.object({
-// 		old_password: z.string().min(8, 'Old Password must be at least 8 characters'),
-// 		password: z.string().min(8, 'Password must be at least 8 characters'),
-// 		confirmPassword: z.string().min(8, 'Confirm Password must be at least 8 characters'),
-// 	})
-// 	.refine((data) => data.password === data.confirmPassword, {
-// 		message: "Passwords don't match",
-// 		path: ['confirmPassword'],
-// 	})
-// 	.refine((data) => data.old_password !== data.password, {
-// 		message: 'New password must not be the same as the old password',
-// 		path: ['password'],
-// 	});
-
 export const changePasswordSchema = z
 	.object({
 		old_password: z
