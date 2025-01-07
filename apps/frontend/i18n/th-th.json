@@ -181,5 +181,7 @@
 	"error_del_text": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุขณะทำการลบ",
 	"fail_del_currency": "ไม่สามารถลบสกุลเงินได้",
 	"del_department_success": "ลบแผนกสำเร็จแล้ว",
-	"fail_del_department": "การลบจุดแผนกล้มเหลว"
+	"fail_del_department": "การลบจุดแผนกล้มเหลว",
+	"department_label_name": "ชื่อแผนก",
+	"placeholder_department_name": "กรอกชื่อแผนก"
 }

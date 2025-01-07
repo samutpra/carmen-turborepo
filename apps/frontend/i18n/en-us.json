@@ -181,5 +181,7 @@
 	"error_del_text": "An unknown error occurred while deleting",
 	"fail_del_currency": "Failed to delete currency",
 	"del_department_success": "Department deleted successfully",
-	"fail_del_department": "Failed to delete department point"
+	"fail_del_department": "Failed to delete department point",
+	"department_label_name": "Department Name",
+	"placeholder_department_name": "Enter Department Name"
 }

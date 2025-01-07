@@ -130,7 +130,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? 'Create' : 'Edit'} Department
+						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`} {m.department()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -140,10 +140,10 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.department_label_name()}</FormLabel>
 									<FormControl>
 										<InputCustom
-											placeholder="Enter Name"
+											placeholder={m.placeholder_department_name()}
 											error={!!form.formState.errors.name}
 											{...field}
 										/>
@@ -158,9 +158,9 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea placeholder={m.placeholder_enter()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -173,7 +173,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">Active</FormLabel>
+										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -192,7 +192,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 									onClick={handleClose}
 									size={'sm'}
 								>
-									Cancel
+									{m.cancel_text()}
 								</Button>
 								<LoaderButton
 									type="submit"
@@ -201,10 +201,10 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 									size={'sm'}
 								>
 									{isLoading
-										? 'Saving...'
+										? `${m.saving()}...`
 										: mode === formType.EDIT
-											? 'Save Changes'
-											: 'Add'}
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
 								</LoaderButton>
 							</div>
 						</DialogFooter>
