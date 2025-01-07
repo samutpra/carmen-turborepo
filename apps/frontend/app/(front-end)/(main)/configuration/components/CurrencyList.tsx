@@ -32,6 +32,7 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
+import { FileDown, Printer } from 'lucide-react';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -165,6 +166,14 @@ const CurrencyList = () => {
 	const actionButtons = (
 		<div className="action-btn-container">
 			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
+			<Button variant="outline" className="group" size={'sm'}>
+				<FileDown className="h-4 w-4" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'}>
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
+			</Button>
 		</div>
 	);
 

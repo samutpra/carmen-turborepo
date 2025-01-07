@@ -18,7 +18,7 @@ import {
 	CommandList,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { FileDown, Plus, Printer } from 'lucide-react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import VendorCard from './VendorCard';
 import VendorTable from './VendorTable';
@@ -82,6 +82,14 @@ const VendorList = () => {
 					<Plus className="h-4 w-4" />
 					{m.create_vendor_text()}
 				</Link>
+			</Button>
+			<Button variant="outline" className="group" size={'sm'}>
+				<FileDown className="h-4 w-4" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'}>
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
 			</Button>
 		</div>
 	);

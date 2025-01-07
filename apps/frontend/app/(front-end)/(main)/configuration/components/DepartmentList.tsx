@@ -31,6 +31,7 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
+import { FileDown, Printer } from 'lucide-react';
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -128,6 +129,14 @@ const DepartmentList = () => {
 	const actionButtons = (
 		<div className="action-btn-container">
 			<DepartmentDialog mode={formType.ADD} onSuccess={handleSuccess} />
+			<Button variant="outline" className="group" size={'sm'}>
+				<FileDown className="h-4 w-4" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'}>
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
+			</Button>
 		</div>
 	);
 

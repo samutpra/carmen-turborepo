@@ -188,5 +188,7 @@
 	"location_type_label": "Location Type",
 	"not_found_store_location": "No Store Location found",
 	"placeholder_store_location_name": "Enter delivery point name",
-	"no_delivery_point_found": "No Delevery Points found"
+	"no_delivery_point_found": "No Delevery Points found",
+	"export_text": "Export",
+	"print_text": "Print"
 }

@@ -188,5 +188,7 @@
 	"location_type_label": "ประเภทสถานที่",
 	"not_found_store_location": "ไม่พบที่ตั้งร้านค้า",
 	"placeholder_store_location_name": "กรอกชื่อ ร้านค้า/ที่ตั้ง",
-	"no_delivery_point_found": "ไม่พบจุดส่งมอบ"
+	"no_delivery_point_found": "ไม่พบจุดส่งมอบ",
+	"export_text": "ส่งออก",
+	"print_text": "พิมพ์"
 }
