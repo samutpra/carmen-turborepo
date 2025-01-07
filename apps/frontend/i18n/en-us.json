@@ -183,5 +183,10 @@
 	"del_department_success": "Department deleted successfully",
 	"fail_del_department": "Failed to delete department point",
 	"department_label_name": "Department Name",
-	"placeholder_department_name": "Enter Department Name"
+	"placeholder_department_name": "Enter Department Name",
+	"store_location_name_label": "Store/Location Name",
+	"location_type_label": "Location Type",
+	"not_found_store_location": "No Store Location found",
+	"placeholder_store_location_name": "Enter delivery point name",
+	"no_delivery_point_found": "No Delevery Points found"
 }

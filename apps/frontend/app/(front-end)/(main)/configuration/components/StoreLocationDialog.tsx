@@ -37,6 +37,7 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitStoreLocation } from '../actions/store_location';
 import { formType } from '@/types/form_type';
+import * as m from '@/paraglide/messages.js';
 
 interface StoreLocationDialogProps {
 	mode: formType;
@@ -91,9 +92,13 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 				onSuccess(submitData);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Store location ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
+				toastSuccess({
+					message: `${m.store_location()} ${mode === formType.ADD
+						? `${m.create_txt()}`
+						: `${m.edit_txt()}`} ${m.successfully()}`
+				});
 			} else {
-				toastError({ message: `Failed to ${mode} store location` });
+				toastError({ message: `${m.fail_to_text()} ${mode} ${m.store_location()}` });
 			}
 		} catch (error) {
 			toastError({ message: error instanceof Error ? error.message : String(error) });
@@ -118,7 +123,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="h-4 w-4" />
-							Add Location
+							{m.add_text()} {m.store_location()}
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />
@@ -128,7 +133,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? 'Create' : 'Edit'} Store Location
+						{mode === formType.ADD ? `${m.store_location()}` : `${m.store_location()}`}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -138,10 +143,10 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.store_location_name_label()}</FormLabel>
 									<FormControl>
 										<InputCustom
-											placeholder="Enter delivery point name"
+											placeholder={m.placeholder_store_location_name()}
 											error={!!form.formState.errors.name}
 											{...field}
 										/>
@@ -156,7 +161,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							name="location_type"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Type</FormLabel>
+									<FormLabel>{m.location_type_label()}</FormLabel>
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
@@ -179,9 +184,9 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea placeholder={m.placeholder_enter()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -194,7 +199,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-2">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">Active</FormLabel>
+										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -213,7 +218,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									onClick={handleClose}
 									size={'sm'}
 								>
-									Cancel
+									{m.cancel_text()}
 								</Button>
 								<LoaderButton
 									type="submit"
@@ -222,10 +227,10 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									size={'sm'}
 								>
 									{isLoading
-										? 'Saving...'
+										? `${m.saving()}...`
 										: mode === formType.EDIT
-											? 'Save Changes'
-											: 'Add'}
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
 								</LoaderButton>
 							</div>
 						</DialogFooter>

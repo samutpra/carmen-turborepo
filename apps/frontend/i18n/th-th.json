@@ -183,5 +183,10 @@
 	"del_department_success": "ลบแผนกสำเร็จแล้ว",
 	"fail_del_department": "การลบจุดแผนกล้มเหลว",
 	"department_label_name": "ชื่อแผนก",
-	"placeholder_department_name": "กรอกชื่อแผนก"
+	"placeholder_department_name": "กรอกชื่อแผนก",
+	"store_location_name_label": "ชื่อร้านค้า/ที่ตั้ง",
+	"location_type_label": "ประเภทสถานที่",
+	"not_found_store_location": "ไม่พบที่ตั้งร้านค้า",
+	"placeholder_store_location_name": "กรอกชื่อ ร้านค้า/ที่ตั้ง",
+	"no_delivery_point_found": "ไม่พบจุดส่งมอบ"
 }

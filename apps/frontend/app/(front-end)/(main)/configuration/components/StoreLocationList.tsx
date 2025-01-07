@@ -30,6 +30,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
+import * as m from '@/paraglide/messages.js';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -109,7 +110,7 @@ const StoreLocationList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const title = 'Store Locations';
+	const title = `${m.store_location()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -122,7 +123,7 @@ const StoreLocationList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Store Location..."
+				placeholder={`${m.Search()} ${m.store_location()}...`}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -136,7 +137,7 @@ const StoreLocationList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
@@ -167,10 +168,10 @@ const StoreLocationList = () => {
 	);
 
 	const storeLocationFields: FieldConfig<LocationType>[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'location_type', label: 'Type' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Status', type: 'badge' }
+		{ key: 'name', label: `${m.store_location_name_label()}` },
+		{ key: 'location_type', label: `${m.location_type_label()}` },
+		{ key: 'description', label: `${m.description()}` },
+		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
 	];
 
 	const content = (
@@ -218,7 +219,7 @@ const StoreLocationList = () => {
 		return (
 			<EmptyState
 				title={title}
-				description="No Store Location found"
+				description={m.not_found_store_location()}
 				actionButtons={actionButtons}
 				filters={filter}
 			/>

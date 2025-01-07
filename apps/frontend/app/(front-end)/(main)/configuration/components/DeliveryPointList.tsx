@@ -217,7 +217,7 @@ const DeliveryPointList = () => {
 		return (
 			<EmptyState
 				title={title}
-				description="No Delevery Points found"
+				description={m.no_delivery_point_found()}
 				actionButtons={actionButtons}
 				filters={filter}
 			/>
