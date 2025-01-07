@@ -28,7 +28,8 @@ import ContactsSection from './sections/ContactsSection';
 import CertificationsSection from './sections/CertificationsSection';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
-
+import SkeltonVendorDetail from '@/components/ui-custom/Loading/SkeltonVendorDetail';
+import * as m from '@/paraglide/messages.js';
 interface Props {
     vendor: vendor_type | null;
     mode: formType;
@@ -92,7 +93,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
         }
     }
 
-    if (!vendor && mode === formType.EDIT) return <div className='container p-6'>Loading...</div>;
+    if (!vendor && mode === formType.EDIT) return <SkeltonVendorDetail />
 
     const isInputDisabled = mode === formType.EDIT && !isEditing;
 
@@ -111,31 +112,34 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                         <Button
                             variant="default"
                             onClick={form.handleSubmit(onSubmit)}
+                            size={'sm'}
                         >
-                            <Save className="h-4 w-4 mr-2" />
-                            Save
+                            <Save className="h-4 w-4" />
+                            {m.save_text()}
                         </Button>
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             onClick={handleCancelEdit}
+                            size={'sm'}
                         >
-                            <X className="h-4 w-4 mr-2" />
-                            Cancel
+                            <X className="h-4 w-4" />
+                            {m.cancel_text()}
                         </Button>
                     </>
                 ) : (
                     <>
                         <Button
-                            size={'icon'}
+                            size={'sm'}
                             variant={'ghost'}
                             onClick={handleEdit}
+
                         >
                             <PencilIcon />
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button
-                                    size={'icon'}
+                                    size={'sm'}
                                     variant={'ghost'}
                                 >
                                     <Trash />
@@ -178,7 +182,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                 {actionsButton}
             </Card>
             <Card className='p-4 space-y-4'>
-                <h1 className='text-base font-bold'>Infomations</h1>
+                <h1 className='text-base font-bold'>{m.infomation()}</h1>
                 <VendorInfo
                     form={form}
                     isInputDisabled={isInputDisabled}

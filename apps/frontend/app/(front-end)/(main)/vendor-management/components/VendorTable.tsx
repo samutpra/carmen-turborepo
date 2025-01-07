@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/table';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
+import { Badge } from '@/components/ui-custom/is-active-badge';
 interface VendorTableProps {
 	vendors: vendor_type[];
 	isLoading: boolean;
@@ -36,10 +36,10 @@ const VendorTable: React.FC<VendorTableProps> = ({
 			<TableHeader>
 				<TableRow>
 					<TableHead className="w-[100px]">#</TableHead>
-					<TableHead>Name</TableHead>
-					<TableHead>Description</TableHead>
-					<TableHead>Status</TableHead>
-					<TableHead className="text-right">Actions</TableHead>
+					<TableHead>{m.vendor_name_label()}</TableHead>
+					<TableHead>{m.description()}</TableHead>
+					<TableHead>{m.status_text()}</TableHead>
+					<TableHead className="text-right">{m.action_text()}</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -50,7 +50,7 @@ const VendorTable: React.FC<VendorTableProps> = ({
 						<TableCell>{vendor.description}</TableCell>
 						<TableCell>
 							<Badge variant={vendor.is_active ? 'default' : 'destructive'}>
-								{vendor.is_active ? 'Active' : 'Inactive'}
+								{vendor.is_active ? `${m.status_active()}` : `${m.status_inactive()}`}
 							</Badge>
 						</TableCell>
 						<TableCell className="text-right">

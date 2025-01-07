@@ -11,6 +11,7 @@ import {
 } from '@/components/ui-custom/FormCustom';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import * as m from '@/paraglide/messages.js';
 
 interface Props {
     form: UseFormReturn<vendor_type>;
@@ -31,7 +32,7 @@ const VendorInfo: React.FC<Props> = ({
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Vendor Name</FormLabel>
+                            <FormLabel>{m.Vendor()}</FormLabel>
                             <FormControl>
                                 <Input
                                     {...field}
@@ -48,7 +49,7 @@ const VendorInfo: React.FC<Props> = ({
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>{m.description()}</FormLabel>
                             <FormControl>
                                 <Input
                                     {...field}
@@ -65,6 +66,7 @@ const VendorInfo: React.FC<Props> = ({
                     name="is_active"
                     render={({ field }) => (
                         <FormItem className="flex items-center space-x-2">
+                            <FormLabel>{m.status_text()}</FormLabel>
                             <FormControl>
                                 <Switch
                                     checked={field.value}
@@ -72,7 +74,6 @@ const VendorInfo: React.FC<Props> = ({
                                     disabled={isInputDisabled}
                                 />
                             </FormControl>
-                            <FormLabel>Active</FormLabel>
                             <FormMessage />
                         </FormItem>
                     )}

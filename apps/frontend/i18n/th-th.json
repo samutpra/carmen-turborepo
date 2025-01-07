@@ -190,5 +190,20 @@
 	"placeholder_store_location_name": "กรอกชื่อ ร้านค้า/ที่ตั้ง",
 	"no_delivery_point_found": "ไม่พบจุดส่งมอบ",
 	"export_text": "ส่งออก",
-	"print_text": "พิมพ์"
+	"print_text": "พิมพ์",
+	"vendor_name_label": "ชื่อผู้ขาย",
+	"save_text": "บันทึก",
+	"infomation": "ข้อมูล",
+	"loading": "กำลังโหลด",
+	"change_profile_picture": "เปลี่ยนรูปโปรไฟล์",
+	"change_profile_pic_des": "เลือกรูปประจำตัวใหม่เพื่ออัปเดตภาพโปรไฟล์ของคุณ",
+	"choose_image": "เลือกภาพ",
+	"email": "อีเมล",
+	"first_name": "ชื่อจริง",
+	"last_name": "นามสกุล",
+	"edit_profile_title": "แก้ไขโปรไฟล์",
+	"role_text": "บทบาท",
+	"business_unit_text": "หน่วยธุรกิจ",
+	"langauge_text": "ภาษา",
+	"time_zone_text": "เขตเวลา"
 }

@@ -190,5 +190,20 @@
 	"placeholder_store_location_name": "Enter delivery point name",
 	"no_delivery_point_found": "No Delevery Points found",
 	"export_text": "Export",
-	"print_text": "Print"
+	"print_text": "Print",
+	"vendor_name_label": "Vendor Name",
+	"save_text": "Save",
+	"infomation": "Infomations",
+	"loading": "Loading",
+	"change_profile_picture": "Change Profile Picture",
+	"change_profile_pic_des": "Choose a new avatar to update your profile picture",
+	"choose_image": "Choose Image",
+	"email": "Email",
+	"first_name": "First Name",
+	"last_name": "Last Name",
+	"edit_profile_title": "Edit Profile",
+	"role_text": "Roles",
+	"business_unit_text": "Business Units",
+	"langauge_text": "Language",
+	"time_zone_text": "Time Zone"
 }

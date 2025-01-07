@@ -40,6 +40,7 @@ import { AvailableLanguageTag } from '@/paraglide/runtime';
 import { usePathname, useRouter } from '@/lib/i18n';
 import { Route } from 'next';
 import { useParams } from 'next/navigation';
+import * as m from '@/paraglide/messages.js';
 
 const profileFormSchema = z.object({
 	username: z.string(),
@@ -126,7 +127,7 @@ const ProfileComponent = () => {
 	return (
 		<Card className="p-4 bg-background m-6">
 			<CardHeader>
-				<CardTitle className="text-3xl font-bold">Edit Profile</CardTitle>
+				<CardTitle className="text-3xl font-bold">{m.edit_profile_title()}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
@@ -154,9 +155,9 @@ const ProfileComponent = () => {
 								</DialogTrigger>
 								<DialogContent className="sm:max-w-md">
 									<DialogHeader>
-										<DialogTitle>Change Profile Picture</DialogTitle>
+										<DialogTitle>{m.change_profile_picture()}</DialogTitle>
 										<DialogDescription>
-											Choose a new avatar to update your profile picture
+											{m.change_profile_pic_des()}
 										</DialogDescription>
 									</DialogHeader>
 									<div className="flex flex-col items-center space-y-4 py-4">
@@ -170,22 +171,20 @@ const ProfileComponent = () => {
 												{form.getValues('lastName')[0]}
 											</AvatarFallback>
 										</Avatar>
-										<div className="flex items-center gap-4">
+										<div className="flex items-center gap-2">
 											<Button
-												type="button"
-												variant="secondary"
-												className="bg-blue-500 text-white hover:bg-blue-600"
+												size={'sm'}
 												onClick={() => fileInputRef.current?.click()}
 											>
-												<CameraIcon className="w-4 h-4 mr-2" />
-												Choose Image
+												<CameraIcon className="w-4 h-4" />
+												{m.choose_image()}
 											</Button>
 											<Button
-												type="button"
+												size={'sm'}
 												variant="outline"
 												onClick={() => setIsDialogOpen(false)}
 											>
-												Cancel
+												{m.cancel_text()}
 											</Button>
 										</div>
 									</div>
@@ -200,10 +199,6 @@ const ProfileComponent = () => {
 								onChange={handleFileChange}
 								aria-label="Upload avatar image"
 							/>
-
-							<Button asChild>
-								<Link href="/profile/change-password">Change Password</Link>
-							</Button>
 						</div>
 
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +207,7 @@ const ProfileComponent = () => {
 								name="username"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Username</FormLabel>
+										<FormLabel>{m.username()}</FormLabel>
 										<FormControl>
 											<Input {...field} />
 										</FormControl>
@@ -226,7 +221,7 @@ const ProfileComponent = () => {
 								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Email</FormLabel>
+										<FormLabel>{m.email()}</FormLabel>
 										<FormControl>
 											<Input {...field} type="email" />
 										</FormControl>
@@ -240,7 +235,7 @@ const ProfileComponent = () => {
 								name="firstName"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>First Name</FormLabel>
+										<FormLabel>{m.first_name()}</FormLabel>
 										<FormControl>
 											<Input {...field} />
 										</FormControl>
@@ -254,7 +249,7 @@ const ProfileComponent = () => {
 								name="lastName"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Last Name</FormLabel>
+										<FormLabel>{m.last_name()}</FormLabel>
 										<FormControl>
 											<Input {...field} />
 										</FormControl>
@@ -264,7 +259,7 @@ const ProfileComponent = () => {
 							/>
 
 							<div className="space-y-2">
-								<Label>Roles</Label>
+								<Label>{m.role_text()}</Label>
 								<div className="flex flex-wrap gap-2">
 									{roles.map((role) => (
 										<Badge
@@ -279,7 +274,7 @@ const ProfileComponent = () => {
 							</div>
 
 							<div className="space-y-2">
-								<Label>Business Units</Label>
+								<Label>{m.business_unit_text()}</Label>
 								<div className="flex flex-wrap gap-2">
 									{businessUnits.map((unit) => (
 										<Badge
@@ -298,7 +293,7 @@ const ProfileComponent = () => {
 								name="language"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Language</FormLabel>
+										<FormLabel>{m.langauge_text()}</FormLabel>
 										<Select
 											onValueChange={(value: AvailableLanguageTag) => {
 												field.onChange(labels[value]);
@@ -336,7 +331,7 @@ const ProfileComponent = () => {
 								name="timezone"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Time Zone</FormLabel>
+										<FormLabel>{m.time_zone_text()}</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={field.value}
@@ -358,8 +353,11 @@ const ProfileComponent = () => {
 							/>
 						</div>
 
-						<div className="flex justify-end">
-							<Button type="submit">Save Changes</Button>
+						<div className="flex justify-end gap-2">
+							<Button asChild size={'sm'} variant={'outline'}>
+								<Link href="/profile/change-password">{m.change_password()}</Link>
+							</Button>
+							<Button type="submit" size={'sm'}>Save Changes</Button>
 						</div>
 					</form>
 				</Form>
