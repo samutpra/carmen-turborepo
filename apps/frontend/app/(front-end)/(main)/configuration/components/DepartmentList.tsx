@@ -30,7 +30,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
-
+import * as m from '@/paraglide/messages.js';
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -45,9 +45,9 @@ const DepartmentList = () => {
 	const [status, setStatus] = useURL('status');
 
 	const departmentFields = useMemo<FieldConfig<DepartmentType>[]>(() => [
-		{ key: 'name', label: 'Name' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Status', type: 'badge' }
+		{ key: 'name', label: `${m.department_name_label()}` },
+		{ key: 'description', label: `${m.description()}` },
+		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
 	], []);
 
 	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -106,24 +106,24 @@ const DepartmentList = () => {
 					const res = await deleteDepartment(id, token, tenantId);
 					if (res) {
 						setDepartments((prev) => prev.filter((department) => department.id !== id));
-						toastSuccess({ message: 'Department deleted successfully' });
+						toastSuccess({ message: `${m.del_department_success()}` });
 					}
 				});
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
+						toastError({ message: `${m.session_expire()}` });
 					} else {
-						toastError({ message: `Failed to delete department point: ${error.message}` });
+						toastError({ message: `${m.fail_del_department()}: ${error.message}` });
 					}
 				} else {
-					toastError({ message: 'An unknown error occurred while deleting the department.' });
+					toastError({ message: `${m.error_del_text()} ${m.department()}.` });
 				}
 			}
 		}, [token, tenantId, deleteDepartment]
 	)
 
-	const title = 'Departments';
+	const title = `${m.department()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -136,7 +136,7 @@ const DepartmentList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Departments..."
+				placeholder={`${m.Search()} ${m.department()}...`}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -151,12 +151,12 @@ const DepartmentList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>

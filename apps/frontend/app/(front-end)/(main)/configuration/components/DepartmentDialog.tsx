@@ -33,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitDepartment } from '../actions/department';
 import { formType } from '@/types/form_type';
+import * as m from '@/paraglide/messages.js';
 
 export interface DepartmentDialogProps {
 	mode: formType;
@@ -86,14 +87,19 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 				onSuccess(submitData);
 				setOpen(false);
 				form.reset();
-				toastSuccess({ message: `Department ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
+
+				toastSuccess({
+					message: `${m.department()} ${mode === formType.ADD
+						? `${m.create_txt()}`
+						: `${m.edit_txt()}`} ${m.successfully()}`
+				});
 			} else {
 				toastError({ message: `Failed to ${mode} department` });
 			}
 
 		} catch (error) {
 			console.error(`Error ${mode}ing department:`, error);
-			toastError({ message: `Failed to ${mode} department` });
+			toastError({ message: `${m.fail_to_text()} ${mode} ${m.department()}` });
 		} finally {
 			setIsLoading(false);
 		}
@@ -114,7 +120,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="h-4 w-4" />
-							Add Department
+							{m.add_text()} {m.department()}
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />

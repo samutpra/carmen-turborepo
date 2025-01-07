@@ -32,7 +32,7 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { submitDeliveryPoint } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
-
+import * as m from '@/paraglide/messages.js';
 export interface DeliveryPointDialogProps {
 	mode: formType;
 	defaultValues?: DeliveryPointType;
@@ -83,10 +83,14 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 			onSuccess(submitData);
 			setOpen(false);
 			form.reset();
-			toastSuccess({ message: `Delivery point ${mode === formType.ADD ? 'created' : 'updated'} successfully` });
+			toastSuccess({
+				message: `${m.delivery_point()} ${mode === formType.ADD
+					? `${m.create_txt()}`
+					: `${m.edit_txt()}`} ${m.successfully()}`
+			});
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);
-			toastError({ message: `Failed to ${mode} delivery point` });
+			toastError({ message: `${m.fail_to_text()} ${mode} delivery point` });
 		} finally {
 			setIsLoading(false);
 		}
@@ -107,7 +111,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 					{mode === formType.ADD ? (
 						<>
 							<PlusIcon className="h-4 w-4" />
-							Add Delivery Point
+							{m.add_text()} {m.delivery_point()}
 						</>
 					) : (
 						<PencilIcon className="w-4 h-4" />
@@ -118,8 +122,8 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 				<DialogHeader>
 					<DialogTitle>
 						{mode === formType.ADD
-							? 'Create New Delivery Point'
-							: 'Edit Delivery Point'}
+							? `${m.create_new_delvery_point()}`
+							: `${m.edit_delivery_point()}`}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -132,10 +136,10 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.delivery_point_name_label()}</FormLabel>
 									<FormControl>
 										<InputCustom
-											placeholder="Enter delivery point name"
+											placeholder={m.placeholder_delivery_point_name()}
 											error={!!form.formState.errors.name}
 											{...field}
 										/>
@@ -151,7 +155,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">Active</FormLabel>
+										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -170,7 +174,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 									onClick={handleClose}
 									size={'sm'}
 								>
-									Cancel
+									{m.cancel_text()}
 								</Button>
 								<LoaderButton
 									type="submit"
@@ -179,10 +183,10 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 									size={'sm'}
 								>
 									{isLoading
-										? 'Saving...'
+										? `${m.saving()}...`
 										: mode === formType.EDIT
-											? 'Save Changes'
-											: 'Add'}
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
 								</LoaderButton>
 							</div>
 						</DialogFooter>

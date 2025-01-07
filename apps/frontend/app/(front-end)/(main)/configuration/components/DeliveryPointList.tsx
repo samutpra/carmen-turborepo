@@ -29,6 +29,7 @@ import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
+import * as m from '@/paraglide/messages.js';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -76,17 +77,17 @@ const DeliveryPointList = () => {
 				const res = await deleteDeliveryPoint(id, token, tenantId);
 				if (res) {
 					setDeliveryPoints((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: 'Delivery point deleted successfully' });
+					toastSuccess({ message: `${m.delivery_point_del_success()}` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
+						toastError({ message: `${m.session_expire()}` });
 					} else {
-						toastError({ message: `Failed to delete delivery point: ${error.message}` });
+						toastError({ message: `${m.fail_del_delivery_point()}: ${error.message}` });
 					}
 				} else {
-					toastError({ message: 'An unknown error occurred while deleting the delivery point.' });
+					toastError({ message: `${m.error_del_text()} ${m.delivery_point()}.` });
 				}
 			}
 		}, [token, tenantId, deleteDeliveryPoint]
@@ -109,7 +110,7 @@ const DeliveryPointList = () => {
 		);
 	}
 
-	const title = 'Delivery Points';
+	const title = `${m.delivery_point()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -122,7 +123,7 @@ const DeliveryPointList = () => {
 			<SearchForm
 				onSubmit={handleSearch}
 				defaultValue={search}
-				placeholder="Search Delivery Point..."
+				placeholder={`${m.Search()} ${m.delivery_point()}...`}
 			/>
 			<div className="all-center gap-2">
 				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
@@ -136,12 +137,12 @@ const DeliveryPointList = () => {
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
-								: 'Select status...'}
+								: `${m.select_status()}`}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
@@ -167,8 +168,8 @@ const DeliveryPointList = () => {
 	);
 
 	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'is_active', label: 'Status', type: 'badge' }
+		{ key: 'name', label: `${m.delivery_point_label()}` },
+		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
 	];
 
 	const content = (

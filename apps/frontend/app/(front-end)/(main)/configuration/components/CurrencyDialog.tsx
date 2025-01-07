@@ -86,7 +86,11 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			setOpen(false);
 			form.reset();
 
-			toastSuccess({ message: `${m.currency()} ${mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`} ${m.successfully()}` });
+			toastSuccess({
+				message: `${m.currency()} ${mode === formType.ADD
+					? `${m.create_txt()}`
+					: `${m.edit_txt()}`} ${m.successfully()}`
+			});
 		} catch (err) {
 			console.error(`Error submit Currency:`, err);
 			toastError({ message: `${m.fail_to_text()} ${mode} ${m.currency()}` });

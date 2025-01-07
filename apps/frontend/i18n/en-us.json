@@ -168,5 +168,18 @@
 	"placeholder_currency_name": "Enter Currency Name",
 	"placeholder_symbol": "Enter Symbol",
 	"placeholder_rate": "Enter Rate",
-	"placeholder_enter": "Enter description"
+	"placeholder_enter": "Enter description",
+	"delivery_point_label": "Deliverys Point Name",
+	"department_name_label": "Department",
+	"create_new_delvery_point": "Create New Delivery Point",
+	"edit_delivery_point": "Edit Delivery Point",
+	"delivery_point_name_label": "Delivery Point Name",
+	"placeholder_delivery_point_name": "Enter delivery point name",
+	"delivery_point_del_success": "Delivery point deleted successfully",
+	"fail_del_delivery_point": "Failed to delete delivery point",
+	"session_expire": "Your session has expired. Please login again.",
+	"error_del_text": "An unknown error occurred while deleting",
+	"fail_del_currency": "Failed to delete currency",
+	"del_department_success": "Department deleted successfully",
+	"fail_del_department": "Failed to delete department point"
 }

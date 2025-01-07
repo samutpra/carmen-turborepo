@@ -106,12 +106,12 @@ const CurrencyList = () => {
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
+						toastError({ message: `${m.session_expire()}` });
 					} else {
-						toastError({ message: `Failed to delete currency: ${error.message}` });
+						toastError({ message: `${m.fail_del_currency()}: ${error.message}` });
 					}
 				} else {
-					toastError({ message: 'An unknown error occurred while deleting the currency.' });
+					toastError({ message: `${m.error_del_text()} ${m.currency()}.` });
 				}
 			}
 		}, [token, tenantId, deleteCurrency]
