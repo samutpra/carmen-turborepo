@@ -357,7 +357,7 @@ const ProfileComponent = () => {
 							<Button asChild size={'sm'} variant={'outline'}>
 								<Link href="/profile/change-password">{m.change_password()}</Link>
 							</Button>
-							<Button type="submit" size={'sm'}>Save Changes</Button>
+							<Button type="submit" size={'sm'}>{m.save_text()}</Button>
 						</div>
 					</form>
 				</Form>
