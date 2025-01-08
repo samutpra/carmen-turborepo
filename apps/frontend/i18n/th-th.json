@@ -169,7 +169,6 @@
 	"placeholder_rate": "ป้อนอัตรา",
 	"placeholder_enter": "กรอกคำอธิบาย",
 	"delivery_point_label": "ชื่อจุดส่งมอบ",
-	"department_label": "แผนก",
 	"department_name_label": "แผนก",
 	"create_new_delvery_point": "สร้างจุดส่งมอบใหม่",
 	"edit_delivery_point": "แก้ไขจุดส่งมอบ",
@@ -205,5 +204,14 @@
 	"role_text": "บทบาท",
 	"business_unit_text": "หน่วยธุรกิจ",
 	"langauge_text": "ภาษา",
-	"time_zone_text": "เขตเวลา"
+	"time_zone_text": "เขตเวลา",
+	"department_label": "แผนก",
+	"create_store_requistion": " สร้างใบขอซื้อของร้านค้า",
+	"title_store_requisition_not_found": "ไม่พบคำขอซื้อจากร้านค้า",
+	"date": "วันที่",
+	"ref": "อ้างอิง",
+	"request_to": "คำร้องขอถึง",
+	"store_name": "ชื่อร้านค้า",
+	"total_amout": "ยอดรวม",
+	"sort_by": "จัดเรียงตาม"
 }

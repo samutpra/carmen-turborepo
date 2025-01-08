@@ -1,5 +1,5 @@
 import React from 'react'
-import StoreRequisitionsList from '../components/StoreRequisitionsList'
+import StoreRequisitionsList from './components/StoreRequisitionsList'
 
 const StoreRequisitionsPage = () => {
     return (

@@ -205,5 +205,13 @@
 	"role_text": "Roles",
 	"business_unit_text": "Business Units",
 	"langauge_text": "Language",
-	"time_zone_text": "Time Zone"
+	"time_zone_text": "Time Zone",
+	"create_store_requistion": " Create Store Requisition",
+	"title_store_requisition_not_found": "No Store Requisitions Found",
+	"date": "Date",
+	"ref": "Ref",
+	"request_to": "Request To",
+	"store_name": "Store Name",
+	"total_amout": "Total Amount",
+	"sort_by": "Sort by"
 }
