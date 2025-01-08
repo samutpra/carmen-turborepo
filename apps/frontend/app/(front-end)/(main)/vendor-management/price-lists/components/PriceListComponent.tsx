@@ -129,7 +129,7 @@ const PriceListComponent = () => {
                             {pricelists.map((pricelist) => (
                                 <TableRow
                                     key={pricelist.id}
-                                    className="group hover:bg-gray-50/50 cursor-pointer border-b last:border-b-0"
+                                    className="group cursor-pointer border-b last:border-b-0"
                                 >
                                     <TableCell className="py-4 pl-4">
                                         <Checkbox />
