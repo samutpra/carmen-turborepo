@@ -568,7 +568,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                         <div className="overflow-x-auto">
                                             <Table>
                                                 <TableHeader>
-                                                    <TableRow>
+                                                    <TableRow className='text-xs'>
                                                         <TableHead>Location</TableHead>
                                                         <TableHead>Product</TableHead>
                                                         <TableHead>Lot No.</TableHead>
@@ -595,7 +595,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                                                 <TableRow>
                                                                     <TableCell>
                                                                         <div className="flex justify-between items-center">
-                                                                            <div className="flex items-center gap-2">
+                                                                            <div className="flex items-center gap-2 text-xs">
                                                                                 <span className="text-blue-600">{movement.sourceDocument}</span>
                                                                                 <span className="text-gray-400">|</span>
                                                                                 <span className="text-gray-500">{movement.commitDate}</span>
@@ -608,12 +608,12 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                                                 </TableRow>
                                                                 {inventoryItems.map(item =>
                                                                     item.lots.map((lot, index) => (
-                                                                        <TableRow key={item.id}>
+                                                                        <TableRow key={item.id} className='text-xs'>
                                                                             <TableCell>
                                                                                 {index === 0 && (
                                                                                     <div className="flex flex-col gap-1">
-                                                                                        <div className="text-xs font-medium text-gray-900">{item.location.name}</div>
-                                                                                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                                                        <div className="font-medium text-gray-900">{item.location.name}</div>
+                                                                                        <div className="flex items-center gap-1 text-gray-500">
                                                                                             <span>{item.location.code}</span>
                                                                                         </div>
                                                                                     </div>
@@ -622,17 +622,17 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                                                             <TableCell className="px-6 py-4 whitespace-nowrap">
                                                                                 {index === 0 && (
                                                                                     <div className="flex flex-col gap-1">
-                                                                                        <div className="text-xs font-medium text-gray-900">{item.productName}</div>
-                                                                                        <div className="text-xs text-gray-500">{item.sku}</div>
+                                                                                        <div className="font-medium text-gray-900">{item.productName}</div>
+                                                                                        <div className="text-gray-500">{item.sku}</div>
                                                                                     </div>
                                                                                 )}
                                                                             </TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'>{lot.lotNo}</TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'>{lot.uom}</TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'>{lot.quantity > 0 ? lot.quantity.toLocaleString() : ''}</TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'>{lot.quantity < 0 ? Math.abs(lot.quantity).toLocaleString() : ''}</TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'>{item.unitCost.toLocaleString()}</TableCell>
-                                                                            <TableCell className='px-6 py-4 whitespace-nowrap'> {(item.unitCost * Math.abs(lot.quantity)).toLocaleString()}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'>{lot.lotNo}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'>{lot.uom}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'>{lot.quantity > 0 ? lot.quantity.toLocaleString() : ''}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'>{lot.quantity < 0 ? Math.abs(lot.quantity).toLocaleString() : ''}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'>{item.unitCost.toLocaleString()}</TableCell>
+                                                                            <TableCell className='py-4 whitespace-nowrap'> {(item.unitCost * Math.abs(lot.quantity)).toLocaleString()}</TableCell>
                                                                         </TableRow>
                                                                     ))
                                                                 )}
@@ -715,7 +715,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                 </CardContent>
                 {/* Transaction Summary */}
                 <div className="border-t">
-                    <div className="p-4">
+                    <div className="p-6">
                         <h3 className="text-xs font-semibold mb-4">Transaction Summary</h3>
                         <div className="grid grid-cols-5 gap-8">
                             <div>
@@ -760,6 +760,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                             <Button
                                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                                 onClick={() => console.log('Approve')}
+                                size={'sm'}
                             >
                                 <Check className="h-4 w-4" />
                                 Approve
@@ -768,6 +769,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                 variant="outline"
                                 className="flex items-center gap-2 text-red-600 hover:bg-red-50"
                                 onClick={() => console.log('Reject')}
+                                size={'sm'}
                             >
                                 <XCircle className="h-4 w-4" />
                                 Reject
@@ -776,6 +778,7 @@ const StoreRequisitionsDetails: React.FC<Props> = ({ storeRequisition, mode }) =
                                 variant="outline"
                                 className="flex items-center gap-2 text-orange-600 hover:bg-orange-50"
                                 onClick={() => console.log('Send Back')}
+                                size={'sm'}
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Send Back
