@@ -78,16 +78,6 @@ const CurrencyList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	// const handleSuccess = (values: CurrencyType) => {
-	// 	setCurrencies((prev) => {
-	// 		const exists = prev.some((p) => p.id === values.id);
-	// 		if (exists) {
-	// 			return prev.map((p) => (p.id === values.id ? values : p));
-	// 		}
-	// 		return [...prev, values];
-	// 	});
-	// };
-
 	const handleSuccess = useCallback((values: CurrencyType) => {
 		setCurrencies((prev) => {
 			const mapValues = new Map(prev.map((u) => [u.id, u]));
@@ -117,24 +107,6 @@ const CurrencyList = () => {
 			}
 		}, [token, tenantId, deleteCurrency]
 	)
-
-
-	// const handleDelete = async (id: string) => {
-	// 	try {
-	// 		await deleteCurrency(id, token, tenantId);
-	// 		setCurrencies((prev) => prev.filter((currency) => currency.id !== id));
-	// 		toastSuccess({ message: 'Currency deleted successfully' });
-	// 	} catch (error) {
-	// 		if (error instanceof Error && error.message === 'Unauthorized') {
-	// 			toastError({ message: 'Your session has expired. Please login again.' });
-	// 			setShowRefreshToken(true);
-	// 		} else {
-	// 			console.error('Error deleting currency:', error);
-	// 			toastError({ message: 'Failed to delete currency' });
-	// 		}
-	// 	}
-
-	// };
 
 	if (showRefreshToken) {
 		return (
