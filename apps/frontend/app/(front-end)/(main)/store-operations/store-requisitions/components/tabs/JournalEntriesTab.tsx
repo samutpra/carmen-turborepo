@@ -33,8 +33,8 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-                    <h2 className="text-lg font-medium">Journal Entries</h2>
-                    <div className="px-2 py-1 text-sm text-blue-600 bg-blue-50 rounded-full">
+                    <h2 className="font-medium">Journal Entries</h2>
+                    <div className="px-2 py-1 text-xs text-blue-600 bg-blue-50 rounded-full">
                         {refNo}
                     </div>
                 </div>
@@ -47,31 +47,31 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
             {/* Header Details */}
             <div className="grid grid-cols-3 gap-6 p-4 bg-gray-50 rounded-lg">
                 <div>
-                    <div className="text-sm text-gray-500">Document Type</div>
-                    <div className="font-medium">Store Requisition</div>
+                    <div className="text-xs text-gray-500">Document Type</div>
+                    <div className="font-medium text-xs">Store Requisition</div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500">Transaction Date</div>
-                    <div className="font-medium">{date}</div>
+                    <div className="text-xs text-gray-500">Transaction Date</div>
+                    <div className="font-medium text-xs">{date}</div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500">Journal Status</div>
+                    <div className="text-xs text-gray-500">Journal Status</div>
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full" />
-                        <span className="font-medium">Posted</span>
+                        <span className="font-medium text-xs">Posted</span>
                     </div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500">Journal Reference</div>
-                    <div className="font-medium">JV-{refNo.split('-')[1]}</div>
+                    <div className="text-xs text-gray-500">Journal Reference</div>
+                    <div className="font-medium text-xs">JV-{refNo.split('-')[1]}</div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500">Source</div>
-                    <div className="font-medium">SR</div>
+                    <div className="text-xs text-gray-500">Source</div>
+                    <div className="font-medium text-xs">SR</div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500">Description</div>
-                    <div className="font-medium">{description}</div>
+                    <div className="text-xs text-gray-500">Description</div>
+                    <div className="font-medium text-xs">{description}</div>
                 </div>
             </div>
 
@@ -81,15 +81,15 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
                     <div key={group.group}>
                         {/* Group Header */}
                         <div className="bg-gray-50 p-4">
-                            <h3 className="font-medium text-sm">{group.group}</h3>
-                            <p className="text-sm text-gray-500 mt-1">{group.description}</p>
+                            <h3 className="font-medium text-xs">{group.group}</h3>
+                            <p className="text-xs text-gray-500 mt-1">{group.description}</p>
                         </div>
 
                         {/* Group Entries */}
                         <div className="p-4">
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
+                                    <TableRow className='text-xs'>
                                         <TableHead className="w-[250px]">Account</TableHead>
                                         <TableHead className="w-[200px]">Department</TableHead>
                                         <TableHead>Description</TableHead>
@@ -99,14 +99,14 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
                                 </TableHeader>
                                 <TableBody>
                                     {group.entries.map((entry, index) => (
-                                        <TableRow key={index}>
+                                        <TableRow key={index} className='text-xs'>
                                             <TableCell className="w-[250px]">
                                                 <div className="font-medium">{entry.accountName}</div>
-                                                <div className="text-sm text-gray-500">{entry.accountCode}</div>
+                                                <div className="text-xs text-gray-500">{entry.accountCode}</div>
                                             </TableCell>
                                             <TableCell className="w-[200px]">
                                                 <div>{entry.department.name}</div>
-                                                <div className="text-sm text-gray-500">
+                                                <div className="text-xs text-gray-500">
                                                     CC: {entry.costCenter}
                                                 </div>
                                             </TableCell>
@@ -131,7 +131,7 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
                 <div className="p-4">
                     <Table>
                         <TableBody>
-                            <TableRow className="border-t border-gray-200 font-medium">
+                            <TableRow className="border-t border-gray-200 font-medium text-xs">
                                 <TableCell className="w-[250px]">Totals</TableCell>
                                 <TableCell className="w-[200px]"></TableCell>
                                 <TableCell></TableCell>
@@ -149,19 +149,19 @@ const JournalEntriesTab: React.FC<JournalEntriesTabProps> = ({
                 {/* Balance Status */}
                 <div className="border-t p-4 bg-gray-50 flex justify-end">
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-gray-500">Difference:</div>
-                        <div className="font-medium">
+                        <div className="text-xs text-gray-500">Difference:</div>
+                        <div className="font-medium text-xs">
                             {(totals.debit - totals.credit).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </div>
                         {totals.debit === totals.credit ? (
                             <div className="flex items-center text-green-700 bg-green-50 px-3 py-1 rounded-full">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-                                <span className="text-sm font-medium">Balanced</span>
+                                <span className="text-xs font-medium">Balanced</span>
                             </div>
                         ) : (
                             <div className="flex items-center text-red-700 bg-red-50 px-3 py-1 rounded-full">
                                 <div className="w-2 h-2 bg-red-500 rounded-full mr-2" />
-                                <span className="text-sm font-medium">Unbalanced</span>
+                                <span className="text-xs font-medium">Unbalanced</span>
                             </div>
                         )}
                     </div>

@@ -53,7 +53,7 @@ const StoreRequisitionsTable: React.FC<StoreRequisitionsProps> = ({
                         <TableCell>{requisition.requestTo}</TableCell>
                         <TableCell>{requisition.storeName}</TableCell>
                         <TableCell>{requisition.description}</TableCell>
-                        <TableCell>
+                        <TableCell className='font-mono'>
                             {new Intl.NumberFormat('en-US', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
@@ -67,7 +67,7 @@ const StoreRequisitionsTable: React.FC<StoreRequisitionsProps> = ({
                         <TableCell className='text-center'>
                             <Button asChild variant="ghost" size={'sm'}>
                                 <Link href={`/store-operations/store-requisitions/${requisition.refNo}`}>
-                                    <Eye className="h-4 w-4" />
+                                    <Eye />
                                 </Link>
                             </Button>
                         </TableCell>

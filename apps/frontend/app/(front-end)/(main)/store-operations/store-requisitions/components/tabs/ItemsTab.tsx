@@ -1,36 +1,77 @@
-import React from 'react'
+import { Button } from '@/components/ui/button'
+import { AlertCircle, Check, Edit2, Plus, Split, Trash2, XCircle } from 'lucide-react'
+import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, Check, Edit2, Plus, Split, Trash2, XCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Movement, RequisitionItem } from '../../data';
 import { Input } from '@/components/ui/input';
 import ApprovalLogDialog from '../ApprovalLogDialog';
+import { mockApprovalLogs } from '../../data';
 import { Badge } from '@/components/ui/badge';
 
-interface Props {
-    items: RequisitionItem[]
-    selectedItems: string[]
-    movements: Movement[]
-    handleSelectAll: (checked: boolean) => void
-    handleSelectItem: (id: string, checked: boolean) => void
-    handleBulkAction: (action: string) => void
+interface ItemsTabProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    items: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setItems: React.Dispatch<React.SetStateAction<any[]>>
     isEditMode: boolean
-    handleQuantityUpdate: (id: string, field: string, value: number) => void
-    setItems: React.Dispatch<React.SetStateAction<RequisitionItem[]>>
-
 }
 
-const ItemsTab: React.FC<Props> = ({
-    selectedItems,
-    handleBulkAction,
+const ItemsTab: React.FC<ItemsTabProps> = ({
     items,
-    handleSelectAll,
-    handleSelectItem,
-    isEditMode,
-    handleQuantityUpdate,
     setItems,
+    isEditMode
 }) => {
+
+    const [selectedItems, setSelectedItems] = useState<number[]>([])
+
+    const handleBulkAction = (action: 'Accept' | 'Reject' | 'Review' | 'Delete' | 'Split') => {
+        if (!selectedItems.length) return
+
+        switch (action) {
+            case 'Accept':
+            case 'Reject':
+            case 'Review':
+                setItems(items.map(item =>
+                    selectedItems.includes(item.id)
+                        ? { ...item, approvalStatus: action }
+                        : item
+                ))
+                break
+            case 'Delete':
+                setItems(items.filter(item => !selectedItems.includes(item.id)))
+                break
+            case 'Split':
+                console.log('Splitting items:', selectedItems)
+                break
+        }
+        setSelectedItems([]) // Clear selection after action
+    }
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedItems(items.map(item => item.id))
+        } else {
+            setSelectedItems([])
+        }
+    }
+
+    const handleQuantityUpdate = (itemId: number, field: 'qtyRequired' | 'qtyApproved' | 'qtyIssued', value: number) => {
+        setItems(items.map(item =>
+            item.id === itemId
+                ? { ...item, [field]: value }
+                : item
+        ))
+    }
+
+    const handleSelectItem = (itemId: number, checked: boolean) => {
+        if (checked) {
+            setSelectedItems([...selectedItems, itemId])
+        } else {
+            setSelectedItems(selectedItems.filter(id => id !== itemId))
+        }
+    }
+
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -46,7 +87,6 @@ const ItemsTab: React.FC<Props> = ({
                 </Button>
             </div>
 
-            {/* Add bulk actions buttons below the title */}
             {selectedItems.length > 0 && (
                 <div className="flex gap-2">
                     <Button
@@ -83,7 +123,6 @@ const ItemsTab: React.FC<Props> = ({
                     </Button>
                 </div>
             )}
-
             <Table className="w-full">
                 <TableHeader>
                     <TableRow className="border-b bg-gray-50">
@@ -92,7 +131,6 @@ const ItemsTab: React.FC<Props> = ({
                                 id="select-all"
                                 checked={selectedItems.length === items.length}
                                 onCheckedChange={handleSelectAll}
-                                className='h-3 w-3'
                             />
                         </TableHead>
                         <TableHead className="text-left p-4 text-xs font-medium text-gray-500">
@@ -136,7 +174,6 @@ const ItemsTab: React.FC<Props> = ({
                                         id={`select-${item.id}`}
                                         checked={selectedItems.includes(item.id)}
                                         onCheckedChange={(checked) => handleSelectItem(item.id, Boolean(checked))}
-                                        className='h-3 w-3'
                                     />
                                 </TableCell>
                                 <TableCell className="p-4">
@@ -165,7 +202,7 @@ const ItemsTab: React.FC<Props> = ({
                                 <TableCell className="p-4">
                                     <p className="text-xs">{item.unit}</p>
                                 </TableCell>
-                                <TableCell className="p-4 text-right">
+                                <TableCell className="p-4 text-right text-xs">
                                     {isEditMode ? (
                                         <Input
                                             type="number"
@@ -183,7 +220,7 @@ const ItemsTab: React.FC<Props> = ({
                                         <p>{item.qtyRequired}</p>
                                     )}
                                 </TableCell>
-                                <TableCell className="p-4 text-right">
+                                <TableCell className="p-4 text-right text-xs">
                                     {isEditMode ? (
                                         <Input
                                             type="number"
@@ -201,7 +238,7 @@ const ItemsTab: React.FC<Props> = ({
                                         <p>{item.qtyApproved}</p>
                                     )}
                                 </TableCell>
-                                <TableCell className="p-4 text-right">
+                                <TableCell className="p-4 text-right text-xs">
                                     {isEditMode ? (
                                         <Input
                                             type="number"
@@ -219,10 +256,11 @@ const ItemsTab: React.FC<Props> = ({
                                         <p>{item.qtyIssued || 0}</p>
                                     )}
                                 </TableCell>
-                                <TableCell className="p-4 text-right">
-                                    <p className="font-medium text-xs">
-                                        {item.total.toFixed(2)}
-                                    </p>
+                                <TableCell className="p-4 text-right font-mono text-xs">
+                                    {new Intl.NumberFormat('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    }).format(item.total)}
                                 </TableCell>
                                 <TableCell className="p-4 text-center">
                                     <ApprovalLogDialog
@@ -242,7 +280,7 @@ const ItemsTab: React.FC<Props> = ({
                                             size="sm"
                                             onClick={() => console.log("Edit item", item.id)}
                                         >
-                                            <Edit2 className="h-4 w-4" />
+                                            <Edit2 />
                                         </Button>
                                         <Button
                                             variant="ghost"
@@ -251,7 +289,7 @@ const ItemsTab: React.FC<Props> = ({
                                                 setItems(items.filter((i) => i.id !== item.id));
                                             }}
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash2 />
                                         </Button>
                                     </div>
                                 </TableCell>
