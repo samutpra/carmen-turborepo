@@ -4,7 +4,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DepartmentType } from '@carmensoftware/shared-types/src/department';
-import React, { useEffect, useState, FormEvent, useMemo, useCallback, useTransition } from 'react';
+import React, { useEffect, useState, FormEvent, useCallback, useTransition } from 'react';
 import {
 	Popover,
 	PopoverContent,
@@ -46,12 +46,11 @@ const DepartmentList = () => {
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
 
-	const departmentFields = useMemo<FieldConfig<DepartmentType>[]>(() => [
-		{ key: 'name', label: `${m.department_name_label()}` },
-		{ key: 'description', label: `${m.description()}` },
-		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
-	], []);
-
+	const departmentFields: FieldConfig<DepartmentType>[] = [
+		{ key: 'name', label: m.department_name_label() },
+		{ key: 'description', label: m.description() },
+		{ key: 'is_active', label: m.status_text(), type: 'badge' },
+	];
 	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		startTransition(() => {
@@ -59,82 +58,55 @@ const DepartmentList = () => {
 		});
 	};
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		setIsLoading(true);
 		try {
 			const data = await fetchDepartments(token, tenantId, { search, status });
-			startTransition(() => {
-				setDepartments(data);
-			});
+			setDepartments(data);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [token, tenantId, search, status]);
+
 
 	useEffect(() => {
 		startTransition(() => {
 			fetchData();
 		});
-	}, [token, tenantId, search, status]);
+	}, [fetchData]);
 
-
-
-	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">Error loading departments: {error}</p>
-				</CardContent>
-			</Card>
-		);
-	}
 
 	const handleSuccess = useCallback((values: DepartmentType) => {
-		startTransition(() => {
-			setDepartments((prev) => {
-				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				mapValues.set(values.id, values);
-				return Array.from(mapValues.values());
-			});
-		})
-	}, [setDepartments]);
+		setDepartments((prev) => {
+			const mapValues = new Map(prev.map((u) => [u.id, u]));
+			mapValues.set(values.id, values);
+			return Array.from(mapValues.values());
+		});
+	}, []);
 
-	const handleDelete = useCallback(
-		async (id: string) => {
-			try {
-				startTransition(async () => {
-					const res = await deleteDepartment(id, token, tenantId);
-					if (res) {
-						setDepartments((prev) => prev.filter((department) => department.id !== id));
-						toastSuccess({ message: `${m.del_department_success()}` });
-					}
-				});
-			} catch (error) {
-				if (error instanceof Error) {
-					if (error.message === 'Unauthorized') {
-						toastError({ message: `${m.session_expire()}` });
-					} else {
-						toastError({ message: `${m.fail_del_department()}: ${error.message}` });
-					}
-				} else {
-					toastError({ message: `${m.error_del_text()} ${m.department()}.` });
-				}
-			}
-		}, [token, tenantId, deleteDepartment]
-	)
+	const handleDelete = useCallback(async (id: string) => {
+		try {
+			await deleteDepartment(id, token, tenantId);
+			setDepartments((prev) => prev.filter((department) => department.id !== id));
+			toastSuccess({ message: m.del_department_success() });
+		} catch (error) {
+			const message = error instanceof Error ? error.message : m.error_del_text();
+			toastError({ message: `${m.fail_del_department()}: ${message}` });
+		}
+	}, [token, tenantId]);
 
-	const title = `${m.department()}`;
+	const title = m.department();
 
 	const actionButtons = (
 		<div className="action-btn-container">
 			<DepartmentDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
+			<Button variant="outline" size="sm" aria-label={m.export_text()}>
 				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
+			<Button variant="outline" size="sm" aria-label={m.print_text()}>
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
@@ -158,6 +130,7 @@ const DepartmentList = () => {
 							className="btn-combobox"
 							size={'sm'}
 							disabled={isPending}
+							aria-label={m.select_status()}
 						>
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
@@ -231,6 +204,18 @@ const DepartmentList = () => {
 			</div>
 		</>
 	);
+
+
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">Error loading departments: {error}</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
 
 	if (isLoading) {
 		return (

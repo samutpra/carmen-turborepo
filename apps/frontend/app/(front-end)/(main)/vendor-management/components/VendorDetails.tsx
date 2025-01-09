@@ -75,7 +75,8 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
             if (result) {
                 form.reset();
                 toastSuccess({ message: mode === formType.ADD ? 'Vendor created successfully' : 'Vendor updated successfully' });
-                router.push('/vendor-management/vendors');
+                // router.push('/vendor-management/vendors');
+                // รอ รีโหลด
             }
         } catch (error) {
             console.error('Error saving vendor:', error);
@@ -189,7 +190,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                     onSubmit={onSubmit}
                 />
             </Card>
-
+            {/* 
             {mode === formType.EDIT && (
                 <Card className='p-4'>
                     <h1 className="text-lg font-medium">Environmental Impact</h1>
@@ -236,7 +237,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                         }}
                     />
                 </Card>
-            )}
+            )} */}
 
             <Card className='p-4'>
                 <AddressesSection isEdit={isEditing} />
