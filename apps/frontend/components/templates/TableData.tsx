@@ -68,7 +68,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
     idField,
     onSuccess,
     onDelete,
-    isLoading = false,
+    isLoading,
     showIndex = true,
     editComponent,
     deleteDialogProps = {
@@ -77,6 +77,7 @@ const DataTable = <T extends Record<string, FieldValue>>({
         confirmLabel: `${m.delete_text()}`,
     },
 }: DataTableProps<T>): React.ReactElement => {
+
     const handleDelete = (id: string): void => {
         if (onDelete) {
             onDelete(id);

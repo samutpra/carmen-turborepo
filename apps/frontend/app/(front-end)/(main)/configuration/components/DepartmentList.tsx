@@ -22,7 +22,6 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteDepartment, fetchDepartments } from '../actions/department';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
@@ -32,6 +31,8 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -231,9 +232,19 @@ const DepartmentList = () => {
 		</>
 	);
 
-	if (isLoading || isPending) {
-		return <SkeltonLoad />;
+	if (isLoading) {
+		return (
+			<>
+				<div className='block md:hidden'>
+					<SkeltonCardLoading />
+				</div>
+				<div className='hidden md:block'>
+					<SkeletonTableLoading />;
+				</div>
+			</>
+		)
 	}
+
 	if (departments.length === 0) {
 		return (
 			<EmptyState

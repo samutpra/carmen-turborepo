@@ -21,7 +21,6 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import UnitDialog from './UnitDialog';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
 import { deleteUnit, fetchUnits } from '../actions/unit';
@@ -32,6 +31,8 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -106,7 +107,7 @@ const UnitList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const title = `${m.units()}`;
+	const title = `${m.unit()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
@@ -213,9 +214,17 @@ const UnitList = () => {
 			</div>
 		</>
 	);
-
 	if (isLoading) {
-		return <SkeltonLoad />;
+		return (
+			<>
+				<div className='block md:hidden'>
+					<SkeltonCardLoading />
+				</div>
+				<div className='hidden md:block'>
+					<SkeletonTableLoading />;
+				</div>
+			</>
+		)
 	}
 
 	if (units.length === 0) {

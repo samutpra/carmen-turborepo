@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
 import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
@@ -31,6 +30,8 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -219,9 +220,17 @@ const DeliveryPointList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />;
+		return (
+			<>
+				<div className='block md:hidden'>
+					<SkeltonCardLoading />
+				</div>
+				<div className='hidden md:block'>
+					<SkeletonTableLoading />;
+				</div>
+			</>
+		)
 	}
-
 	if (deliveryPoints.length === 0) {
 		return (
 			<EmptyState

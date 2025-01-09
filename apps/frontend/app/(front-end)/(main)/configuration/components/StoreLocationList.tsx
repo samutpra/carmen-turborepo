@@ -21,7 +21,6 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import TableData from '@/components/templates/TableData';
 import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
@@ -32,6 +31,8 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -221,7 +222,16 @@ const StoreLocationList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />;
+		return (
+			<>
+				<div className='block md:hidden'>
+					<SkeltonCardLoading />
+				</div>
+				<div className='hidden md:block'>
+					<SkeletonTableLoading />;
+				</div>
+			</>
+		)
 	}
 
 	if (storeLocations.length === 0) {

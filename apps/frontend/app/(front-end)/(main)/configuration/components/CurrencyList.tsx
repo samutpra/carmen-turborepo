@@ -23,7 +23,6 @@ import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import TableData from '@/components/templates/TableData';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
@@ -33,6 +32,8 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
+import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -243,8 +244,18 @@ const CurrencyList = () => {
 			</div>
 		</>
 	);
+
 	if (isLoading) {
-		return <SkeltonLoad />;
+		return (
+			<>
+				<div className='block md:hidden'>
+					<SkeltonCardLoading />
+				</div>
+				<div className='hidden md:block'>
+					<SkeletonTableLoading />;
+				</div>
+			</>
+		)
 	}
 
 	if (currencies.length === 0) {
