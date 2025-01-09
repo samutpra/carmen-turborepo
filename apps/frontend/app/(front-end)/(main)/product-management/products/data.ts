@@ -378,3 +378,113 @@ export const productStockCount = {
         }
     ]
 };
+
+export const productListData = {
+    total: 8,
+    products: [
+        {
+            id: 'PRD001',
+            productCode: 'ELEC-001',
+            name: 'MacBook Pro 16"',
+            description: 'Latest M2 Pro chip, 16GB RAM, 512GB SSD',
+            categoryId: 'Electronics',
+            subCategoryId: 'Laptops',
+            itemGroup: 'Computing Devices',
+            basePrice: 2499.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT001'
+        },
+        {
+            id: 'PRD002',
+            productCode: 'OFF-001',
+            name: 'Ergonomic Office Chair',
+            description: 'Adjustable height and lumbar support, mesh back',
+            categoryId: 'Office Furniture',
+            subCategoryId: 'Chairs',
+            itemGroup: 'Furniture',
+            basePrice: 299.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT002'
+        },
+        {
+            id: 'PRD003',
+            productCode: 'STAT-001',
+            name: 'Premium Notebook Set',
+            description: 'A set of high-quality notebooks for all your writing needs',
+            categoryId: 'Stationery',
+            subCategoryId: 'Writing Materials',
+            itemGroup: 'Office Supplies',
+            basePrice: 24.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT003'
+        },
+        {
+            id: 'PRD004',
+            productCode: 'ELEC-002',
+            name: 'Dell UltraSharp Monitor',
+            description: 'A high-resolution monitor with a 4K display',
+            categoryId: 'Electronics',
+            subCategoryId: 'Monitors',
+            itemGroup: 'Computing Devices',
+            basePrice: 499.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT004'
+        },
+        {
+            id: 'PRD005',
+            productCode: 'OFF-002',
+            name: 'Standing Desk',
+            description: 'A standing desk to promote better posture',
+            categoryId: 'Office Furniture',
+            subCategoryId: 'Desks',
+            itemGroup: 'Furniture',
+            basePrice: 699.99,
+            currency: 'USD',
+            isActive: false,
+            primaryInventoryUnitId: 'UNIT005'
+        },
+        {
+            id: 'PRD006',
+            productCode: 'TECH-001',
+            name: 'Wireless Mouse',
+            description: 'A wireless mouse for easy navigation',
+            categoryId: 'Electronics',
+            subCategoryId: 'Accessories',
+            itemGroup: 'Computing Devices',
+            basePrice: 79.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT006'
+        },
+        {
+            id: 'PRD007',
+            productCode: 'STAT-002',
+            name: 'Filing Cabinet',
+            description: 'A large filing cabinet for storage',
+            categoryId: 'Office Furniture',
+            subCategoryId: 'Storage',
+            itemGroup: 'Office Supplies',
+            basePrice: 199.99,
+            currency: 'USD',
+            isActive: true,
+            primaryInventoryUnitId: 'UNIT007'
+        },
+        {
+            id: 'PRD008',
+            productCode: 'TECH-002',
+            name: 'Mechanical Keyboard',
+            description: 'A mechanical keyboard for typing',
+            categoryId: 'Electronics',
+            subCategoryId: 'Accessories',
+            itemGroup: 'Computing Devices',
+            basePrice: 149.99,
+            currency: 'USD',
+            isActive: false,
+            primaryInventoryUnitId: 'UNIT008'
+        }
+    ]
+};

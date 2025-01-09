@@ -33,9 +33,6 @@ const PeriodEndList = () => {
         fetchPeriodEnd();
     }, [token, tenantId]);
 
-    console.log('periodEnd', periodEnd);
-
-
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setSearch(event.currentTarget.search.value);
