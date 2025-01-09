@@ -132,13 +132,13 @@ const ProductIdPage = () => {
 		<>
 			{isEditing ? (
 				<>
-					<Button onClick={handleSave} variant="default">Save</Button>
-					<Button onClick={handleCancel} variant="outline">Cancel</Button>
+					<Button onClick={handleSave} variant="default" size={'sm'}>Save</Button>
+					<Button onClick={handleCancel} variant="outline" size={'sm'}>Cancel</Button>
 				</>
 			) : (
 				<>
-					<Button onClick={handleEdit}>Edit</Button>
-					<Button variant="destructive" onClick={handleDelete}>Delete</Button>
+					<Button onClick={handleEdit} size={'sm'}>Edit</Button>
+					<Button variant="destructive" onClick={handleDelete} size={'sm'}>Delete</Button>
 				</>
 			)}
 		</>
@@ -148,12 +148,12 @@ const ProductIdPage = () => {
 		<>
 			<Tabs defaultValue="basic">
 				<TabsList>
-					<TabsTrigger value="basic">Basic Info</TabsTrigger>
-					<TabsTrigger value="inventory">Inventory</TabsTrigger>
-					<TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
-					<TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
-					<TabsTrigger value="stockCount">Stock Count</TabsTrigger>
-					<TabsTrigger value="environment">Environmental Impact</TabsTrigger>
+					<TabsTrigger value="basic" className='text-xs'>Basic Info</TabsTrigger>
+					<TabsTrigger value="inventory" className='text-xs'>Inventory</TabsTrigger>
+					<TabsTrigger value="orderUnit" className='text-xs'>Order Unit</TabsTrigger>
+					<TabsTrigger value="ingredientUnit" className='text-xs'>Ingredient Unit</TabsTrigger>
+					<TabsTrigger value="stockCount" className='text-xs'>Stock Count</TabsTrigger>
+					<TabsTrigger value="environment" className='text-xs'>Environmental Impact</TabsTrigger>
 				</TabsList>
 				<TabsContent value="basic">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -457,8 +457,8 @@ const ProductIdPage = () => {
 				</TabsContent>
 			</Tabs>
 			<div className="mt-4 space-x-2">
-				<Button onClick={saveConversions}>Save Conversions</Button>
-				<Button variant="secondary" asChild>
+				<Button onClick={saveConversions} size={'sm'}>Save Conversions</Button>
+				<Button variant="secondary" size={'sm'} asChild>
 					<Link href="/product-management/products">Back to Product List</Link>
 				</Button>
 			</div>
@@ -577,7 +577,7 @@ const ProductIdPage = () => {
 									<div className="flex flex-col gap-1">
 										<div className="flex items-center gap-3">
 											<div className="text-2xl font-bold">
-												ข้าวหอมะลิอินทรีย์
+												ข้าวหอมมะลิ
 											</div>
 											{status}
 										</div>
