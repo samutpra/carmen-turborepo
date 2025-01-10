@@ -22,7 +22,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import VendorInfo from './sections/VendorInfo';
-import { EnvironmentalProfile } from './sections/EnvironmentalProfile';
 import AddressesSection from './sections/AddressesSection';
 import ContactsSection from './sections/ContactsSection';
 import CertificationsSection from './sections/CertificationsSection';

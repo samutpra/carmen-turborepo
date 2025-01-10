@@ -4,30 +4,31 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus, Printer } from 'lucide-react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import VendorCard from './VendorCard';
-import VendorTable from './VendorTable';
 import { fetchAllVendors } from '../actions/vendor';
 import { Link } from '@/lib/i18n';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import { FieldConfig } from '@/components/templates/DisplayComponent';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import VendorDisplay from './VendorDisplay';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+
+enum VendorFields {
+	Name = 'name',
+	Description = 'description',
+	isActive = 'is_active',
+}
+
+const sortFields: FieldConfig<vendor_type>[] = [
+	{ key: VendorFields.Name, label: m.department_name_label() },
+	{ key: VendorFields.isActive, label: m.status_text(), type: 'badge' },
+];
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -68,11 +69,6 @@ const VendorList = () => {
 		);
 	}
 
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
 	const title = `${m.vendors_title()}`;
 
 	const actionButtons = (
@@ -97,68 +93,34 @@ const VendorList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
+				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.Vendor()}...`}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
-											}}
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={vendors}
+					onSort={setVendors}
+				/>
 			</div>
 		</div>
 	);
 
+	if (isLoading) return <SkeltonLoad />
+
 	const content = (
-		<>
-			<div className="block md:hidden">
-				<VendorCard
-					vendors={vendors}
-					isLoading={isLoading}
-				/>
-			</div>
-			<div className="hidden md:block">
-				<VendorTable
-					vendors={vendors}
-					isLoading={isLoading}
-				/>
-			</div>
-		</>
-	);
+		<VendorDisplay
+			vendors={vendors}
+		/>
+	)
 
 	return (
 		<DataDisplayTemplate
