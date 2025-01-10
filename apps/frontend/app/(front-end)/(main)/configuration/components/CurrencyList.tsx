@@ -6,19 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CurrencyType } from '@carmensoftware/shared-types';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
@@ -31,10 +18,11 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
-import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
+import { FileDown, Printer } from 'lucide-react';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 
 enum CurrencyField {
 	Code = 'code',
@@ -45,6 +33,18 @@ enum CurrencyField {
 	isActive = 'is_active',
 }
 
+const sortFields: FieldConfig<CurrencyType>[] = [
+	{ key: CurrencyField.Code, label: `${m.code_label()}` },
+	{ key: CurrencyField.Name, label: `${m.currency_name()}` },
+	{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
+	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
+]
+
+const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+	...sortFields,
+	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
+	{ key: CurrencyField.Description, label: `${m.description()}` },
+]
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
@@ -57,17 +57,6 @@ const CurrencyList = () => {
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
-	const [sortField, setSortField] = useState<CurrencyField | null>(null);
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-	const currenciesFiltered: FieldConfig<CurrencyType>[] = [
-		{ key: CurrencyField.Code, label: `${m.code_label()}` },
-		{ key: CurrencyField.Name, label: `${m.currency_name()}` },
-		{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
-		{ key: CurrencyField.Description, label: `${m.description()}` },
-		{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
-		{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	]
 
 	const fetchData = async () => {
 		try {
@@ -95,11 +84,6 @@ const CurrencyList = () => {
 	useEffect(() => {
 		fetchData();
 	}, [token, tenantId, search, status]);
-
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
 
 	const handleSuccess = useCallback((values: CurrencyType) => {
 		setCurrencies((prev) => {
@@ -130,21 +114,6 @@ const CurrencyList = () => {
 			}
 		}, [token, tenantId, deleteCurrency]
 	)
-
-	const handleSort = (field: CurrencyField) => {
-		const isAscending = sortField === field && sortDirection === "asc";
-		const newDirection = isAscending ? "desc" : "asc";
-
-		const sortedData = [...currencies].sort((a, b) => {
-			if (a[field] < b[field]) return newDirection === "asc" ? -1 : 1;
-			if (a[field] > b[field]) return newDirection === "asc" ? 1 : -1;
-			return 0;
-		});
-
-		setCurrencies(sortedData);
-		setSortField(field);
-		setSortDirection(newDirection);
-	};
 
 
 	if (showRefreshToken) {
@@ -191,83 +160,23 @@ const CurrencyList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
 				defaultValue={search}
+				onSearch={setSearch}
 				placeholder={`${m.Search()} ${m.currency()}..`}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-							<ChevronDown className="h-4 w-4" />
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
-											}}
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size={"sm"}>
-							<ArrowUpDown className="mr-2 h-4 w-4" />
-							{m.sort_by()}
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem onClick={() => handleSort(CurrencyField.Code)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.code_label()}</span>
-								{sortField === CurrencyField.Code && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(CurrencyField.Name)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.currency_name()}</span>
-								{sortField === CurrencyField.Name && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(CurrencyField.Rate)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.rate_label()}</span>
-								{sortField === CurrencyField.Rate && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(CurrencyField.isActive)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.status_text()}</span>
-								{sortField === CurrencyField.isActive && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={currencies}
+					onSort={setCurrencies}
+				/>
 			</div>
 		</div>
 	);

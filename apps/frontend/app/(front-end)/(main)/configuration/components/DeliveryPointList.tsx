@@ -5,19 +5,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import EmptyState from '@/components/ui-custom/EmptyState';
@@ -29,15 +16,21 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
+import { FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
 
 enum DeliveryPointField {
 	Name = 'name',
 	isActive = 'is_active',
 }
+
+const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
+	{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
+	{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
+];
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -49,15 +42,6 @@ const DeliveryPointList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [sortField, setSortField] = useState<DeliveryPointField | null>(null);
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-
-	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
-		{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
-		{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	];
-
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -86,7 +70,6 @@ const DeliveryPointList = () => {
 		});
 	}, [setDeliveryPoints]);
 
-
 	const handleDelete = useCallback(
 		async (id: string) => {
 			try {
@@ -109,23 +92,6 @@ const DeliveryPointList = () => {
 		}, [token, tenantId, deleteDeliveryPoint]
 	)
 
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
-	const handleSort = (field: DeliveryPointField) => {
-		const isAscending = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
-		const newDirection = isAscending === 'asc' ? 'desc' : 'asc';
-		const sortedData = [...deliveryPoints].sort((a, b) => {
-			if (a[field] < b[field]) return newDirection === 'asc' ? -1 : 1;
-			if (a[field] > b[field]) return newDirection === 'asc' ? 1 : -1;
-			return 0;
-		});
-		setDeliveryPoints(sortedData);
-		setSortField(field);
-		setSortDirection(newDirection);
-	};
 
 	if (error) {
 		return (
@@ -158,78 +124,26 @@ const DeliveryPointList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
 				defaultValue={search}
+				onSearch={setSearch}
 				placeholder={`${m.Search()} ${m.delivery_point()}...`}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-
-							<ChevronDown className="h-4 w-4" />
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9 text-xs" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
-											}}
-											className='text-xs'
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size={'sm'}>
-							<ArrowUpDown className="h-4 w-4" />
-							{m.sort_by()}
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem onClick={() => handleSort(DeliveryPointField.Name)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.delivery_point_name_label()}</span>
-								{sortField === DeliveryPointField.Name && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(DeliveryPointField.isActive)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.status_text()}</span>
-								{sortField === DeliveryPointField.isActive && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={deliveryPointsFields}
+					items={deliveryPoints}
+					onSort={setDeliveryPoints}
+				/>
 			</div>
 		</div>
 	);
-
 
 	const content = (
 		<>

@@ -4,20 +4,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DepartmentType } from '@carmensoftware/shared-types/src/department';
-import React, { useEffect, useState, FormEvent, useCallback, useTransition } from 'react';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
+import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
 import DataCard, { FieldConfig } from '@/components/templates/DataCard';
@@ -30,10 +17,11 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
+import { FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 
 enum DepartmentFields {
 	Name = 'name',
@@ -41,26 +29,26 @@ enum DepartmentFields {
 	isActive = 'is_active',
 }
 
+const sortFields: FieldConfig<DepartmentType>[] = [
+	{ key: DepartmentFields.Name, label: m.department_name_label() },
+	{ key: DepartmentFields.isActive, label: m.status_text(), type: 'badge' },
+];
+
+const departmentFields: FieldConfig<DepartmentType>[] = [
+	...sortFields,
+	{ key: DepartmentFields.Description, label: m.description() },
+];
+
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-
 	const [departments, setDepartments] = useState<DepartmentType[]>([]);
-	const [isPending, startTransition] = useTransition();
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [sortField, setSortField] = useState<DepartmentFields | null>(null);
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-	const departmentFields: FieldConfig<DepartmentType>[] = [
-		{ key: DepartmentFields.Name, label: m.department_name_label() },
-		{ key: DepartmentFields.Description, label: m.description() },
-		{ key: DepartmentFields.isActive, label: m.status_text(), type: 'badge' },
-	];
 
 	const fetchData = useCallback(async () => {
 		setIsLoading(true);
@@ -74,13 +62,9 @@ const DepartmentList = () => {
 		}
 	}, [token, tenantId, search, status]);
 
-
 	useEffect(() => {
-		startTransition(() => {
-			fetchData();
-		});
-	}, [fetchData]);
-
+		fetchData();
+	}, [token, tenantId, search, status]);
 
 	const handleSuccess = useCallback((values: DepartmentType) => {
 		setDepartments((prev) => {
@@ -101,27 +85,6 @@ const DepartmentList = () => {
 		}
 	}, [token, tenantId]);
 
-	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		startTransition(() => {
-			setSearch(event.currentTarget.search.value);
-		});
-	};
-
-	const handleSort = (field: DepartmentFields) => {
-		const isAscending = sortField === field && sortDirection === "asc";
-		const newDirection = isAscending ? "desc" : "asc";
-
-		const sortedData = [...departments].sort((a, b) => {
-			if (a[field] < b[field]) return newDirection === "asc" ? -1 : 1;
-			if (a[field] > b[field]) return newDirection === "asc" ? 1 : -1;
-			return 0;
-		});
-
-		setDepartments(sortedData);
-		setSortField(field);
-		setSortDirection(newDirection);
-	};
 
 	const title = m.department();
 
@@ -142,76 +105,23 @@ const DepartmentList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
+				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.department()}...`}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-							disabled={isPending}
-							aria-label={m.select_status()}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-							<ChevronDown className="h-4 w-4" />
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9 text-xs" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												startTransition(() => {
-													setStatus(option.value);
-													setStatusOpen(false);
-												});
-											}}
-											className='text-xs'
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size="sm">
-							<ArrowUpDown className="h-4 w-4" />
-							{m.sort_by()}
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem onClick={() => handleSort(DepartmentFields.Name)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.department_label_name()}</span>
-								{sortField === DepartmentFields.Name && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(DepartmentFields.isActive)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.status_text()}</span>
-								{sortField === DepartmentFields.isActive && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={departments}
+					onSort={setDepartments}
+				/>
 			</div>
 		</div>
 	);

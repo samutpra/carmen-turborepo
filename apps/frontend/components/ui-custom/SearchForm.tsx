@@ -1,11 +1,11 @@
-import React, { FormEvent, KeyboardEvent } from 'react';
+import React, { KeyboardEvent } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 
 interface SearchFormProps {
-    onSubmit: (e: FormEvent<HTMLFormElement>) => void;
     defaultValue: string;
+    onSearch: (value: string) => void;
     placeholder?: string;
     containerClassName?: string;
     inputClassName?: string;
@@ -13,13 +13,14 @@ interface SearchFormProps {
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({
-    onSubmit,
     defaultValue = '',
     placeholder = '',
     containerClassName = 'w-full md:w-1/3',
     inputClassName = 'h-8 pr-10 text-xs',
-    buttonClassName = 'absolute right-0 top-0 h-full px-3'
+    buttonClassName = 'absolute right-0 top-0 h-full px-3',
+    onSearch
 }) => {
+
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -30,8 +31,13 @@ const SearchForm: React.FC<SearchFormProps> = ({
         }
     };
 
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        onSearch(event.currentTarget.search.value);
+    };
+
     return (
-        <form onSubmit={onSubmit} className="flex gap-2 w-full">
+        <form onSubmit={handleSearch} className="flex gap-2 w-full">
             <div className={`relative ${containerClassName}`}>
                 <Input
                     name="search"

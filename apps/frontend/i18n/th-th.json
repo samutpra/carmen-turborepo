@@ -214,5 +214,7 @@
 	"total_amout": "ยอดรวม",
 	"sort_by": "จัดเรียงตาม",
 	"department_label": "แผนก",
-	"sort_text": "เรียงลำดับ"
+	"sort_text": "เรียงลำดับ",
+	"no_result_found": "ไม่พบผลลัพธ์.",
+	"no_result": "ไม่พบผลลัพธ์."
 }

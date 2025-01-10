@@ -214,5 +214,7 @@
 	"store_name": "Store Name",
 	"total_amout": "Total Amount",
 	"sort_by": "Sort by",
-	"sort_text": "Sort"
+	"sort_text": "Sort",
+	"no_result_found": "No results found.",
+	"no_result": "No results found."
 }

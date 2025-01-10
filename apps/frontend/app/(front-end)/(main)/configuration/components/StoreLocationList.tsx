@@ -3,20 +3,7 @@
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LocationType } from '@carmensoftware/shared-types';
-import React, { useEffect, useState, FormEvent, useCallback } from 'react';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
+import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,10 +17,11 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
+import { FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -41,6 +29,17 @@ enum StoreLocationField {
 	Description = 'description',
 	isActive = 'is_active',
 }
+
+const sortFields: FieldConfig<LocationType>[] = [
+	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
+	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
+	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' }
+];
+const storeLocationFields: FieldConfig<LocationType>[] = [
+	...sortFields,
+	{ key: StoreLocationField.Description, label: m.description() }
+];
+
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -51,16 +50,6 @@ const StoreLocationList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [sortField, setSortField] = useState<StoreLocationField | null>(null);
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-
-	const storeLocationFields: FieldConfig<LocationType>[] = [
-		{ key: StoreLocationField.Name, label: `${m.store_location_name_label()}` },
-		{ key: StoreLocationField.LocationType, label: `${m.location_type_label()}` },
-		{ key: StoreLocationField.Description, label: `${m.description()}` },
-		{ key: StoreLocationField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	];
 
 	const fetchData = async () => {
 		try {
@@ -123,28 +112,6 @@ const StoreLocationList = () => {
 		}, [token, tenantId, deleteStoreLocation]
 	)
 
-
-	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
-	const handleSort = (field: StoreLocationField) => {
-		const isAscending = sortField === field && sortDirection === "asc";
-		const newDirection = isAscending ? "desc" : "asc";
-
-		const sortedData = [...storeLocations].sort((a, b) => {
-			if (a[field] < b[field]) return newDirection === "asc" ? -1 : 1;
-			if (a[field] > b[field]) return newDirection === "asc" ? 1 : -1;
-			return 0;
-		});
-
-		setStoreLocations(sortedData);
-		setSortField(field);
-		setSortDirection(newDirection);
-	};
-
-
 	const title = `${m.store_location()}`;
 
 	const actionButtons = (
@@ -164,77 +131,23 @@ const StoreLocationList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
+				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.store_location()}...`}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-							<ChevronDown className="h-4 w-4" />
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
-											}}
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size="sm">
-							<ArrowUpDown className="h-4 w-4" />
-							{m.sort_by()}
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.Name)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.store_location_name_label()}</span>
-								{sortField === StoreLocationField.Name && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.LocationType)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.location_type_label()}</span>
-								{sortField === StoreLocationField.LocationType && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.isActive)}>
-							<span className="flex items-center justify-between w-full text-xs">
-								<span>{m.status_text()}</span>
-								{sortField === StoreLocationField.isActive && (sortDirection === "asc" ? "↑" : "↓")}
-							</span>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={storeLocations}
+					onSort={setStoreLocations}
+				/>
 			</div>
 		</div>
 	);
