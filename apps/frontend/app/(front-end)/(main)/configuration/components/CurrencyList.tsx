@@ -19,10 +19,9 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 
 enum CurrencyField {
 	Code = 'code',
@@ -181,9 +180,6 @@ const CurrencyList = () => {
 		</div>
 	);
 
-
-
-
 	const content = (
 		<>
 			<div className="block md:hidden">
@@ -222,16 +218,7 @@ const CurrencyList = () => {
 	);
 
 	if (isLoading) {
-		return (
-			<>
-				<div className='block md:hidden'>
-					<SkeltonCardLoading />
-				</div>
-				<div className='hidden md:block'>
-					<SkeletonTableLoading />;
-				</div>
-			</>
-		)
+		return <SkeltonLoad />
 	}
 
 	if (currencies.length === 0) {

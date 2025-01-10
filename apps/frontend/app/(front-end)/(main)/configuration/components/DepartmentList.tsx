@@ -18,10 +18,9 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 
 enum DepartmentFields {
 	Name = 'name',
@@ -176,16 +175,7 @@ const DepartmentList = () => {
 
 
 	if (isLoading) {
-		return (
-			<>
-				<div className='block md:hidden'>
-					<SkeltonCardLoading />
-				</div>
-				<div className='hidden md:block'>
-					<SkeletonTableLoading />;
-				</div>
-			</>
-		)
+		return <SkeltonLoad />
 	}
 
 	if (departments.length === 0) {

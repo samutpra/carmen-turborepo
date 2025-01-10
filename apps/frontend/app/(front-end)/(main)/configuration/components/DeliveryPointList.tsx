@@ -17,10 +17,9 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 
 enum DeliveryPointField {
 	Name = 'name',
@@ -183,17 +182,9 @@ const DeliveryPointList = () => {
 	);
 
 	if (isLoading) {
-		return (
-			<>
-				<div className='block md:hidden'>
-					<SkeltonCardLoading />
-				</div>
-				<div className='hidden md:block'>
-					<SkeletonTableLoading />;
-				</div>
-			</>
-		)
+		return <SkeltonLoad />
 	}
+
 	if (deliveryPoints.length === 0) {
 		return (
 			<EmptyState

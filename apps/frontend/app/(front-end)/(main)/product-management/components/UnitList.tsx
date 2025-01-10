@@ -4,19 +4,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { UnitType } from '@carmensoftware/shared-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import UnitDialog from './UnitDialog';
@@ -31,9 +18,25 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 
+enum UnitField {
+	Name = 'name',
+	Description = 'description',
+	Status = 'is_active',
+}
+
+const sortFields: FieldConfig<UnitType>[] = [
+	{ key: UnitField.Name, label: `${m.unit_name_label()}` },
+	{ key: UnitField.Status, label: `${m.status_text()}`, type: 'badge' },
+];
+
+const unitFields: FieldConfig<UnitType>[] = [
+	...sortFields,
+	{ key: 'description', label: `${m.unit_des_label()}` },
+];
 const UnitList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -102,11 +105,6 @@ const UnitList = () => {
 		[token, tenantId, deleteUnit]
 	);
 
-	const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setSearch(event.currentTarget.search.value);
-	};
-
 	const title = `${m.unit()}`;
 
 	const actionButtons = (
@@ -126,57 +124,27 @@ const UnitList = () => {
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
-				onSubmit={handleSearch}
+				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={m.placeholder_search_unit()}
 			/>
 			<div className="all-center gap-2">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="btn-combobox"
-							size={'sm'}
-						>
-							{status
-								? statusOptions.find((option) => option.value === status)?.label
-								: `${m.select_status()}`}
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="pop-content">
-						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
-							<CommandList>
-								<CommandEmpty>{m.not_found_unit()}</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((option) => (
-										<CommandItem
-											key={option.value}
-											value={option.value}
-											onSelect={() => {
-												setStatus(option.value);
-												setStatusOpen(false);
-											}}
-										>
-											{option.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={units}
+					onSort={setUnits}
+				/>
 			</div>
 		</div>
 	);
 
-	const unitFields: FieldConfig<UnitType>[] = [
-		{ key: 'name', label: `${m.unit_name_label()}` },
-		{ key: 'description', label: `${m.unit_des_label()}` },
-		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
-	];
 
 	const content = (
 		<>
@@ -214,17 +182,9 @@ const UnitList = () => {
 			</div>
 		</>
 	);
+
 	if (isLoading) {
-		return (
-			<>
-				<div className='block md:hidden'>
-					<SkeltonCardLoading />
-				</div>
-				<div className='hidden md:block'>
-					<SkeletonTableLoading />;
-				</div>
-			</>
-		)
+		return <SkeltonLoad />
 	}
 
 	if (units.length === 0) {
