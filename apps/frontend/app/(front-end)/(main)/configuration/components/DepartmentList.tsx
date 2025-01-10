@@ -124,8 +124,6 @@ const DepartmentList = () => {
 		</div>
 	);
 
-
-
 	const content = (
 		<DisplayComponent<DepartmentType>
 			items={departments}
