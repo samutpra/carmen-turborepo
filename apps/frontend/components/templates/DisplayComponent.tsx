@@ -25,21 +25,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
+import { FieldConfig } from '@/lib/util/uiConfig';
 
 type FieldValue = string | number | boolean | null | undefined;
 
-type RenderFunction<T> = (value: T[keyof T], item?: T) => React.ReactNode;
-
 type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
-
-export interface FieldConfig<T> {
-    key: keyof T;
-    label: string;
-    type?: 'text' | 'badge' | 'custom';
-    render?: RenderFunction<T>;
-    width?: string;
-    align?: 'left' | 'center' | 'right';
-}
 
 interface DeleteProps {
     title?: string;

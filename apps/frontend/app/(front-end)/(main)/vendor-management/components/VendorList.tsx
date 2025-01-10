@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/app/context/AuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { vendor_type } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -14,10 +13,11 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import { FieldConfig } from '@/components/templates/DisplayComponent';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import VendorDisplay from './VendorDisplay';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum VendorFields {
 	Name = 'name',
@@ -58,15 +58,7 @@ const VendorList = () => {
 	}, [token, tenantId, search, status]);
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	const title = `${m.vendors_title()}`;

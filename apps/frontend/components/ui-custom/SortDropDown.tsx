@@ -20,7 +20,8 @@ interface SortDropdownProps<T extends Record<string, unknown>> {
     onSort: (sortedItems: T[]) => void;
 }
 
-const SortDropDown = <T extends Record<string, unknown>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SortDropDown = <T extends Record<string, any>>({
     fieldConfigs,
     items,
     onSort,

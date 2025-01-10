@@ -6,7 +6,6 @@ import { LocationType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
-import { Card, CardContent } from '@/components/ui/card';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
@@ -19,7 +18,9 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
-import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
+import DisplayComponent from '@/components/templates/DisplayComponent';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -68,17 +69,7 @@ const StoreLocationList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
-	}
+	if (error) return <ErrorCard message={error} />;
 
 	const handleSuccess = useCallback((values: LocationType) => {
 		setStoreLocations((prev) => {
