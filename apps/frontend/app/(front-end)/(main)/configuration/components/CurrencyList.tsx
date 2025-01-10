@@ -60,8 +60,14 @@ const CurrencyList = () => {
 	const [sortField, setSortField] = useState<CurrencyField | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-	console.log('Currencies:', currencies);
-
+	const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+		{ key: CurrencyField.Code, label: `${m.code_label()}` },
+		{ key: CurrencyField.Name, label: `${m.currency_name()}` },
+		{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
+		{ key: CurrencyField.Description, label: `${m.description()}` },
+		{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
+		{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
+	]
 
 	const fetchData = async () => {
 		try {
@@ -267,14 +273,6 @@ const CurrencyList = () => {
 	);
 
 
-	const currenciesFiltered: FieldConfig<CurrencyType>[] = [
-		{ key: CurrencyField.Code, label: `${m.code_label()}` },
-		{ key: CurrencyField.Name, label: `${m.currency_name()}` },
-		{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
-		{ key: CurrencyField.Description, label: `${m.description()}` },
-		{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
-		{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	]
 
 
 	const content = (

@@ -52,6 +52,12 @@ const DeliveryPointList = () => {
 	const [sortField, setSortField] = useState<DeliveryPointField | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+
+	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
+		{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
+		{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
+	];
+
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -224,10 +230,6 @@ const DeliveryPointList = () => {
 		</div>
 	);
 
-	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
-		{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
-		{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	];
 
 	const content = (
 		<>

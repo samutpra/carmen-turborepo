@@ -30,7 +30,7 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { ArrowUpDown, FileDown, Printer } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -53,6 +53,14 @@ const StoreLocationList = () => {
 	const [status, setStatus] = useURL('status');
 	const [sortField, setSortField] = useState<StoreLocationField | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+
+	const storeLocationFields: FieldConfig<LocationType>[] = [
+		{ key: StoreLocationField.Name, label: `${m.store_location_name_label()}` },
+		{ key: StoreLocationField.LocationType, label: `${m.location_type_label()}` },
+		{ key: StoreLocationField.Description, label: `${m.description()}` },
+		{ key: StoreLocationField.isActive, label: `${m.status_text()}`, type: 'badge' }
+	];
 
 	const fetchData = async () => {
 		try {
@@ -173,6 +181,7 @@ const StoreLocationList = () => {
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
 								: `${m.select_status()}`}
+							<ChevronDown className="h-4 w-4" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
@@ -230,12 +239,6 @@ const StoreLocationList = () => {
 		</div>
 	);
 
-	const storeLocationFields: FieldConfig<LocationType>[] = [
-		{ key: StoreLocationField.Name, label: `${m.store_location_name_label()}` },
-		{ key: StoreLocationField.LocationType, label: `${m.location_type_label()}` },
-		{ key: StoreLocationField.Description, label: `${m.description()}` },
-		{ key: StoreLocationField.isActive, label: `${m.status_text()}`, type: 'badge' }
-	];
 
 	const content = (
 		<>

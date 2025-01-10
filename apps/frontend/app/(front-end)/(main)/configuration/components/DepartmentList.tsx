@@ -30,9 +30,17 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { FileDown, Printer } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
+enum DepartmentFields {
+	Name = 'name',
+	Description = 'description',
+	isActive = 'is_active',
+}
+
 const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -45,18 +53,14 @@ const DepartmentList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [sortField, setSortField] = useState<DepartmentFields | null>(null);
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const departmentFields: FieldConfig<DepartmentType>[] = [
-		{ key: 'name', label: m.department_name_label() },
-		{ key: 'description', label: m.description() },
-		{ key: 'is_active', label: m.status_text(), type: 'badge' },
+		{ key: DepartmentFields.Name, label: m.department_name_label() },
+		{ key: DepartmentFields.Description, label: m.description() },
+		{ key: DepartmentFields.isActive, label: m.status_text(), type: 'badge' },
 	];
-	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		startTransition(() => {
-			setSearch(event.currentTarget.search.value);
-		});
-	};
 
 	const fetchData = useCallback(async () => {
 		setIsLoading(true);
@@ -97,6 +101,28 @@ const DepartmentList = () => {
 		}
 	}, [token, tenantId]);
 
+	const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		startTransition(() => {
+			setSearch(event.currentTarget.search.value);
+		});
+	};
+
+	const handleSort = (field: DepartmentFields) => {
+		const isAscending = sortField === field && sortDirection === "asc";
+		const newDirection = isAscending ? "desc" : "asc";
+
+		const sortedData = [...departments].sort((a, b) => {
+			if (a[field] < b[field]) return newDirection === "asc" ? -1 : 1;
+			if (a[field] > b[field]) return newDirection === "asc" ? 1 : -1;
+			return 0;
+		});
+
+		setDepartments(sortedData);
+		setSortField(field);
+		setSortDirection(newDirection);
+	};
+
 	const title = m.department();
 
 	const actionButtons = (
@@ -135,11 +161,12 @@ const DepartmentList = () => {
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
 								: `${m.select_status()}`}
+							<ChevronDown className="h-4 w-4" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9 text-xs" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
@@ -153,6 +180,7 @@ const DepartmentList = () => {
 													setStatusOpen(false);
 												});
 											}}
+											className='text-xs'
 										>
 											{option.label}
 										</CommandItem>
@@ -162,11 +190,31 @@ const DepartmentList = () => {
 						</Command>
 					</PopoverContent>
 				</Popover>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" size="sm">
+							<ArrowUpDown className="h-4 w-4" />
+							{m.sort_by()}
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem onClick={() => handleSort(DepartmentFields.Name)}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>{m.department_label_name()}</span>
+								{sortField === DepartmentFields.Name && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSort(DepartmentFields.isActive)}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>{m.status_text()}</span>
+								{sortField === DepartmentFields.isActive && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</div>
 	);
-
-
 
 	const content = (
 		<>
