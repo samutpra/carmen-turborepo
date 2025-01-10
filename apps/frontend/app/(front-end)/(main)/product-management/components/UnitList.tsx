@@ -8,8 +8,6 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import UnitDialog from './UnitDialog';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import DataCard, { FieldConfig } from '@/components/templates/DataCard';
-import TableData from '@/components/templates/TableData';
 import { deleteUnit, fetchUnits } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
@@ -21,6 +19,7 @@ import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
 
 enum UnitField {
 	Name = 'name',
@@ -147,40 +146,20 @@ const UnitList = () => {
 
 
 	const content = (
-		<>
-			<div className="block md:hidden">
-				<DataCard<UnitType>
-					items={units}
-					fields={unitFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<UnitDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
+		<DisplayComponent<UnitType>
+			items={units}
+			fields={unitFields}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<UnitDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
 				/>
-			</div>
-			<div className="hidden md:block">
-				<TableData<UnitType>
-					items={units}
-					fields={unitFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<UnitDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-		</>
+			)}
+		/>
 	);
 
 	if (isLoading) {
