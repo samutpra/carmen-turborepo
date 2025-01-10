@@ -30,10 +30,17 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { FileDown, Printer } from 'lucide-react';
+import { ArrowUpDown, FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+enum StoreLocationField {
+	Name = 'name',
+	LocationType = 'location_type',
+	Description = 'description',
+	isActive = 'is_active',
+}
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -44,6 +51,8 @@ const StoreLocationList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [sortField, setSortField] = useState<StoreLocationField | null>(null);
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const fetchData = async () => {
 		try {
@@ -112,6 +121,22 @@ const StoreLocationList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
+	const handleSort = (field: StoreLocationField) => {
+		const isAscending = sortField === field && sortDirection === "asc";
+		const newDirection = isAscending ? "desc" : "asc";
+
+		const sortedData = [...storeLocations].sort((a, b) => {
+			if (a[field] < b[field]) return newDirection === "asc" ? -1 : 1;
+			if (a[field] > b[field]) return newDirection === "asc" ? 1 : -1;
+			return 0;
+		});
+
+		setStoreLocations(sortedData);
+		setSortField(field);
+		setSortDirection(newDirection);
+	};
+
+
 	const title = `${m.store_location()}`;
 
 	const actionButtons = (
@@ -173,15 +198,43 @@ const StoreLocationList = () => {
 						</Command>
 					</PopoverContent>
 				</Popover>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" size="sm">
+							<ArrowUpDown className="h-4 w-4" />
+							{m.sort_by()}
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.Name)}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>{m.store_location_name_label()}</span>
+								{sortField === StoreLocationField.Name && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.LocationType)}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>{m.location_type_label()}</span>
+								{sortField === StoreLocationField.LocationType && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSort(StoreLocationField.isActive)}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>{m.status_text()}</span>
+								{sortField === StoreLocationField.isActive && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</div>
 	);
 
 	const storeLocationFields: FieldConfig<LocationType>[] = [
-		{ key: 'name', label: `${m.store_location_name_label()}` },
-		{ key: 'location_type', label: `${m.location_type_label()}` },
-		{ key: 'description', label: `${m.description()}` },
-		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
+		{ key: StoreLocationField.Name, label: `${m.store_location_name_label()}` },
+		{ key: StoreLocationField.LocationType, label: `${m.location_type_label()}` },
+		{ key: StoreLocationField.Description, label: `${m.description()}` },
+		{ key: StoreLocationField.isActive, label: `${m.status_text()}`, type: 'badge' }
 	];
 
 	const content = (
