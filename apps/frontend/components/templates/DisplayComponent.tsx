@@ -24,7 +24,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import SkeltonLoad from '../ui-custom/Loading/SkeltonLoad';
 import * as m from '@/paraglide/messages.js';
 
 type FieldValue = string | number | boolean | null | undefined;
@@ -54,7 +53,6 @@ interface DisplayComponentProps<T extends Record<string, FieldValue>> {
     idField: keyof T;
     onSuccess?: SuccessCallback<T>;
     onDelete?: (id: string) => void;
-    isLoading?: boolean;
     showIndex?: boolean;
     editComponent?: (props: {
         item: T;
@@ -69,7 +67,6 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
     idField,
     onSuccess,
     onDelete,
-    isLoading = false,
     showIndex = true,
     editComponent,
     deleteDialogProps = {
@@ -135,10 +132,6 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
             )}
         </div>
     );
-
-    if (isLoading) {
-        <SkeltonLoad />
-    }
 
     return (
         <>
