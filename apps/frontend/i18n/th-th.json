@@ -205,7 +205,6 @@
 	"business_unit_text": "หน่วยธุรกิจ",
 	"langauge_text": "ภาษา",
 	"time_zone_text": "เขตเวลา",
-	"department_label": "แผนก",
 	"create_store_requistion": " สร้างใบขอซื้อของร้านค้า",
 	"title_store_requisition_not_found": "ไม่พบคำขอซื้อจากร้านค้า",
 	"date": "วันที่",
@@ -213,5 +212,7 @@
 	"request_to": "คำร้องขอถึง",
 	"store_name": "ชื่อร้านค้า",
 	"total_amout": "ยอดรวม",
-	"sort_by": "จัดเรียงตาม"
+	"sort_by": "จัดเรียงตาม",
+	"department_label": "แผนก",
+	"sort_text": "เรียงลำดับ"
 }

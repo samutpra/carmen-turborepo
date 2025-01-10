@@ -34,6 +34,11 @@ import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoadin
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+enum DeliveryPointField {
+	Name = 'name',
+	isActive = 'is_active',
+}
+
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -44,8 +49,7 @@ const DeliveryPointList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-
-	const [sortField, setSortField] = useState<"name" | "status" | null>(null);
+	const [sortField, setSortField] = useState<DeliveryPointField | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const fetchData = async () => {
@@ -104,26 +108,17 @@ const DeliveryPointList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
-	const sortDeliveryPoints = (field: "name" | "status") => {
-		const isAscending = sortField === field && sortDirection === "asc";
-		const direction = isAscending ? "desc" : "asc";
-		setSortField(field);
-		setSortDirection(direction);
-
-		const sorted = [...deliveryPoints].sort((a, b) => {
-			if (field === "name") {
-				return direction === "asc"
-					? a.name.localeCompare(b.name)
-					: b.name.localeCompare(a.name);
-			}
-			if (field === "status") {
-				return direction === "asc"
-					? Number(a.is_active) - Number(b.is_active)
-					: Number(b.is_active) - Number(a.is_active);
-			}
+	const handleSort = (field: DeliveryPointField) => {
+		const isAscending = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+		const newDirection = isAscending === 'asc' ? 'desc' : 'asc';
+		const sortedData = [...deliveryPoints].sort((a, b) => {
+			if (a[field] < b[field]) return newDirection === 'asc' ? -1 : 1;
+			if (a[field] > b[field]) return newDirection === 'asc' ? 1 : -1;
 			return 0;
 		});
-		setDeliveryPoints(sorted);
+		setDeliveryPoints(sortedData);
+		setSortField(field);
+		setSortDirection(newDirection);
 	};
 
 	if (error) {
@@ -206,20 +201,20 @@ const DeliveryPointList = () => {
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" size={'sm'}>
 							<ArrowUpDown className="h-4 w-4" />
-							Sort
+							{m.sort_by()}
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
-						<DropdownMenuItem onClick={() => sortDeliveryPoints("name")}>
+						<DropdownMenuItem onClick={() => handleSort(DeliveryPointField.Name)}>
 							<span className="flex items-center justify-between w-full text-xs">
-								<span>Name</span>
-								{sortField === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+								<span>{m.delivery_point_name_label()}</span>
+								{sortField === DeliveryPointField.Name && (sortDirection === "asc" ? "↑" : "↓")}
 							</span>
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => sortDeliveryPoints("status")}>
+						<DropdownMenuItem onClick={() => handleSort(DeliveryPointField.isActive)}>
 							<span className="flex items-center justify-between w-full text-xs">
-								<span>Status</span>
-								{sortField === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+								<span>{m.status_text()}</span>
+								{sortField === DeliveryPointField.isActive && (sortDirection === "asc" ? "↑" : "↓")}
 							</span>
 						</DropdownMenuItem>
 
@@ -230,8 +225,8 @@ const DeliveryPointList = () => {
 	);
 
 	const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
-		{ key: 'name', label: `${m.delivery_point_label()}` },
-		{ key: 'is_active', label: `${m.status_text()}`, type: 'badge' }
+		{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
+		{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
 	];
 
 	const content = (

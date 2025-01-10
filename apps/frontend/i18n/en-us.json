@@ -213,5 +213,6 @@
 	"request_to": "Request To",
 	"store_name": "Store Name",
 	"total_amout": "Total Amount",
-	"sort_by": "Sort by"
+	"sort_by": "Sort by",
+	"sort_text": "Sort"
 }
