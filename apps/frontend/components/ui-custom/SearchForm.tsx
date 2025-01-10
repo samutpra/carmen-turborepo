@@ -17,7 +17,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
     defaultValue = '',
     placeholder = '',
     containerClassName = 'w-full md:w-1/3',
-    inputClassName = 'h-8 pr-10',
+    inputClassName = 'h-8 pr-10 text-xs',
     buttonClassName = 'absolute right-0 top-0 h-full px-3'
 }) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {

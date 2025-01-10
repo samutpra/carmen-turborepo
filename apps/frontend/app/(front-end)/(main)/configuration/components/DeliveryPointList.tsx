@@ -29,9 +29,10 @@ import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
-import { FileDown, Printer } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, FileDown, Printer } from 'lucide-react';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
@@ -43,6 +44,9 @@ const DeliveryPointList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+
+	const [sortField, setSortField] = useState<"name" | "status" | null>(null);
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const fetchData = async () => {
 		try {
@@ -100,6 +104,28 @@ const DeliveryPointList = () => {
 		setSearch(event.currentTarget.search.value);
 	};
 
+	const sortDeliveryPoints = (field: "name" | "status") => {
+		const isAscending = sortField === field && sortDirection === "asc";
+		const direction = isAscending ? "desc" : "asc";
+		setSortField(field);
+		setSortDirection(direction);
+
+		const sorted = [...deliveryPoints].sort((a, b) => {
+			if (field === "name") {
+				return direction === "asc"
+					? a.name.localeCompare(b.name)
+					: b.name.localeCompare(a.name);
+			}
+			if (field === "status") {
+				return direction === "asc"
+					? Number(a.is_active) - Number(b.is_active)
+					: Number(b.is_active) - Number(a.is_active);
+			}
+			return 0;
+		});
+		setDeliveryPoints(sorted);
+	};
+
 	if (error) {
 		return (
 			<Card className="border-destructive">
@@ -148,11 +174,13 @@ const DeliveryPointList = () => {
 							{status
 								? statusOptions.find((option) => option.value === status)?.label
 								: `${m.select_status()}`}
+
+							<ChevronDown className="h-4 w-4" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="pop-content">
 						<Command>
-							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
+							<CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9 text-xs" />
 							<CommandList>
 								<CommandEmpty>No status found.</CommandEmpty>
 								<CommandGroup>
@@ -164,6 +192,7 @@ const DeliveryPointList = () => {
 												setStatus(option.value);
 												setStatusOpen(false);
 											}}
+											className='text-xs'
 										>
 											{option.label}
 										</CommandItem>
@@ -173,6 +202,29 @@ const DeliveryPointList = () => {
 						</Command>
 					</PopoverContent>
 				</Popover>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" size={'sm'}>
+							<ArrowUpDown className="h-4 w-4" />
+							Sort
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem onClick={() => sortDeliveryPoints("name")}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>Name</span>
+								{sortField === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => sortDeliveryPoints("status")}>
+							<span className="flex items-center justify-between w-full text-xs">
+								<span>Status</span>
+								{sortField === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+							</span>
+						</DropdownMenuItem>
+
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</div>
 	);
