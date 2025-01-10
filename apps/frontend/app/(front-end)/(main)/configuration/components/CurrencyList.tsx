@@ -8,8 +8,6 @@ import { CurrencyType } from '@carmensoftware/shared-types';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
-import DataCard, { FieldConfig } from '@/components/templates/DataCard';
-import TableData from '@/components/templates/TableData';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
@@ -22,6 +20,7 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
 
 enum CurrencyField {
 	Code = 'code',
@@ -181,40 +180,20 @@ const CurrencyList = () => {
 	);
 
 	const content = (
-		<>
-			<div className="block md:hidden">
-				<DataCard<CurrencyType>
-					items={currencies}
-					fields={currenciesFiltered}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<CurrencyDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
+		<DisplayComponent<CurrencyType>
+			items={currencies}
+			fields={currenciesFiltered}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<CurrencyDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
 				/>
-			</div>
-			<div className="hidden md:block">
-				<TableData<CurrencyType>
-					items={currencies}
-					fields={currenciesFiltered}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<CurrencyDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-		</>
+			)}
+		/>
 	);
 
 	if (isLoading) {

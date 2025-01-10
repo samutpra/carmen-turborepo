@@ -7,9 +7,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
 import { Card, CardContent } from '@/components/ui/card';
-import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import TableData from '@/components/templates/TableData';
 import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
@@ -21,6 +19,7 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -151,42 +150,21 @@ const StoreLocationList = () => {
 		</div>
 	);
 
-
 	const content = (
-		<>
-			<div className="block md:hidden">
-				<DataCard<LocationType>
-					items={storeLocations}
-					fields={storeLocationFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<StoreLocationDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
+		<DisplayComponent<LocationType>
+			items={storeLocations}
+			fields={storeLocationFields}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<StoreLocationDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
 				/>
-			</div>
-			<div className="hidden md:block">
-				<TableData<LocationType>
-					items={storeLocations}
-					fields={storeLocationFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<StoreLocationDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-		</>
+			)}
+		/>
 	);
 
 	if (isLoading) {

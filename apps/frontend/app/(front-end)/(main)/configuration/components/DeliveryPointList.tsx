@@ -6,9 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DataCard, { FieldConfig } from '@/components/templates/DataCard';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import TableData from '@/components/templates/TableData';
 import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
@@ -20,6 +18,7 @@ import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
 
 enum DeliveryPointField {
 	Name = 'name',
@@ -60,7 +59,6 @@ const DeliveryPointList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-
 	const handleSuccess = useCallback((values: DeliveryPointType) => {
 		setDeliveryPoints((prev) => {
 			const mapValues = new Map(prev.map((u) => [u.id, u]));
@@ -90,7 +88,6 @@ const DeliveryPointList = () => {
 			}
 		}, [token, tenantId, deleteDeliveryPoint]
 	)
-
 
 	if (error) {
 		return (
@@ -145,40 +142,20 @@ const DeliveryPointList = () => {
 	);
 
 	const content = (
-		<>
-			<div className="block md:hidden">
-				<DataCard<DeliveryPointType>
-					items={deliveryPoints}
-					fields={deliveryPointsFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<DeliveryPointDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
+		<DisplayComponent<DeliveryPointType>
+			items={deliveryPoints}
+			fields={deliveryPointsFields}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<DeliveryPointDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
 				/>
-			</div>
-			<div className="hidden md:block">
-				<TableData<DeliveryPointType>
-					items={deliveryPoints}
-					fields={deliveryPointsFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<DeliveryPointDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-		</>
+			)}
+		/>
 	);
 
 	if (isLoading) {

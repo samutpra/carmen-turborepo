@@ -7,8 +7,6 @@ import { DepartmentType } from '@carmensoftware/shared-types/src/department';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
-import DataCard, { FieldConfig } from '@/components/templates/DataCard';
-import TableData from '@/components/templates/TableData';
 import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteDepartment, fetchDepartments } from '../actions/department';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
@@ -21,6 +19,7 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
 
 enum DepartmentFields {
 	Name = 'name',
@@ -125,43 +124,24 @@ const DepartmentList = () => {
 		</div>
 	);
 
-	const content = (
-		<>
-			<div className="block md:hidden">
-				<DataCard<DepartmentType>
-					items={departments}
-					fields={departmentFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<DepartmentDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-			<div className="hidden md:block">
-				<TableData<DepartmentType>
-					items={departments}
-					fields={departmentFields}
-					idField="id"
-					onSuccess={handleSuccess}
-					onDelete={handleDelete}
-					editComponent={({ item, onSuccess }) => (
-						<DepartmentDialog
-							mode={formType.EDIT}
-							defaultValues={item}
-							onSuccess={onSuccess}
-						/>
-					)}
-				/>
-			</div>
-		</>
-	);
 
+
+	const content = (
+		<DisplayComponent<DepartmentType>
+			items={departments}
+			fields={departmentFields}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<DepartmentDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
+				/>
+			)}
+		/>
+	);
 
 	if (error) {
 		return (
@@ -172,7 +152,6 @@ const DepartmentList = () => {
 			</Card>
 		);
 	}
-
 
 	if (isLoading) {
 		return <SkeltonLoad />
