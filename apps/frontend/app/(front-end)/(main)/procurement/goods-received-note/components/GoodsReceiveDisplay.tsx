@@ -12,7 +12,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
-import { GoodsReceiveNote } from '@/lib/types';
+import { GoodsReceiveNote, GoodsReceiveNoteStatus } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { Badge } from '@/components/ui/badge';
 
@@ -20,6 +20,23 @@ interface GoodsReceiveProps {
     grnDatas: GoodsReceiveNote[];
     fields: FieldConfig<GoodsReceiveNote>[];
 }
+
+const statusColor = (status: GoodsReceiveNoteStatus): string => {
+    switch (status) {
+        case "Pending":
+            return "bg-yellow-200 text-yellow-800";
+        case "Received":
+            return "bg-green-100 text-green-800";
+        case "Partial":
+            return "bg-blue-100 text-blue-800";
+        case "Cancelled":
+            return "bg-red-100 text-red-800";
+        case "Voided":
+            return "bg-gray-100 text-gray-800";
+        default:
+            return "bg-indigo-100 text-indigo-800";
+    }
+};
 
 const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({ grnDatas, fields }) => {
     const renderField = (field: FieldConfig<GoodsReceiveNote>, item: GoodsReceiveNote): React.ReactNode => {
@@ -29,14 +46,11 @@ const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({ grnDatas, fields }) 
         }
         switch (field.type) {
             case 'badge':
-                if (typeof value === 'boolean') {
-                    return (
-                        <Badge>
-                            {value}
-                        </Badge>
-                    );
-                }
-                return <Badge>{String(value)}</Badge>;
+                return (
+                    <Badge className={`rounded-xl ${typeof value === 'string' ? statusColor(value as GoodsReceiveNoteStatus) : ''}`}>
+                        {String(value)}
+                    </Badge>
+                );
             default:
                 if (value instanceof Date) {
                     return <span className="text-xs">{value.toLocaleDateString()}</span>;

@@ -20,7 +20,8 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
-import DisplayComponent, { FieldConfig } from '@/components/templates/DisplayComponent';
+import DisplayComponent from '@/components/templates/DisplayComponent';
+import { FieldConfig } from '@/lib/util/uiConfig';
 
 enum CurrencyField {
 	Code = 'code',
