@@ -294,7 +294,7 @@ export interface PurchaseRequest_1 {
 		department: string;
 	};
 	currency: string;
-	status: Status;
+	status: DocumentStatus;
 	workflowStatus: WorkflowStatus;
 	currentWorkflowStage: WorkflowStage;
 	location: string;
@@ -638,6 +638,14 @@ export enum PRType {
 	ServiceRequest = 'ServiceRequest',
 }
 
+export enum DocumentStatus {
+	Draft = 'Draft',
+	Submitted = 'Submitted',
+	InProgress = 'InProgress',
+	Completed = 'Completed',
+	Rejected = 'Rejected',
+}
+
 export enum WorkflowStatus {
 	pending = 'Pending',
 	approved = 'Approved',
@@ -655,8 +663,10 @@ export enum WorkflowStage {
 
 export interface PurchaseRequest {
 	id: string;
-	ref: string;
+	refNumber: string;
 	date: Date;
+	vendor: string;
+	vendorId: number;
 	type: PRType;
 	deliveryDate: Date;
 	description: string;
@@ -666,7 +676,7 @@ export interface PurchaseRequest {
 		id: string;
 		department: string;
 	};
-	status: Status;
+	status: DocumentStatus;
 	workflowStatus: WorkflowStatus;
 	currentWorkflowStage: WorkflowStage;
 	location: string;
@@ -1010,9 +1020,9 @@ export const PrSchema = z.object({
 	currentStage: z.string(),
 });
 
-export type PrList = z.infer<typeof PrSchema>;
+export type PrType = z.infer<typeof PrSchema>;
 export interface PrLabel {
-	key: keyof PrList;
+	key: keyof PrType;
 	label: string;
 }
 
