@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (Main Kitchen)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/exchangerate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "at_date": "2024-01-01 00:00:00.000",
+    "rate": 1,
+    "currency_id": "06113ead-1089-4146-9dce-1a8f59dbd260"
+  }
+}
