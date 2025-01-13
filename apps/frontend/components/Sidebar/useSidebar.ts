@@ -1,32 +1,28 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from '@/lib/i18n';
+import useResponsive from '@/hooks/useResponsive';
 
 export const useSidebar = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isLargeScreen, setIsLargeScreen] = useState(false);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPinned, setIsPinned] = useState(false);
     const pathname = usePathname();
+    const { isDesktop } = useResponsive();
 
     useEffect(() => {
-        const handleResize = () => {
-            const largeScreen = window.innerWidth >= 1024;
-            setIsLargeScreen(largeScreen);
-            setIsSidebarOpen(largeScreen);
-        };
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    useEffect(() => {
-        if (!isLargeScreen) {
+        if (isDesktop) {
+            setIsSidebarOpen(true);
+        } else {
             setIsSidebarOpen(false);
         }
-    }, [pathname, isLargeScreen]);
+    }, [isDesktop]);
+
+    useEffect(() => {
+        if (!isDesktop) {
+            setIsSidebarOpen(false);
+        }
+    }, [pathname, isDesktop]);
 
     const toggleExpand = (title: string) => {
         setExpandedItems((prev) =>
@@ -47,7 +43,6 @@ export const useSidebar = () => {
     return {
         isSidebarOpen,
         setIsSidebarOpen,
-        isLargeScreen,
         expandedItems,
         setExpandedItems,
         isExpanded,

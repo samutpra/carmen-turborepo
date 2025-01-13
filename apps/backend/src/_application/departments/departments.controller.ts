@@ -1,18 +1,24 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
-  Controller,
-  Get,
-  Post,
+  DepartmentCreateDto,
+  DepartmentUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
   Req,
   UseGuards,
-  Query,
-  Logger,
 } from '@nestjs/common';
-import { DepartmentsService } from './departments.service';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,12 +26,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  DepartmentCreateDto,
-  DepartmentUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+
+import { DepartmentsService } from './departments.service';
 
 @Controller('api/v1/departments')
 @ApiTags('department')
@@ -48,6 +50,7 @@ export class DepartmentsController {
     type: 'uuid',
   })
   async fineOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.departmentsService.findOne(req, id);
   }
 
@@ -65,6 +68,16 @@ export class DepartmentsController {
   ) {
     const defaultSearchFields: string[] = ['name', 'description'];
 
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -75,6 +88,8 @@ export class DepartmentsController {
       sort,
       advance,
     );
+
+    this.logger.debug({ q: q });
     return this.departmentsService.findAll(req, q);
   }
 
@@ -84,6 +99,7 @@ export class DepartmentsController {
     description: 'DepartmentCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.departmentsService.create(req, createDto);
   }
 
@@ -105,6 +121,7 @@ export class DepartmentsController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.departmentsService.update(req, id, updatedto);
   }
 
@@ -116,6 +133,7 @@ export class DepartmentsController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.departmentsService.delete(req, id);
   }
 }

@@ -1,32 +1,33 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Logger,
-  Query,
-} from '@nestjs/common';
-import { ProductsService } from './products.service';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiHeader,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { ResponseId } from 'lib/helper/iResponse';
+
 import {
   ProductCreateDto,
   ProductUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { ProductsService } from './products.service';
 
 @Controller('api/v1/products')
 @ApiTags('products')
@@ -49,6 +50,7 @@ export class ProductsController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productsService.findOne(req, id);
   }
 
@@ -66,6 +68,16 @@ export class ProductsController {
   ) {
     const defaultSearchFields: string[] = ['code', 'name', 'description'];
 
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -76,7 +88,49 @@ export class ProductsController {
       sort,
       advance,
     );
+
+    this.logger.debug({ q: q });
     return this.productsService.findAll(req, q);
+  }
+
+  @Get('by-item-group-id/:id')
+  @ApiUserFilterQueries()
+  async getByItemsGroup(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
+  ) {
+    const defaultSearchFields: string[] = [];
+
+    this.logger.debug({
+      id: id,
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
+    const q = new QueryParams(
+      page,
+      perpage,
+      search,
+      searchfields,
+      defaultSearchFields,
+      filter,
+      sort,
+      advance,
+    );
+
+    return this.productsService.getByItemsGroup(req, q, id);
   }
 
   @Post()
@@ -85,6 +139,7 @@ export class ProductsController {
     description: 'ProductCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.productsService.create(req, createDto);
   }
 
@@ -106,6 +161,7 @@ export class ProductsController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ id: id, updateDto: updateDto });
     return this.productsService.update(req, id, updatedto);
   }
 
@@ -117,6 +173,7 @@ export class ProductsController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productsService.delete(req, id);
   }
 }

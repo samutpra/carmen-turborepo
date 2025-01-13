@@ -10,7 +10,7 @@ const VerifyPage = () => {
 
     if (!token) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen all-center">
                 <div className="text-center p-8 bg-red-50 rounded-lg">
                     <h1 className="text-xl font-semibold text-red-600 mb-2">
                         Invalid Verification Link

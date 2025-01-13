@@ -18,12 +18,12 @@ const StockTable = () => {
             <CardHeader>
                 <div className="flex flex-col gap-4">
                     {/* First Row - Title and Create Button */}
-                    <div className="flex justify-between items-center">
+                    <div className="flex-between">
                         <CardTitle>Inventory Status</CardTitle>
                         <Button>Create Requisition</Button>
                     </div>
                     {/* Second Row - Search and Filters with justify-between */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex-between">
                         <div className="relative w-1/2">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                             <Input className="pl-8 w-full" placeholder="Search items..." />

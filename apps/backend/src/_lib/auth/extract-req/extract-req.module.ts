@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 
 import { ExtractReqService } from './extract-req.service';
-import { JwtModule } from '@nestjs/jwt';
 
 @Global()
 @Module({

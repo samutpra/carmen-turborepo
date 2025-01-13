@@ -1,10 +1,9 @@
 import { Injectable, Request } from '@nestjs/common';
-
 import { JwtService } from '@nestjs/jwt';
 
 export interface ResultHeader {
-  userId: string;
-  tenantId: string;
+  user_id: string;
+  business_unit_id: string;
 }
 
 @Injectable()
@@ -15,12 +14,12 @@ export class ExtractReqService {
     const access_token = req.headers['authorization']?.split(' ')[1];
     const decoded = this.JwtService.decode(access_token);
 
-    const userId = decoded['id'] || null;
-    const tenantId = req.headers['x-tenant-id'] || '';
+    const user_id = decoded['id'] || null;
+    const business_unit_id = req.headers['x-tenant-id'] || '';
 
     const res: ResultHeader = {
-      userId: userId,
-      tenantId: tenantId,
+      user_id: user_id,
+      business_unit_id: business_unit_id,
     };
 
     return res;

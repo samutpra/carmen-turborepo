@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "nest start --watch",
-    "build": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && nest build",
+    "build": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/bu/bu.prisma && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -19,15 +19,15 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma",
-    "prisma:generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma",
-    "prisma:reset": "prisma migrate reset --schema prisma/schema/system/system.prisma && prisma migrate reset --schema prisma/schema/tenant/tenant.prisma",
-    "prisma:dev": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/tenant/tenant.prisma && ts-node ./src/main.ts",
+    "generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/bu/bu.prisma",
+    "prisma:generate": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/bu/bu.prisma",
+    "prisma:reset": "prisma migrate reset --schema prisma/schema/system/system.prisma && prisma migrate reset --schema prisma/schema/bu/bu.prisma",
+    "prisma:dev": "prisma generate --schema prisma/schema/system/system.prisma && prisma generate --schema prisma/schema/bu/bu.prisma && ts-node ./src/main.ts",
     "prisma:seed": "prisma db seed",
-    "prisma:db-pull": "prisma db pull --schema prisma/schema/system/system.prisma &&prisma db pull --schema prisma/schema/tenant/tenant.prisma",
-    "prisma:migrate": "prisma migrate dev --name 000 --schema prisma/schema/system/system.prisma && prisma migrate dev --name 000 --schema prisma/schema/tenant/tenant.prisma",
+    "prisma:db-pull": "prisma db pull --schema prisma/schema/system/system.prisma &&prisma db pull --schema prisma/schema/bu/bu.prisma",
+    "prisma:migrate": "prisma migrate dev --name 000 --schema prisma/schema/system/system.prisma && prisma migrate dev --name 000 --schema prisma/schema/bu/bu.prisma",
     "prisma:generate:migrate": "npm run prisma:generate && npm run prisma:migrate",
-    "prisma:deploy": "npx prisma migrate deploy --schema prisma/schema/system/system.prisma && npx prisma migrate deploy --schema prisma/schema/tenant/tenant.prisma"
+    "prisma:deploy": "npx prisma migrate deploy --schema prisma/schema/system/system.prisma && npx prisma migrate deploy --schema prisma/schema/bu/bu.prisma"
   },
   "dependencies": {
     "@carmensoftware/shared-dtos": "*",
@@ -40,7 +40,8 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^8.0.2",
-    "@prisma/client": "^5.22.0",
+    "@nestjs/throttler": "^6.3.0",
+    "@prisma/client": "^6.0.1",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
@@ -81,7 +82,7 @@
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "prettier-plugin-prisma": "^5.0.0",
-    "prisma": "^5.21.1",
+    "prisma": "^6.0.1",
     "prisma-markdown": "^1.0.9",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
@@ -110,6 +111,6 @@
     "testEnvironment": "node"
   },
   "prisma": {
-    "seed": "tsx prisma/schema/system/seed.ts && tsx prisma/schema/tenant/seed.ts"
+    "seed": "tsx prisma/schema/system/seed.ts && tsx prisma/schema/bu/seed.ts"
   }
 }

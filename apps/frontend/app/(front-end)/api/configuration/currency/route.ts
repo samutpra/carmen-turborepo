@@ -54,7 +54,16 @@ export async function POST(request: NextRequest) {
                 { status: 401 }
             );
         }
+
         const body = await request.json();
+
+        body.rate = parseFloat(body.rate);
+        if (isNaN(body.rate)) {
+            return NextResponse.json(
+                { error: 'Invalid rate: must be a number' },
+                { status: 400 }
+            );
+        }
 
         const response = await fetch(apiUrl, {
             method: 'POST',

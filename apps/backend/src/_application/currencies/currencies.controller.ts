@@ -1,33 +1,33 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Query,
-  Logger,
-} from '@nestjs/common';
-import { CurrenciesService } from './currencies.service';
-
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiParam,
-  ApiBody,
-  ApiHeader,
-} from '@nestjs/swagger';
-
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   CurrencyCreateDto,
   CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
-import QueryParams, { QueryAdvance } from 'lib/types';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { CurrenciesService } from './currencies.service';
 
 @Controller('api/v1/currencies')
 @ApiTags('currencies')
@@ -51,6 +51,7 @@ export class CurrenciesController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.currenciesService.findOne(req, id);
   }
   //#endregion GET ONE
@@ -75,6 +76,16 @@ export class CurrenciesController {
       'description',
     ];
 
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -85,6 +96,8 @@ export class CurrenciesController {
       sort,
       advance,
     );
+
+    this.logger.debug({ q: q });
     return this.currenciesService.findAll(req, q);
   }
   //#endregion GET ALL
@@ -96,6 +109,7 @@ export class CurrenciesController {
     description: 'CurrencyCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.currenciesService.create(req, createDto);
   }
   //#endregion CREATE
@@ -119,6 +133,7 @@ export class CurrenciesController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ id: id, updatedto: updatedto });
     return this.currenciesService.update(req, id, updatedto);
   }
   //#endregion UPDATE
@@ -132,6 +147,7 @@ export class CurrenciesController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.currenciesService.delete(req, id);
   }
   //#endregion DELETE

@@ -1,31 +1,33 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Query,
-  Logger,
-} from '@nestjs/common';
-import { ExchangerateService } from './exchangerate.service';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiHeader,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   ExchangeRateCreateDto,
   ExchangeRateUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { ExchangerateService } from './exchangerate.service';
 
 @Controller('api/v1/exchangerate')
 @ApiTags('exchangerate')
@@ -49,6 +51,7 @@ export class ExchangerateController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.exchangerateService.findOne(req, id);
   }
   //#endregion GET ONE
@@ -78,6 +81,8 @@ export class ExchangerateController {
       sort,
       advance,
     );
+
+    this.logger.debug({ q: q });
     return this.exchangerateService.findAll(req, q);
   }
   //#endregion GET ALL
@@ -89,6 +94,7 @@ export class ExchangerateController {
     description: 'ExchangeRateCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.exchangerateService.create(req, createDto);
   }
   //#endregion Create
@@ -112,6 +118,7 @@ export class ExchangerateController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.exchangerateService.update(req, id, updatedto);
   }
   //#endregion UPDATE
@@ -125,6 +132,7 @@ export class ExchangerateController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.exchangerateService.delete(req, id);
   }
   //#endregion DELETE

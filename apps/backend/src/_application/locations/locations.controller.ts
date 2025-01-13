@@ -1,32 +1,33 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Logger,
-  Query,
-} from '@nestjs/common';
-import { LocationsService } from './locations.service';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiHeader,
-  ApiBody,
-  ApiParam,
-} from '@nestjs/swagger';
-
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   LocationCreateDto,
   LocationUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { LocationsService } from './locations.service';
 
 @Controller('api/v1/locations')
 @ApiTags('locations')
@@ -49,6 +50,7 @@ export class LocationsController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.locationsService.findOne(req, id);
   }
 
@@ -71,6 +73,16 @@ export class LocationsController {
       'deliveryPointId',
     ];
 
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -81,6 +93,8 @@ export class LocationsController {
       sort,
       advance,
     );
+
+    this.logger.debug({ q: q });
     return this.locationsService.findAll(req, q);
   }
 
@@ -90,6 +104,7 @@ export class LocationsController {
     description: 'LocationCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.locationsService.create(req, createDto);
   }
 
@@ -111,6 +126,7 @@ export class LocationsController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.locationsService.update(req, id, updatedto);
   }
 
@@ -122,6 +138,7 @@ export class LocationsController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.locationsService.delete(req, id);
   }
 }

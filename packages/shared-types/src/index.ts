@@ -7,3 +7,4 @@ export * from './locationSchema';
 export * from './productCategorySchema';
 export * from './unitSchema';
 export * from './vendorSchema';
+export type { ProductResponse } from './productCategorySchema';

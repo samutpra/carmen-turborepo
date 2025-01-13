@@ -1,32 +1,33 @@
 import {
+  AuthChangePasswordDto,
+  AuthLoginResponseDto,
+  EmailDto,
+  UserForgotPassDto,
+  UserRegisterDto,
+} from '@carmensoftware/shared-dtos';
+import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import {
-  AuthLoginDto,
-  AuthLoginResponseDto,
-} from '@carmensoftware/shared-dtos';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
-import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { LocalGuard } from './guards/local.guard';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
-import {
-  UserForgotPassDto,
-  UserRegisterDto,
-  EmailDto,
-} from '@carmensoftware/shared-dtos';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  private readonly logger = new Logger(AuthController.name);
   @Post('login')
   @UseGuards(LocalGuard)
   login(@Request() req): AuthLoginResponseDto {
@@ -48,6 +49,7 @@ export class AuthController {
 
   @Get('check-token')
   async checkToken(@Query('token') token: string, @Request() req) {
+    this.logger.debug({ token: token });
     return this.authService.checkToken(token, req);
   }
 
@@ -61,7 +63,7 @@ export class AuthController {
     @Body() userRegisterEmailDto: any,
     @Request() req,
   ) {
-    console.log(userRegisterEmailDto);
+    this.logger.debug({ userRegisterEmailDto: userRegisterEmailDto });
     return this.authService.registerEmail(userRegisterEmailDto, req);
   }
 
@@ -72,6 +74,7 @@ export class AuthController {
     description: 'UserRegisterDto',
   })
   async register_confirm(@Body() userRegisterDto: any, @Request() req) {
+    this.logger.debug({ userRegisterDto: userRegisterDto });
     return this.authService.registerConfirm(userRegisterDto, req);
   }
 
@@ -85,6 +88,9 @@ export class AuthController {
     @Body() userForgotPasswordEmailDto: any,
     @Request() req,
   ) {
+    this.logger.debug({
+      userForgotPasswordEmailDto: userForgotPasswordEmailDto,
+    });
     return this.authService.forgotPasswordEmail(
       userForgotPasswordEmailDto,
       req,
@@ -98,6 +104,22 @@ export class AuthController {
     description: 'UserForgotPassDto',
   })
   async forgot_confirm(@Body() userForgotPassDto: any, @Request() req) {
+    this.logger.debug({ userForgotPassDto: userForgotPassDto });
     return this.authService.forgotPasswordConfirm(userForgotPassDto, req);
+  }
+
+  @Post('change-password')
+  @ApiTags('Change Password')
+  @ApiBody({
+    type: AuthChangePasswordDto,
+    description: 'AuthChangePasswordDto',
+  })
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Body() userChangePassDto: AuthChangePasswordDto,
+    @Request() req,
+  ) {
+    this.logger.debug({ userChangePassDto: userChangePassDto });
+    return this.authService.changePassword(userChangePassDto, req);
   }
 }

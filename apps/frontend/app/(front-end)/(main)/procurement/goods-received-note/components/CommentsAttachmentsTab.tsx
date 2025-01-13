@@ -72,7 +72,7 @@ const CommentsAttachmentsTab = () => {
                   <AvatarFallback>{comment.user.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex justify-between items-center">
+                  <div className="flex-between">
                     <h3 className="font-semibold">{comment.user}</h3>
                     <span className="text-sm text-gray-500">{comment.timestamp}</span>
                   </div>

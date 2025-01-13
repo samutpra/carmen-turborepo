@@ -57,3 +57,33 @@ export class UserUpdateDto implements UserUpdateModel {
 }
 
 //#endregion Zod Update
+export const mockUsers: UserCreateDto[] = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440001',
+		username: 'john@example.com',
+		email: 'john@example.com',
+		is_consent: true,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440002',
+		username: 'jane@example.com',
+		email: 'jane@example.com',
+		is_consent: true,
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440003',
+		username: 'bob@example.com',
+		email: 'bob@example.com', 
+		is_consent: true,
+		is_active: false
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440004',
+		username: 'alice@example.com',
+		email: 'alice@example.com',
+		is_consent: false,
+		is_active: true
+	}
+];

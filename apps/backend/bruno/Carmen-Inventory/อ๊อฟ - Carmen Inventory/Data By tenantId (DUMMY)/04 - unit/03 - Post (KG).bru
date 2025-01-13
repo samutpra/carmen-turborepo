@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (KG)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/units
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "KG",
+    "description": "KG Description",
+    "is_active": true
+  }
+}

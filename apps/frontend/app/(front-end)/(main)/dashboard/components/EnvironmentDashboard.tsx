@@ -1,7 +1,7 @@
 import React from 'react'
 import MetricCard from './MetricCard';
 import { energyData, scopeData } from '../mock_data/data';
-
+import * as m from '@/paraglide/messages.js';
 import EmissionsScope from './EmissionsScope';
 import EnergyUsageTrend from './EnergyUsageTrend';
 import EmissionsDistribution from './EmissionsDistribution';
@@ -19,7 +19,7 @@ const EnvironmentDashboard = () => {
 
     return (
         <div className="p-6 space-y-4">
-            <h1 className="text-3xl font-bold">Environmental Dashboard</h1>
+            <h1 className="text-3xl font-bold">{m.Environmental_Dashboard_Title()}</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <MetricCard
                     title="Total Energy Usage"

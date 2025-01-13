@@ -1,0 +1,21 @@
+meta {
+  name: 06 - Delete
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/api/v1/product-category/21777d84-006e-43a9-9553-c0fd4bb680c6
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Change USD To THB",
+    "description": "THB Description",
+    "code": "USD xxx",
+    "symbol": "###",
+    "isActive": true
+  }
+}

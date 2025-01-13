@@ -1,3 +1,11 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import {
+  ProductItemGroupCreateDto,
+  ProductItemGroupUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
@@ -11,14 +19,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ProductItemGroupService } from './product-item-group.service';
-import {
-  ProductItemGroupCreateDto,
-  ProductItemGroupUpdateDto,
-} from '@carmensoftware/shared-dtos';
-
-import { ResponseId } from 'lib/helper/iResponse';
-
 import {
   ApiBearerAuth,
   ApiBody,
@@ -26,10 +26,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { QueryAdvance } from 'lib/types';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import QueryParams from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+
+import { ProductItemGroupService } from './product-item-group.service';
 
 @Controller('api/v1/product-item-group')
 @ApiTags('product-item-group')
@@ -54,6 +52,7 @@ export class ProductItemGroupController {
     type: 'uuid',
   })
   async fineOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productItemGroupService.findOne(req, id);
   }
 
@@ -70,6 +69,15 @@ export class ProductItemGroupController {
     @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
 
     const q = new QueryParams(
       page,
@@ -81,6 +89,7 @@ export class ProductItemGroupController {
       sort,
       advance,
     );
+    this.logger.debug({ q: q });
     return this.productItemGroupService.findAll(req, q);
   }
 
@@ -90,6 +99,7 @@ export class ProductItemGroupController {
     description: 'ProductItemGroupCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.productItemGroupService.create(req, createDto);
   }
 
@@ -111,6 +121,7 @@ export class ProductItemGroupController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.productItemGroupService.update(req, id, updatedto);
   }
 
@@ -122,6 +133,7 @@ export class ProductItemGroupController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productItemGroupService.delete(req, id);
   }
 }

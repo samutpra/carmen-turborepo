@@ -16,22 +16,22 @@ const DataDisplayTemplate: React.FC<Props> = ({
     bulkActions,
 }) => {
     return (
-        <div className="flex flex-col p-6 justify-center">
-            <div className="sticky top-0 z-10">
-                <div className="md:flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-semibold">{title}</h1>
-                    {actionButtons && (
-                        <div className="mt-4 md:mt-0">{actionButtons}</div>
-                    )}
-                </div>
-                {filters && <div className="mb-4">{filters}</div>}
-                {bulkActions && <div className="mb-4">{bulkActions}</div>}
-            </div>
-            <div className="p-4 flex-1 overflow-y-auto bg-background mt-2 max-h-[calc(100vh-200px)] rounded-lg">
-                {content}
-            </div>
-        </div>
-    )
+			<div className="flex flex-col p-6 justify-center">
+				<div className="sticky top-0 z-10">
+					<div className="md:flex justify-between items-start">
+						<h1 className="text-2xl font-semibold">{title}</h1>
+						{actionButtons && (
+							<div className="mt-4 md:mt-0">{actionButtons}</div>
+						)}
+					</div>
+					{filters && <div className="mb-4">{filters}</div>}
+					{bulkActions && <div className="mb-4">{bulkActions}</div>}
+				</div>
+				<div className="flex-1 overflow-y-auto bg-background max-h-[calc(100vh-200px)] rounded-lg">
+					{content}
+				</div>
+			</div>
+		);
 }
 
 export default DataDisplayTemplate

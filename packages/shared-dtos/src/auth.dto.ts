@@ -16,6 +16,13 @@ export const authLoginSchema = z.object({
 
 export type AuthLoginModel = z.infer<typeof authLoginSchema>;
 
+export const authChangePassword = z.object({
+	old_pass : z.string({required_error: 'request old password'}),
+	new_pass : z.string({required_error: 'request new password'})
+});
+
+export type AuthChangePasswordModel = z.infer<typeof authChangePassword>;
+
 //#endregion Zod
 
 export class AuthPayloadDto {
@@ -27,6 +34,11 @@ export class AuthPayloadDto {
 export class AuthLoginDto implements AuthLoginModel {
 	username!: string;
 	password!: string;
+}
+
+export class AuthChangePasswordDto implements AuthChangePasswordModel {
+    old_pass!: string;
+    new_pass!: string;
 }
 
 export class AuthLoginResponseDto {
@@ -62,3 +74,22 @@ export class UserForgotPassDto {
 	password!: string;
 	emailToken!: string;
 }
+
+export const mockUserLogins: AuthLoginDto[] = [
+	{
+		username: 'john@example.com',
+		password: 'password123'
+	},
+	{
+		username: 'jane@example.com',
+		password: 'password123' 
+	},
+	{
+		username: 'bob@example.com',
+		password: 'password123'
+	},
+	{
+		username: 'alice@example.com',
+		password: 'password123'
+	}
+];

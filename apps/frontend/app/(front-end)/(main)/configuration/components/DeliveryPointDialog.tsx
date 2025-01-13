@@ -1,0 +1,198 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui-custom/FormCustom';
+import { Switch } from '@/components/ui/switch';
+import {
+	deliveryPointSchema,
+	DeliveryPointType,
+} from '@carmensoftware/shared-types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PencilIcon, PlusIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { useAuth } from '@/app/context/AuthContext';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { submitDeliveryPoint } from '../actions/delivery_point';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
+import * as m from '@/paraglide/messages.js';
+export interface DeliveryPointDialogProps {
+	mode: formType;
+	defaultValues?: DeliveryPointType;
+	onSuccess: (point: DeliveryPointType) => void;
+}
+
+export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
+	mode,
+	defaultValues,
+	onSuccess,
+}) => {
+	const [open, setOpen] = useState(false);
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [isLoading, setIsLoading] = useState(false);
+
+	const defaultDeliveryPointValues: DeliveryPointType = {
+		name: '',
+		is_active: true,
+	};
+
+	const form = useForm<DeliveryPointType>({
+		resolver: zodResolver(deliveryPointSchema),
+		defaultValues: mode === formType.EDIT && defaultValues
+			? { ...defaultValues } : defaultDeliveryPointValues,
+	});
+
+	useEffect(() => {
+		if (mode === formType.EDIT && defaultValues) {
+			form.reset({ ...defaultValues });
+		} else {
+			form.reset({ ...defaultDeliveryPointValues })
+		}
+	}, [mode, defaultValues, form])
+
+	const onSubmit = async (data: DeliveryPointType) => {
+		setIsLoading(true);
+		try {
+			const id = defaultValues?.id || '';
+			const result = await submitDeliveryPoint(data, mode, token, tenantId, id);
+
+			const submitData: DeliveryPointType = {
+				id: result.id,
+				...data,
+			}
+
+			onSuccess(submitData);
+			setOpen(false);
+			form.reset();
+			toastSuccess({
+				message: `${m.delivery_point()} ${mode === formType.ADD
+					? `${m.create_txt()}`
+					: `${m.edit_txt()}`} ${m.successfully()}`
+			});
+		} catch (err) {
+			console.error(`Error ${mode}ing delivery point:`, err);
+			toastError({ message: `${m.fail_to_text()} ${mode} delivery point` });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+		form.reset();
+	};
+
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
+				>
+					{mode === formType.ADD ? (
+						<>
+							<PlusIcon className="h-4 w-4" />
+							{m.add_text()} {m.delivery_point()}
+						</>
+					) : (
+						<PencilIcon className="w-4 h-4" />
+					)}
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="w-full md:w-[500px] rounded-lg">
+				<DialogHeader>
+					<DialogTitle>
+						{mode === formType.ADD
+							? `${m.create_new_delvery_point()}`
+							: `${m.edit_delivery_point()}`}
+					</DialogTitle>
+				</DialogHeader>
+				<Form {...form}>
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-4"
+					>
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>{m.delivery_point_name_label()}</FormLabel>
+									<FormControl>
+										<InputCustom
+											placeholder={m.placeholder_delivery_point_name()}
+											error={!!form.formState.errors.name}
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+							required
+						/>
+						<FormField
+							control={form.control}
+							name="is_active"
+							render={({ field }) => (
+								<FormItem className="flex-between rounded-lg border p-4">
+									<div className="space-y-0.5">
+										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+									</div>
+									<FormControl>
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+								</FormItem>
+							)}
+						/>
+						<DialogFooter>
+							<div className="flex-end gap-2">
+								<Button
+									type="button"
+									variant={'outline'}
+									onClick={handleClose}
+									size={'sm'}
+								>
+									{m.cancel_text()}
+								</Button>
+								<LoaderButton
+									type="submit"
+									disabled={isLoading}
+									isLoading={isLoading}
+									size={'sm'}
+								>
+									{isLoading
+										? `${m.saving()}...`
+										: mode === formType.EDIT
+											? `${m.save_change_text()}`
+											: `${m.add_text()}`}
+								</LoaderButton>
+							</div>
+						</DialogFooter>
+					</form>
+				</Form>
+			</DialogContent>
+		</Dialog>
+	);
+};

@@ -64,3 +64,30 @@ export class ClusterUpdateDto implements ClusterUpdateModel {
 }
 
 //#endregion Zod
+
+export const mockClusters = [
+	{
+		id: '550e8400-e29b-41d4-a716-446655440000',
+		code: 'BKK',
+		name: 'กรุงเทพและปริมณฑล',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440001',
+		code: 'NTH',
+		name: 'ภาคเหนือ',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440002',
+		code: 'STH', 
+		name: 'ภาคใต้',
+		is_active: true
+	},
+	{
+		id: '550e8400-e29b-41d4-a716-446655440003',
+		code: 'EST',
+		name: 'ภาคตะวันออก',
+		is_active: true
+	}
+];

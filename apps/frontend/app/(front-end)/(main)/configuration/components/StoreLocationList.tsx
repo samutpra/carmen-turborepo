@@ -1,253 +1,177 @@
 'use client';
-import React, { useState } from 'react';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import DataTable from '@/components/templates/DataTable';
-import DataCard from '@/components/templates/DataCard';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { useRouter } from '@/lib/i18n';
-import {
-	createLocation,
-	deleteLocation,
-	updateLocation,
-	useLocations,
-} from '../actions/location';
+
 import { useAuth } from '@/app/context/AuthContext';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import ErrorDisplay from '@/components/ErrorDisplay';
-import {
-	LocationLabel,
-	LocationSchema,
-	LocationType,
-	PayloadLocationType,
-} from '@/lib/types';
-import LocationForm from './form/LocationForm';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import { LocationType } from '@carmensoftware/shared-types';
+import React, { useEffect, useState, useCallback } from 'react';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import StoreLocationDialog from './StoreLocationDialog';
+import EmptyState from '@/components/ui-custom/EmptyState';
+import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import { useURL } from '@/hooks/useURL';
+import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
+import { FileDown, Printer } from 'lucide-react';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent from '@/components/templates/DisplayComponent';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+
+enum StoreLocationField {
+	Name = 'name',
+	LocationType = 'location_type',
+	Description = 'description',
+	isActive = 'is_active',
+}
+
+const sortFields: FieldConfig<LocationType>[] = [
+	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
+	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
+	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' }
+];
+const storeLocationFields: FieldConfig<LocationType>[] = [
+	...sortFields,
+	{ key: StoreLocationField.Description, label: m.description() }
+];
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
-	const router = useRouter();
-	const [dialogDelete, setDialogDelete] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-	const [editingItem, setEditingItem] = useState<LocationType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-
 	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [storeLocations, setStoreLocations] = useState<LocationType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
 
-	const {
-		locations,
-		setLocations,
-		loading,
-		error,
-		pagination,
-		search,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		handleSearch,
-		fetchData,
-	} = useLocations(token);
-
-	const form = useForm<PayloadLocationType>({
-		resolver: zodResolver(LocationSchema),
-		defaultValues: {
-			description: '',
-			name: '',
-			delivery_point_id: '',
-			location_type: 'inventory',
-			is_active: true,
-		},
-	});
-
-	const handleView = (item: LocationType) => {
-		router.push(`/configuration/store-location/${item.id}`);
-	};
-
-	const handleSave = async (data: LocationType) => {
-		console.log('Submitting data:', data);
+	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-
-			if (editingItem?.id) {
-				const updatedFields: LocationType = {
-					...data,
-					id: editingItem.id, // make sure id is included
-				};
-				const updatedLocation = await updateLocation(
-					token,
-					editingItem.id,
-					updatedFields
-				);
-				setLocations((prev) =>
-					prev.map((loc) => (loc.id === editingItem.id ? updatedLocation : loc))
-				);
-			} else {
-				console.log('Creating new location with:', data);
-				const newLocation = await createLocation(token, data);
-				setLocations((prev) => [...prev, newLocation]);
-			}
-
-			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error:', error);
-			// อาจจะเพิ่ม toast หรือ alert แจ้ง error
+			const data = await fetchStoreLocations(token, tenantId, {
+				search,
+				status,
+			});
+			setStoreLocations(data.data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	const handleDelete = (item: LocationType) => {
-		setIdToDelete(item.id);
-		setDialogDelete(true);
-	};
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
 
-	const confirmDelete = async () => {
-		try {
-			if (idToDelete) {
-				await deleteLocation(token, idToDelete);
-				setLocations((prev) =>
-					prev.filter((location) => location.id !== idToDelete)
-				);
-				fetchData();
-				setDialogDelete(false);
-			}
-		} catch (error) {
-			console.error('Error deleting currency:', error);
-		} finally {
-			setIdToDelete(null);
-		}
-	};
+	if (error) return <ErrorCard message={error} />;
 
-	const handleCloseDialog = () => {
-		form.reset({
-			description: '',
-			name: '',
-			delivery_point_id: '',
-			location_type: 'inventory',
-			is_active: true,
+	const handleSuccess = useCallback((values: LocationType) => {
+		setStoreLocations((prev) => {
+			const mapValues = new Map(prev.map((u) => [u.id, u]));
+			mapValues.set(values.id, values);
+			return Array.from(mapValues.values());
 		});
-		setDialogForm(false);
-		setEditingItem(null);
-	};
+	}, [setStoreLocations]);
 
-	const actionButtons = (
-		<div className="flex flex-col gap-4 md:flex-row">
-			<CustomButton
-				className="w-full md:w-20"
-				prefixIcon={<PlusCircle />}
-				onClick={() => setDialogForm(true)}
-			>
-				Add
-			</CustomButton>
-			<div className="flex flex-row md:flex-row gap-4">
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Sheet />}
-				>
-					Export
-				</CustomButton>
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Printer />}
-				>
-					Print
-				</CustomButton>
-			</div>
-		</div>
-	);
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteStoreLocation(id, token, tenantId);
+				if (res) {
+					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
+					toastSuccess({ message: 'Store location deleted successfully' });
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: 'Your session has expired. Please login again.' });
+					} else {
+						toastError({ message: `Failed to delete store location: ${error.message}` });
+					}
+				} else {
+					toastError({ message: 'An unknown error occurred while deleting the store location.' });
+				}
+			}
+		}, [token, tenantId, deleteStoreLocation]
+	)
 
 	const title = `${m.store_location()}`;
 
+	const actionButtons = (
+		<div className="action-btn-container">
+			<StoreLocationDialog mode={formType.ADD} onSuccess={handleSuccess} />
+			<Button variant="outline" className="group" size={'sm'}>
+				<FileDown className="h-4 w-4" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'}>
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
+			</Button>
+		</div>
+	);
+
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-			<div className="w-full sm:w-auto flex-grow">
-				<SearchInput
-					placeholder="Search Currency..."
-					value={search}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-						handleSearch(e.target.value, false);
-					}}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							handleSearch(e.currentTarget.value, true);
-						}
-					}}
-					Icon={Search}
+		<div className="filter-container">
+			<SearchForm
+				onSearch={setSearch}
+				defaultValue={search}
+				placeholder={`${m.Search()} ${m.store_location()}...`}
+			/>
+			<div className="all-center gap-2">
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={storeLocations}
+					onSort={setStoreLocations}
 				/>
 			</div>
 		</div>
 	);
 
-	const columns: LocationLabel[] = [
-		{ key: 'name', label: 'Name' },
-		{ key: 'location_type', label: 'Location Type' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'is_active', label: 'Active Status' },
-		{ key: 'delivery_point_id', label: 'Delivery Point ID' },
-	];
-
 	const content = (
-		<>
-			<div className="block lg:hidden">
-				{loading ? (
-					<SkeltonCardLoading />
-				) : error ? (
-					<div className="text-red-500">{error.message}</div>
-				) : (
-					<DataCard
-						data={locations}
-						columns={columns}
-						onView={handleView}
-						onDelete={handleDelete}
-					/>
-				)}
-			</div>
-
-			<div className="hidden lg:block">
-				{loading ? (
-					<SkeletonTableLoading />
-				) : error ? (
-					<ErrorDisplay errMessage={error.message} />
-				) : (
-					<DataTable
-						data={locations}
-						columns={columns}
-						onView={handleView}
-						onDelete={handleDelete}
-						pagination={pagination}
-						goToPage={goToPage}
-						nextPage={nextPage}
-						previousPage={previousPage}
-						setPerPage={setPerPage}
-					/>
-				)}
-			</div>
-			<LocationForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={handleSave}
-			/>
-
-			<DialogDelete
-				open={dialogDelete}
-				onOpenChange={setDialogDelete}
-				onConfirm={confirmDelete}
-				idDelete={idToDelete}
-			/>
-		</>
+		<DisplayComponent<LocationType>
+			items={storeLocations}
+			fields={storeLocationFields}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<StoreLocationDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
+				/>
+			)}
+		/>
 	);
+
+	if (isLoading) {
+		return <SkeltonLoad />
+	}
+
+	if (storeLocations.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description={m.not_found_store_location()}
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
 
 	return (
 		<DataDisplayTemplate

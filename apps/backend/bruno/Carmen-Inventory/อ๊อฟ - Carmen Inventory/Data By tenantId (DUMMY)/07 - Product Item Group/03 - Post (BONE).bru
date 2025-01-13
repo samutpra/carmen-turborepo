@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (BONE)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/product-item-group
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "BONE",
+    "description": "BONE Description",
+    "is_active": true,
+    "code": "BONE",
+    "product_subcategory_id": "0ebbd685-d7ef-47ef-bce7-a51ec0dc2eef"
+  }
+}

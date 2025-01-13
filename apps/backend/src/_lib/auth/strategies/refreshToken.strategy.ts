@@ -1,8 +1,13 @@
 import * as dotenv from 'dotenv';
+import {
+  ExtractJwt,
+  Strategy,
+} from 'passport-jwt';
 
-import { ExtractJwt, Strategy } from 'passport-jwt';
-
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
 dotenv.config();
@@ -21,6 +26,9 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   validate(payload: any) {
+    const logger = new Logger(RefreshJwtStrategy.name);
+    logger.debug(`validate payload: ${JSON.stringify(payload)}`);
+
     const {
       email,
       consent,
@@ -28,8 +36,13 @@ export class RefreshJwtStrategy extends PassportStrategy(
       createById,
       updateAt,
       updateById,
+      is_refresh,
       ...res
     } = payload;
+
+    if (!is_refresh) {
+      return null;
+    }
     return res;
   }
 }

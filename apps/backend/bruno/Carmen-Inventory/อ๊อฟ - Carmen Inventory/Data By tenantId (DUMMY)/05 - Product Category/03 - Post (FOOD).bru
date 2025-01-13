@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (FOOD)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/product-category
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "FOOD",
+    "description": "FOOD Description",
+    "is_active": true
+  }
+}

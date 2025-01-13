@@ -1,6 +1,7 @@
+import { Module } from '@nestjs/common';
+
 import { CurrenciesController } from './currencies.controller';
 import { CurrenciesService } from './currencies.service';
-import { Module } from '@nestjs/common';
 
 @Module({
   controllers: [CurrenciesController],

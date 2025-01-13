@@ -1,20 +1,31 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
+  UnitCreateDto,
+  UnitUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
 import {
   PrismaClient as dbTenant,
-  unit_table,
+  tb_unit,
 } from '@prisma-carmen-client-tenant';
-
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
 
 @Injectable()
 export class UnitsService {
@@ -27,8 +38,8 @@ export class UnitsService {
 
   logger = new Logger(UnitsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<unit_table> {
-    const res = await db_tenant.unit_table.findUnique({
+  async _getById(db_tenant: dbTenant, id: string): Promise<tb_unit> {
+    const res = await db_tenant.tb_unit.findUnique({
       where: {
         id: id,
       },
@@ -36,38 +47,35 @@ export class UnitsService {
     return res;
   }
 
-  async findOne(req: Request, id: string): Promise<ResponseSingle<unit_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+  async findOne(req: Request, id: string): Promise<ResponseSingle<tb_unit>> {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Unit not found');
     }
-    const res: ResponseSingle<unit_table> = {
+    const res: ResponseSingle<tb_unit> = {
       data: oneObj,
     };
     return res;
   }
 
-  async findAll(
-    req: Request,
-    q: QueryParams,
-  ): Promise<ResponseList<unit_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.unit_table.count({
+  async findAll(req: Request, q: QueryParams): Promise<ResponseList<tb_unit>> {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    const max = await this.db_tenant.tb_unit.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.unit_table.findMany(q.findMany());
+    const listObj = await this.db_tenant.tb_unit.findMany(q.findMany());
 
-    const res: ResponseList<unit_table> = {
+    const res: ResponseList<tb_unit> = {
       data: listObj,
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
+        perPage: q.perpage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
     return res;
@@ -77,10 +85,10 @@ export class UnitsService {
     req: Request,
     createDto: UnitCreateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const found = await this.db_tenant.unit_table.findUnique({
+    const found = await this.db_tenant.tb_unit.findUnique({
       where: {
         name: createDto.name,
       },
@@ -94,12 +102,12 @@ export class UnitsService {
       });
     }
 
-    const createObj = await this.db_tenant.unit_table.create({
+    const createObj = await this.db_tenant.tb_unit.create({
       data: {
         ...createDto,
-        created_by_id: userId,
+        created_by_id: user_id,
         created_at: new Date(),
-        updated_by_id: userId,
+        updated_by_id: user_id,
         updated_at: new Date(),
       },
     });
@@ -114,19 +122,19 @@ export class UnitsService {
     id: string,
     updateDto: UnitUpdateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Unit not found');
     }
 
-    const updateObj = await this.db_tenant.unit_table.update({
+    const updateObj = await this.db_tenant.tb_unit.update({
       where: {
         id,
       },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
+      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -137,15 +145,15 @@ export class UnitsService {
   }
 
   async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('Unit not found');
     }
 
-    await this.db_tenant.unit_table.delete({
+    await this.db_tenant.tb_unit.delete({
       where: {
         id,
       },

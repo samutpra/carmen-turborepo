@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react"
+import * as m from '@/paraglide/messages.js';
 
 const rippleStyles = `
   .ripple-effect {
@@ -113,8 +114,8 @@ const CustomButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
             >
                 {loading ? (
                     <>
-                        <span>loading</span>
                         <Loader2 className="ml-2 animate-spin" />
+                        <span>{`${m.loading()}...`}</span>
                     </>
                 ) : (
                     <>

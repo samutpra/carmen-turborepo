@@ -5,7 +5,7 @@ interface Props {
 }
 const ErrorDisplay: React.FunctionComponent<Props> = ({ errMessage }) => {
     return (
-        <div className="flex items-center justify-center h-96 text-red-500">
+        <div className="all-center h-96 text-red-500">
             {errMessage}
         </div>
     )

@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (Credit note)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/credit-note
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Vendor 1",
+    "description": "vendor 1 description",
+    "is_active": true
+  }
+}

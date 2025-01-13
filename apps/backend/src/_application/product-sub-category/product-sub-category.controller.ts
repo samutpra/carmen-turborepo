@@ -1,8 +1,17 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import {
+  ProductSubCategoryCreateDto,
+  ProductSubCategoryUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -10,12 +19,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ResponseId } from 'lib/helper/iResponse';
-import {
-  ProductSubCategoryCreateDto,
-  ProductSubCategoryUpdateDto,
-} from '@carmensoftware/shared-dtos';
-
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,11 +26,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import QueryParams from 'lib/types';
+
 import { ProductSubCategoryService } from './product-sub-category.service';
-import { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/product-sub-category')
 @ApiTags('Product-sub-category')
@@ -42,6 +42,8 @@ export class ProductSubCategoryController {
     private readonly productSubCategoryService: ProductSubCategoryService,
   ) {}
 
+  private readonly logger = new Logger(ProductSubCategoryController.name);
+
   @Get(':id')
   @ApiParam({
     name: 'id',
@@ -50,6 +52,7 @@ export class ProductSubCategoryController {
     type: 'uuid',
   })
   async fineOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productSubCategoryService.findOne(req, id);
   }
 
@@ -67,6 +70,15 @@ export class ProductSubCategoryController {
   ) {
     const defaultSearchFields: string[] = [];
 
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
     const q = new QueryParams(
       page,
       perpage,
@@ -77,6 +89,7 @@ export class ProductSubCategoryController {
       sort,
       advance,
     );
+    this.logger.debug({ q: q });
     return this.productSubCategoryService.findAll(req, q);
   }
 
@@ -86,6 +99,7 @@ export class ProductSubCategoryController {
     description: 'ProductSubCategoryCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.productSubCategoryService.create(req, createDto);
   }
 
@@ -107,6 +121,7 @@ export class ProductSubCategoryController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.productSubCategoryService.update(req, id, updatedto);
   }
 
@@ -118,6 +133,7 @@ export class ProductSubCategoryController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productSubCategoryService.delete(req, id);
   }
 }

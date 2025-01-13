@@ -1,23 +1,31 @@
 import {
+  ResponseId,
+  ResponseList,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import {
+  ExtractReqService,
+} from 'src/_lib/auth/extract-req/extract-req.service';
+import {
+  PrismaClientManagerService,
+} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
+import {
+  ProductItemGroupCreateDto,
+  ProductItemGroupUpdateDto,
+} from '@carmensoftware/shared-dtos';
+import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ProductItemGroupCreateDto,
-  ProductItemGroupUpdateDto,
-} from '@carmensoftware/shared-dtos';
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import {
   PrismaClient as dbTenant,
-  product_item_group_table,
+  tb_product_item_group,
 } from '@prisma-carmen-client-tenant';
-
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-import QueryParams from 'lib/types';
 
 @Injectable()
 export class ProductItemGroupService {
@@ -33,8 +41,8 @@ export class ProductItemGroupService {
   async _getById(
     db_tenant: dbTenant,
     id: string,
-  ): Promise<product_item_group_table> {
-    const res = await db_tenant.product_item_group_table.findUnique({
+  ): Promise<tb_product_item_group> {
+    const res = await db_tenant.tb_product_item_group.findUnique({
       where: {
         id: id,
       },
@@ -45,15 +53,15 @@ export class ProductItemGroupService {
   async findOne(
     req: Request,
     id: string,
-  ): Promise<ResponseSingle<product_item_group_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+  ): Promise<ResponseSingle<tb_product_item_group>> {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
     }
-    const res: ResponseSingle<product_item_group_table> = {
+    const res: ResponseSingle<tb_product_item_group> = {
       data: oneObj,
     };
     return res;
@@ -62,23 +70,23 @@ export class ProductItemGroupService {
   async findAll(
     req: Request,
     q: QueryParams,
-  ): Promise<ResponseList<product_item_group_table>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
-    const max = await this.db_tenant.product_item_group_table.count({
+  ): Promise<ResponseList<tb_product_item_group>> {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    const max = await this.db_tenant.tb_product_item_group.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.product_item_group_table.findMany(
+    const listObj = await this.db_tenant.tb_product_item_group.findMany(
       q.findMany(),
     );
 
-    const res: ResponseList<product_item_group_table> = {
+    const res: ResponseList<tb_product_item_group> = {
       data: listObj,
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perPage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perPage),
+        perPage: q.perpage,
+        pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
 
@@ -89,12 +97,16 @@ export class ProductItemGroupService {
     req: Request,
     createDto: ProductItemGroupCreateDto,
   ): Promise<ResponseId<string>> {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    const found = await this.db_tenant.product_item_group_table.findUnique({
+    const found = await this.db_tenant.tb_product_item_group.findUnique({
       where: {
-        name: createDto.name,
+        code_name_product_subcategory_id: {
+          code: createDto.code,
+          name: createDto.name,
+          product_subcategory_id: createDto.product_subcategory_id,
+        },
       },
     });
 
@@ -106,12 +118,13 @@ export class ProductItemGroupService {
       });
     }
 
-    const createObj = await this.db_tenant.product_item_group_table.create({
+    const createObj = await this.db_tenant.tb_product_item_group.create({
       data: {
         ...createDto,
-        created_by_id: userId,
+        code: createDto.name.toUpperCase(),
+        created_by_id: user_id,
         created_at: new Date(),
-        updated_by_id: userId,
+        updated_by_id: user_id,
         updated_at: new Date(),
       },
     });
@@ -121,19 +134,19 @@ export class ProductItemGroupService {
   }
 
   async update(req: Request, id: string, updateDto: ProductItemGroupUpdateDto) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
     }
 
-    const updateObj = await this.db_tenant.product_item_group_table.update({
+    const updateObj = await this.db_tenant.tb_product_item_group.update({
       where: {
         id,
       },
-      data: { ...updateDto, updated_by_id: userId, updated_at: new Date() },
+      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
     });
 
     const res: ResponseId<string> = {
@@ -144,15 +157,15 @@ export class ProductItemGroupService {
   }
 
   async delete(req: Request, id: string) {
-    const { userId, tenantId } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(tenantId);
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException('productItemGroup not found');
     }
 
-    await this.db_tenant.product_item_group_table.delete({
+    await this.db_tenant.tb_product_item_group.delete({
       where: {
         id,
       },

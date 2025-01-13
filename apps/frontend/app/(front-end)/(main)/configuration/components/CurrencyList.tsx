@@ -1,381 +1,225 @@
 'use client';
-
-import { ArrowUpDown, Filter, PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import DataCard from '@/components/templates/DataCard';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DataTable from '@/components/templates/DataTable';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import { FilterBuilder } from '@/components/ui-custom/FilterBuilder';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import { useCurrencies, updateCurrency, deleteCurrency, createCurrency } from '../currency/actions/currency';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import ErrorDisplay from '@/components/ErrorDisplay';
-import { CurrencyLabel, CurrencySchema, CurrencyType } from '@/lib/types';
-import CurrencyForm from './form/CurrencyForm';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
-import EmptyData from '@/components/EmptyData';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CurrencyType } from '@carmensoftware/shared-types';
+import { APIError } from '@carmensoftware/shared-types/src/pagination';
+import CurrencyDialog from './CurrencyDialog';
+import RefreshToken from '@/components/RefreshToken';
+import EmptyState from '@/components/ui-custom/EmptyState';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { deleteCurrency, fetchCurrencies } from '../actions/currency';
+import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import { useURL } from '@/hooks/useURL';
+import * as m from '@/paraglide/messages.js';
+import { statusOptions } from '@/lib/statusOptions';
+import { FileDown, Printer } from 'lucide-react';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import DisplayComponent from '@/components/templates/DisplayComponent';
+import { FieldConfig } from '@/lib/util/uiConfig';
 
-const statusOptions = [
-	{ value: 'all', label: 'All Statuses' },
-	{ value: 'true', label: 'Active' },
-	{ value: 'false', label: 'Not Active' },
-];
+enum CurrencyField {
+	Code = 'code',
+	Name = 'name',
+	Symbol = 'symbol',
+	Description = 'description',
+	Rate = 'rate',
+	isActive = 'is_active',
+}
 
+const sortFields: FieldConfig<CurrencyType>[] = [
+	{ key: CurrencyField.Code, label: `${m.code_label()}` },
+	{ key: CurrencyField.Name, label: `${m.currency_name()}` },
+	{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
+	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
+]
+
+const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+	...sortFields,
+	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
+	{ key: CurrencyField.Description, label: `${m.description()}` },
+]
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
-	const [editingItem, setEditingItem] = useState<CurrencyType | null>(null);
-	const [dialogForm, setDialogForm] = useState(false);
-	const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-	const [dialogDelete, setDialogDelete] = useState(false);
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState('');
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
-	const token = accessToken || ''
-
-	const {
-		currencies,
-		setCurrencies,
-		loading,
-		error,
-		pagination,
-		search,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		handleSearch,
-		fetchData
-	} = useCurrencies(token);
-
-	const form = useForm<CurrencyType>({
-		resolver: zodResolver(CurrencySchema),
-		defaultValues: {
-			code: '',
-			name: '',
-			symbol: '',
-			description: '',
-			rate: 0,
-			is_active: true,
-		},
-	});
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchCurrencies(token, tenantId, {
+				search,
+				status,
+			});
+			setCurrencies(data);
+			setShowRefreshToken(false);
+		} catch (err) {
+			if (err instanceof APIError && err.status === 401) {
+				toastError({ message: 'Your session has expired. Please login again.' });
+				setShowRefreshToken(true);
+				setCurrencies([]);
+			} else {
+				setError(err instanceof Error ? err.message : 'An error occurred');
+				toastError({ message: 'Failed to fetch currencies' });
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		if (editingItem) {
-			form.reset({
-				code: editingItem.code,
-				name: editingItem.name,
-				symbol: editingItem.symbol,
-				description: editingItem.description,
-				rate: editingItem.rate,
-				is_active: editingItem.is_active,
-			});
-		}
-	}, [editingItem, form]);
+		fetchData();
+	}, [token, tenantId, search, status]);
 
-	const handleEdit = (item: CurrencyType) => {
-		setEditingItem(item);
-		form.reset({
-			id: item.id,
-			code: item.code,
-			name: item.name,
-			symbol: item.symbol,
-			description: item.description,
-			rate: item.rate,
-			is_active: item.is_active,
+	const handleSuccess = useCallback((values: CurrencyType) => {
+		setCurrencies((prev) => {
+			const mapValues = new Map(prev.map((u) => [u.id, u]));
+			mapValues.set(values.id, values);
+			return Array.from(mapValues.values());
 		});
-		setDialogForm(true);
-	};
+	}, [setCurrencies]);
 
-	const handleDelete = (item: CurrencyType) => {
-		setIdToDelete(item.id);
-		setDialogDelete(true);
-	};
-
-	const confirmDelete = async () => {
-		try {
-			setIsLoading(true);
-			if (idToDelete) {
-				await deleteCurrency(token, idToDelete);
-				setCurrencies((prev) =>
-					prev.filter((currency) => currency.id !== idToDelete)
-				);
-				fetchData();
-				setDialogDelete(false);
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteCurrency(id, token, tenantId);
+				if (res) {
+					setCurrencies((prev) => prev.filter((p) => p.id !== id));
+					toastSuccess({ message: `${m.currency_delete_success()}` });
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({ message: `${m.session_expire()}` });
+					} else {
+						toastError({ message: `${m.fail_del_currency()}: ${error.message}` });
+					}
+				} else {
+					toastError({ message: `${m.error_del_text()} ${m.currency()}.` });
+				}
 			}
-		} catch (error) {
-			console.error('Error deleting currency:', error);
-		} finally {
-			setIsLoading(false);
-			setIdToDelete(null);
-		}
-	};
+		}, [token, tenantId, deleteCurrency]
+	)
 
-	const handleSave = async (data: CurrencyType) => {
-		try {
-			setIsLoading(true);
 
-			if (editingItem?.id) {
-				const updatedFields: CurrencyType = { ...data };
-				const updatedCurrency = await updateCurrency(
-					token,
-					editingItem.id,
-					updatedFields
-				);
-				setCurrencies((prev) =>
-					prev.map((currency) =>
-						currency.id === editingItem.id ? updatedCurrency : currency
-					)
-				);
-			} else {
-				const newCurrency = await createCurrency(token, data);
-				setCurrencies((prev: CurrencyType[]) => [...prev, newCurrency]);
-			}
-			handleCloseDialog();
-		} catch (error) {
-			console.error('Save error details:', {
-				error,
-				message: error instanceof Error ? error.message : 'Unknown error',
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	if (showRefreshToken) {
+		return (
+			<Card className="border-destructive w-full md:w-1/2">
+				<CardContent className="pt-6">
+					<div className="flex flex-col items-center gap-4">
+						<p className="text-destructive">Your session has expired.</p>
+						<RefreshToken />
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
 
-	const handleCloseDialog = () => {
-		form.reset({
-			code: '',
-			description: '',
-			name: '',
-			symbol: '',
-			rate: 0,
-			is_active: true,
-		});
-		setDialogForm(false);
-		setEditingItem(null);
-	};
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">
+						Error loading delivery points: {error}
+					</p>
+				</CardContent>
+			</Card>
+		);
+	}
 
-	const title = 'Currency';
-
-	const columns: CurrencyLabel[] = [
-		{ key: 'code', label: 'Code' },
-		{ key: 'name', label: 'Name' },
-		{ key: 'symbol', label: 'Symbol' },
-		{ key: 'description', label: 'Description' },
-		{ key: 'rate', label: 'Rate' },
-		{ key: 'is_active', label: 'Active' },
-	];
+	const title = `${m.currency()}`;
 
 	const actionButtons = (
-		<div className="flex flex-col gap-4 md:flex-row">
-			<CustomButton
-				className="w-full md:w-20"
-				prefixIcon={<PlusCircle />}
-				onClick={() => setDialogForm(true)}
-			>
-				Add
-			</CustomButton>
-			<div className="flex flex-row md:flex-row gap-4">
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Sheet />}
-				>
-					Export
-				</CustomButton>
-				<CustomButton
-					className="w-full md:w-20"
-					variant="outline"
-					prefixIcon={<Printer />}
-				>
-					Print
-				</CustomButton>
-			</div>
+		<div className="action-btn-container">
+			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
+			<Button variant="outline" className="group" size={'sm'}>
+				<FileDown className="h-4 w-4" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'}>
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
+			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-			<div className="w-full sm:w-auto flex-grow">
-				<SearchInput
-					placeholder="Search Currency..."
-					value={search}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-						handleSearch(e.target.value, false);
-					}}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							handleSearch(e.currentTarget.value, true);
-						}
-					}}
-					Icon={Search}
+		<div className="filter-container">
+			<SearchForm
+				defaultValue={search}
+				onSearch={setSearch}
+				placeholder={`${m.Search()} ${m.currency()}..`}
+			/>
+			<div className="all-center gap-2">
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
 				/>
-			</div>
-			<div className="flex items-center space-x-4">
-				<Popover open={statusOpen} onOpenChange={setStatusOpen}>
-					<PopoverTrigger asChild>
-						<Button
-							variant="outline"
-							role="combobox"
-							aria-expanded={statusOpen}
-							className="w-[200px] justify-between"
-						>
-							{selectedStatus
-								? statusOptions.find(
-										(status) => status.value === selectedStatus
-									)?.label
-								: 'Select status...'}
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="w-[200px] p-0">
-						<Command>
-							<CommandInput placeholder="Search status..." className="h-9" />
-							<CommandList>
-								<CommandEmpty>No status found.</CommandEmpty>
-								<CommandGroup>
-									{statusOptions.map((status) => (
-										<CommandItem
-											key={status.value}
-											onSelect={() => {
-												setSelectedStatus(
-													status.value === selectedStatus ? '' : status.value
-												);
-												setStatusOpen(false);
-											}}
-										>
-											{status.label}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
-
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="outline">
-							<Filter className="h-4 w-4" />
-							More Filters
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
-						<FilterBuilder
-							fields={[
-								{ value: 'name', label: 'Name' },
-								{ value: 'description', label: 'Description' },
-								{ value: 'is_active', label: 'Status' },
-							]}
-							onFilterChange={(filters) => {
-								console.log('Applied filters:', filters);
-							}}
-						/>
-					</DialogContent>
-				</Dialog>
-
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline">
-							<ArrowUpDown className="h-4 w-4" />
-							Sort
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuItem>Name</DropdownMenuItem>
-						<DropdownMenuItem>Description</DropdownMenuItem>
-						<DropdownMenuItem>Status</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<SortDropDown
+					fieldConfigs={sortFields}
+					items={currencies}
+					onSort={setCurrencies}
+				/>
 			</div>
 		</div>
 	);
 
 	const content = (
-		<>
-			<div className='block lg:hidden'>
-				{loading ? (
-					<SkeltonCardLoading />
-				) : error ? (
-					<div className='text-red-500'>{error.message}</div>
-				) : (
-					<DataCard data={currencies} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
-				)}
-			</div>
-
-			<div className='hidden lg:block'>
-				{loading ? (
-					<SkeletonTableLoading />
-				) : error ? (
-					<ErrorDisplay errMessage={error.message} />
-				) : (
-					<DataTable
-						data={currencies}
-						columns={columns}
-						onEdit={handleEdit}
-						onDelete={handleDelete}
-						pagination={pagination}
-						goToPage={goToPage}
-						nextPage={nextPage}
-						previousPage={previousPage}
-						setPerPage={setPerPage}
-					/>
-				)}
-			</div>
-
-			<DialogDelete
-				open={dialogDelete}
-				onOpenChange={setDialogDelete}
-				onConfirm={confirmDelete}
-				idDelete={idToDelete}
-			/>
-
-			<CurrencyForm
-				open={dialogForm}
-				editingItem={editingItem}
-				isLoading={isLoading}
-				onOpenChange={setDialogForm}
-				onSubmit={handleSave}
-			/>
-		</>
+		<DisplayComponent<CurrencyType>
+			items={currencies}
+			fields={currenciesFiltered}
+			idField="id"
+			onSuccess={handleSuccess}
+			onDelete={handleDelete}
+			editComponent={({ item, onSuccess }) => (
+				<CurrencyDialog
+					mode={formType.EDIT}
+					defaultValues={item}
+					onSuccess={onSuccess}
+				/>
+			)}
+		/>
 	);
 
+	if (isLoading) {
+		return <SkeltonLoad />
+	}
+
+	if (currencies.length === 0) {
+		return (
+			<EmptyState
+				title={title}
+				description={m.no_currency_found_text()}
+				actionButtons={actionButtons}
+				filters={filter}
+			/>
+		);
+	}
+
 	return (
-		<>
-			{currencies.length > 0 ? (
-				<DataDisplayTemplate
-					title={title}
-					actionButtons={actionButtons}
-					filters={filter}
-					content={content}
-				/>
-			) : (
-				<EmptyData />
-			)}
-		</>
-
-
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+		/>
 	);
 };
 
 export default CurrencyList;
-
-
-

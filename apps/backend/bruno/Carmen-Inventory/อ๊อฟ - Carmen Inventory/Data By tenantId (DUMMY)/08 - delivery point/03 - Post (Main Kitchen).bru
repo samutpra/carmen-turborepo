@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Post (Main Kitchen)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/delivery-point
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Main kitchen delivery point",
+    "is_active": true
+  }
+}

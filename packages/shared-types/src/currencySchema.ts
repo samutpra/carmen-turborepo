@@ -2,17 +2,34 @@ import { z } from "zod";
 
 // Currency
 export const CurrencySchema = z.object({
-    id: z.string().optional(),
-    code: z.string(),
-    name: z.string(),
-    symbol: z.string(),
-    description: z.string(),
-    rate: z.number(),
-    isActive: z.boolean(),
-  });
-  
-  export type CurrencyType = z.infer<typeof CurrencySchema>;
-  export interface CurrencyLabel {
-    key: keyof CurrencyType;
-    label: string;
-  }
+	id: z.string().optional(),
+	code: z
+		.string()
+		.nonempty('Currency code is required')
+		.max(10, 'Currency code must not exceed 10 characters'),
+	name: z
+		.string()
+		.nonempty('Currency name is required')
+		.max(50, 'Currency name must not exceed 50 characters'),
+	symbol: z
+		.string()
+		.nonempty('Currency symbol is required')
+		.max(5, 'Currency symbol must not exceed 5 characters'),
+	description: z
+		.string()
+		.nonempty('Currency description is required')
+		.max(255, 'Description must not exceed 255 characters'),
+	rate: z
+		.string()
+		.regex(/^\d+(\.\d+)?$/, 'Rate must be a valid decimal number'),
+	is_active: z.boolean().refine(
+		(val) => typeof val === 'boolean',
+		{ message: 'Active status must be true or false' }
+	),
+});
+
+export type CurrencyType = z.infer<typeof CurrencySchema>;
+export interface CurrencyLabel {
+	key: keyof CurrencyType;
+	label: string;
+}

@@ -1,0 +1,17 @@
+meta {
+  name: 04 - Update (Main Kitchen)
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/v1/delivery-point/bfe68f37-f0ce-4cda-908a-ddb3f10129dd
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "is_active": false
+  }
+}

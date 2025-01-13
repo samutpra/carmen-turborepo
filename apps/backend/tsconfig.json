@@ -17,8 +17,12 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "esModuleInterop": true
   },
-  "plugins": ["@nestjs/swagger"]
+  "plugins": [
+    "@nestjs/swagger"
+  ]
 }

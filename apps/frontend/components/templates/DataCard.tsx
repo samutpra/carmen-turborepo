@@ -1,98 +1,183 @@
+'use client';
+
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '../ui-custom/is-active-badge';
 import { Button } from '@/components/ui/button';
-import { EyeIcon, Pen, Trash } from 'lucide-react';
-import IsActiveIcon from '../ui-custom/Icon/IsActiveIcon';
-import { TypeDateKey, dateKeys, formatDateCustom } from '@/lib/formatDate';
-import StatusBadge from '../ui-custom/custom-status-badge';
-import { amountKeys, formatPrice, TypeAmountKey } from '@/lib/formatPrice';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { TrashIcon } from 'lucide-react';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
-interface Column {
-    key: string;
-    label: string;
+type FieldValue = string | number | boolean | null | undefined;
+
+export type RenderFunction<T> = (value: T[keyof T]) => React.ReactNode;
+
+type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
+
+export interface FieldConfig<T> {
+	key: keyof T;
+	label: string;
+	type?: 'text' | 'badge' | 'custom';
+	render?: RenderFunction<T>;
 }
 
-interface Props<T> {
-    data: T[];
-    columns: Column[];
-    onEdit?: (item: T) => void;
-    onDelete?: (item: T) => void;
-    onView?: (item: T) => void;
+interface DeleteDialogProps {
+	title?: string;
+	description?: string;
+	confirmLabel?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const DataCard = <T extends Record<string, any>>({ data, columns, onEdit, onDelete, onView }: Props<T>) => {
+interface DataCardProps<T extends Record<string, FieldValue>> {
+	items: T[];
+	fields: FieldConfig<T>[];
+	idField: keyof T;
+	onSuccess?: SuccessCallback<T>;
+	onDelete?: (id: string) => void;
+	isLoading?: boolean;
+	loadingCount?: number;
+	editComponent?: (props: {
+		item: T;
+		onSuccess: (updatedItem: T) => void;
+	}) => React.ReactNode;
+	deleteDialogProps?: DeleteDialogProps;
+}
 
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data.map((item, index) => (
-                <Card key={index} className="overflow-hidden">
-                    <CardContent>
-                        {columns.map((column) => {
-                            const value = item[column.key];
-                            return (
-                                <div key={column.key} className="flex items-center">
-                                    <div className="flex w-2/5">
-                                        <span className="text-sm font-medium text-gray-500">{column.label}</span>
-                                    </div>
-                                    <div>
-                                        {typeof value === 'boolean' ? (
-                                            <IsActiveIcon isChecked={value} />
-                                        ) : dateKeys.includes(column.key as TypeDateKey) ? (
-                                            <span className="text-sm w-full">
-                                                {formatDateCustom(value as TypeDateKey)}
-                                            </span>
-                                        ) : column.key === 'status' ? (
-                                            <StatusBadge status={value} />
-                                        ) : amountKeys.includes(column.key as TypeAmountKey) ? (
-                                            <span className="text-sm w-full">{formatPrice(value)}</span>
-                                        ) : value != null ? (
-                                            <span className="text-sm w-full">{String(value)}</span>
-                                        ) : (
-                                            '-'
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
+const DataCard = <T extends Record<string, FieldValue>>({
+	items,
+	fields,
+	idField,
+	onSuccess,
+	onDelete,
+	isLoading = false,
+	loadingCount = 6,
+	editComponent,
+	deleteDialogProps = {
+		title: 'Are you sure?',
+		description: 'This action cannot be undone. This will permanently delete this item.',
+		confirmLabel: 'Delete',
+	},
+}: DataCardProps<T>): React.ReactElement => {
+	const renderLoadingSkeleton = (): React.ReactElement => (
+		<div className="grid grid-cols-1 gap-4">
+			{[...Array(loadingCount)].map((_, index) => (
+				<SkeltonCardLoading key={index} />
+			))}
+		</div>
+	);
 
-                        {(onEdit || onDelete || onView) && (
-                            <div className="flex gap-2 pt-2 justify-end">
-                                {onView && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => onView(item)}
-                                        className="hover:bg-blue-50"
-                                    >
-                                        <EyeIcon />
-                                    </Button>
-                                )}
-                                {onEdit && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => onEdit(item)}
-                                        className="hover:bg-blue-50"
-                                    >
-                                        <Pen />                                        </Button>
-                                )}
-                                {onDelete && (
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() => onDelete(item)}
-                                    >
-                                        <Trash />
-                                    </Button>
-                                )}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
-    );
+	const renderField = (field: FieldConfig<T>, item: T): React.ReactNode => {
+		const value = item[field.key];
+
+		if (field.render) {
+			return field.render(value);
+		}
+
+		switch (field.type) {
+			case 'badge':
+				if (typeof value === 'boolean') {
+					return (
+						<Badge variant={value ? 'default' : 'destructive'}>
+							{value ? 'Active' : 'Inactive'}
+						</Badge>
+					);
+				}
+				return <Badge>{String(value)}</Badge>;
+
+			default:
+				return (
+					<span className="text-sm font-medium">
+						{String(value)}
+					</span>
+				);
+		}
+	};
+
+	const handleDelete = (id: string): void => {
+		if (onDelete) {
+			onDelete(id);
+		}
+	};
+
+	const handleSuccess = (updatedItem: T, originalItem: T): void => {
+		if (onSuccess) {
+			onSuccess(updatedItem, originalItem);
+		}
+	};
+
+	if (isLoading) {
+		return renderLoadingSkeleton();
+	}
+
+	return (
+		<div className="grid grid-cols-1 gap-4">
+			{items?.map((item) => (
+				<Card
+					key={String(item[idField])}
+					className="hover:shadow-md transition-all"
+				>
+					<CardContent className="p-4">
+						<div className="space-y-3">
+							{fields.map((field) => (
+								<div
+									key={String(field.key)}
+									className="grid grid-cols-10 gap-4"
+								>
+									<span className="text-sm text-muted-foreground col-span-3">
+										{field.label}
+									</span>
+									<div className="col-span-7">
+										{renderField(field, item)}
+									</div>
+								</div>
+							))}
+						</div>
+					</CardContent>
+					<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
+						{editComponent && editComponent({
+							item,
+							onSuccess: (updatedItem: T) => handleSuccess(updatedItem, item)
+						})}
+						{onDelete && (
+							<AlertDialog>
+								<AlertDialogTrigger asChild>
+									<Button variant="ghost" size="sm">
+										<TrashIcon />
+									</Button>
+								</AlertDialogTrigger>
+								<AlertDialogContent>
+									<AlertDialogHeader>
+										<AlertDialogTitle>{deleteDialogProps.title}</AlertDialogTitle>
+										<AlertDialogDescription>
+											{deleteDialogProps.description}
+										</AlertDialogDescription>
+									</AlertDialogHeader>
+									<AlertDialogFooter>
+										<AlertDialogCancel>Cancel</AlertDialogCancel>
+										<AlertDialogAction
+											onClick={() => handleDelete(String(item[idField]))}
+											className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+										>
+											{deleteDialogProps.confirmLabel}
+										</AlertDialogAction>
+									</AlertDialogFooter>
+								</AlertDialogContent>
+							</AlertDialog>
+						)}
+					</CardFooter>
+				</Card>
+			))}
+		</div>
+	);
 };
 
 export default DataCard;

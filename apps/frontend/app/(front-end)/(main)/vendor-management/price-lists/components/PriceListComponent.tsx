@@ -9,9 +9,8 @@ import ListPageTemplate from '@/components/templates/ListPageTemplate';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@radix-ui/react-checkbox';
-import StatusBadge from '@/components/ui-custom/custom-status-badge';
-import { Badge } from '@/components/ui/badge';
-
+import * as m from '@/paraglide/messages.js';
+import { Badge } from '@/components/ui-custom/is-active-badge';
 const PriceListComponent = () => {
     const router = useRouter();
     const [pricelists, setPricelists] = useState<Pricelist[]>([]);
@@ -65,13 +64,13 @@ const PriceListComponent = () => {
 
     const actionButtons = (
         <div className='flex gap-2'>
-            <Button onClick={handleAddPricelist}>
+            <Button variant="outline" onClick={handleAddPricelist} size={'sm'}>
                 <Plus className="h-4 w-4" /> Add Pricelist
             </Button>
-            <Button variant="secondary" onClick={handleImport}>
+            <Button variant="outline" onClick={handleImport} size={'sm'}>
                 <Upload className="h-4 w-4" /> Import
             </Button>
-            <Button variant="outline" onClick={handleGenerateReport}>
+            <Button variant="outline" onClick={handleGenerateReport} size={'sm'}>
                 <Printer className="h-4 w-4" /> Print
             </Button>
         </div>
@@ -96,15 +95,15 @@ const PriceListComponent = () => {
                         placeholder="Search price lists..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="pl-10 w-full"
+                        className="pl-10 w-full h-8"
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="gap-2 text-sm">
+                    <Button variant="outline" className="gap-2 text-sm" size={'sm'}>
                         <Filter className="h-4 w-4" />
                         More Filters
                     </Button>
-                    <Button variant="outline" className="gap-2 text-sm">
+                    <Button variant="outline" className="gap-2 text-sm" size={'sm'}>
                         <ArrowUpDown className="h-4 w-4" />
                         Sort
                     </Button>
@@ -115,7 +114,7 @@ const PriceListComponent = () => {
                 <div className="rounded-lg border ">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-gray-50/75">
+                            <TableRow >
                                 <TableHead className="w-12 py-3">
                                     <Checkbox className="ml-3" />
                                 </TableHead>
@@ -130,7 +129,7 @@ const PriceListComponent = () => {
                             {pricelists.map((pricelist) => (
                                 <TableRow
                                     key={pricelist.id}
-                                    className="group hover:bg-gray-50/50 cursor-pointer border-b last:border-b-0"
+                                    className="group cursor-pointer border-b last:border-b-0"
                                 >
                                     <TableCell className="py-4 pl-4">
                                         <Checkbox />
@@ -157,9 +156,9 @@ const PriceListComponent = () => {
                                         {new Date(pricelist.endDate).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="py-4">
-                                        <StatusBadge
-                                            status={pricelist.isActive ? 'active' : 'inactive'}
-                                        />
+                                        <Badge variant={pricelist.isActive ? 'default' : 'destructive'}>
+                                            {pricelist.isActive ? `${m.status_active()}` : `${m.status_inactive()}`}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell className="py-4">
                                         <div className="flex justify-end gap-2">
@@ -211,7 +210,7 @@ const PriceListComponent = () => {
 
             {/* Pagination */}
             {pricelists.length > 0 && (
-                <div className="flex items-center justify-between border-t pt-4">
+                <div className="flex items-center justify-between border-t p-2">
                     <p className="text-sm text-gray-500">
                         Page {currentPage} of {totalPages}
                     </p>

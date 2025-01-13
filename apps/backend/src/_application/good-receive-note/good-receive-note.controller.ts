@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
+
 import { GoodReceiveNoteService } from './good-receive-note.service';
 
 @Controller('good-receive-note')

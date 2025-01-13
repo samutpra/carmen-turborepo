@@ -1,158 +1,157 @@
 "use client"
-import DataCard from '@/components/templates/DataCard';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import DataTable from '@/components/templates/DataTable';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import { useRouter } from '@/lib/i18n';
-import { mockGoodsReceiveNotes } from '@/lib/mock/mock_goodsReceiveNotes';
-import { FormAction, GoodsReceiveNote } from '@/lib/types';
-import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import { Link } from '@/lib/i18n';
+import { mockGoodsReceiveNotes } from '@/lib/mock/mock_goodsReceiveNotes';
+import { GoodsReceiveNote } from '@/lib/types';
+import { FileDown, Filter, Plus, Printer } from 'lucide-react';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import * as m from '@/paraglide/messages.js';
+import { Button } from '@/components/ui/button';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import { useURL } from '@/hooks/useURL';
+import { statusOptions } from '@/lib/statusOptions';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import GoodsReceiveDisplay from './GoodsReceiveDisplay';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { FilterBuilder } from './FilterBuilder';
+
+enum GOOD_RECIEVE_NOTE_FIELDS {
+    DATE = 'date',
+    REF = 'ref',
+    DESCRIPTION = 'description',
+    VENDOR = 'vendor',
+    INVOICE_NUMBER = 'invoiceNumber',
+    INVOICE_DATE = 'invoiceDate',
+    TOTAL_AMOUNT = 'totalAmount',
+    STATUS = 'status',
+}
+
+const sortFields: FieldConfig<GoodsReceiveNote>[] = [
+    { key: GOOD_RECIEVE_NOTE_FIELDS.DATE, label: 'Date' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.REF, label: 'Code' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.VENDOR, label: 'Vendor' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.INVOICE_NUMBER, label: 'Invoice Number' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.INVOICE_DATE, label: 'Invoice Date' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.TOTAL_AMOUNT, label: 'Total Amount' },
+    { key: GOOD_RECIEVE_NOTE_FIELDS.STATUS, label: 'Status', type: 'badge' },
+]
+
+const goodsReceiveNoteFields: FieldConfig<GoodsReceiveNote>[] = [
+    ...sortFields,
+    { key: GOOD_RECIEVE_NOTE_FIELDS.DESCRIPTION, label: 'Description' },
+]
+
 
 const GoodsReceiveNoteList = () => {
-    const router = useRouter();
     const [grnData, setGrnData] = useState<GoodsReceiveNote[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-    const [dialogDelete, setDialogDelete] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [search, setSearch] = useURL('search');
+    const [status, setStatus] = useURL('status');
 
-    useEffect(() => {
-        const fetchGrn = async () => {
-            setIsLoading(true);
-            try {
-                const data = mockGoodsReceiveNotes.map((item: GoodsReceiveNote) => item);
-                setGrnData(data);
-            } catch (error) {
-                console.error('Error fetching units:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchGrn();
-    }, []);
-
-    const handleAdd = () => {
-        router.push(`/procurement/goods-received-note/${FormAction.CREATE}`);
-
-    }
-
-    const handleView = (item: GoodsReceiveNote) => {
-        console.log('Viewing unit:', item);
-        router.push(`/procurement/goods-received-note/${item.id}`);
-    };
-
-    const handleEdit = (item: GoodsReceiveNote) => {
-        console.log(item);
-        router.push(`/procurement/goods-received-note/${item.id}/${FormAction.EDIT}`);
-    };
-
-    const handleDelete = (item: GoodsReceiveNote) => {
-        setIdToDelete(item.id);
-        setDialogDelete(true);
-    };
-
-    const confirmDelete = async () => {
+    const fetchGrn = async () => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
-            setGrnData((prev) => prev.filter((item) => item.id !== idToDelete));
-            setDialogDelete(false);
+            const data = mockGoodsReceiveNotes.map((item: GoodsReceiveNote) => item);
+            setGrnData(data);
         } catch (error) {
-            console.error('Error deleting Good Recieve Note:', error);
+            console.error('Error fetching Goods Receive Notes:', error);
+            setError(error instanceof Error ? error.message : 'Error fetching Goods Receive Notes');
         } finally {
             setIsLoading(false);
-            setIdToDelete(null);
         }
     };
 
+    useEffect(() => {
+        fetchGrn();
+    }, []);
 
+
+    if (error) return <ErrorCard message={error} />
+
+    if (isLoading) return <SkeltonLoad />
 
     const title = 'Goods Receive Note';
 
-    const columns: { key: keyof GoodsReceiveNote; label: string }[] = [
-        { key: 'date', label: 'Date' },
-        { key: 'ref', label: 'Code' },
-        { key: 'description', label: 'Description' },
-        { key: 'status', label: 'Status' },
-        { key: 'vendor', label: 'Vendor' },
-        { key: 'invoiceNumber', label: 'Invoice Number' },
-        { key: 'invoiceDate', label: 'Invoice Date' },
-        { key: 'totalAmount', label: 'Total Amount' },
-    ];
-
     const actionButtons = (
-        <div className="flex flex-col gap-4 md:flex-row">
-            <CustomButton
-                className='w-full md:w-20'
-                prefixIcon={<PlusCircle />}
-                onClick={handleAdd}
-            >
-                Add
-            </CustomButton>
-            <div className='flex flex-row md:flex-row gap-4'>
-                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Sheet />}>Export</CustomButton>
-                <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Printer />}>Print</CustomButton>
-            </div>
-
+        <div className="action-btn-container">
+            <Button asChild variant={'outline'} size={'sm'}>
+                <Link href="/procurement/goods-received-note/new">
+                    <Plus className="h-4 w-4" />
+                    Create Good Recieve Note
+                </Link>
+            </Button>
+            <Button variant="outline" className="group" size={'sm'}>
+                <FileDown className="h-4 w-4" />
+                {m.export_text()}
+            </Button>
+            <Button variant="outline" size={'sm'}>
+                <Printer className="h-4 w-4" />
+                {m.print_text()}
+            </Button>
         </div>
     );
 
     const filter = (
-        <div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-            <div className="w-full sm:w-auto flex-grow">
-                <SearchInput
-                    placeholder="Search Units..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    Icon={Search}
+        <div className="filter-container">
+            <SearchForm
+                onSearch={setSearch}
+                defaultValue={search}
+                placeholder={`${m.Search()} Goods Receive Note...`}
+            />
+            <div className="all-center gap-2">
+                <StatusSearchDropdown
+                    options={statusOptions}
+                    value={status}
+                    onChange={setStatus}
+                    open={statusOpen}
+                    onOpenChange={setStatusOpen}
+                />
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size={'sm'} className='text-xs'>
+                            <Filter className="h-4 w-4" />
+                            More Filters
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className='sm:w-[70vw] max-w-[60vw]'>
+                        <FilterBuilder
+                            fields={[
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.REF, label: 'Reference' },
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.VENDOR, label: 'Vendor' },
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.DATE, label: 'Date' },
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.INVOICE_NUMBER, label: 'Invoice Number' },
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.INVOICE_DATE, label: 'Invoice Date' },
+                                { value: GOOD_RECIEVE_NOTE_FIELDS.STATUS, label: 'Status' },
+                            ]}
+                            onFilterChange={(filters) => {
+                                // Handle filter changes
+                                console.log(filters)
+                                // You'll need to implement the actual filtering logic
+                            }}
+                        />
+                    </DialogContent>
+                </Dialog>
+                <SortDropDown
+                    fieldConfigs={sortFields}
+                    items={grnData}
+                    onSort={setGrnData}
                 />
             </div>
         </div>
     );
 
+
     const content = (
-        <>
-            <div className="block lg:hidden">
-                {isLoading ? (
-                    <SkeltonCardLoading />) : (
-                    <DataCard
-                        data={grnData}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onView={handleView}
-                    />
-                )}
-            </div>
-
-            <div className="hidden lg:block">
-
-
-                {isLoading ? (
-                    <SkeletonTableLoading />
-                ) : (
-                    <DataTable
-                        data={grnData}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onView={handleView}
-                    />
-                )}
-            </div>
-
-            <DialogDelete
-                open={dialogDelete}
-                onOpenChange={setDialogDelete}
-                onConfirm={confirmDelete}
-                idDelete={idToDelete}
-            />
-        </>
+        <GoodsReceiveDisplay
+            grnDatas={grnData}
+            fields={goodsReceiveNoteFields}
+        />
     );
 
     return (

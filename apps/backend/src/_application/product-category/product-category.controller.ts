@@ -1,3 +1,11 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import {
+  ProductCategoryCreateDto,
+  ProductCategoryUpdateDto,
+} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
@@ -12,22 +20,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ProductCategoryCreateDto,
-  ProductCategoryUpdateDto,
-} from '@carmensoftware/shared-dtos';
-
-import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import QueryParams from 'lib/types';
-import { QueryAdvance } from 'lib/types';
+
 import { ProductCategoryService } from './product-category.service';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
 @Controller('api/v1/product-category')
 @ApiTags('product-category')
@@ -52,6 +52,7 @@ export class ProductCategoryController {
     type: 'uuid',
   })
   async fineOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productCategoryService.findOne(req, id);
   }
 
@@ -68,6 +69,15 @@ export class ProductCategoryController {
     @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
 
     const q = new QueryParams(
       page,
@@ -79,6 +89,7 @@ export class ProductCategoryController {
       sort,
       advance,
     );
+    this.logger.debug({ q: q });
     return this.productCategoryService.findAll(req, q);
   }
 
@@ -88,6 +99,7 @@ export class ProductCategoryController {
     description: 'ProductCategoryCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.productCategoryService.create(req, createDto);
   }
 
@@ -109,6 +121,7 @@ export class ProductCategoryController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ updatedto: updatedto });
     return this.productCategoryService.update(req, id, updatedto);
   }
 
@@ -120,6 +133,7 @@ export class ProductCategoryController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.productCategoryService.delete(req, id);
   }
 }

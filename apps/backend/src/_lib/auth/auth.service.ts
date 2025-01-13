@@ -1,40 +1,138 @@
 import 'dotenv/config';
 
 import {
-  AuthLoginResponseDto,
-  AuthPayloadDto,
-} from '@carmensoftware/shared-dtos';
+  ResponseId,
+  ResponseSingle,
+} from 'lib/helper/iResponse';
 import {
   DuplicateException,
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
+import { isWelformJWT } from 'lib/utils/functions';
 import {
+  comparePassword,
+  hashPassword,
+} from 'lib/utils/password';
+import {
+  SystemUsersService,
+} from 'src/_system/system-users/system-users.service';
+
+import {
+  AuthChangePasswordDto,
+  AuthLoginResponseDto,
+  AuthPayloadDto,
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
 } from '@carmensoftware/shared-dtos';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
-import { comparePassword, hashPassword } from 'lib/utils/password';
-
+import {
+  HttpException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
-import { UsersService } from 'src/_system/users/users.service';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
-import { isWelformJWT } from '../../../lib/utils/functions';
+
+import {
+  PrismaClientManagerService,
+} from '../prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from './extract-req/extract-req.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prismaClientMamager: PrismaClientManagerService,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private systemUsersService: SystemUsersService,
+    private extractReqService: ExtractReqService,
   ) {}
 
   private db_System: dbSystem;
 
   private readonly logger = new Logger(AuthService.name);
+
+  async changePassword(userChangePassDto: AuthChangePasswordDto, req: any) {
+    this.db_System = this.prismaClientMamager.getSystemDB();
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+
+    if (!userChangePassDto.old_pass || !userChangePassDto.new_pass) {
+      throw new DuplicateException('Old and new password are required');
+    }
+
+    const lastPassword = await this.db_System.tb_password.findFirst({
+      where: {
+        user_id: user_id,
+        is_active: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    const isMatch = comparePassword(
+      userChangePassDto.old_pass,
+      lastPassword.hash,
+    );
+
+    if (!isMatch) {
+      throw new HttpException('Old password does not match', 401);
+    }
+
+    if (!user_id) {
+      throw new NotFoundException('User not found');
+    }
+
+    const x = await this.db_System.tb_password.updateMany({
+      where: {
+        user_id: user_id,
+      },
+      data: {
+        is_active: false,
+      },
+    });
+
+    const passObj = await this.db_System.tb_password.create({
+      data: {
+        user_id: user_id,
+        hash: hashPassword(userChangePassDto.new_pass),
+        is_active: true,
+      },
+    });
+
+    // drop current token by user id
+    const deleteSessionObj =
+      await this.db_System.tb_user_login_session.deleteMany({
+        where: {
+          user_id: user_id,
+        },
+      });
+
+    this.logger.debug(passObj);
+
+    const res: ResponseId<string> = {
+      id: user_id,
+    };
+
+    return res;
+  }
+
+  async checkDatabaseToken(token: string): Promise<boolean> {
+    this.logger.debug(`Checking database token`);
+    const refreshTokenList =
+      await this.db_System.tb_user_login_session.findFirst({
+        where: {
+          token: token,
+        },
+      });
+
+    if (!refreshTokenList) {
+      throw new InvalidTokenException('Invalid token');
+    }
+
+    return refreshTokenList ? true : false;
+  }
 
   async checkToken(token: string, req: any): Promise<ResponseSingle<object>> {
     const isWelformJWT_ = isWelformJWT(token);
@@ -76,7 +174,7 @@ export class AuthService {
     this.db_System = this.prismaClientMamager.getSystemDB();
 
     this.logger.debug(userForgotPassDto);
-    const u = await this.usersService.findByUsername(
+    const u = await this.systemUsersService.findByUsername(
       this.db_System,
       userForgotPassDto.email,
     );
@@ -125,7 +223,7 @@ export class AuthService {
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const user = await this.usersService.findByUsername(
+    const user = await this.systemUsersService.findByUsername(
       this.db_System,
       userForgotPassDto.username,
     );
@@ -134,7 +232,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    await this.db_System.password_table.updateMany({
+    await this.db_System.tb_password.updateMany({
       where: {
         user_id: user.id,
       },
@@ -143,7 +241,7 @@ export class AuthService {
       },
     });
 
-    const passObj = await this.db_System.password_table.create({
+    const passObj = await this.db_System.tb_password.create({
       data: {
         user_id: user.id,
         hash: hashPassword(userForgotPassDto.password),
@@ -173,7 +271,7 @@ export class AuthService {
     this.logger.debug(userRegisterEmailDto);
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const found = await this.usersService.findByUsername(
+    const found = await this.systemUsersService.findByUsername(
       this.db_System,
       userRegisterEmailDto.email,
     );
@@ -228,7 +326,7 @@ export class AuthService {
     }
 
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const found = await this.usersService.findByUsername(
+    const found = await this.systemUsersService.findByUsername(
       this.db_System,
       userRegisterDto.username,
     );
@@ -237,14 +335,14 @@ export class AuthService {
       throw new DuplicateException('User already exists');
     }
 
-    const createUserObj = await this.db_System.user_table.create({
+    const createUserObj = await this.db_System.tb_user.create({
       data: {
         username: userRegisterDto.username,
         email: userRegisterDto.email,
       },
     });
 
-    const passObj = await this.db_System.password_table.create({
+    const passObj = await this.db_System.tb_password.create({
       data: {
         user_id: createUserObj.id,
         hash: hashPassword(userRegisterDto.password),
@@ -252,7 +350,7 @@ export class AuthService {
       },
     });
 
-    const userInfoObj = await this.db_System.user_profile_table.create({
+    const userInfoObj = await this.db_System.tb_user_profile.create({
       data: {
         user_id: createUserObj.id,
         firstname: userRegisterDto.userInfo.firstName || '',
@@ -271,14 +369,14 @@ export class AuthService {
 
   async validateUser({ username, password }: AuthPayloadDto) {
     this.db_System = this.prismaClientMamager.getSystemDB();
-    const findUser = await this.usersService.findByUsername(
+    const findUser = await this.systemUsersService.findByUsername(
       this.db_System,
       username,
     );
 
     if (!findUser) return null;
 
-    const lastPassword = await this.db_System.password_table.findFirst({
+    const lastPassword = await this.db_System.tb_password.findFirst({
       where: {
         user_id: findUser.id,
         is_active: true,
@@ -300,14 +398,55 @@ export class AuthService {
         ...user
       } = findUser;
 
+      const payload_refresh = {
+        ...user,
+        is_refresh: true,
+      };
+
       const res = {
         id: findUser.id,
         username: user.username,
         access_token: this.jwtService.sign(user),
-        refresh_token: this.jwtService.sign(user, {
+        refresh_token: this.jwtService.sign(payload_refresh, {
           expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
         }),
       };
+
+      // delete session is expired
+      const deleteSessionObj =
+        await this.db_System.tb_user_login_session.deleteMany({
+          where: {
+            expired_on: {
+              lt: new Date(),
+            },
+          },
+        });
+
+      // create a new session in db
+      const accessTokenObj = await this.db_System.tb_user_login_session.create({
+        data: {
+          token: res.access_token,
+          user_id: findUser.id,
+          expired_on: new Date(
+            new Date().getTime() + 1 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          token_type: 'access_token',
+        },
+      });
+
+      const refreshTokenObj = await this.db_System.tb_user_login_session.create(
+        {
+          data: {
+            token: res.refresh_token,
+            user_id: findUser.id,
+            expired_on: new Date(
+              new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+            token_type: 'refresh_token',
+          },
+        },
+      );
+
       return res;
     }
   }
@@ -325,6 +464,19 @@ export class AuthService {
       ...payload,
       access_token: this.jwtService.sign(payload),
     };
+
+    //create token in token table
+    const tokenObj = await this.db_System.tb_user_login_session.create({
+      data: {
+        token: res.access_token,
+        user_id: id,
+        expired_on: new Date(
+          new Date().getTime() + 1 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        token_type: 'access_token',
+      },
+    });
+
     return res;
   }
 }

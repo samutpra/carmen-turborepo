@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (MEAT)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/product-sub-category
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "MEAT",
+    "description": "MEAT Description",
+    "is_active": true
+  }
+}

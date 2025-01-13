@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post (FISH)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/product-sub-category
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "FISH",
+    "description": "FISH Description",
+    "is_active": true
+  }
+}

@@ -1,28 +1,30 @@
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
+import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Query,
+  Get,
   Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { UnitsService } from './units.service';
 import {
-  ApiTags,
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiParam,
-  ApiBody,
+  ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-import { UnitCreateDto, UnitUpdateDto } from '@carmensoftware/shared-dtos';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+
+import { UnitsService } from './units.service';
 
 @Controller('api/v1/units')
 @ApiTags('units')
@@ -45,6 +47,7 @@ export class UnitsController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.unitsService.findOne(req, id);
   }
 
@@ -61,6 +64,17 @@ export class UnitsController {
     @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = ['name'];
+
+    this.logger.debug({
+      page: page,
+      perpage: perpage,
+      search: search,
+      searchfields: searchfields,
+      filter: filter,
+      sort: sort,
+      advance: advance,
+    });
+
     const q = new QueryParams(
       page,
       perpage,
@@ -72,6 +86,8 @@ export class UnitsController {
       advance,
     );
 
+    this.logger.debug({ q: q });
+
     return this.unitsService.findAll(req, q);
   }
 
@@ -81,6 +97,7 @@ export class UnitsController {
     description: 'UnitCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({ createDto: createDto });
     return this.unitsService.create(req, createDto);
   }
 
@@ -102,6 +119,7 @@ export class UnitsController {
   ) {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
+    this.logger.debug({ id: id, updateDto: updateDto });
     return this.unitsService.update(req, id, updatedto);
   }
 
@@ -113,6 +131,7 @@ export class UnitsController {
     type: 'uuid',
   })
   async remove(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({ id: id });
     return this.unitsService.delete(req, id);
   }
 }

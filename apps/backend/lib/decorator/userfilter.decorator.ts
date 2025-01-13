@@ -1,5 +1,5 @@
-import { ApiQuery } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+import { ApiQuery } from '@nestjs/swagger';
 
 export function ApiUserFilterQueries() {
   return applyDecorators(

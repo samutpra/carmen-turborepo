@@ -1,276 +1,103 @@
-'use client';
-import {
-	APIError,
-	DepartmentSchema,
-	DepartmentType,
-	PaginationType,
-	ParamsType,
-	PayloaDepartmentType,
-} from '@/lib/types';
-import { useCallback, useEffect, useState } from 'react';
-import { z } from 'zod';
+import { formType } from "@/types/form_type";
+import { DepartmentType } from "@carmensoftware/shared-types/src/department";
+import { APIError } from "@carmensoftware/shared-types/src/pagination";
 
-export const fetchDepartment = async (
-	accessToken: string,
-	params: ParamsType = {}
-): Promise<{ departments: DepartmentType[]; pagination: PaginationType }> => {
-	if (!accessToken) {
-		throw new Error('Access token is required');
-	}
+export const fetchDepartments = async (
+    token: string,
+    tenantId: string,
+    params: { search?: string; status?: string } = {}
+) => {
+    try {
+        if (!token) {
+            throw new Error('Access token is required');
+        }
 
-	const query = new URLSearchParams({
-		page: params.page?.toString() || '1',
-		perpage: params.perpage?.toString() || '10',
-	});
+        const query = new URLSearchParams();
 
-	try {
-		const response = await fetch(`/api/configuration/department?${query}`, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json',
-				'x-tenant-id': 'DUMMY',
-			},
-		});
+        if (params.search) {
+            query.append('search', params.search);
+        }
 
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to fetch departments: ${response.status} ${response.statusText}`
-			);
-		}
+        if (params.status) {
+            query.append('filter[is_active:bool]', params.status);
+        }
 
-		const data = await response.json();
+        const url = `/api/configuration/department?${query}`;
 
-		const departmentsResult = data.data.map((unit: unknown) =>
-			DepartmentSchema.parse(unit)
-		);
+        const options = {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        };
 
-		return {
-			departments: departmentsResult,
-			pagination: data.pagination,
-		};
-	} catch (error) {
-		console.error('Fetch Departments Error:', error);
-		if (error instanceof APIError) {
-			throw error;
-		}
-		if (error instanceof z.ZodError) {
-			throw new Error('Invalid department data received from server');
-		}
-		throw new Error('Failed to fetch departments');
-	}
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new APIError(
+                response.status,
+                `Failed to fetch departments: ${response.status} ${response.statusText}`
+            );
+        }
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching departments:', error);
+        throw error;
+    }
 };
 
-export const createDepartment = async (
-	accessToken: string,
-	payload: PayloaDepartmentType
-): Promise<DepartmentType> => {
-	try {
-		const response = await fetch('/api/configuration/department', {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json',
-				'x-tenant-id': 'DUMMY',
-			},
-			body: JSON.stringify(payload),
-		});
-
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to create department: ${response.status} ${response.statusText}`
-			);
-		}
-
-		const idReturn = await response.json();
-		return {
-			id: idReturn,
-			...payload,
-		};
-	} catch (error) {
-		console.error('Create Department Error:', error);
-		if (error instanceof APIError) {
-			throw error;
-		}
-		if (error instanceof z.ZodError) {
-			throw new Error('Invalid department data received from server');
-		}
-		throw new Error('Failed to create department');
-	}
+export const deleteDepartment = async (id: string, token: string, tenantId: string) => {
+    try {
+        const response = await fetch(`/api/configuration/department/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+            },
+        });
+        if (!response.ok) {
+            throw new APIError(
+                response.status,
+                `Failed to delete department: ${response.status} ${response.statusText}`
+            );
+        }
+        return response;
+    } catch (error) {
+        console.error('Error deleting department:', error);
+        throw error;
+    }
 };
 
-export const updateDepartment = async (
-	accessToken: string,
-	id: string,
-	payload: PayloaDepartmentType
-): Promise<DepartmentType> => {
-	try {
-		const response = await fetch(`/api/configuration/department/${id}`, {
-			method: 'PATCH',
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json',
-				'x-tenant-id': 'DUMMY',
-			},
-			body: JSON.stringify(payload),
-		});
+export const submitDepartment = async (
+    data: DepartmentType,
+    mode: formType,
+    token: string,
+    tenantId: string,
+    id: string
+) => {
+    const url =
+        mode === formType.ADD
+            ? '/api/configuration/department'
+            : `/api/configuration/department/${id}`;
 
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to update department: ${response.status} ${response.statusText}`
-			);
-		}
-		return payload;
-	} catch (error) {
-		console.error('Update Department Error:', error);
-		if (error instanceof APIError) {
-			throw error;
-		}
-		if (error instanceof z.ZodError) {
-			throw new Error('Invalid department data received from server');
-		}
-		throw new Error('Failed to update department');
-	}
-};
+    const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
-export const deleteDepartment = async (
-	accessToken: string,
-	id: string
-): Promise<void> => {
-	try {
-		const response = await fetch(`/api/configuration/department/${id}`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json',
-				'x-tenant-id': 'DUMMY',
-			},
-		});
-
-		if (!response.ok) {
-			throw new APIError(
-				response.status,
-				`Failed to delete department: ${response.status} ${response.statusText}`
-			);
-		}
-	} catch (error) {
-		console.error('Delete Department Error:', error);
-		if (error instanceof APIError) {
-			throw error;
-		}
-		throw new Error('Failed to delete department');
-	}
-};
-
-export const useDepartments = (token: string) => {
-	const [search, setSearch] = useState('');
-	const [departments, setDepartments] = useState<DepartmentType[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState<Error | null>(null);
-	const [pagination, setPagination] = useState<PaginationType>({
-		total: 0,
-		page: 1,
-		perPage: 10,
-		pages: 1,
-	});
-	const [shouldFetch, setShouldFetch] = useState(true);
-
-	if (!token) {
-		console.log('not have token');
-	}
-
-	const fetchData = useCallback(async () => {
-		if (!token || !shouldFetch) {
-			return;
-		}
-
-		setLoading(true);
-		setError(null);
-		try {
-			const { departments: fetchedDepartments, pagination: fetchedPagination } =
-				await fetchDepartment(token, {
-					page: pagination.page,
-					perpage: pagination.perPage,
-					search,
-				});
-
-			setDepartments(fetchedDepartments);
-			setPagination(fetchedPagination);
-		} catch (err) {
-			setError(
-				err instanceof Error ? err : new Error('An unknown error occurred')
-			);
-		} finally {
-			setLoading(false);
-			setShouldFetch(false);
-		}
-	}, [token, pagination.page, pagination.perPage, search, shouldFetch]);
-
-	const goToPage = useCallback((page: number) => {
-		setPagination((prev) => ({ ...prev, page }));
-	}, []);
-
-	const nextPage = useCallback(() => {
-		setPagination((prev) => ({
-			...prev,
-			page: Math.min((prev.page ?? 1) + 1, prev.pages ?? 1),
-		}));
-	}, []);
-
-	const previousPage = useCallback(() => {
-		setPagination((prev) => ({
-			...prev,
-			page: Math.max((prev.page ?? 1) - 1, 1),
-		}));
-	}, []);
-
-	const setPerPage = useCallback((perPage: number) => {
-		setPagination((prev) => ({
-			...prev,
-			perPage,
-			page: 1,
-		}));
-	}, []);
-
-	const handleSearch = (value: string, shouldSearch: boolean = false) => {
-		setSearch(value);
-		if (shouldSearch) {
-			setPagination((prev) => ({ ...prev, page: 1 }));
-			setShouldFetch(true);
-		}
-	};
-
-	useEffect(() => {
-		let isMounted = true;
-
-		const fetchWithMount = async () => {
-			if (isMounted && shouldFetch) {
-				await fetchData();
-			}
-		};
-
-		fetchWithMount();
-
-		return () => {
-			isMounted = false;
-		};
-	}, [fetchData]);
-
-	return {
-		departments,
-		setDepartments,
-		loading,
-		error,
-		pagination,
-		search,
-		handleSearch,
-		goToPage,
-		nextPage,
-		previousPage,
-		setPerPage,
-		fetchData,
-	};
-};
+    const response = await fetch(url, {
+        method,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to ${mode} Currency`);
+    }
+    const result = await response.json();
+    const returnData = mode === formType.ADD ? result : { id: id };
+    return returnData;
+}
