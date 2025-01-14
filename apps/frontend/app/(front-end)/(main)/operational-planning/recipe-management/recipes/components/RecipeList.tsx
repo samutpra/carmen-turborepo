@@ -2,9 +2,7 @@
 import React, { useState } from 'react'
 import { mockRecipes } from '../mockData';
 import { Button } from '@/components/ui/button';
-import { FileDown, FileUp, LayoutGrid, List, Plus, Search, SlidersHorizontal } from 'lucide-react';
-import Link from 'next/link';
-import { Input } from '@/components/ui/input';
+import { FileDown, LayoutGrid, List, Plus, Printer, SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +11,10 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import RecipeCard from './RecipeCard';
 import RecipeTable from './RecipeTable';
+import * as m from '@/paraglide/messages.js';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import { Link } from '@/lib/i18n';
 
 const filterOptions = {
     categories: [
@@ -163,226 +165,225 @@ const RecipeList = () => {
         if (key === 'hasMedia') return 'Has Media'
 
         return `${key}: ${value}`
-    }
+    };
 
-    return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-semibold">Recipe Library</h1>
-                <div className="flex gap-2">
-                    <Button variant="outline">
-                        <FileUp className="h-4 w-4 mr-2" />
-                        Import
-                    </Button>
-                    <Button variant="outline">
-                        <FileDown className="h-4 w-4 mr-2" />
-                        Export
-                    </Button>
-                    <Link href="/operational-planning/recipe-management/recipes/new">
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            New Recipe
+    const title = "Recipe Library";
+
+    const actionButtons = (
+        <div className="action-btn-container">
+            <Button asChild variant={'outline'} size={'sm'}>
+                <Link href="/vendor-management/vendors/new">
+                    <Plus className="h-4 w-4" />
+                    New Recipe
+                </Link>
+            </Button>
+            <Button variant="outline" className="group" size={'sm'}>
+                <FileDown className="h-4 w-4" />
+                {m.export_text()}
+            </Button>
+            <Button variant="outline" size={'sm'}>
+                <Printer className="h-4 w-4" />
+                {m.print_text()}
+            </Button>
+        </div>
+    );
+
+    const filter = (
+        <div className='filter-container'>
+            <SearchForm
+                onSearch={setSearchQuery}
+                defaultValue={searchQuery}
+                placeholder={`${m.Search()}...`}
+            />
+            <div className="all-center gap-2">
+                <Select
+                    value={filters.category}
+                    onValueChange={(value) => handleFilterChange('category', value)}
+                >
+                    <SelectTrigger className="w-[180px] h-8">
+                        <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent >
+                        {filterOptions.categories.map((category) => (
+                            <SelectItem key={category.value} value={category.value} className='text-xs'>
+                                {category.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Popover open={showFilters} onOpenChange={setShowFilters}>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="gap-2" size={'sm'}>
+                            <SlidersHorizontal className="h-4 w-4" />
+                            Filters
+                            {getActiveFilterCount() > 0 && (
+                                <Badge variant="secondary" className="ml-1">
+                                    {getActiveFilterCount()}
+                                </Badge>
+                            )}
                         </Button>
-                    </Link>
-                </div>
-            </div>
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search recipes..."
-                            className="pl-9"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-                <div className="flex gap-2">
-                    <Select
-                        value={filters.category}
-                        onValueChange={(value) => handleFilterChange('category', value)}
-                    >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {filterOptions.categories.map((category) => (
-                                <SelectItem key={category.value} value={category.value}>
-                                    {category.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4">
+                        <div className="space-y-4">
+                            {/* Cuisine Type */}
+                            <div className="space-y-2">
+                                <Label className='text-xs'>Cuisine Type</Label>
+                                <Select
+                                    value={filters.cuisine}
+                                    onValueChange={(value) => handleFilterChange('cuisine', value)}
+                                >
+                                    <SelectTrigger className='h-8'>
+                                        <SelectValue placeholder="Select cuisine" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filterOptions.cuisineTypes.map((cuisine) => (
+                                            <SelectItem key={cuisine.value} value={cuisine.value} className='text-xs'>
+                                                {cuisine.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                    {/* Advanced Filters Popover */}
-                    <Popover open={showFilters} onOpenChange={setShowFilters}>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="gap-2">
-                                <SlidersHorizontal className="h-4 w-4" />
-                                Filters
-                                {getActiveFilterCount() > 0 && (
-                                    <Badge variant="secondary" className="ml-1">
-                                        {getActiveFilterCount()}
-                                    </Badge>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-4">
-                            <div className="space-y-4">
-                                {/* Cuisine Type */}
-                                <div className="space-y-2">
-                                    <Label>Cuisine Type</Label>
-                                    <Select
-                                        value={filters.cuisine}
-                                        onValueChange={(value) => handleFilterChange('cuisine', value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select cuisine" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {filterOptions.cuisineTypes.map((cuisine) => (
-                                                <SelectItem key={cuisine.value} value={cuisine.value}>
-                                                    {cuisine.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Cost Range */}
-                                <div className="space-y-2">
-                                    <Label>Cost Range ($)</Label>
-                                    <Slider
-                                        value={filters.costRange}
-                                        min={0}
-                                        max={100}
-                                        step={1}
-                                        onValueChange={(value) => handleFilterChange('costRange', value)}
-                                    />
-                                    <div className="flex justify-between text-sm text-muted-foreground">
-                                        <span>${filters.costRange[0]}</span>
-                                        <span>${filters.costRange[1]}</span>
-                                    </div>
-                                </div>
-
-                                {/* Status */}
-                                <div className="space-y-2">
-                                    <Label>Status</Label>
-                                    <Select
-                                        value={filters.status}
-                                        onValueChange={(value) => handleFilterChange('status', value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {filterOptions.status.map((status) => (
-                                                <SelectItem key={status.value} value={status.value}>
-                                                    {status.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Preparation Time */}
-                                <div className="space-y-2">
-                                    <Label>Preparation Time</Label>
-                                    <Select
-                                        value={filters.preparationTime}
-                                        onValueChange={(value) => handleFilterChange('preparationTime', value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select time" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {filterOptions.preparationTimes.map((time) => (
-                                                <SelectItem key={time.value} value={time.value}>
-                                                    {time.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Difficulty Level */}
-                                <div className="space-y-2">
-                                    <Label>Difficulty Level</Label>
-                                    <Select
-                                        value={filters.difficulty}
-                                        onValueChange={(value) => handleFilterChange('difficulty', value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select difficulty" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {filterOptions.difficultyLevels.map((level) => (
-                                                <SelectItem key={level.value} value={level.value}>
-                                                    {level.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Has Media Toggle */}
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        checked={filters.hasMedia}
-                                        onCheckedChange={(checked) => handleFilterChange('hasMedia', checked)}
-                                    />
-                                    <Label>Has Media</Label>
-                                </div>
-
-                                {/* Filter Actions */}
-                                <div className="flex justify-between pt-2">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setFilters(initialFilters)}
-                                    >
-                                        Reset
-                                    </Button>
-                                    <Button onClick={() => setShowFilters(false)}>
-                                        Apply Filters
-                                    </Button>
+                            {/* Cost Range */}
+                            <div className="space-y-2">
+                                <Label className='text-xs'>Cost Range ($)</Label>
+                                <Slider
+                                    value={filters.costRange}
+                                    min={0}
+                                    max={100}
+                                    step={1}
+                                    onValueChange={(value) => handleFilterChange('costRange', value)}
+                                />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                    <span>${filters.costRange[0]}</span>
+                                    <span>${filters.costRange[1]}</span>
                                 </div>
                             </div>
-                        </PopoverContent>
-                    </Popover>
 
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                    >
-                        {viewMode === "grid" ? (
-                            <List className="h-4 w-4" />
-                        ) : (
-                            <LayoutGrid className="h-4 w-4" />
-                        )}
-                    </Button>
-                </div>
+                            {/* Status */}
+                            <div className="space-y-2">
+                                <Label className='text-xs'>Status</Label>
+                                <Select
+                                    value={filters.status}
+                                    onValueChange={(value) => handleFilterChange('status', value)}
+                                >
+                                    <SelectTrigger className='h-8'>
+                                        <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filterOptions.status.map((status) => (
+                                            <SelectItem key={status.value} value={status.value} className='text-xs'>
+                                                {status.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Preparation Time */}
+                            <div className="space-y-2">
+                                <Label>Preparation Time</Label>
+                                <Select
+                                    value={filters.preparationTime}
+                                    onValueChange={(value) => handleFilterChange('preparationTime', value)}
+                                >
+                                    <SelectTrigger className='h-8'>
+                                        <SelectValue placeholder="Select time" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filterOptions.preparationTimes.map((time) => (
+                                            <SelectItem key={time.value} value={time.value} className='text-xs'>
+                                                {time.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Difficulty Level */}
+                            <div className="space-y-2">
+                                <Label>Difficulty Level</Label>
+                                <Select
+                                    value={filters.difficulty}
+                                    onValueChange={(value) => handleFilterChange('difficulty', value)}
+                                >
+                                    <SelectTrigger className='h-8'>
+                                        <SelectValue placeholder="Select difficulty" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filterOptions.difficultyLevels.map((level) => (
+                                            <SelectItem key={level.value} value={level.value} className='text-xs'>
+                                                {level.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Has Media Toggle */}
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    checked={filters.hasMedia}
+                                    onCheckedChange={(checked) => handleFilterChange('hasMedia', checked)}
+                                />
+                                <Label>Has Media</Label>
+                            </div>
+
+                            {/* Filter Actions */}
+                            <div className="flex justify-between pt-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setFilters(initialFilters)}
+                                    size={"sm"}
+                                >
+                                    Reset
+                                </Button>
+                                <Button onClick={() => setShowFilters(false)} size={'sm'}>
+                                    Apply Filters
+                                </Button>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+
+                >
+                    {viewMode === "grid" ? (
+                        <List className="h-4 w-4" />
+                    ) : (
+                        <LayoutGrid className="h-4 w-4" />
+                    )}
+                </Button>
+                {getActiveFilterCount() > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {Object.entries(filters).map(([key, value]) => {
+                            if (value === 'all' || value === false) return null
+                            if (key === 'costRange' && value[0] === 0 && value[1] === 100) return null
+
+                            return (
+                                <Badge
+                                    key={key}
+                                    variant="secondary"
+                                    className="px-2 py-1"
+                                    onClick={() => handleFilterChange(key as keyof FilterOptions, initialFilters[key as keyof FilterOptions])}
+                                >
+                                    {getFilterLabel(key, value)}
+                                </Badge>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
-            {getActiveFilterCount() > 0 && (
-                <div className="flex flex-wrap gap-2">
-                    {Object.entries(filters).map(([key, value]) => {
-                        if (value === 'all' || value === false) return null
-                        if (key === 'costRange' && value[0] === 0 && value[1] === 100) return null
+        </div>
+    )
 
-                        return (
-                            <Badge
-                                key={key}
-                                variant="secondary"
-                                className="px-2 py-1"
-                                onClick={() => handleFilterChange(key as keyof FilterOptions, initialFilters[key as keyof FilterOptions])}
-                            >
-                                {getFilterLabel(key, value)}
-                            </Badge>
-                        )
-                    })}
-                </div>
-            )}
+    const content = (
+        <>
             <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-4"}>
                 {filteredRecipes.length === 0 ? (
                     <div className="col-span-full text-center py-8 text-muted-foreground">
@@ -399,7 +400,16 @@ const RecipeList = () => {
             <div className="text-sm text-muted-foreground">
                 Showing {filteredRecipes.length} of {mockRecipes.length} recipes
             </div>
-        </div>
+        </>
+    )
+
+    return (
+        <DataDisplayTemplate
+            title={title}
+            actionButtons={actionButtons}
+            filters={filter}
+            content={content}
+        />
     )
 }
 

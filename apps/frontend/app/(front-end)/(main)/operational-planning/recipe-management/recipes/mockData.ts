@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export interface Ingredient {
     id: string
     name: string
@@ -55,6 +57,70 @@ export interface Recipe {
     ingredients: Ingredient[]
     instructions: Instruction[]
 }
+
+export interface IngredientFormValues {
+    name: string
+    quantity: number
+    unit: string
+    category: string
+    cost: number
+}
+
+
+export const recipeSchema = z.object({
+    name: z.string().min(1, "Recipe name is required"),
+    category: z.string().min(1, "Category is required"),
+    cuisine: z.string().min(1, "Cuisine type is required"),
+    portionSize: z.string().min(1, "Portion size is required"),
+    preparationTime: z.string().min(1, "Preparation time is required"),
+    difficulty: z.string().min(1, "Difficulty level is required"),
+    status: z.enum(["active", "draft", "archived"] as const),
+    costPerPortion: z.number().min(0, "Cost per portion must be positive").default(0),
+    sellingPrice: z.number().min(0, "Selling price must be positive").default(0),
+    grossMargin: z.number().min(0, "Gross margin must be positive").default(0),
+    ingredients: z.array(z.object({
+        id: z.string(),
+        name: z.string().min(1, "Ingredient name is required"),
+        quantity: z.number().min(0, "Quantity must be positive"),
+        unit: z.string().min(1, "Unit is required"),
+        cost: z.number().min(0, "Cost must be positive"),
+        category: z.string().min(1, "Category is required"),
+    })),
+    instructions: z.array(z.object({
+        id: z.string(),
+        stepNumber: z.number().min(1, "Step number is required"),
+        description: z.string().min(1, "Description is required"),
+        time: z.number().optional(),
+        temperature: z.number().optional(),
+        notes: z.string().optional(),
+        image: z.string().optional(),
+        equipments: z.array(z.string()).optional(),
+        criticalControl: z.boolean().optional(),
+    })),
+    thumbnail: z.string().optional(),
+    hasMedia: z.boolean().default(false),
+    additionalImages: z.array(z.object({
+        id: z.string(),
+        url: z.string(),
+        caption: z.string().optional(),
+    })).default([]),
+    video: z.object({
+        url: z.string(),
+        thumbnail: z.string().optional(),
+        duration: z.number().optional(),
+    }).nullable().optional(),
+    documents: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        url: z.string(),
+        type: z.string(),
+        size: z.number(),
+        uploadedAt: z.string(),
+    })).default([]),
+})
+
+export type RecipeFormValues = z.infer<typeof recipeSchema>
+
 
 export const mockRecipes: Recipe[] = [
     {

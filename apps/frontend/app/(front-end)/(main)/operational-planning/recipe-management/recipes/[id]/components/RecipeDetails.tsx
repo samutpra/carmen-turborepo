@@ -1,7 +1,7 @@
 "use client";
+
 import React, { useEffect, useState } from 'react'
-import { Recipe } from '../../mockData'
-import { z } from 'zod';
+import { IngredientFormValues, Instruction, Recipe, RecipeFormValues, recipeSchema } from '../../mockData'
 import { useRouter } from '@/lib/i18n';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -48,80 +48,6 @@ const formatDate = (dateString: string): string => {
         minute: '2-digit'
     }).format(date)
 }
-
-interface IngredientFormValues {
-    name: string
-    quantity: number
-    unit: string
-    category: string
-    cost: number
-}
-
-interface Instruction {
-    id: string
-    stepNumber: number
-    description: string
-    time?: number
-    temperature?: number
-    notes?: string
-    image?: string
-    equipments?: string[]
-    criticalControl?: boolean
-}
-
-const recipeSchema = z.object({
-    name: z.string().min(1, "Recipe name is required"),
-    category: z.string().min(1, "Category is required"),
-    cuisine: z.string().min(1, "Cuisine type is required"),
-    portionSize: z.string().min(1, "Portion size is required"),
-    preparationTime: z.string().min(1, "Preparation time is required"),
-    difficulty: z.string().min(1, "Difficulty level is required"),
-    status: z.enum(["active", "draft", "archived"] as const),
-    costPerPortion: z.number().min(0, "Cost per portion must be positive").default(0),
-    sellingPrice: z.number().min(0, "Selling price must be positive").default(0),
-    grossMargin: z.number().min(0, "Gross margin must be positive").default(0),
-    ingredients: z.array(z.object({
-        id: z.string(),
-        name: z.string().min(1, "Ingredient name is required"),
-        quantity: z.number().min(0, "Quantity must be positive"),
-        unit: z.string().min(1, "Unit is required"),
-        cost: z.number().min(0, "Cost must be positive"),
-        category: z.string().min(1, "Category is required"),
-    })),
-    instructions: z.array(z.object({
-        id: z.string(),
-        stepNumber: z.number().min(1, "Step number is required"),
-        description: z.string().min(1, "Description is required"),
-        time: z.number().optional(),
-        temperature: z.number().optional(),
-        notes: z.string().optional(),
-        image: z.string().optional(),
-        equipments: z.array(z.string()).optional(),
-        criticalControl: z.boolean().optional(),
-    })),
-    thumbnail: z.string().optional(),
-    hasMedia: z.boolean().default(false),
-    additionalImages: z.array(z.object({
-        id: z.string(),
-        url: z.string(),
-        caption: z.string().optional(),
-    })).default([]),
-    video: z.object({
-        url: z.string(),
-        thumbnail: z.string().optional(),
-        duration: z.number().optional(),
-    }).nullable().optional(),
-    documents: z.array(z.object({
-        id: z.string(),
-        name: z.string(),
-        url: z.string(),
-        type: z.string(),
-        size: z.number(),
-        uploadedAt: z.string(),
-    })).default([]),
-})
-
-type RecipeFormValues = z.infer<typeof recipeSchema>
 
 const RecipeDetails: React.FC<Props> = ({ recipe }) => {
     const router = useRouter()
@@ -497,18 +423,16 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
     }
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button
-                        type="button"
                         variant="ghost"
-                        size="sm"
+                        size={'sm'}
                         onClick={() => router.back()}
                     >
-                        <ChevronLeft className="h-4 w-4 mr-2" />
-                        Back to Library
+                        <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-semibold">
@@ -520,14 +444,15 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                 : "Create a new recipe from scratch"}
                         </p>
                     </div>
-                </div>
-                <div className="flex items-center gap-4">
                     <Badge variant={form.watch("status") === "active" ? "default" : "secondary"}>
                         {form.watch("status")}
                     </Badge>
-                    <Button type="submit" disabled={isSaving}>
-                        <Save className="h-4 w-4 mr-2" />
-                        {isSaving ? "Saving..." : "Save Changes"}
+                </div>
+                <div className="flex items-center gap-4">
+
+                    <Button type="submit" disabled={isSaving} size={'sm'} variant={"outline"}>
+                        <Save className="h-4 w-4" />
+                        {isSaving ? "Saving..." : "Save"}
                     </Button>
                 </div>
             </div>
@@ -552,6 +477,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                     <Input
                                         id="name"
                                         placeholder="Enter recipe name"
+                                        className='h-8'
                                         {...form.register("name")}
                                     />
                                     {form.formState.errors.name && (
@@ -563,7 +489,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                 <div className="space-y-2">
                                     <Label htmlFor="category">Category</Label>
                                     <Select defaultValue={form.watch("category")}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className='h-8'>
                                             <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -581,7 +507,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                 <div className="space-y-2">
                                     <Label htmlFor="cuisine">Cuisine Type</Label>
                                     <Select defaultValue={form.watch("cuisine")}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className='h-8'>
                                             <SelectValue placeholder="Select cuisine" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -601,6 +527,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                     <Input
                                         id="portion-size"
                                         placeholder="e.g., 250g"
+                                        className='h-8'
                                         {...form.register("portionSize")}
                                     />
                                     {form.formState.errors.portionSize && (
@@ -612,7 +539,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                 <div className="space-y-2">
                                     <Label htmlFor="prep-time">Preparation Time</Label>
                                     <Select defaultValue={form.watch("preparationTime")}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className='h-8'>
                                             <SelectValue placeholder="Select time" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -631,7 +558,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                 <div className="space-y-2">
                                     <Label htmlFor="difficulty">Difficulty Level</Label>
                                     <Select defaultValue={form.watch("difficulty")}>
-                                        <SelectTrigger>
+                                        <SelectTrigger className='h-8'>
                                             <SelectValue placeholder="Select difficulty" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -661,9 +588,9 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                     <h3 className="text-lg font-medium">Ingredients</h3>
                                     <Button
                                         onClick={openIngredientDialog}
-                                        type="button"
+                                        size={'sm'}
                                     >
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="h-4 w-4" />
                                         Add Ingredient
                                     </Button>
                                 </div>
@@ -678,7 +605,7 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                                 <TableHead>Quantity</TableHead>
                                                 <TableHead>Unit</TableHead>
                                                 <TableHead>Cost</TableHead>
-                                                <TableHead>Actions</TableHead>
+                                                <TableHead className='text-right'>Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -689,23 +616,21 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                                     <TableCell>{ingredient.quantity}</TableCell>
                                                     <TableCell>{ingredient.unit}</TableCell>
                                                     <TableCell>${ingredient.cost.toFixed(2)}</TableCell>
-                                                    <TableCell>
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                onClick={() => handleEditIngredient(index)}
-                                                            >
-                                                                <Edit2 className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                onClick={() => handleRemoveIngredient(index)}
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
+                                                    <TableCell className='text-right space-x-2'>
+                                                        <Button
+                                                            size="sm"
+                                                            variant={'ghost'}
+                                                            onClick={() => handleEditIngredient(index)}
+                                                        >
+                                                            <Edit2 className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant={'ghost'}
+                                                            onClick={() => handleRemoveIngredient(index)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
@@ -866,9 +791,9 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                     <h3 className="text-lg font-medium">Instructions</h3>
                                     <Button
                                         onClick={openInstructionDialog}
-                                        type="button"
+                                        size={'sm'}
                                     >
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="h-4 w-4" />
                                         Add Step
                                     </Button>
                                 </div>
@@ -928,17 +853,17 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                                                     </div>
 
                                                     {/* Actions */}
-                                                    <div className="flex gap-2">
+                                                    <div className="flex">
                                                         <Button
                                                             size="sm"
-                                                            variant="outline"
+                                                            variant={'ghost'}
                                                             onClick={() => handleEditInstruction(index)}
                                                         >
                                                             <Edit2 className="h-4 w-4" />
                                                         </Button>
                                                         <Button
                                                             size="sm"
-                                                            variant="outline"
+                                                            variant={'ghost'}
                                                             onClick={() => handleRemoveInstruction(index)}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -1109,8 +1034,8 @@ const RecipeDetails: React.FC<Props> = ({ recipe }) => {
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-medium">Cost Analysis</h3>
-                                    <Button variant="outline" onClick={updatePricing}>
-                                        <Loader2 className="h-4 w-4 mr-2" />
+                                    <Button variant="outline" size={'sm'} onClick={updatePricing}>
+                                        <Loader2 className="h-4 w-4" />
                                         Recalculate
                                     </Button>
                                 </div>

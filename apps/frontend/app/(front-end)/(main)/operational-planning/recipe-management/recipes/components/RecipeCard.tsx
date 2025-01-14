@@ -54,23 +54,23 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             <div className="p-4">
                 <h3 className="font-semibold text-lg mb-2">{recipe.name}</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-xs">
                         <span>Category:</span>
                         <span className="font-medium text-foreground">{recipe.category}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-xs">
                         <span>Cost/Portion:</span>
                         <span className="font-medium text-foreground">
                             ${recipe.costPerPortion.toFixed(2)}
                         </span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-xs">
                         <span>Selling Price:</span>
                         <span className="font-medium text-foreground">
                             ${recipe.sellingPrice.toFixed(2)}
                         </span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-xs">
                         <span>Margin:</span>
                         <span className="font-medium text-foreground">
                             {recipe.grossMargin.toFixed(1)}%
@@ -82,7 +82,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
                         href={`/operational-planning/recipe-management/recipes/${recipe.id}`}
                         className="flex-1"
                     >
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full" size={'sm'}>
                             <Edit2 className="h-4 w-4 mr-2" />
                             Edit
                         </Button>
@@ -92,6 +92,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
                         className="flex-1"
                         onClick={handleClone}
                         disabled={isLoading}
+                        size={'sm'}
                     >
                         {isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -105,6 +106,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
                         className="flex-1"
                         onClick={handleArchive}
                         disabled={isLoading}
+                        size={'sm'}
                     >
                         {isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
