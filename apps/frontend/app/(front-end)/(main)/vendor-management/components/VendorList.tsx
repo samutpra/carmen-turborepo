@@ -26,7 +26,7 @@ enum VendorFields {
 }
 
 const sortFields: FieldConfig<vendor_type>[] = [
-	{ key: VendorFields.Name, label: m.department_name_label() },
+	{ key: VendorFields.Name, label: m.vendor_name_label() },
 	{ key: VendorFields.isActive, label: m.status_text(), type: 'badge' },
 ];
 

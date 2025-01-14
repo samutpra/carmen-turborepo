@@ -16,7 +16,7 @@ import {
 import * as m from '@/paraglide/messages.js';
 
 interface VendorDisplayProps {
-    vendors: vendor_type[]; // Include the new processed field
+    vendors: vendor_type[];
 }
 const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
 
@@ -31,7 +31,7 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                                 <div className="space-y-3">
                                     <div className="grid grid-cols-10 gap-4">
                                         <span className="text-sm text-muted-foreground col-span-3">
-                                            Name
+                                            {m.vendor_name_label()}
                                         </span>
                                         <span className="text-sm font-medium col-span-7">
                                             {vendor.name}
@@ -39,7 +39,7 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                                     </div>
                                     <div className="grid grid-cols-10 gap-4">
                                         <span className="text-sm text-muted-foreground col-span-3">
-                                            Description
+                                            {m.description()}
                                         </span>
                                         <span className="text-sm font-medium col-span-7">
                                             {vendor.description}
@@ -47,7 +47,7 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                                     </div>
                                     <div className="grid grid-cols-10 gap-4">
                                         <span className="text-sm text-muted-foreground col-span-3">
-                                            Status
+                                            {m.status_text()}
                                         </span>
                                         <div className="col-span-7">
                                             <Badge variant={vendor.is_active ? 'default' : 'destructive'}>
