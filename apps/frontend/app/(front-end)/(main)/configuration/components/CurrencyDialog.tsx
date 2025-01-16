@@ -6,17 +6,11 @@ import { CurrencySchema, CurrencyType, SystemCurrencyType } from '@carmensoftwar
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { PencilIcon, PlusIcon } from 'lucide-react';
-import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { submitCurrency } from '../actions/currency';
-import { formType } from '@/types/form_type';
-import * as m from '@/paraglide/messages.js';
+import { Loader2, PencilIcon, PlusIcon } from 'lucide-react';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
-import { useURL } from '@/hooks/useURL';
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableFooter,
 	TableHead,
@@ -24,49 +18,34 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Switch } from '@/components/ui/switch';
-import {
-	Pagination,
-	PaginationContent,
-	PaginationEllipsis,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui-custom/dialog/dialog';
+import PaginationComponent from '@/components/PaginationComponent';
+import * as m from '@/paraglide/messages.js';
+import { formType } from '@/types/form_type';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const fetchSystemCurrencies = async (
 	token: string,
 	tenantId: string,
-	params: {
-		search?: string;
-		status?: string;
-		page?: string;
-		perpage?: string;
-		sort?: string;
-	} = {}
+	page: number,
+	perpage: number,
+	search: string,
+	sort: string
 ) => {
 	try {
 		if (!token) {
 			throw new Error('Access token is required');
 		}
 
-		const query = new URLSearchParams();
-
-		if (params.search) {
-			query.append('search', params.search);
-		}
-		if (params.page) {
-			query.append('page', params.page);
-		}
-		if (params.perpage) {
-			query.append('perpage', params.perpage);
-		}
-		if (params.sort) {
-			query.append('sort', params.sort);
-		}
-
-		const url = `/api/system/system-currency-iso?${query}`;
+		const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
 
 		const options = {
 			method: 'GET',
@@ -83,16 +62,31 @@ const fetchSystemCurrencies = async (
 			throw new APIError(response.status, `Failed to fetch currencies: ${response.status} ${response.statusText}`);
 		}
 
-		const result = await response.json();
-
-		return result;
+		return await response.json();
 	} catch (error) {
 		console.error('Error fetching currencies:', error);
 		throw error;
 	}
 };
 
-export interface CurrencyDialogProps {
+enum SORT_OPTIONS {
+	NAME = 'name',
+	CODE = 'iso_code',
+	SYMBOL = 'symbol',
+}
+
+
+const toggleSort = (field: SORT_OPTIONS, currentValue: string): string => {
+	if (currentValue === field) {
+		return `${field}:desc`; // เพิ่ม :desc หากไม่มี
+	} else if (currentValue === `${field}:desc`) {
+		return field; // ลบ :desc หากมี
+	} else {
+		return field; // ค่าเริ่มต้น
+	}
+}
+
+interface CurrencyDialogProps {
 	mode: formType;
 	defaultValues?: CurrencyType;
 	onSuccess: (currency: CurrencyType) => void;
@@ -108,42 +102,50 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [search, setSearch] = useURL('search');
-	const [page, setPage] = useURL('page');
-	const [perpage, setPerpage] = useURL('perpage');
-	const [sort, setSort] = useURL('sort');
+
 	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyType[]>([]);
 	const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+	const [pagination, setPagination] = useState({
+		page: 1,
+		pages: 1,
+		perpage: 10,
+		total: 0
+	});
+	const [search, setSearch] = useState('');
+	const [sort, setSort] = useState('');
 
 	const fetchListCurrencies = async () => {
+		setIsLoading(true);
 		try {
-			const result = await fetchSystemCurrencies(token, tenantId, {
+			const result = await fetchSystemCurrencies(
+				token,
+				tenantId,
+				pagination.page,
+				pagination.perpage,
 				search,
-				sort,
-				page,
-				perpage,
-			});
-			console.log('result >>>', result);
+				sort
+			);
 			setListCurrencies(result.data);
-
-			// Update pagination state
-			setPage(result.pagination.page.toString());
-			setPerpage(result.pagination.perpage.toString());
+			setPagination(result.pagination);
 		} catch (error) {
 			console.error('Error fetching currencies:', error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		fetchListCurrencies();
-	}, [token, tenantId, search, page, perpage, sort]);
+		if (open) {
+			fetchListCurrencies();
+		}
+	}, [token, tenantId, pagination.page, pagination.perpage, open, search, sort]);
 
 	const handleSwitchChange = (currencyId: string, checked: boolean) => {
 		setSelectedCurrencies((prev) => {
 			if (checked) {
-				return [...prev, currencyId]; // Add the selected currency id
+				return [...prev, currencyId];
 			} else {
-				return prev.filter((id) => id !== currencyId); // Remove the unselected currency id
+				return prev.filter((id) => id !== currencyId);
 			}
 		});
 	};
@@ -179,65 +181,28 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		setOpen(false);
 		form.reset();
 		setSelectedCurrencies([]);
+		setPagination(prev => ({ ...prev, page: 1 })); // Reset page when closing
 	};
 
 	const handlePageChange = (newPage: number) => {
-		const nextPage = Math.max(newPage, 1); // Ensure the page is at least 1
-		setPage(nextPage.toString());
+		setPagination(prev => ({ ...prev, page: newPage }));
 	};
 
-	// Pagination logic
-	const totalPages = Math.ceil(156 / parseInt(perpage, 10)); // Example total pages, calculate dynamically based on 'total'
-	const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
-
-	const paginationRange = (totalPages: number, currentPage: number) => {
-		const range: (number | string)[] = [];
-
-		if (totalPages <= 3) {
-			// If total pages are 3 or fewer, show all pages
-			for (let i = 1; i <= totalPages; i++) {
-				range.push(i);
-			}
-		} else {
-			// Always show the first page
-			range.push(1);
-
-			// Show ellipsis if the current page is greater than 3
-			if (currentPage > 3) {
-				range.push('...');
-			}
-
-			// Show the 2 or 3 pages around the current page
-			let start = currentPage - 1;
-			let end = currentPage + 1;
-
-			// Ensure that pages are within bounds
-			if (start < 2) start = 2;
-			if (end > totalPages - 1) end = totalPages - 1;
-
-			for (let i = start; i <= end; i++) {
-				range.push(i);
-			}
-
-			// Show ellipsis if the current page is near the last page
-			if (currentPage < totalPages - 2) {
-				range.push('...');
-			}
-
-			// Always show the last page
-			range.push(totalPages);
-		}
-
-		return range;
+	const handleSortChange = (field: SORT_OPTIONS) => {
+		setSort((prev) => toggleSort(field, prev));
 	};
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant={mode === formType.ADD ? 'outline' : 'ghost'} size={'sm'}>
+				<Button
+					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					size={'sm'}
+					disabled={isLoading}
+				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="h-4 w-4" />
+							<PlusIcon className="h-4 w-4 mr-2" />
 							{m.add_text()} {m.currency()}
 						</>
 					) : (
@@ -247,89 +212,96 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>{mode === formType.ADD ? `${m.create_new_currency()}` : `${m.edit_currency()}`}</DialogTitle>
+					<DialogTitle>
+						{mode === formType.ADD ? `${m.create_new_currency()}` : `${m.edit_currency()}`}
+					</DialogTitle>
 				</DialogHeader>
 				{mode === formType.EDIT && defaultValues ? (
 					<h1>Edit Currency</h1>
 				) : (
-					<Table>
-						<TableCaption>A list of your recent Currency.</TableCaption>
-						<TableHeader>
-							<TableRow>
-								<TableHead className='w-40'>Code</TableHead>
-								<TableHead>Name</TableHead>
-								<TableHead>Symbol</TableHead>
-								<TableHead>Status</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{listCurrencies.map((currency) => (
-								<TableRow key={currency.id}>
-									<TableCell>{currency.iso_code}</TableCell>
-									<TableCell>{currency.name}</TableCell>
-									<TableCell>{currency.symbol}</TableCell>
-									<TableCell>
-										<Switch
-											checked={selectedCurrencies.includes(currency.iso_code)}
-											onCheckedChange={(checked) => handleSwitchChange(currency.iso_code, checked)}
-											aria-label={`Select ${currency.name}`}
-										/>
-									</TableCell>
+
+					<div className=''>
+						{isLoading && (
+							<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
+								<Loader2 className="h-8 w-8 animate-spin text-primary" />
+							</div>
+						)}
+						<SearchForm
+							defaultValue={search}
+							onSearch={setSearch}
+							placeholder={`${m.Search()} ${m.currency()}..`}
+						/>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline">Sort: {sort}</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="w-56">
+								<DropdownMenuLabel>Sort By</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								{Object.values(SORT_OPTIONS).map((field) => (
+									<DropdownMenuItem
+										key={field}
+										onClick={() => handleSortChange(field as SORT_OPTIONS)}
+									>
+										{field} {sort.includes(field) ? (sort.endsWith(":desc") ? "↓" : "↑") : ""}
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuContent>
+						</DropdownMenu>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className='w-40'>Code</TableHead>
+									<TableHead>Name</TableHead>
+									<TableHead>Symbol</TableHead>
+									<TableHead>Status</TableHead>
 								</TableRow>
-							))}
-						</TableBody>
-						<TableFooter className="flex items-center justify-between w-full">
-							<Pagination>
-								<PaginationContent className="flex items-center space-x-2">
-									<PaginationItem>
-										<PaginationPrevious
-											href="#"
-											onClick={(e) => {
-												e.preventDefault();
-												handlePageChange(Number(page) - 1);
-											}}
-										/>
-									</PaginationItem>
-									{paginationRange(totalPages, Number(page)).map((pageNum, index) => (
-										pageNum === '...' ? (
-											<PaginationItem key={index}>
-												<PaginationEllipsis />
-											</PaginationItem>
-										) : (
-											<PaginationItem key={pageNum}>
-												<PaginationLink
-													href="#"
-													isActive={page === pageNum.toString()}
-													onClick={(e) => {
-														e.preventDefault();
-														handlePageChange(Number(pageNum)); // Directly set the page when a page number is clicked
-													}}
-												>
-													{pageNum}
-												</PaginationLink>
-											</PaginationItem>
-										)
-									))}
-									<PaginationItem>
-										<PaginationNext
-											href="#"
-											onClick={(e) => {
-												e.preventDefault();
-												handlePageChange(Number(page) + 1);
-											}}
-										/>
-									</PaginationItem>
-								</PaginationContent>
-							</Pagination>
+							</TableHeader>
+							<TableBody>
+								{listCurrencies.map((currency) => (
+									<TableRow key={currency.id}>
+										<TableCell>{currency.iso_code}</TableCell>
+										<TableCell>{currency.name}</TableCell>
+										<TableCell>{currency.symbol}</TableCell>
+										<TableCell>
+											<Switch
+												checked={selectedCurrencies.includes(currency.iso_code)}
+												onCheckedChange={(checked) => handleSwitchChange(currency.iso_code, checked)}
+												aria-label={`Select ${currency.name}`}
+												disabled={isLoading}
+											/>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+							<TableFooter>
+
+							</TableFooter>
+						</Table>
+						<PaginationComponent
+							currentPage={pagination.page}
+							totalPages={pagination.pages}
+							onPageChange={handlePageChange}
+						/>
+						<div className='text-right pt-2'>
 							<Button
 								onClick={handleSubmit}
 								aria-label="Submit Selected Currencies"
 								size={'sm'}
+								disabled={isLoading}
 							>
-								Submit
+								{isLoading ? (
+									<>
+										<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+										Loading...
+									</>
+								) : (
+									'Submit'
+								)}
 							</Button>
-						</TableFooter>
-					</Table>
+						</div>
+
+					</div>
 				)}
 			</DialogContent>
 		</Dialog>
