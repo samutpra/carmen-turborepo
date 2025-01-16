@@ -42,7 +42,6 @@ const sortFields: FieldConfig<CurrencyType>[] = [
 const currenciesFiltered: FieldConfig<CurrencyType>[] = [
 	...sortFields,
 	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
-	{ key: CurrencyField.Description, label: `${m.description()}` },
 ]
 
 const CurrencyList = () => {
@@ -55,6 +54,9 @@ const CurrencyList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('sort');
+	const [perpage, setPerpage] = useURL('perpage');
+
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const fetchData = async () => {
@@ -63,6 +65,8 @@ const CurrencyList = () => {
 			const data = await fetchCurrencies(token, tenantId, {
 				search,
 				status,
+				page,
+				perpage
 			});
 			setCurrencies(data);
 			setShowRefreshToken(false);
