@@ -6,6 +6,13 @@ Project Carmen_Inventory {
   Note: 'Carmen Inventory Project 2024'
 }
 
+TABLE CARMEN_SYSTEM.tb_currency_iso {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  iso_code varchar(3) [not null, unique]
+  name varchar(255) [not null]
+  symbol varchar(10) [not null]
+}
+
 TABLE CARMEN_SYSTEM.tb_user {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   username varchar(30) [unique, not null]
@@ -453,6 +460,12 @@ enum TENANT_DUMMY.enum_location_type {
   consignment
 }
 
+enum TENANT_DUMMY.enum_location_status_type {
+  active
+  inactive
+  maintenance
+}
+
 TABLE TENANT_DUMMY.tb_location {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
@@ -460,6 +473,8 @@ TABLE TENANT_DUMMY.tb_location {
   location_type TENANT_DUMMY.enum_location_type [not null]
 
   description text
+  info json [null]
+
   is_active bool [default: true]
 
   delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
@@ -554,14 +569,21 @@ TABLE TENANT_DUMMY.tb_department {
   }
 }
 
+enum TENANT_DUMMY.enum_product_status_type {
+  active
+  inactive
+  discontinued
+}
+
 TABLE TENANT_DUMMY.tb_product {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar [unique, not null]
   name varchar [unique, not null]
   description text
 
-  primary_unit uuid [not null, ref: > TENANT_DUMMY.tb_unit.id]
+  primary_unit_id uuid [not null, ref: > TENANT_DUMMY.tb_unit.id]
 
+  product_status_type TENANT_DUMMY.enum_product_status_type [not null, default: "active"]
   is_active bool [default: true]
   
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
@@ -580,6 +602,8 @@ TABLE TENANT_DUMMY.tb_product {
 TABLE TENANT_DUMMY.tb_product_info {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   product_id uuid [unique, not null, ref: - TENANT_DUMMY.tb_product.id]
+  product_item_group_id uuid [ref: > TENANT_DUMMY.tb_product_item_group.id]
+
   price Float
 
   info json [null]
@@ -697,10 +721,18 @@ TABLE TENANT_DUMMY.tb_purchase_request {
   workflow_obj json
   workflow_history json
 
+  current_workflow_status varchar
+
   purchase_request_status TENANT_DUMMY.enum_purchase_request_doc_status [default: 'draft']
 
   requestor_id uuid
   department_id uuid
+
+  job_code varchar
+  budget_code varchar
+  allocated_budget_amt decimal
+
+  // delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
 
   is_active bool [default: true]
 
@@ -719,20 +751,58 @@ TABLE TENANT_DUMMY.tb_purchase_request_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   purchase_request_id uuid [ref: > TENANT_DUMMY.tb_purchase_request.id]
 
-  location_id uuid
-  product_id uuid
-  unit_id uuid
+  location_id uuid [ref: > TENANT_DUMMY.tb_location.id]
+  product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
+  unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  vendor_name varchar
+
+  price_list_id uuid [ref: > TENANT_DUMMY.tb_price_list.id]
 
   description text
 
   requested_qty float
   approved_qty float
 
-  currency_id uuid
-  currency_rate float
+  currency_id uuid [ref: > TENANT_CURRENCY.tb_currency.id]
+  exchange_rate numeric(15,5)
+  exchange_rate_date date
 
-  price numeric(15,5)
-  total_price numeric(15,5)
+  price decimal
+  total_price decimal
+  foc decimal
+
+  is_tax_included bool
+  is_tax_adjustment bool
+  is_discount bool
+
+  discount_rate decimal
+  discount_amount decimal
+
+  tax_rate decimal
+  tax_amount decimal
+
+  is_active bool [default: true]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid 
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+
+  indexes {
+    // name [name: "PR1_name_u"]
+  }
+}
+
+TABLE TENANT_DUMMY.tb_purchase_order_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  purchase_order_id uuid [ref: > TENANT_DUMMY.tb_purchase_order.id]
+
+  delivery_date date
+  delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
+
 
   workflow_history json
 
@@ -772,7 +842,26 @@ TABLE TENANT_DUMMY.tb_purchase_order {
   purchase_order_status TENANT_DUMMY.enum_purchase_order_doc_status [default: 'open']
 
   description text
-  order_date date
+
+  order_date timestamp
+  delivery_date timestamp
+
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  vendor_name varchar
+
+  currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
+  currency_name varchar
+  base_currency_id uuid [ref: > TENANT_DUMMY.currency.id]
+  base_currency_name varchar
+
+  exchange_rate numeric(15,5)
+  notes text [null]
+
+  approval_date timestamp [null]
+  email varchar
+  buyer_name varchar
+  credit_term varchar
+  remarks text [null]
 
   history json
 
@@ -799,6 +888,31 @@ TABLE TENANT_DUMMY.tb_purchase_order_detail {
   purchase_order_id uuid [ref: > TENANT_DUMMY.tb_purchase_order.id]
 
   purchase_request_detail_id uuid [ref: > TENANT_DUMMY.tb_purchase_request_detail.id]
+
+  exchange_rate numeric(15,5)
+  order_qty numeric
+  order_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+  order_unit_name varchar
+
+  base_qty numeric
+  base_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+  base_unit_name varchar
+
+  unit_price numeric
+  sub_total_price numeric
+  base_sub_total_price numeric
+  is_foc bool [default: false]
+  is_tax_included bool [default: false]
+  tax_rate numeric [default: 0]
+  tax_amount numeric [default: 0]
+  discount_rate numeric [default: 0]
+  discount_amount numeric [default: 0]
+
+  net_amount numeric [default: 0]
+  base_net_amount numeric [default: 0]
+
+  total_price numeric
+  base_total_price numeric
 
   history json
 
@@ -938,7 +1052,10 @@ TABLE TENANT_DUMMY.tb_inventory_transaction_detail {
   current_lot_name varchar
 
   qty decimal
-  cost numeric(15,5)
+  unit_cost numeric
+  total_cost numeric
+
+  info json [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -976,6 +1093,7 @@ TABLE TENANT_DUMMY.tb_good_receive_note {
   inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
+  ref_no varchar
 
   workflow json [null]
 
@@ -992,9 +1110,37 @@ TABLE TENANT_DUMMY.tb_good_receive_note_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   good_receive_note_id uuid [not null, ref: > TENANT_DUMMY.tb_good_receive_note.id]
   
-  name varchar
+  purchase_order_detail_id uuid [not null, ref: - TENANT_DUMMY.tb_purchase_order_detail.id]
+  item_id numeric
+  location_id uuid [not null, ref: - TENANT_DUMMY.tb_location.id]
 
-  qty decimal
+  received_qty decimal
+  received_unit_id uuid [not null, ref: - TENANT_DUMMY.tb_unit.id]
+  received_unit_name varchar
+
+  is_foc bool [default: false]
+
+  price decimal
+  tax_amount decimal
+  total_amount decimal
+
+  delivery_point_id uuid [null, ref: - TENANT_DUMMY.tb_delivery_point.id]
+
+  base_price decimal
+  base_qty decimal
+
+  extra_cost decimal
+  total_cost decimal
+
+  is_discount bool [default: false]
+  discount_amount decimal 
+
+  is_tax_adjustment bool [default: false]
+
+  lot_number varchar
+  expired_date date
+
+  comment text [null]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
@@ -1169,6 +1315,98 @@ TABLE TENANT_DUMMY.tb_stock_take_detail {
   name varchar
   
   qty decimal
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+enum  TENANT_DUMMY.enum_count_stock_type {
+  physical
+  spot
+}
+
+enum  TENANT_DUMMY.enum_count_stock_status {
+  draft
+  in_progress
+  completed
+  cancelled
+}
+
+
+TABLE TENANT_DUMMY.tb_count_stock {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  start_date timestamp [not null, default: `CURRENT_TIMESTAMP` ]
+  end_date timestamp [ null]
+  location_id uuid [not null]
+  notes text [null]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+TABLE TENANT_DUMMY.tb_count_stock_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  count_stock_id uuid [not null, ref: > TENANT_DUMMY.tb_count_stock.id]
+  product_id uuid [not null, ref: > TENANT_DUMMY.tb_product.id]
+  qty decimal [not null]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+enum TENANT_DUMMY.enum_jv_status {
+  draft
+  posted
+}
+
+TABLE TENANT_DUMMY.tb_jv_header {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  exchange_rate numeric(15,5) [not null]
+  base_currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  jv_type varchar(255) [not null]
+  jv_number varchar(255) [not null]
+  jv_date timestamp [not null]
+  jv_description text [null]
+  jv_status enum_jv_status [not null]
+
+  workflow json [null]
+  info json [null]
+
+  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+TABLE TENANT_DUMMY.tb_jv_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  jv_header_id uuid [not null, ref: > TENANT_DUMMY.tb_jv_header.id]
+
+  account_department_id uuid [not null]
+  account_code uuid [not null, ref: > TENANT_DUMMY.tb_account_code.id]
+  account_name varchar [not null]
+
+  currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  exchange_rate numeric(15,5) [not null]
+
+  debit numeric(15,5) [not null, default: 0.0]
+  credit numeric(15,5) [not null, default: 0.0]
+
+  base_currency_id [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  base_debit numeric(15,5) [not null, default: 0.0]
+  base_credit numeric(15,5) [not null, default: 0.0]
 
   created_at timestamp [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid

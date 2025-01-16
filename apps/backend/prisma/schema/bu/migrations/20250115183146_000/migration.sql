@@ -31,6 +31,18 @@ CREATE TYPE "enum_vendor_contact_type" AS ENUM ('phone', 'email');
 -- CreateEnum
 CREATE TYPE "enum_workflow_type" AS ENUM ('purchase_request', 'purchase_order', 'store_requisition');
 
+-- CreateEnum
+CREATE TYPE "enum_count_stock_status" AS ENUM ('draft', 'in_progress', 'completed', 'cancelled');
+
+-- CreateEnum
+CREATE TYPE "enum_count_stock_type" AS ENUM ('physical', 'spot');
+
+-- CreateEnum
+CREATE TYPE "enum_location_status_type" AS ENUM ('active', 'inactive', 'maintenance');
+
+-- CreateEnum
+CREATE TYPE "enum_product_status_type" AS ENUM ('active', 'inactive', 'discontinued');
+
 -- CreateTable
 CREATE TABLE "tb_activity" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -216,6 +228,7 @@ CREATE TABLE "tb_location" (
     "name" VARCHAR NOT NULL,
     "location_type" "enum_location_type" NOT NULL,
     "description" TEXT,
+    "info" JSON,
     "is_active" BOOLEAN DEFAULT true,
     "delivery_point_id" UUID,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
@@ -250,7 +263,8 @@ CREATE TABLE "tb_product" (
     "code" VARCHAR NOT NULL,
     "name" VARCHAR NOT NULL,
     "description" TEXT,
-    "primary_unit" UUID NOT NULL,
+    "primary_unit_id" UUID NOT NULL,
+    "product_status_type" "enum_product_status_type" NOT NULL DEFAULT 'active',
     "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -279,6 +293,7 @@ CREATE TABLE "tb_product_category" (
 CREATE TABLE "tb_product_info" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "product_id" UUID NOT NULL,
+    "product_item_group_id" UUID,
     "price" DOUBLE PRECISION,
     "info" JSON,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
@@ -619,6 +634,35 @@ CREATE TABLE "tb_workflow" (
     CONSTRAINT "tb_workflow_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tb_count_stock" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "start_date" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "end_date" TIMESTAMP(6),
+    "location_id" UUID NOT NULL,
+    "notes" TEXT,
+    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+
+    CONSTRAINT "tb_count_stock_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_count_stock_detail" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "count_stock_id" UUID NOT NULL,
+    "product_id" UUID NOT NULL,
+    "qty" DECIMAL NOT NULL,
+    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+
+    CONSTRAINT "tb_count_stock_detail_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "activity_entitytype_entityid_idx" ON "tb_activity"("entity_type", "entity_id");
 
@@ -776,10 +820,13 @@ ALTER TABLE "tb_inventory_transaction_detail" ADD CONSTRAINT "tb_inventory_trans
 ALTER TABLE "tb_location" ADD CONSTRAINT "tb_location_delivery_point_id_fkey" FOREIGN KEY ("delivery_point_id") REFERENCES "tb_delivery_point"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "tb_product" ADD CONSTRAINT "tb_product_primary_unit_fkey" FOREIGN KEY ("primary_unit") REFERENCES "tb_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "tb_product" ADD CONSTRAINT "tb_product_primary_unit_id_fkey" FOREIGN KEY ("primary_unit_id") REFERENCES "tb_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "tb_product_info" ADD CONSTRAINT "tb_product_info_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_product_info" ADD CONSTRAINT "tb_product_info_product_item_group_id_fkey" FOREIGN KEY ("product_item_group_id") REFERENCES "tb_product_item_group"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "tb_product_item_group" ADD CONSTRAINT "tb_product_item_group_product_subcategory_id_fkey" FOREIGN KEY ("product_subcategory_id") REFERENCES "tb_product_sub_category"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -843,3 +890,9 @@ ALTER TABLE "tb_vendor_address" ADD CONSTRAINT "tb_vendor_address_vendor_id_fkey
 
 -- AddForeignKey
 ALTER TABLE "tb_vendor_contact" ADD CONSTRAINT "tb_vendor_contact_vendor_id_fkey" FOREIGN KEY ("vendor_id") REFERENCES "tb_vendor"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_count_stock_detail" ADD CONSTRAINT "tb_count_stock_detail_count_stock_id_fkey" FOREIGN KEY ("count_stock_id") REFERENCES "tb_count_stock"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_count_stock_detail" ADD CONSTRAINT "tb_count_stock_detail_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

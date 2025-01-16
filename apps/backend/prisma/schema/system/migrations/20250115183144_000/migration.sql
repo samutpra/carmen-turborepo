@@ -247,6 +247,16 @@ CREATE TABLE "tb_user_login_session" (
     CONSTRAINT "tb_user_login_session_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tb_currency_iso" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "iso_code" VARCHAR(3) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "symbol" VARCHAR(10) NOT NULL,
+
+    CONSTRAINT "tb_currency_iso_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "tb_application_role_name_key" ON "tb_application_role"("name");
 
@@ -324,6 +334,9 @@ CREATE UNIQUE INDEX "user_businessunit_user_business_unit_u" ON "tb_user_tb_busi
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tb_user_login_session_token_key" ON "tb_user_login_session"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tb_currency_iso_iso_code_key" ON "tb_currency_iso"("iso_code");
 
 -- AddForeignKey
 ALTER TABLE "tb_application_role" ADD CONSTRAINT "tb_application_role_business_unit_id_fkey" FOREIGN KEY ("business_unit_id") REFERENCES "tb_business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

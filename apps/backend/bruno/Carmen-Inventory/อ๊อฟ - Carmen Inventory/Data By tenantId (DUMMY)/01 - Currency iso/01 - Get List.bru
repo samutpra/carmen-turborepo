@@ -5,16 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/currencies?sort=code,name:asc&searchfields=code,name,description,is_active:bool&perpage=2&filter[name]=th
+  url: {{host}}/system-api/v1/system-currency-iso?perpage=10
   body: none
   auth: bearer
 }
 
 params:query {
-  sort: code,name:asc
-  searchfields: code,name,description,is_active:bool
-  perpage: 2
-  filter[name]: th
+  perpage: 10
   ~page: 1
   ~filter[isActive: bool]: 1
   ~search: baht

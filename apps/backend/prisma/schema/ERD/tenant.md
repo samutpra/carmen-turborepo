@@ -142,6 +142,7 @@ erDiagram
   String name UK
   enum_location_type location_type
   String description "nullable"
+  Json info "nullable"
   Boolean is_active "nullable"
   String delivery_point_id FK "nullable"
   DateTime created_at "nullable"
@@ -168,7 +169,8 @@ erDiagram
   String code UK
   String name UK
   String description "nullable"
-  String primary_unit FK
+  String primary_unit_id FK
+  enum_product_status_type product_status_type
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -189,6 +191,7 @@ erDiagram
 "tb_product_info" {
   String id PK
   String product_id FK
+  String product_item_group_id FK "nullable"
   Float price "nullable"
   Json info "nullable"
   DateTime created_at "nullable"
@@ -442,6 +445,27 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id "nullable"
 }
+"tb_count_stock" {
+  String id PK
+  DateTime start_date
+  DateTime end_date "nullable"
+  String location_id
+  String notes "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_count_stock_detail" {
+  String id PK
+  String count_stock_id FK
+  String product_id FK
+  Decimal qty
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
 "tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
 "tb_exchange_rate" }o--o| "tb_currency" : tb_currency
@@ -452,6 +476,7 @@ erDiagram
 "tb_location" }o--o| "tb_delivery_point" : tb_delivery_point
 "tb_product" }o--|| "tb_unit" : tb_unit
 "tb_product_info" |o--|| "tb_product" : tb_product
+"tb_product_info" }o--o| "tb_product_item_group" : tb_product_item_group
 "tb_product_item_group" }o--|| "tb_product_sub_category" : tb_product_sub_category
 "tb_product_sub_category" }o--|| "tb_product_category" : tb_product_category
 "tb_product_tb_vendor" }o--o| "tb_product" : tb_product
@@ -473,6 +498,8 @@ erDiagram
 "tb_unit_conversion" }o--o| "tb_unit" : tb_unit_tb_unit_conversion_to_unit_idTotb_unit
 "tb_vendor_address" }o--o| "tb_vendor" : tb_vendor
 "tb_vendor_contact" }o--o| "tb_vendor" : tb_vendor
+"tb_count_stock_detail" }o--|| "tb_count_stock" : tb_count_stock
+"tb_count_stock_detail" }o--|| "tb_product" : tb_product
 ```
 
 ### `tb_activity`
@@ -637,6 +664,7 @@ erDiagram
   - `name`: 
   - `location_type`: 
   - `description`: 
+  - `info`: 
   - `is_active`: 
   - `delivery_point_id`: 
   - `created_at`: 
@@ -667,7 +695,8 @@ erDiagram
   - `code`: 
   - `name`: 
   - `description`: 
-  - `primary_unit`: 
+  - `primary_unit_id`: 
+  - `product_status_type`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -692,6 +721,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `product_id`: 
+  - `product_item_group_id`: 
   - `price`: 
   - `info`: 
   - `created_at`: 
@@ -982,6 +1012,31 @@ erDiagram
   - `workflow_type`: 
   - `description`: 
   - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_count_stock`
+
+**Properties**
+  - `id`: 
+  - `start_date`: 
+  - `end_date`: 
+  - `location_id`: 
+  - `notes`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_count_stock_detail`
+
+**Properties**
+  - `id`: 
+  - `count_stock_id`: 
+  - `product_id`: 
+  - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

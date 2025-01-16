@@ -5,6 +5,16 @@ export enum enum_location_type {
 	direct = 'Direct',
 	consignment = 'Consignment',
 }
+
+export type location_info = {
+	floor? : number;
+	building? : string;
+	capacity? : number;
+	responsibleDepartment? : string;
+	itemCount? : number;
+	lastCount?: string;
+}
+
 export const LocationCreateSchema = z.object({
 	id: z.string().uuid().optional(),
 	name: z.string().min(1, 'name must be at least 1 character'),
@@ -12,6 +22,14 @@ export const LocationCreateSchema = z.object({
 	is_active: z.boolean().default(true).nullable().optional(),
 	location_type: z.enum(Object.values(enum_location_type) as [string, ...string[]]),
 	deliveryPointId: z.string().uuid().nullable().optional(),
+	info: z.object({
+		floor: z.number().optional(),
+		building: z.string().optional(),
+		capacity: z.number().optional(),
+		responsibleDepartment: z.string().optional(),
+		itemCount: z.number().optional(),
+		lastCount: z.string().optional()
+	}).optional(),
 });
 
 export type LocationCreateModel = z.infer<typeof LocationCreateSchema>;
@@ -23,6 +41,7 @@ export class LocationCreateDto implements LocationCreateModel {
 	is_active?: boolean | null;
 	location_type!: enum_location_type;
 	deliveryPointId?: string | null;
+	info?: location_info;
 }
 
 export const LocationUpdateSchema = z.object({
@@ -32,6 +51,14 @@ export const LocationUpdateSchema = z.object({
 	is_active: z.boolean().default(true).nullable().optional(),
 	location_type: z.enum(Object.values(enum_location_type) as [string, ...string[]]).optional(),
 	deliveryPointId: z.string().uuid().nullable().optional(),
+	info: z.object({
+		floor: z.number().optional(),
+		building: z.string().optional(),
+		capacity: z.number().optional(),
+		responsibleDepartment: z.string().optional(),
+		itemCount: z.number().optional(),
+		lastCount: z.string().optional()
+	}).optional(),
 });
 
 export type LocationUpdateModel = z.infer<typeof LocationUpdateSchema>;
@@ -43,6 +70,7 @@ export class LocationUpdateDto implements LocationUpdateModel {
 	is_active?: boolean | null;
 	location_type!: enum_location_type;
 	deliveryPointId?: string | null;
+	info?: location_info;
 }
 
 
@@ -53,7 +81,15 @@ export const mockLocations: LocationCreateDto[] = [
 		description: 'คลังสินค้าหลักสำหรับจัดเก็บสินค้าทั่วไป',
 		is_active: true,
 		location_type: enum_location_type.inventory,
-		deliveryPointId: '550e8400-e29b-41d4-a716-446655440010'
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440010',
+		info: {
+			floor: 1,
+			building: 'Building A',
+			capacity: 1000,
+			responsibleDepartment: 'Inventory Department',
+			itemCount: 500,
+			lastCount: '2023-01-01'
+		}
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440002', 
@@ -61,7 +97,15 @@ export const mockLocations: LocationCreateDto[] = [
 		description: 'คลังสินค้าสำหรับสินค้าฝากขาย',
 		is_active: true,
 		location_type: enum_location_type.consignment,
-		deliveryPointId: '550e8400-e29b-41d4-a716-446655440011'
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440011',
+		info: {
+			floor: 2,
+			building: 'Building B',
+			capacity: 500,
+			responsibleDepartment: 'Consignment Department',
+			itemCount: 200,
+			lastCount: '2023-01-02'
+		}
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440003',
@@ -69,7 +113,15 @@ export const mockLocations: LocationCreateDto[] = [
 		description: 'คลังสินค้าสำหรับการส่งตรงถึงลูกค้า',
 		is_active: true,
 		location_type: enum_location_type.direct,
-		deliveryPointId: '550e8400-e29b-41d4-a716-446655440012'
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440012',
+		info: {
+			floor: 3,
+			building: 'Building C',
+			capacity: 200,
+			responsibleDepartment: 'Direct Department',
+			itemCount: 100,
+			lastCount: '2023-01-03'
+		}
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440004',
@@ -77,6 +129,14 @@ export const mockLocations: LocationCreateDto[] = [
 		description: 'คลังสินค้าสำรองสำหรับสินค้าคงคลัง',
 		is_active: false,
 		location_type: enum_location_type.inventory,
-		deliveryPointId: '550e8400-e29b-41d4-a716-446655440013'
+		deliveryPointId: '550e8400-e29b-41d4-a716-446655440013',
+		info: {
+			floor: 4,
+			building: 'Building D',
+			capacity: 300,
+            responsibleDepartment: 'Inventory Department',
+            itemCount: 150,
+            lastCount: '2023-01-04',
+		}
 	}
 ];

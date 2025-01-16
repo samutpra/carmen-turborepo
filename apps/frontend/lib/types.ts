@@ -1,6 +1,7 @@
 // File: types/inventory.ts
 
-import { z } from "zod";
+import { z } from 'zod';
+
 import * as m from '@/paraglide/messages.js';
 
 // Common Types and Enums
@@ -1298,7 +1299,7 @@ export type IProductList = z.infer<typeof ProductListSchema>;
 export type PaginationType = {
   page?: number | 0;
   pages?: number | 0;
-  perPage?: number | 10;
+  perpage?: number | 10;
   total?: number | 0;
 }
 

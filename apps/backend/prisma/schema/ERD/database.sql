@@ -57,10 +57,22 @@ CREATE TYPE "TENANT_DUMMY"."enum_location_type" AS ENUM (
   'consignment'
 );
 
+CREATE TYPE "TENANT_DUMMY"."enum_location_status_type" AS ENUM (
+  'active',
+  'inactive',
+  'maintenance'
+);
+
 CREATE TYPE "TENANT_DUMMY"."enum_unit_type" AS ENUM (
   'order_unit',
   'inventory_unit',
   'recipe_unit'
+);
+
+CREATE TYPE "TENANT_DUMMY"."enum_product_status_type" AS ENUM (
+  'active',
+  'inactive',
+  'discontinued'
 );
 
 CREATE TYPE "TENANT_DUMMY"."enum_workflow_type" AS ENUM (
@@ -114,6 +126,25 @@ CREATE TYPE "TENANT_DUMMY"."enum_inventory_doc_type" AS ENUM (
   'stock_take'
 );
 
+CREATE TYPE "TENANT_DUMMY"."enum_count_stock_type" AS ENUM (
+  'physical',
+  'spot'
+);
+
+CREATE TYPE "TENANT_DUMMY"."enum_count_stock_status" AS ENUM (
+  'draft',
+  'in_progress',
+  'completed',
+  'cancelled'
+);
+
+CREATE TABLE "CARMEN_SYSTEM"."tb_currency_iso" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "iso_code" varchar(3) UNIQUE NOT NULL,
+  "name" varchar(255) NOT NULL,
+  "symbol" varchar(10) NOT NULL
+);
+
 CREATE TABLE "CARMEN_SYSTEM"."tb_user" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "username" varchar(30) UNIQUE NOT NULL,
@@ -140,7 +171,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_password" (
 CREATE TABLE "CARMEN_SYSTEM"."tb_user_login_session" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "token" text UNIQUE NOT NULL,
-  "token_type" "CARMEN_SYSTEM".enum_token_type NOT NULL DEFAULT 'access_token',
+  "token_type" "CARMEN_SYSTEM"."enum_token_type" NOT NULL DEFAULT 'access_token',
   "user_id" uuid NOT NULL,
   "expired_on" timestamp NOT NULL DEFAULT (now() + '1 day'::interval)
 );
@@ -221,7 +252,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_subscription" (
   "subscription_number" varchar NOT NULL,
   "start_date" date NOT NULL,
   "end_date" date NOT NULL,
-  "status" "CARMEN_SYSTEM".enum_subscription_status NOT NULL,
+  "status" "CARMEN_SYSTEM"."enum_subscription_status" NOT NULL,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -308,8 +339,8 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_notification" (
 
 CREATE TABLE "TENANT_DUMMY"."tb_activity" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "action" "TENANT_DUMMY".enum_activity_action,
-  "entity_type" "TENANT_DUMMY".enum_activity_entity_type,
+  "action" "TENANT_DUMMY"."enum_activity_action",
+  "entity_type" "TENANT_DUMMY"."enum_activity_entity_type",
   "entity_id" uuid,
   "actor_id" uuid,
   "meta_data" json,
@@ -365,8 +396,9 @@ CREATE TABLE "TENANT_DUMMY"."tb_exchange_rate" (
 CREATE TABLE "TENANT_DUMMY"."tb_location" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "location_type" "TENANT_DUMMY".enum_location_type NOT NULL,
+  "location_type" "TENANT_DUMMY"."enum_location_type" NOT NULL,
   "description" text,
+  "info" json,
   "is_active" bool DEFAULT true,
   "delivery_point_id" uuid,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -399,7 +431,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_unit" (
 CREATE TABLE "TENANT_DUMMY"."tb_unit_conversion" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid,
-  "unit_type" "TENANT_DUMMY".enum_unit_type NOT NULL,
+  "unit_type" "TENANT_DUMMY"."enum_unit_type" NOT NULL,
   "from_unit_id" uuid,
   "from_unit_qty" float DEFAULT 1,
   "to_unit_id" uuid,
@@ -428,7 +460,8 @@ CREATE TABLE "TENANT_DUMMY"."tb_product" (
   "code" varchar UNIQUE NOT NULL,
   "name" varchar UNIQUE NOT NULL,
   "description" text,
-  "primary_unit" uuid NOT NULL,
+  "primary_unit_id" uuid NOT NULL,
+  "product_status_type" "TENANT_DUMMY"."enum_product_status_type" NOT NULL DEFAULT 'active',
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
@@ -439,6 +472,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product" (
 CREATE TABLE "TENANT_DUMMY"."tb_product_info" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid UNIQUE NOT NULL,
+  "product_item_group_id" uuid,
   "price" Float,
   "info" json,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -488,7 +522,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product_item_group" (
 CREATE TABLE "TENANT_DUMMY"."tb_workflow" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "workflow_type" "TENANT_DUMMY".enum_workflow_type NOT NULL,
+  "workflow_type" "TENANT_DUMMY"."enum_workflow_type" NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -504,7 +538,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_purchase_request" (
   "workflow_id" uuid,
   "workflow_obj" json,
   "workflow_history" json,
-  "purchase_request_status" "TENANT_DUMMY".enum_purchase_request_doc_status DEFAULT 'draft',
+  "purchase_request_status" "TENANT_DUMMY"."enum_purchase_request_doc_status" DEFAULT 'draft',
   "requestor_id" uuid,
   "department_id" uuid,
   "is_active" bool DEFAULT true,
@@ -537,7 +571,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_purchase_request_detail" (
 CREATE TABLE "TENANT_DUMMY"."tb_purchase_order" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "purchase_order_status" "TENANT_DUMMY".enum_purchase_order_doc_status DEFAULT 'open',
+  "purchase_order_status" "TENANT_DUMMY"."enum_purchase_order_doc_status" DEFAULT 'open',
   "description" text,
   "order_date" date,
   "history" json,
@@ -576,7 +610,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_vendor" (
 CREATE TABLE "TENANT_DUMMY"."tb_vendor_contact" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "contact_type" "TENANT_DUMMY".enum_vendor_contact_type NOT NULL,
+  "contact_type" "TENANT_DUMMY"."enum_vendor_contact_type" NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "info" json,
@@ -589,7 +623,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_vendor_contact" (
 CREATE TABLE "TENANT_DUMMY"."tb_vendor_address" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "address_type" "TENANT_DUMMY".enum_vendor_address_type,
+  "address_type" "TENANT_DUMMY"."enum_vendor_address_type",
   "address" json,
   "is_active" bool DEFAULT true,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -614,7 +648,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product_tb_vendor" (
 CREATE TABLE "TENANT_DUMMY"."tb_inventory_transaction" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "inventory_doc_type" "TENANT_DUMMY".enum_inventory_doc_type NOT NULL,
+  "inventory_doc_type" "TENANT_DUMMY"."enum_inventory_doc_type" NOT NULL,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -774,6 +808,29 @@ CREATE TABLE "TENANT_DUMMY"."tb_stock_take_detail" (
   "stock_take_id" uuid NOT NULL,
   "name" varchar,
   "qty" decimal,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_count_stock" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "start_date" timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  "end_date" timestamp,
+  "location_id" uuid NOT NULL,
+  "notes" text,
+  "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_count_stock_detail" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "count_stock_id" uuid NOT NULL,
+  "product_id" uuid NOT NULL,
+  "qty" decimal NOT NULL,
   "created_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamp DEFAULT (CURRENT_TIMESTAMP),
@@ -986,9 +1043,11 @@ ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion" ADD FOREIGN KEY ("from_unit_id")
 
 ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion" ADD FOREIGN KEY ("to_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
 
-ALTER TABLE "TENANT_DUMMY"."tb_product" ADD FOREIGN KEY ("primary_unit") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
+ALTER TABLE "TENANT_DUMMY"."tb_product" ADD FOREIGN KEY ("primary_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
 
 ALTER TABLE "TENANT_DUMMY"."tb_product_info" ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."tb_product" ("id");
+
+ALTER TABLE "TENANT_DUMMY"."tb_product_info" ADD FOREIGN KEY ("product_item_group_id") REFERENCES "TENANT_DUMMY"."tb_product_item_group" ("id");
 
 ALTER TABLE "TENANT_DUMMY"."tb_product_sub_category" ADD FOREIGN KEY ("product_category_id") REFERENCES "TENANT_DUMMY"."tb_product_category" ("id");
 
@@ -1037,3 +1096,7 @@ ALTER TABLE "TENANT_DUMMY"."tb_credit_note_detail" ADD FOREIGN KEY ("credit_note
 ALTER TABLE "TENANT_DUMMY"."tb_stock_take" ADD FOREIGN KEY ("inventory_transaction_id") REFERENCES "TENANT_DUMMY"."tb_inventory_transaction" ("id");
 
 ALTER TABLE "TENANT_DUMMY"."tb_stock_take_detail" ADD FOREIGN KEY ("stock_take_id") REFERENCES "TENANT_DUMMY"."tb_stock_take" ("id");
+
+ALTER TABLE "TENANT_DUMMY"."tb_count_stock_detail" ADD FOREIGN KEY ("count_stock_id") REFERENCES "TENANT_DUMMY"."tb_count_stock" ("id");
+
+ALTER TABLE "TENANT_DUMMY"."tb_count_stock_detail" ADD FOREIGN KEY ("product_id") REFERENCES "TENANT_DUMMY"."tb_product" ("id");

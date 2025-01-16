@@ -338,6 +338,13 @@ model tb_user_login_session {
   tb_user    tb_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model tb_currency_iso {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  iso_code String @unique @db.VarChar(3)
+  name     String @db.VarChar(255)
+  symbol   String @db.VarChar(10)
+}
+
 enum enum_subscription_status {
   active
   inactive

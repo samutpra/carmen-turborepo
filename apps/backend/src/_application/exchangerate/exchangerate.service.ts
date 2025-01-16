@@ -83,7 +83,7 @@ export class ExchangerateService {
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perpage,
+        perpage: q.perpage,
         pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
