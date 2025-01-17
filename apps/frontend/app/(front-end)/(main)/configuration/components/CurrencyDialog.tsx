@@ -7,12 +7,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Loader2, PencilIcon, PlusIcon } from 'lucide-react';
-import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import {
 	Table,
 	TableBody,
 	TableCell,
-	TableFooter,
 	TableHead,
 	TableHeader,
 	TableRow,
@@ -31,61 +29,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
+import { fetchSystemCurrencies } from '../actions/currency';
+import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 
-const fetchSystemCurrencies = async (
-	token: string,
-	tenantId: string,
-	page: number,
-	perpage: number,
-	search: string,
-	sort: string
-) => {
-	try {
-		if (!token) {
-			throw new Error('Access token is required');
-		}
-
-		const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
-
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
-				'Content-Type': 'application/json',
-			},
-		};
-
-		const response = await fetch(url, options);
-
-		if (!response.ok) {
-			throw new APIError(response.status, `Failed to fetch currencies: ${response.status} ${response.statusText}`);
-		}
-
-		return await response.json();
-	} catch (error) {
-		console.error('Error fetching currencies:', error);
-		throw error;
-	}
-};
-
-enum SORT_OPTIONS {
-	NAME = 'name',
-	CODE = 'iso_code',
-	SYMBOL = 'symbol',
-}
-
-
-const toggleSort = (field: SORT_OPTIONS, currentValue: string): string => {
-	if (currentValue === field) {
-		return `${field}:desc`; // เพิ่ม :desc หากไม่มี
-	} else if (currentValue === `${field}:desc`) {
-		return field; // ลบ :desc หากมี
-	} else {
-		return field; // ค่าเริ่มต้น
-	}
-}
-
+// Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
 	mode: formType;
 	defaultValues?: CurrencyType;
@@ -112,7 +60,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		total: 0
 	});
 	const [search, setSearch] = useState('');
-	const [sort, setSort] = useState('');
+	const [sort, setSort] = useState(SORT_OPTIONS.NAME);
 
 	const fetchListCurrencies = async () => {
 		setIsLoading(true);
@@ -181,7 +129,8 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		setOpen(false);
 		form.reset();
 		setSelectedCurrencies([]);
-		setPagination(prev => ({ ...prev, page: 1 })); // Reset page when closing
+		setSort(SORT_OPTIONS.NAME);
+		setPagination(prev => ({ ...prev, page: 1 }));
 	};
 
 	const handlePageChange = (newPage: number) => {
@@ -189,11 +138,24 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	};
 
 	const handleSortChange = (field: SORT_OPTIONS) => {
-		setSort((prev) => toggleSort(field, prev));
+		setSort((prev) => toggleSort(field, prev) as SORT_OPTIONS);
 	};
 
+	if (isLoading) {
+		<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
+			<Loader2 className="h-8 w-8 animate-spin text-primary" />
+		</div>
+	}
+
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog
+			open={open}
+			onOpenChange={(isOpen) => {
+				setOpen(isOpen);
+				if (!isOpen) {
+					handleClose();
+				}
+			}} >
 			<DialogTrigger asChild>
 				<Button
 					variant={mode === formType.ADD ? 'outline' : 'ghost'}
@@ -202,7 +164,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="h-4 w-4 mr-2" />
+							<PlusIcon className="h-4 w-4" />
 							{m.add_text()} {m.currency()}
 						</>
 					) : (
@@ -219,35 +181,40 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 				{mode === formType.EDIT && defaultValues ? (
 					<h1>Edit Currency</h1>
 				) : (
-
-					<div className=''>
-						{isLoading && (
-							<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
-								<Loader2 className="h-8 w-8 animate-spin text-primary" />
-							</div>
-						)}
-						<SearchForm
-							defaultValue={search}
-							onSearch={setSearch}
-							placeholder={`${m.Search()} ${m.currency()}..`}
-						/>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="outline">Sort: {sort}</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="w-56">
-								<DropdownMenuLabel>Sort By</DropdownMenuLabel>
-								<DropdownMenuSeparator />
-								{Object.values(SORT_OPTIONS).map((field) => (
-									<DropdownMenuItem
-										key={field}
-										onClick={() => handleSortChange(field as SORT_OPTIONS)}
-									>
-										{field} {sort.includes(field) ? (sort.endsWith(":desc") ? "↓" : "↑") : ""}
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuContent>
-						</DropdownMenu>
+					<>
+						<div className='flex my-4'>
+							<SearchForm
+								defaultValue={search}
+								onSearch={setSearch}
+								placeholder={`${m.Search()} ${m.currency()}..`}
+							/>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="outline" size="sm" aria-label="Sort options">
+										{sortFields.find((f) => sort.startsWith(f.key))?.label ?? "Sort"}{" "}
+										{sort.endsWith(":desc") ? "↓" : sort ? "↑" : ""}
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent className="w-56">
+									<DropdownMenuLabel>Sort By</DropdownMenuLabel>
+									<DropdownMenuSeparator />
+									{sortFields.map(({ key, label }) => (
+										<DropdownMenuItem
+											key={key}
+											className={`flex justify-between items-center ${sort.startsWith(key) ? "font-bold text-blue-500" : ""
+												}`}
+											onClick={() => handleSortChange(key)}
+											aria-selected={sort.startsWith(key)}
+										>
+											{label}
+											{sort.startsWith(key) && (
+												<span>{sort.endsWith(":desc") ? "↓" : "↑"}</span>
+											)}
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 						<Table>
 							<TableHeader>
 								<TableRow>
@@ -274,9 +241,6 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									</TableRow>
 								))}
 							</TableBody>
-							<TableFooter>
-
-							</TableFooter>
 						</Table>
 						<PaginationComponent
 							currentPage={pagination.page}
@@ -284,24 +248,20 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							onPageChange={handlePageChange}
 						/>
 						<div className='text-right pt-2'>
-							<Button
+							<LoaderButton
 								onClick={handleSubmit}
-								aria-label="Submit Selected Currencies"
-								size={'sm'}
 								disabled={isLoading}
+								isLoading={isLoading}
+								size={'sm'}
 							>
-								{isLoading ? (
-									<>
-										<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-										Loading...
-									</>
-								) : (
-									'Submit'
-								)}
-							</Button>
+								{isLoading
+									? `${m.loading()}...`
+									: mode === formType.EDIT
+										? `${m.save_change_text()}`
+										: `${m.add_text()}`}
+							</LoaderButton>
 						</div>
-
-					</div>
+					</>
 				)}
 			</DialogContent>
 		</Dialog>

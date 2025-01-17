@@ -115,3 +115,28 @@ export const submitCurrency = async (data: CurrencyType, mode: formType, token: 
     const result = await response.json();
     return result;
 };
+
+
+export const fetchSystemCurrencies = async (
+    token: string,
+    tenantId: string,
+    page: number,
+    perpage: number,
+    search: string,
+    sort: string
+) => {
+    const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
+        },
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new APIError(response.status, 'Failed to fetch currencies');
+    }
+    return await response.json();
+};

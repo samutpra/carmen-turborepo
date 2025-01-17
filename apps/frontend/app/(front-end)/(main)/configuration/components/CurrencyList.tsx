@@ -24,7 +24,7 @@ import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 
 enum CurrencyField {
-	Code = 'iso_code',
+	Code = 'code',
 	Name = 'name',
 	Symbol = 'symbol',
 	Description = 'description',
