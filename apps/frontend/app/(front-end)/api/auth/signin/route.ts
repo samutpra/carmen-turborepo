@@ -14,10 +14,12 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
         const { username, password } = result.data;
 
-        // Ensure headers are used in the correct context
-        const response = await fetch(`${API_URL}/v1/auth/login`, {
+        const URL = `${API_URL}/v1/auth/login`;
+
+        const response = await fetch(URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,8 +28,6 @@ export async function POST(request: NextRequest) {
         });
 
         const data = await response.json();
-
-        console.log('data >>>', data);
 
         if (!response.ok) {
             return NextResponse.json(

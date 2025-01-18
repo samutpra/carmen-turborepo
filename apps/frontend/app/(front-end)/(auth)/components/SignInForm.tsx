@@ -4,30 +4,22 @@ import React, { useState } from 'react'
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from '@/lib/i18n';
 import { useForm } from 'react-hook-form';
-import { SignInSchema } from '@/lib/types';
+import { SignInSchema, SignInType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import * as m from '@/paraglide/messages.js';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { toast } from 'sonner';
-
-interface SignInResponse {
-	id: string;
-	username: string;
-	refresh_token: string;
-	access_token: string;
-	message?: string;
-}
+import { signInAction } from '../action/sign-in';
+import { toastError } from '@/components/ui-custom/Toast';
 
 const SignInForm = () => {
 	const { handleLogin } = useAuth();
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
-	const form = useForm<z.infer<typeof SignInSchema>>({
+	const form = useForm<SignInType>({
 		resolver: zodResolver(SignInSchema),
 		defaultValues: {
 			username: '',
@@ -35,45 +27,30 @@ const SignInForm = () => {
 		},
 	});
 
-	const onSubmit = async (data: z.infer<typeof SignInSchema>) => {
+	const onSubmit = async (data: SignInType) => {
 		setLoading(true);
-
 		try {
-			const response = await fetch('/api/auth/signin', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-				},
-				body: JSON.stringify(data),
-				cache: 'no-store',
-			});
+			const result = await signInAction(data);
 
-			const result = (await response.json()) as SignInResponse;
-
-			if (!response.ok) {
-				throw new Error(result.message || 'Sign in failed');
+			if (result) {
+				await handleLogin(
+					{
+						user: {
+							id: result.id,
+							username: result.username,
+						},
+						refresh_token: result.refresh_token,
+						access_token: result.access_token,
+					},
+					result.access_token
+				);
+				router.push('/dashboard');
+			} else {
+				toastError({ message: 'Sign in failed' });
 			}
 
-			await handleLogin(
-				{
-					user: {
-						id: result.id,
-						username: result.username,
-					},
-					refresh_token: result.refresh_token,
-					access_token: result.access_token,
-				},
-				result.access_token
-			);
-
-			router.push('/dashboard');
 		} catch (error) {
-			console.error('Error during signin:', error);
-			toast.error(error instanceof Error ? error.message : 'Sign in failed', {
-				className: 'bg-red-500 text-white border-none',
-				duration: 3000,
-			});
+			toastError({ message: error instanceof Error ? error.message : String(error) });
 		} finally {
 			setLoading(false);
 		}
@@ -81,7 +58,9 @@ const SignInForm = () => {
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 auth-container">
+				<p className="text-[32px] font-bold">{m.signIn_title()}</p>
+				<p className="mb-2.5 mt-2.5 font-normal">{m.des_signIn()}</p>
 				<FormField
 					control={form.control}
 					name="username"

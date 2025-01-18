@@ -1303,6 +1303,14 @@ export type PaginationType = {
   total?: number | 0;
 }
 
+export interface SignInResponse {
+  id: string;
+  username: string;
+  refresh_token: string;
+  access_token: string;
+  message?: string;
+}
+
 export const SignInSchema = z.object({
   username: z.string().min(2, {
     message: `${m.username_zod_error()}`,
@@ -1311,6 +1319,8 @@ export const SignInSchema = z.object({
     message: `${m.password_zod_error()}`,
   }),
 });
+
+export type SignInType = z.infer<typeof SignInSchema>;
 
 export interface User {
   id: string;
