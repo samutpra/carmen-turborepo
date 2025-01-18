@@ -1,5 +1,8 @@
+import { useAuth } from "@/app/context/AuthContext";
+import { toastError } from "@/components/ui-custom/Toast";
 import { SignInResponse, SignInType } from "@/lib/types";
 
+const { handleLogin } = useAuth();
 export const signInAction = async (data: SignInType): Promise<SignInResponse> => {
     const response = await fetch(`api/auth/signin`, {
         method: 'POST',
@@ -14,6 +17,23 @@ export const signInAction = async (data: SignInType): Promise<SignInResponse> =>
         const errorData = await response.json();
         throw new Error(errorData.message || 'Sign in failed');
     }
-
     return response.json();
 }
+export const processLogin = async (result: SignInResponse) => {
+    await handleLogin(
+        {
+            user: {
+                id: result.id,
+                username: result.username,
+            },
+            refresh_token: result.refresh_token,
+            access_token: result.access_token,
+        },
+        result.access_token
+    );
+};
+
+export const handleSignInException = (error: unknown): void => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    toastError({ message: errorMessage });
+};

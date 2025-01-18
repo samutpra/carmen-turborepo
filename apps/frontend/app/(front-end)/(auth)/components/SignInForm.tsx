@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from 'react'
-import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from '@/lib/i18n';
 import { useForm } from 'react-hook-form';
 import { SignInSchema, SignInType } from '@/lib/types';
@@ -11,11 +10,10 @@ import { InputCustom } from '@/components/ui-custom/InputCustom';
 import * as m from '@/paraglide/messages.js';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { signInAction } from '../action/sign-in';
+import { handleSignInException, processLogin, signInAction } from '../action/sign-in';
 import { toastError } from '@/components/ui-custom/Toast';
 
 const SignInForm = () => {
-	const { handleLogin } = useAuth();
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
@@ -32,25 +30,15 @@ const SignInForm = () => {
 		try {
 			const result = await signInAction(data);
 
-			if (result) {
-				await handleLogin(
-					{
-						user: {
-							id: result.id,
-							username: result.username,
-						},
-						refresh_token: result.refresh_token,
-						access_token: result.access_token,
-					},
-					result.access_token
-				);
-				router.push('/dashboard');
-			} else {
+			if (!result) {
 				toastError({ message: 'Sign in failed' });
+			} else {
+				await processLogin(result);
+				router.push('/dashboard');
 			}
 
 		} catch (error) {
-			toastError({ message: error instanceof Error ? error.message : String(error) });
+			handleSignInException(error);
 		} finally {
 			setLoading(false);
 		}
