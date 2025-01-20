@@ -50,6 +50,15 @@ const RecipeTable: React.FC<RecipeTableProps> = ({ recipes }) => {
         <Table>
             <TableHeader>
                 <TableRow>
+                    <TableHead className="w-[50px]">
+                        {/* <Checkbox
+                            checked={
+                                filteredRecipes.length > 0 &&
+                                filteredRecipes.every(recipe => selectedRecipes.includes(recipe.id))
+                            }
+                            onCheckedChange={handleSelectAll}
+                        /> */}
+                    </TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Cuisine</TableHead>

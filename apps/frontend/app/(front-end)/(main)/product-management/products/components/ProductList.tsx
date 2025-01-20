@@ -1,5 +1,5 @@
 "use client";
-import { Link, useRouter } from '@/lib/i18n';
+import { Link } from '@/lib/i18n';
 import React, { useEffect, useState } from 'react'
 import { productListData } from '../data';
 import { useAuth } from '@/app/context/AuthContext';
@@ -45,10 +45,8 @@ const ProductList = () => {
   const { accessToken } = useAuth();
   const token = accessToken || '';
   const tenantId = 'DUMMY';
-  const router = useRouter();
   const [products, setProducts] = useState<ProductMainList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL('search');
   const [status, setStatus] = useURL('status');
@@ -97,7 +95,7 @@ const ProductList = () => {
   const filter = (
     <div className="filter-container">
       <SearchForm
-        onSubmit={handleSearch}
+        onSearch={setSearch}
         defaultValue={search}
         placeholder={`${m.Search()} ${m.Vendor()}...`}
       />

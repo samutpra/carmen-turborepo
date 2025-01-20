@@ -420,3 +420,24 @@ export const mockRecipes: Recipe[] = [
 
 // Export the first recipe as mockRecipe for the form
 export const mockRecipe = mockRecipes[0]
+
+export const FILTER_FIELDS = [
+    { label: "Name", value: "name" },
+    { label: "Category", value: "category" },
+    { label: "Cuisine", value: "cuisine" },
+    { label: "Status", value: "status" },
+    { label: "Cost Range", value: "costRange" },
+    { label: "Margin", value: "margin" },
+    { label: "Preparation Time", value: "preparationTime" },
+    { label: "Difficulty", value: "difficulty" },
+]
+
+export const FILTER_OPERATORS = [
+    { label: "Contains", value: "contains" },
+    { label: "Equals", value: "equals" },
+    { label: "Not equals", value: "notEquals" },
+    { label: "Greater than", value: "greaterThan" },
+    { label: "Less than", value: "lessThan" },
+    { label: "Is empty", value: "isEmpty" },
+    { label: "Is not empty", value: "isNotEmpty" },
+]

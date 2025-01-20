@@ -1,69 +1,18 @@
 "use client";
 import React, { useState } from 'react'
-import { mockRecipes } from '../mockData';
+import { FILTER_FIELDS, FILTER_OPERATORS, mockRecipes, Recipe } from '../mockData';
 import { Button } from '@/components/ui/button';
-import { FileDown, LayoutGrid, List, Plus, Printer, SlidersHorizontal } from 'lucide-react';
+import { FileDown, LayoutGrid, List, Plus, Printer, SlidersHorizontal, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Checkbox } from '@/components/ui/checkbox';
 import RecipeCard from './RecipeCard';
 import RecipeTable from './RecipeTable';
 import * as m from '@/paraglide/messages.js';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Link } from '@/lib/i18n';
-
-const filterOptions = {
-    categories: [
-        { value: "all", label: "All Categories" },
-        { value: "appetizers", label: "Appetizers" },
-        { value: "main-courses", label: "Main Courses" },
-        { value: "soups", label: "Soups" },
-        { value: "salads", label: "Salads" },
-        { value: "desserts", label: "Desserts" },
-    ],
-    cuisineTypes: [
-        { value: "all", label: "All Cuisines" },
-        { value: "international", label: "International" },
-        { value: "italian", label: "Italian" },
-        { value: "chinese", label: "Chinese" },
-        { value: "japanese", label: "Japanese" },
-        { value: "thai", label: "Thai" },
-        { value: "indian", label: "Indian" },
-        { value: "mediterranean", label: "Mediterranean" },
-        { value: "french", label: "French" },
-    ],
-    preparationTimes: [
-        { value: "all", label: "All Times" },
-        { value: "under-15-mins", label: "Under 15 mins" },
-        { value: "15-30-mins", label: "15-30 mins" },
-        { value: "30-60-mins", label: "30-60 mins" },
-        { value: "over-60-mins", label: "Over 60 mins" },
-    ],
-    difficultyLevels: [
-        { value: "all", label: "All Levels" },
-        { value: "easy", label: "Easy" },
-        { value: "medium", label: "Medium" },
-        { value: "hard", label: "Hard" },
-        { value: "expert", label: "Expert" },
-    ],
-    status: [
-        { value: "all", label: "All Status" },
-        { value: "active", label: "Active" },
-        { value: "draft", label: "Draft" },
-        { value: "archived", label: "Archived" },
-    ],
-    sortOptions: [
-        { value: "name", label: "Name" },
-        { value: "lastUpdated", label: "Last Updated" },
-        { value: "costPerPortion", label: "Cost (Low to High)" },
-        { value: "costPerPortionDesc", label: "Cost (High to Low)" },
-        { value: "grossMargin", label: "Margin" },
-    ],
-}
+import { Input } from '@/components/ui/input';
 
 interface FilterOptions {
     category: string
@@ -85,16 +34,46 @@ const initialFilters: FilterOptions = {
     hasMedia: false,
 }
 
+interface FilterCondition {
+    id: string
+    field: string
+    operator: string
+    value: string
+}
+
 const RecipeList = () => {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [filters, setFilters] = useState<FilterOptions>(initialFilters);
-    const [showFilters, setShowFilters] = useState(false);
+    const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("")
-
+    const [quickFilters, setQuickFilters] = useState<string[]>([])
+    const [filterConditions, setFilterConditions] = useState<FilterCondition[]>([])
+    const [selectedRecipes, setSelectedRecipes] = useState<string[]>([])
+    const [searchTerm, setSearchTerm] = useState("")
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFilterChange = (key: keyof FilterOptions, value: any) => {
         setFilters(prev => ({ ...prev, [key]: value }))
     }
+
+    const handleQuickFilter = (filter: string) => {
+        setQuickFilters(prev => {
+            const newFilters = prev.includes(filter)
+                ? prev.filter(f => f !== filter)
+                : [...prev, filter]
+            return newFilters
+        })
+    }
+
+    const addFilterCondition = () => {
+        const newCondition: FilterCondition = {
+            id: Math.random().toString(36).substr(2, 9),
+            field: FILTER_FIELDS[0].value,
+            operator: FILTER_OPERATORS[0].value,
+            value: "",
+        }
+        setFilterConditions([...filterConditions, newCondition])
+    }
+
 
     const getActiveFilterCount = () => {
         return Object.entries(filters).filter(([key, value]) => {
@@ -105,67 +84,88 @@ const RecipeList = () => {
         }).length
     }
 
-    const getFilteredRecipes = () => {
-        return mockRecipes.filter(recipe => {
-            // Search query filter
-            if (searchQuery && !recipe.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-                return false
-            }
-
-            // Category filter (normalize the comparison)
-            if (filters.category !== 'all' && recipe.category.toLowerCase().replace(/\s+/g, '-') !== filters.category) {
-                return false
-            }
-
-            // Cuisine filter
-            if (filters.cuisine !== 'all' && recipe.cuisine.toLowerCase() !== filters.cuisine) {
-                return false
-            }
-
-            // Cost range filter
-            if (recipe.costPerPortion < filters.costRange[0] || recipe.costPerPortion > filters.costRange[1]) {
-                return false
-            }
-
-            // Status filter
-            if (filters.status !== 'all' && recipe.status !== filters.status) {
-                return false
-            }
-
-            // Preparation time filter
-            if (filters.preparationTime !== 'all' && recipe.preparationTime.toLowerCase() !== filters.preparationTime) {
-                return false
-            }
-
-            // Difficulty filter
-            if (filters.difficulty !== 'all' && recipe.difficulty.toLowerCase() !== filters.difficulty) {
-                return false
-            }
-
-            // Has media filter
-            if (filters.hasMedia && !recipe.hasMedia) {
-                return false
-            }
-
-            return true
-        })
+    const removeFilterCondition = (id: string) => {
+        setFilterConditions(filterConditions.filter((condition) => condition.id !== id))
     }
 
-    const filteredRecipes = getFilteredRecipes();
+    const clearFilters = () => {
+        setFilterConditions([])
+        setQuickFilters([])
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getFilterLabel = (key: string, value: any) => {
-        if (key === 'costRange') return `Cost: $${value[0]}-$${value[1]}`
-
-        const option = filterOptions[key as keyof typeof filterOptions]?.find(
-            opt => opt.value === value
+    const updateFilterCondition = (
+        id: string,
+        field: keyof FilterCondition,
+        value: string
+    ) => {
+        setFilterConditions(
+            filterConditions.map((condition) =>
+                condition.id === id ? { ...condition, [field]: value } : condition
+            )
         )
+    }
 
-        if (option) return `${key}: ${option.label}`
-        if (key === 'hasMedia') return 'Has Media'
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedRecipes(filteredRecipes.map(recipe => recipe.id))
+        } else {
+            setSelectedRecipes([])
+        }
+    }
 
-        return `${key}: ${value}`
-    };
+    const handleSelect = (recipeId: string, checked: boolean) => {
+        if (checked) {
+            setSelectedRecipes([...selectedRecipes, recipeId])
+        } else {
+            setSelectedRecipes(selectedRecipes.filter(id => id !== recipeId))
+        }
+    }
+
+
+    const filteredRecipes = mockRecipes.filter(recipe => {
+        // Search filter
+        if (searchTerm && !recipe.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return false
+        }
+
+        // Quick filters
+        if (quickFilters.includes('noMedia') && recipe.hasMedia) return false
+        if (quickFilters.includes('hasMedia') && !recipe.hasMedia) return false
+        if (quickFilters.includes('active') && recipe.status !== 'active') return false
+        if (quickFilters.includes('draft') && recipe.status !== 'draft') return false
+
+        // Advanced filters
+        for (const condition of filterConditions) {
+            const value = recipe[condition.field as keyof Recipe]
+            if (value === undefined) continue
+
+            switch (condition.operator) {
+                case 'contains':
+                    if (!String(value).toLowerCase().includes(condition.value.toLowerCase())) return false
+                    break
+                case 'equals':
+                    if (String(value) !== condition.value) return false
+                    break
+                case 'notEquals':
+                    if (String(value) === condition.value) return false
+                    break
+                case 'greaterThan':
+                    if (typeof value === 'number' && value <= Number(condition.value)) return false
+                    break
+                case 'lessThan':
+                    if (typeof value === 'number' && value >= Number(condition.value)) return false
+                    break
+                case 'isEmpty':
+                    if (value !== '') return false
+                    break
+                case 'isNotEmpty':
+                    if (value === '') return false
+                    break
+            }
+        }
+
+        return true
+    })
 
     const title = "Recipe Library";
 
@@ -196,7 +196,35 @@ const RecipeList = () => {
                 placeholder={`${m.Search()}...`}
             />
             <div className="all-center gap-2">
-                <Select
+                <Button
+                    variant={quickFilters.includes('noMedia') ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickFilter('noMedia')}
+                >
+                    No Media
+                </Button>
+                <Button
+                    variant={quickFilters.includes('hasMedia') ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickFilter('hasMedia')}
+                >
+                    Has Media
+                </Button>
+                <Button
+                    variant={quickFilters.includes('active') ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickFilter('active')}
+                >
+                    Active
+                </Button>
+                <Button
+                    variant={quickFilters.includes('draft') ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickFilter('draft')}
+                >
+                    Draft
+                </Button>
+                {/* <Select
                     value={filters.category}
                     onValueChange={(value) => handleFilterChange('category', value)}
                 >
@@ -210,142 +238,121 @@ const RecipeList = () => {
                             </SelectItem>
                         ))}
                     </SelectContent>
-                </Select>
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
+                </Select> */}
+                <Popover open={isAdvancedFilterOpen} onOpenChange={setIsAdvancedFilterOpen}>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="gap-2" size={'sm'}>
-                            <SlidersHorizontal className="h-4 w-4" />
-                            Filters
+                        <Button variant="outline" size="sm">
+                            <SlidersHorizontal className="h-4 w-4 mr-2" />
+                            Advanced Filters
                             {getActiveFilterCount() > 0 && (
-                                <Badge variant="secondary" className="ml-1">
+                                <Badge variant="secondary" className="ml-2">
                                     {getActiveFilterCount()}
                                 </Badge>
                             )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80 p-4">
+                    <PopoverContent className="w-[400px] p-4" align="end">
                         <div className="space-y-4">
-                            {/* Cuisine Type */}
-                            <div className="space-y-2">
-                                <Label className='text-xs'>Cuisine Type</Label>
-                                <Select
-                                    value={filters.cuisine}
-                                    onValueChange={(value) => handleFilterChange('cuisine', value)}
-                                >
-                                    <SelectTrigger className='h-8'>
-                                        <SelectValue placeholder="Select cuisine" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filterOptions.cuisineTypes.map((cuisine) => (
-                                            <SelectItem key={cuisine.value} value={cuisine.value} className='text-xs'>
-                                                {cuisine.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Cost Range */}
-                            <div className="space-y-2">
-                                <Label className='text-xs'>Cost Range ($)</Label>
-                                <Slider
-                                    value={filters.costRange}
-                                    min={0}
-                                    max={100}
-                                    step={1}
-                                    onValueChange={(value) => handleFilterChange('costRange', value)}
-                                />
-                                <div className="flex justify-between text-xs text-muted-foreground">
-                                    <span>${filters.costRange[0]}</span>
-                                    <span>${filters.costRange[1]}</span>
+                            <div className="font-medium flex items-center justify-between border-b pb-2">
+                                <div className="flex items-center gap-2">
+                                    <SlidersHorizontal className="h-4 w-4" />
+                                    Advanced Filters
                                 </div>
+                                {filterConditions.length > 0 && (
+                                    <Badge variant="secondary" className="ml-2">
+                                        {filterConditions.length}
+                                    </Badge>
+                                )}
                             </div>
-
-                            {/* Status */}
-                            <div className="space-y-2">
-                                <Label className='text-xs'>Status</Label>
-                                <Select
-                                    value={filters.status}
-                                    onValueChange={(value) => handleFilterChange('status', value)}
-                                >
-                                    <SelectTrigger className='h-8'>
-                                        <SelectValue placeholder="Select status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filterOptions.status.map((status) => (
-                                            <SelectItem key={status.value} value={status.value} className='text-xs'>
-                                                {status.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Preparation Time */}
-                            <div className="space-y-2">
-                                <Label>Preparation Time</Label>
-                                <Select
-                                    value={filters.preparationTime}
-                                    onValueChange={(value) => handleFilterChange('preparationTime', value)}
-                                >
-                                    <SelectTrigger className='h-8'>
-                                        <SelectValue placeholder="Select time" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filterOptions.preparationTimes.map((time) => (
-                                            <SelectItem key={time.value} value={time.value} className='text-xs'>
-                                                {time.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Difficulty Level */}
-                            <div className="space-y-2">
-                                <Label>Difficulty Level</Label>
-                                <Select
-                                    value={filters.difficulty}
-                                    onValueChange={(value) => handleFilterChange('difficulty', value)}
-                                >
-                                    <SelectTrigger className='h-8'>
-                                        <SelectValue placeholder="Select difficulty" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filterOptions.difficultyLevels.map((level) => (
-                                            <SelectItem key={level.value} value={level.value} className='text-xs'>
-                                                {level.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Has Media Toggle */}
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    checked={filters.hasMedia}
-                                    onCheckedChange={(checked) => handleFilterChange('hasMedia', checked)}
-                                />
-                                <Label>Has Media</Label>
-                            </div>
-
-                            {/* Filter Actions */}
-                            <div className="flex justify-between pt-2">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setFilters(initialFilters)}
-                                    size={"sm"}
-                                >
+                            {filterConditions.map((condition) => (
+                                <div key={condition.id} className="flex items-center gap-2">
+                                    <Select
+                                        value={condition.field}
+                                        onValueChange={(value) =>
+                                            updateFilterCondition(condition.id, "field", value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[120px]">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {FILTER_FIELDS.map((field) => (
+                                                <SelectItem key={field.value} value={field.value}>
+                                                    {field.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select
+                                        value={condition.operator}
+                                        onValueChange={(value) =>
+                                            updateFilterCondition(condition.id, "operator", value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[120px]">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {FILTER_OPERATORS.map((operator) => (
+                                                <SelectItem key={operator.value} value={operator.value}>
+                                                    {operator.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {!["isEmpty", "isNotEmpty"].includes(condition.operator) && (
+                                        <Input
+                                            value={condition.value}
+                                            onChange={(e) =>
+                                                updateFilterCondition(
+                                                    condition.id,
+                                                    "value",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="flex-1"
+                                            placeholder="Value"
+                                        />
+                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeFilterCondition(condition.id)}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={addFilterCondition}
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Filter Condition
+                            </Button>
+                            <div className="flex justify-between pt-2 border-t">
+                                <Button variant="ghost" size="sm" onClick={clearFilters}>
                                     Reset
                                 </Button>
-                                <Button onClick={() => setShowFilters(false)} size={'sm'}>
+                                <Button size="sm" onClick={() => setIsAdvancedFilterOpen(false)}>
                                     Apply Filters
                                 </Button>
                             </div>
                         </div>
                     </PopoverContent>
                 </Popover>
+                {getActiveFilterCount() > 0 && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="text-muted-foreground"
+                    >
+                        <X className="h-4 w-4 mr-1" />
+                        Clear All
+                    </Button>
+                )}
 
                 <Button
                     variant="outline"
@@ -359,25 +366,7 @@ const RecipeList = () => {
                         <LayoutGrid className="h-4 w-4" />
                     )}
                 </Button>
-                {getActiveFilterCount() > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                        {Object.entries(filters).map(([key, value]) => {
-                            if (value === 'all' || value === false) return null
-                            if (key === 'costRange' && value[0] === 0 && value[1] === 100) return null
 
-                            return (
-                                <Badge
-                                    key={key}
-                                    variant="secondary"
-                                    className="px-2 py-1"
-                                    onClick={() => handleFilterChange(key as keyof FilterOptions, initialFilters[key as keyof FilterOptions])}
-                                >
-                                    {getFilterLabel(key, value)}
-                                </Badge>
-                            )
-                        })}
-                    </div>
-                )}
             </div>
         </div>
     )
