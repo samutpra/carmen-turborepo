@@ -56,7 +56,6 @@ const CurrencyList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('sort');
 	const [perpage, setPerpage] = useURL('perpage');
-
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const fetchData = async () => {
