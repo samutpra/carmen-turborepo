@@ -1,11 +1,13 @@
 import { SignInSchema } from "@/lib/types";
 import { API_URL } from "@/lib/util/api";
 import { NextRequest, NextResponse } from "next/server";
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Validate the input using Zod schema
         const result = SignInSchema.safeParse(body);
         if (!result.success) {
             console.log("Validation error:", result.error);
@@ -17,6 +19,7 @@ export async function POST(request: NextRequest) {
 
         const { username, password } = result.data;
 
+        // Construct the request for the external API
         const URL = `${API_URL}/v1/auth/login`;
 
         const response = await fetch(URL, {
@@ -31,11 +34,12 @@ export async function POST(request: NextRequest) {
 
         if (!response.ok) {
             return NextResponse.json(
-                { error: data.error || 'Authentication failed' },
+                { error: data.error || "Authentication failed" },
                 { status: response.status }
             );
         }
 
+        // Return the response data to the client
         return NextResponse.json(data, { status: 200 });
 
     } catch (error) {
