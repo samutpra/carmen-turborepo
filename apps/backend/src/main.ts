@@ -33,6 +33,10 @@ async function bootstrap() {
       'https://carmen-inventory-backend.vercel.app/',
       'Dev Cloud Environment',
     )
+    .addServer(
+      'https://carmen-inventory-api.vercel.app/',
+      'Production Cloud Environment',
+    )
     // .addSecurity('token', {
     //   type: 'apiKey',
     //   scheme: 'api_key',
