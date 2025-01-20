@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Post (Meat ball)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code" : "BB003",
+    "name" : "meat ball",
+    "description": "meat ball description",
+    "primary_unit_id": "{{unit_id}}",
+    "product_status_type" : "active"
+  }
+}

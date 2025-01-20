@@ -1,0 +1,17 @@
+meta {
+  name: 04 - Update
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/v1/products/d1cedc0d-a5f6-4165-b710-fdbd6fbcbfbc
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "product_status_type" : "discontinued"
+  }
+}

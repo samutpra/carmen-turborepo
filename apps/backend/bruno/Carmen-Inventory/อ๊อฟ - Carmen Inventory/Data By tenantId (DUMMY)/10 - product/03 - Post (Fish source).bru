@@ -1,0 +1,24 @@
+meta {
+  name: 03 - Post (Fish source)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code" : "AB001",
+    "name" : "cat source",
+    "description": "cat source description",
+    "primary_unit_id": "{{unit_id}}",
+    "product_status_type" : "active",
+    "info" : {
+      "brand" : "AAAA"
+    }
+  }
+}

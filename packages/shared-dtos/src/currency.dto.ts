@@ -22,6 +22,12 @@ export class CurrencyCreateDto implements CurrencyCreateModel {
 	rate?: number | null;
 }
 
+export class CurrencyCreateDtoList {
+	list! : CurrencyCreateDto[]
+}
+
+// Update
+
 export const CurrencyUpdateSchema = z.object({
 	id: z.string().uuid(),
 	code: z.string().min(3, 'code must be at least 3 characters'),

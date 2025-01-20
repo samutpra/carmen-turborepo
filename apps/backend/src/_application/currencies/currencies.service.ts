@@ -1,19 +1,12 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   CurrencyCreateDto,
+  CurrencyCreateDtoList,
   CurrencyUpdateDto,
 } from '@carmensoftware/shared-dtos';
 import {
@@ -76,6 +69,10 @@ export class CurrenciesService {
   // }
 
   async _getById(db_tenant: dbTenant, id: string): Promise<tb_currency> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this._getById.name,
+    });
     const res = await db_tenant.tb_currency.findUnique({
       where: {
         id: id,
@@ -89,6 +86,10 @@ export class CurrenciesService {
     req: Request,
     id: string,
   ): Promise<ResponseSingle<tb_currency>> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.findOne.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -108,6 +109,10 @@ export class CurrenciesService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<tb_currency>> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.findAll.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
@@ -135,6 +140,10 @@ export class CurrenciesService {
     req: Request,
     createDto: CurrencyCreateDto,
   ): Promise<ResponseId<string>> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.create.name,
+    });
     // Check if currency already exists
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
@@ -174,12 +183,75 @@ export class CurrenciesService {
   }
   //#endregion CREATE
 
+  //#region CREATE
+  async createBatch(
+    req: Request,
+    createDtoList: CurrencyCreateDtoList,
+  ): Promise<ResponseSingle<object[]>> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.create.name,
+    });
+
+    const msg: object[] = [];
+
+    // Check if currency already exists
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+
+    createDtoList.list.forEach(async (obj) => {
+      const found = await this.db_tenant.tb_currency.findUnique({
+        where: {
+          code: obj.code,
+        },
+      });
+
+      if (found) {
+        msg.push({
+          statusCode: HttpStatus.CONFLICT,
+          error: '`Currency ${obj.code} already exists`',
+          id: found.id,
+        });
+      } else {
+        const createObj = await this.db_tenant.tb_currency.create({
+          data: {
+            ...obj,
+            // code: createDto.code ?? '',
+            // name: createDto.name ?? '',
+            // symbol: createDto.symbol ?? '',
+            // description: createDto.description ?? '',
+            // isActive: createDto.isActive ?? false,
+            created_by_id: user_id,
+            created_at: new Date(),
+            updated_by_id: user_id,
+            updated_at: new Date(),
+          },
+        });
+
+        msg.push({
+          statusCode: HttpStatus.OK,
+          error: '',
+          id: createObj.id,
+        });
+      }
+    });
+
+    const res: ResponseSingle<object[]> = { data: msg };
+
+    return res;
+  }
+  //#endregion CREATE
+
   //#region UPDATE
   async update(
     req: Request,
     id: string,
     updateDto: CurrencyUpdateDto,
   ): Promise<ResponseId<string>> {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.update.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -205,6 +277,10 @@ export class CurrenciesService {
 
   //#region DELETE
   async delete(req: Request, id: string) {
+    this.logger.debug({
+      file: CurrenciesService.name,
+      function: this.delete.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);

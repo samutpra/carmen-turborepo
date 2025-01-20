@@ -27,10 +27,18 @@ export class SystemCurrencyIsoController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
+    this.logger.debug({
+      file: SystemCurrencyIsoController.name,
+      function: this.findAll.name,
+    });
     const defaultSearchFields: string[] = ['iso_code', 'name', 'symbol'];
 
     if (!perpage) {
       perpage = 99999;
+    }
+
+    if (!sort) {
+      sort = 'name';
     }
 
     this.logger.log({

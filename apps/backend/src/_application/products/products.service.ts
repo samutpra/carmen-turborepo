@@ -31,6 +31,10 @@ export class ProductsService {
   logger = new Logger(ProductsService.name);
 
   async getByItemsGroup(req: Request, q: QueryParams, id: string) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.getByItemsGroup.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
@@ -60,6 +64,10 @@ export class ProductsService {
   }
 
   async _getById(db_tenant: dbTenant, id: string): Promise<tb_product> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this._getById.name,
+    });
     const res = await db_tenant.tb_product.findUnique({
       where: {
         id: id,
@@ -69,6 +77,10 @@ export class ProductsService {
   }
 
   async findOne(req: Request, id: string): Promise<ResponseSingle<tb_product>> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.findOne.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -87,12 +99,24 @@ export class ProductsService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<tb_product>> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.findAll.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const max = await this.db_tenant.tb_product.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.tb_product.findMany(q.findMany());
+
+    const include = {
+      ...q.findMany(),
+      include: {
+        tb_product_info: true,
+      },
+    };
+
+    const listObj = await this.db_tenant.tb_product.findMany(include);
 
     const res: ResponseList<tb_product> = {
       data: listObj,
@@ -110,6 +134,10 @@ export class ProductsService {
     req: Request,
     createDto: ProductCreateDto,
   ): Promise<ResponseId<string>> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.create.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
@@ -129,7 +157,7 @@ export class ProductsService {
     const createObj = await this.db_tenant.tb_product.create({
       data: {
         ...createDto,
-        primary_unit_id: createDto.primaryUnit_id || null,
+        primary_unit_id: createDto.primary_unit_id || null,
         created_by_id: user_id,
         created_at: new Date(),
         updated_by_id: user_id,
@@ -142,6 +170,10 @@ export class ProductsService {
   }
 
   async update(req: Request, id: string, updateDto: ProductUpdateDto) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.update.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -176,6 +208,10 @@ export class ProductsService {
   }
 
   async delete(req: Request, id: string) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.delete.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
