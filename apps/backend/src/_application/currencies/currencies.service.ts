@@ -199,42 +199,49 @@ export class CurrenciesService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
-    createDtoList.list.forEach(async (obj) => {
-      const found = await this.db_tenant.tb_currency.findUnique({
-        where: {
-          code: obj.code,
-        },
-      });
+    await Promise.all(
+      createDtoList.list.map(async (obj) => {
+        let err_msg: object = {};
 
-      if (found) {
-        msg.push({
-          statusCode: HttpStatus.CONFLICT,
-          error: '`Currency ${obj.code} already exists`',
-          id: found.id,
-        });
-      } else {
-        const createObj = await this.db_tenant.tb_currency.create({
-          data: {
-            ...obj,
-            // code: createDto.code ?? '',
-            // name: createDto.name ?? '',
-            // symbol: createDto.symbol ?? '',
-            // description: createDto.description ?? '',
-            // isActive: createDto.isActive ?? false,
-            created_by_id: user_id,
-            created_at: new Date(),
-            updated_by_id: user_id,
-            updated_at: new Date(),
+        const found = await this.db_tenant.tb_currency.findUnique({
+          where: {
+            code: obj.code,
           },
         });
 
-        msg.push({
-          statusCode: HttpStatus.OK,
-          error: '',
-          id: createObj.id,
-        });
-      }
-    });
+        if (found) {
+          err_msg = {
+            statusCode: HttpStatus.CONFLICT,
+            error: `Currency ${obj.code} already exists`,
+            id: found.id,
+          };
+        } else {
+          const createObj = await this.db_tenant.tb_currency.create({
+            data: {
+              ...obj,
+              // code: createDto.code ?? '',
+              // name: createDto.name ?? '',
+              // symbol: createDto.symbol ?? '',
+              // description: createDto.description ?? '',
+              // isActive: createDto.isActive ?? false,
+              created_by_id: user_id,
+              created_at: new Date(),
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            },
+          });
+
+          err_msg = {
+            statusCode: HttpStatus.OK,
+            error: '',
+            id: createObj.id,
+          };
+        }
+
+        this.logger.debug(err_msg);
+        msg.push(err_msg);
+      }),
+    );
 
     const res: ResponseSingle<object[]> = { data: msg };
 
