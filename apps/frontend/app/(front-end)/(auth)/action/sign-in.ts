@@ -1,8 +1,6 @@
-import { useAuth } from "@/app/context/AuthContext";
 import { toastError } from "@/components/ui-custom/Toast";
-import { SignInResponse, SignInType } from "@/lib/types";
+import { AuthState, SignInResponse, SignInType } from "@/lib/types";
 
-const { handleLogin } = useAuth();
 export const signInAction = async (data: SignInType): Promise<SignInResponse> => {
     const response = await fetch(`api/auth/signin`, {
         method: 'POST',
@@ -19,8 +17,14 @@ export const signInAction = async (data: SignInType): Promise<SignInResponse> =>
     }
     return response.json();
 }
-export const processLogin = async (result: SignInResponse) => {
-    await handleLogin(
+
+type LoginHandler = (data: AuthState, token: string) => void;
+
+export const processLogin = async (
+    result: SignInResponse,
+    loginHandler: LoginHandler
+) => {
+    await loginHandler(
         {
             user: {
                 id: result.id,

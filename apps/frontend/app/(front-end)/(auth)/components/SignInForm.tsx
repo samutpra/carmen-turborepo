@@ -12,10 +12,12 @@ import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { handleSignInException, processLogin, signInAction } from '../action/sign-in';
 import { toastError } from '@/components/ui-custom/Toast';
+import { useAuth } from '@/app/context/AuthContext';
 
 const SignInForm = () => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const { handleLogin } = useAuth();
 
 	const form = useForm<SignInType>({
 		resolver: zodResolver(SignInSchema),
@@ -33,7 +35,7 @@ const SignInForm = () => {
 			if (!result) {
 				toastError({ message: 'Sign in failed' });
 			} else {
-				await processLogin(result);
+				await processLogin(result, handleLogin);
 				router.push('/dashboard');
 			}
 
