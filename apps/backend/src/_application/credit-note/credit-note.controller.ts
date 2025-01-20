@@ -53,6 +53,10 @@ export class CreditNoteController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: CreditNoteController.name,
+      function: this.findOne.name,
+    });
     try {
       this.logger.debug({ id: id });
       return this.creditNoteService.findOne(req, id);
@@ -78,6 +82,10 @@ export class CreditNoteController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
+    this.logger.debug({
+      file: CreditNoteController.name,
+      function: this.findAll.name,
+    });
     try {
       const defaultSearchFields: string[] = ['name', 'description'];
       this.logger.debug({
@@ -119,6 +127,10 @@ export class CreditNoteController {
     description: 'CreditNoteCreateDto',
   })
   async create(@Req() req: Request, @Body() createDto: CreditNoteCreateDto) {
+    this.logger.debug({
+      file: CreditNoteController.name,
+      function: this.create.name,
+    });
     try {
       this.logger.debug({ createDto: createDto });
       return this.creditNoteService.create(req, createDto);
@@ -148,6 +160,10 @@ export class CreditNoteController {
     @Req() req: Request,
     @Body() updateDto: CreditNoteUpdateDto,
   ) {
+    this.logger.debug({
+      file: CreditNoteController.name,
+      function: this.update.name,
+    });
     try {
       const { ...updatedto } = updateDto;
       updatedto.id = id;
@@ -171,6 +187,10 @@ export class CreditNoteController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: CreditNoteController.name,
+      function: this.delete.name,
+    });
     try {
       this.logger.debug({ id: id });
       return this.creditNoteService.delete(req, id);

@@ -1,26 +1,13 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   CreditNoteCreateDto,
   CreditNoteUpdateDto,
 } from '@carmensoftware/shared-dtos';
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  Request,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Request } from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_credit_note,
@@ -38,6 +25,10 @@ export class CreditNoteService {
   logger = new Logger(CreditNoteService.name);
 
   async _getById(db_tenant: dbTenant, id: string): Promise<tb_credit_note> {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this._getById.name,
+    });
     const res = await db_tenant.tb_credit_note.findUnique({
       where: {
         id: id,
@@ -50,6 +41,10 @@ export class CreditNoteService {
     req: Request,
     id: string,
   ): Promise<ResponseSingle<tb_credit_note>> {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this.findOne.name,
+    });
     const { business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -68,6 +63,10 @@ export class CreditNoteService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<tb_credit_note>> {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this.findAll.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
 
@@ -90,6 +89,10 @@ export class CreditNoteService {
   }
 
   async create(req: Request, createDto: CreditNoteCreateDto) {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this.create.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
 
@@ -125,6 +128,10 @@ export class CreditNoteService {
   }
 
   async update(req: Request, id: string, updateDto: CreditNoteUpdateDto) {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this.update.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
 
@@ -146,6 +153,10 @@ export class CreditNoteService {
   }
 
   async delete(req: Request, id: string) {
+    this.logger.debug({
+      file: CreditNoteService.name,
+      function: this.delete.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
 

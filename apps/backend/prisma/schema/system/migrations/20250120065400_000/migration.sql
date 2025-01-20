@@ -10,9 +10,9 @@ CREATE TABLE "tb_application_role" (
     "business_unit_id" UUID NOT NULL,
     "name" VARCHAR NOT NULL,
     "description" TEXT,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_application_role_pkey" PRIMARY KEY ("id")
@@ -23,9 +23,9 @@ CREATE TABLE "tb_application_role_tb_permission" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "application_role_id" UUID NOT NULL,
     "permission_id" UUID NOT NULL,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_application_role_tb_permission_pkey" PRIMARY KEY ("id")
@@ -40,9 +40,9 @@ CREATE TABLE "tb_business_unit" (
     "description" TEXT,
     "is_hq" BOOLEAN DEFAULT true,
     "is_active" BOOLEAN DEFAULT true,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_business_unit_pkey" PRIMARY KEY ("id")
@@ -53,9 +53,9 @@ CREATE TABLE "tb_business_unit_tb_module" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "business_unit_id" UUID NOT NULL,
     "module_id" UUID NOT NULL,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_business_unit_tb_module_pkey" PRIMARY KEY ("id")
@@ -68,9 +68,9 @@ CREATE TABLE "tb_cluster" (
     "name" TEXT NOT NULL,
     "is_active" BOOLEAN DEFAULT true,
     "info" JSON,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_cluster_pkey" PRIMARY KEY ("id")
@@ -84,9 +84,9 @@ CREATE TABLE "tb_message_format" (
     "is_email" BOOLEAN NOT NULL DEFAULT false,
     "is_sms" BOOLEAN DEFAULT false,
     "is_in_app" BOOLEAN DEFAULT true,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_message_format_pkey" PRIMARY KEY ("id")
@@ -97,9 +97,9 @@ CREATE TABLE "tb_module" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR NOT NULL,
     "description" TEXT,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_module_pkey" PRIMARY KEY ("id")
@@ -112,9 +112,9 @@ CREATE TABLE "tb_notification" (
     "message" TEXT,
     "is_read" BOOLEAN DEFAULT false,
     "is_sent" BOOLEAN DEFAULT false,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_notification_pkey" PRIMARY KEY ("id")
@@ -126,8 +126,8 @@ CREATE TABLE "tb_password" (
     "user_id" UUID NOT NULL,
     "hash" TEXT NOT NULL,
     "is_active" BOOLEAN DEFAULT false,
-    "expired_on" DATE NOT NULL DEFAULT (now() + '90 days'::interval),
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "expired_on" TIMESTAMPTZ(6) NOT NULL DEFAULT (now() + '90 days'::interval),
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
 
     CONSTRAINT "tb_password_pkey" PRIMARY KEY ("id")
@@ -139,9 +139,9 @@ CREATE TABLE "tb_permission" (
     "group" VARCHAR NOT NULL,
     "name" VARCHAR NOT NULL,
     "description" TEXT,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_permission_pkey" PRIMARY KEY ("id")
@@ -152,12 +152,12 @@ CREATE TABLE "tb_subscription" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "cluster_id" UUID NOT NULL,
     "subscription_number" VARCHAR NOT NULL,
-    "start_date" DATE NOT NULL,
-    "end_date" DATE NOT NULL,
+    "start_date" TIMESTAMPTZ(6) NOT NULL,
+    "end_date" TIMESTAMPTZ(6) NOT NULL,
     "status" "enum_subscription_status" NOT NULL,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_subscription_pkey" PRIMARY KEY ("id")
@@ -169,9 +169,9 @@ CREATE TABLE "tb_subscription_detail" (
     "subscription_id" UUID NOT NULL,
     "business_unit_id" UUID NOT NULL,
     "module_id" UUID NOT NULL,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_subscription_detail_pkey" PRIMARY KEY ("id")
@@ -184,10 +184,10 @@ CREATE TABLE "tb_user" (
     "email" VARCHAR(255) NOT NULL,
     "is_active" BOOLEAN DEFAULT false,
     "is_consent" BOOLEAN DEFAULT false,
-    "consent" TIMESTAMP(6),
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "consent" TIMESTAMPTZ(6),
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_user_pkey" PRIMARY KEY ("id")
@@ -201,9 +201,9 @@ CREATE TABLE "tb_user_profile" (
     "middlename" VARCHAR(100) DEFAULT '',
     "lastname" VARCHAR(100) DEFAULT '',
     "bio" JSON DEFAULT '{}',
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_user_profile_pkey" PRIMARY KEY ("id")
@@ -214,9 +214,9 @@ CREATE TABLE "tb_user_tb_application_role" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "application_role_id" UUID NOT NULL,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_user_tb_application_role_pkey" PRIMARY KEY ("id")
@@ -228,9 +228,9 @@ CREATE TABLE "tb_user_tb_business_unit" (
     "user_id" UUID,
     "business_unit_id" UUID,
     "is_active" BOOLEAN DEFAULT true,
-    "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
-    "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_by_id" UUID,
 
     CONSTRAINT "tb_user_tb_business_unit_pkey" PRIMARY KEY ("id")
@@ -242,7 +242,7 @@ CREATE TABLE "tb_user_login_session" (
     "token" TEXT NOT NULL,
     "token_type" "enum_token_type" NOT NULL DEFAULT 'access_token',
     "user_id" UUID NOT NULL,
-    "expired_on" TIMESTAMP(6) NOT NULL DEFAULT (now() + '1 day'::interval),
+    "expired_on" TIMESTAMPTZ(6) NOT NULL DEFAULT (now() + '1 day'::interval),
 
     CONSTRAINT "tb_user_login_session_pkey" PRIMARY KEY ("id")
 );

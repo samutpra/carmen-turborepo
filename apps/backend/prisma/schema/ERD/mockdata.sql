@@ -218,15 +218,14 @@ INSERT INTO "TENANT_DUMMY"."tb_product_item_group" (id, code, name, description,
 (gen_random_uuid(), 'SURFACE', 'Surface Cleaning', 'Surface cleaning supplies', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'CLEANING'), true);
 
 
-
 -- Insert Products
-INSERT INTO "TENANT_DUMMY"."tb_product" (id, code, name, description, primary_unit_id, is_active) VALUES
-(gen_random_uuid(), 'AM001', 'Shower Gel 30ml', 'Guest Amenity Shower Gel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), true),
-(gen_random_uuid(), 'AM002', 'Shampoo 30ml', 'Guest Amenity Shampoo', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), true),
-(gen_random_uuid(), 'LN001', 'Towel', 'Guest Room Towel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), true),
-(gen_random_uuid(), 'LN002', 'Bed Sheet', 'Guest Room Bed Sheet', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), true),
-(gen_random_uuid(), 'MB001', 'Water Bottle', 'Minibar Water Bottle', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), true),
-(gen_random_uuid(), 'CL001', 'Floor Cleaner', 'Floor Cleaning Solution', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), true);
+INSERT INTO "TENANT_DUMMY"."tb_product" (id, code, name, description, primary_unit_id, product_status_type) VALUES
+(gen_random_uuid(), 'AM001', 'Shower Gel 30ml', 'Guest Amenity Shower Gel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'AM002', 'Shampoo 30ml', 'Guest Amenity Shampoo', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'LN001', 'Towel', 'Guest Room Towel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'LN002', 'Bed Sheet', 'Guest Room Bed Sheet', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'MB001', 'Water Bottle', 'Minibar Water Bottle', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'inactive'),
+(gen_random_uuid(), 'CL001', 'Floor Cleaner', 'Floor Cleaning Solution', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), 'discontinued');
 
 
 -- Insert Product Info

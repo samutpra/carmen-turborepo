@@ -26,6 +26,10 @@ export class SystemCurrencyIsoService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<tb_currency_iso>> {
+    this.logger.debug({
+      file: SystemCurrencyIsoService.name,
+      function: this.findAll.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
     const max = await this.db_System.tb_currency_iso.count({
