@@ -213,7 +213,7 @@ INSERT INTO "TENANT_DUMMY"."tb_product_item_group" (id, code, name, description,
 (gen_random_uuid(), 'BED', 'Bedding', 'Bed related linen', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'LINEN'), true),
 (gen_random_uuid(), 'BATH_LIN', 'Bathroom Linen', 'Bathroom related linen', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'LINEN'), true),
 (gen_random_uuid(), 'DRINK', 'Beverages', 'Minibar drinks', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'MINIBAR'), true),
-(gen_random_uuid(), 'SNACK', 'Snacks', 'Minibar snacks', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'MINIBAR'), true),
+('2fd141f2-1298-44ad-89ad-6ad2809f8388', 'SNACK', 'Snacks', 'Minibar snacks', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'MINIBAR'), true),
 (gen_random_uuid(), 'FLOOR', 'Floor Cleaning', 'Floor cleaning supplies', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'CLEANING'), true),
 (gen_random_uuid(), 'SURFACE', 'Surface Cleaning', 'Surface cleaning supplies', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'CLEANING'), true);
 

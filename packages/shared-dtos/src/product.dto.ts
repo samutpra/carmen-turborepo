@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+export enum enum_product_status_type {
+	active = "active",
+	inactive = "inactive",
+	discontinued = "discontinued",
+}
+
 export const product_location_item_schema = z.object( {
 	location_id : z.string().uuid()
 } );
@@ -41,13 +47,17 @@ export const ProductCreateSchema = z.object({
 	id: z.string().uuid().optional(),
 	code: z.string().min(1, 'code must be at least 1 character'),
 	name: z.string().min(1, 'name must be at least 1 character'),
+	local_name: z.string().optional(),
 	description: z.string().nullable().optional(),
 	is_active: z.boolean().default(true).nullable().optional(),
 	primary_unit_id: z.string().uuid().optional(),
+	product_status_type: z.enum(Object.values(enum_product_status_type) as [string, ...string[]]),
+	product_item_group_id: z.string().uuid().min(1, 'item group must be at least 1 character'),
 	price: z.number().optional(),
 	tax_type: z.string().optional(),
 	tax_rate: z.number().optional(),
-	price_deviation_limit : z.number().optional(),
+	is_ingredients: z.boolean().default(false).optional(),
+    price_deviation_limit: z.number().optional(),
     info: z.object({}).optional()
 });
 
@@ -62,12 +72,16 @@ export class ProductCreateDto implements ProductCreateModel {
 	id?: string;
 	code!: string;
 	name!: string;
+	local_name?: string;
+	product_status_type!: enum_product_status_type;
+	product_item_group_id!: string;
 	description?: string | null;
 	is_active?: boolean | null;
 	primary_unit_id?: string;
 	price?: number;
 	tax_type? : enum_tax_type;
 	tax_rate? :number;
+	is_ingredients? :  boolean;
 	price_deviation_limit? : number;
 	info?: Product_info;
 	locations? : {
@@ -95,12 +109,16 @@ export class ProductUpdateDto implements ProductUpdateModel {
 	id!: string;
 	code!: string;
 	name!: string;
+	local_name?: string;
+	product_status_type!: enum_product_status_type;
+	product_item_group_id!: string;
 	description?: string | null;
 	is_active?: boolean | null;
 	primary_unit_id?: string;
 	price?: number;
 	tax_type? : enum_tax_type;
 	tax_rate? :number;
+	is_ingredients? :  boolean;
 	price_deviation_limit? : number;
 	info?: Product_info;
 	locations? : {

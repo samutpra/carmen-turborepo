@@ -130,10 +130,7 @@ export class ProductsService {
     return res;
   }
 
-  async create(
-    req: Request,
-    createDto: ProductCreateDto,
-  ): Promise<ResponseId<string>> {
+  async create(req: Request, createDto: ProductCreateDto) {
     this.logger.debug({
       file: ProductsService.name,
       function: this.create.name,
@@ -154,19 +151,61 @@ export class ProductsService {
         id: found.id,
       });
     }
-    const createObj = await this.db_tenant.tb_product.create({
-      data: {
-        ...createDto,
-        primary_unit_id: createDto.primary_unit_id || null,
+
+    const tx = this.db_tenant.$transaction(async (transactionClient) => {
+      const product_obj: any = {
+        code: createDto.code,
+        name: createDto.name,
+        local_name: createDto.local_name,
+        description: createDto.description,
+        primary_unit_id: createDto.primary_unit_id,
+        product_status_type: createDto.product_status_type,
         created_by_id: user_id,
         created_at: new Date(),
         updated_by_id: user_id,
         updated_at: new Date(),
-      },
+      };
+
+      this.logger.debug(product_obj);
+
+      const createObj = await transactionClient.tb_product.create({
+        data: {
+          ...product_obj,
+          created_by_id: user_id,
+          created_at: new Date(),
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+
+      const product_Info_obj: any = {
+        product_id: createObj.id,
+        product_item_group_id: createDto.product_item_group_id,
+        price: createDto.price,
+        tax_type: createDto.tax_type,
+        tax_rate: createDto.tax_rate,
+        is_ingredients: createDto.is_ingredients,
+        price_deviation_limit: createDto.price_deviation_limit,
+        info: createDto.info,
+      };
+
+      this.logger.debug(product_obj);
+
+      await transactionClient.tb_product_info.create({
+        data: {
+          ...product_Info_obj,
+          created_by_id: user_id,
+          created_at: new Date(),
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+
+      const res: ResponseId<string> = { id: createObj.id };
+      return res;
     });
 
-    const res: ResponseId<string> = { id: createObj.id };
-    return res;
+    return tx;
   }
 
   async update(req: Request, id: string, updateDto: ProductUpdateDto) {
@@ -181,17 +220,6 @@ export class ProductsService {
     if (!oneObj) {
       throw new NotFoundException('Product not found');
     }
-
-    // const obj: Prisma.ProductUpdateInput = {
-    //   id: updateDto.id,
-    //   code: updateDto.code,
-    //   name: updateDto.name,
-    //   description: updateDto.description,
-    //   isActive: updateDto.isActive,
-    //   // ProductInfo: null,
-    //   // ProductVendor: null,
-    //   // UnitConversion: updateDto.UnitConversion,
-    // };
 
     const updateObj = await this.db_tenant.tb_product.update({
       where: {
@@ -220,10 +248,18 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    await this.db_tenant.tb_product.delete({
-      where: {
-        id,
-      },
+    const tx = this.db_tenant.$transaction(async (transactionClient) => {
+      await transactionClient.tb_product_info.deleteMany({
+        where: {
+          product_id: id,
+        },
+      });
+
+      await transactionClient.tb_product.delete({
+        where: {
+          id,
+        },
+      });
     });
   }
 }
