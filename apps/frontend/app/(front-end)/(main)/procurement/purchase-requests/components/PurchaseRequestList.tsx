@@ -94,7 +94,7 @@ const PurchaseRequestList = () => {
       <SearchForm
         defaultValue={search}
         onSearch={setSearch}
-        placeholder={`${m.Search()} ${m.currency()}..`}
+        placeholder={`${m.Search()}..`}
       />
       <div className="all-center gap-2">
         <StatusSearchDropdown

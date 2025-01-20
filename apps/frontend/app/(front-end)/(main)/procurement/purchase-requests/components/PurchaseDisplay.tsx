@@ -57,7 +57,10 @@ const PurchaseDisplay: React.FC<Props> = ({ prData }) => {
                                             Amount
                                         </span>
                                         <span className="text-sm font-medium col-span-7 font-mono">
-                                            {new Intl.NumberFormat().format(pr.amount)}
+                                            {new Intl.NumberFormat('en-US', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            }).format(pr.amount)}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-10 gap-4">
@@ -123,7 +126,12 @@ const PurchaseDisplay: React.FC<Props> = ({ prData }) => {
                                 <TableCell>{pr.date.toLocaleDateString()}</TableCell>
                                 <TableCell>{pr.type}</TableCell>
                                 <TableCell>{pr.requestor}</TableCell>
-                                <TableCell className='font-mono'>{new Intl.NumberFormat().format(pr.amount)}</TableCell>
+                                <TableCell className='font-mono'>
+                                    {new Intl.NumberFormat('en-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }).format(pr.amount)}
+                                </TableCell>
                                 <TableCell>{pr.currentStage}</TableCell>
                                 <TableCell>{pr.description}</TableCell>
                                 <TableCell>
