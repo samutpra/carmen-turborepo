@@ -148,6 +148,7 @@ const CurrencyList = () => {
 
 	const actionButtons = (
 		<div className="action-btn-container">
+			<Button variant={'outline'} size={'sm'}>Refresh Exchange Rate</Button>
 			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
 			<Button variant="outline" className="group" size={'sm'}>
 				<FileDown className="h-4 w-4" />
