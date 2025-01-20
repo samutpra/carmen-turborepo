@@ -3,7 +3,7 @@ import { EmailTemplate } from "@/components/EmailTemplate";
 import { Resend } from 'resend';
 import { API_URL } from '@/lib/util/api';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
     try {
