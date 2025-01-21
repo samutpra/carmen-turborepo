@@ -12,6 +12,8 @@ interface FieldConfig<T> {
     key: keyof T;
     label: string;
     type?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render?: (value: any) => React.ReactNode;
 }
 
 interface SortDropdownProps<T extends Record<string, unknown>> {

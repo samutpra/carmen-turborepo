@@ -1,92 +1,102 @@
 "use client";
+
 import { Link } from '@/lib/i18n';
-import React, { useEffect, useState } from 'react'
-import { productListData } from '../data';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useURL } from '@/hooks/useURL';
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus, Printer } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import ProductTable from './ProductTable';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import ProductCard from './ProductCard';
+import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
+import { fetchProducts } from '../../actions/product';
+import { toastError } from '@/components/ui-custom/Toast';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import ProductDisplay from './ProductDisplay';
 
-export interface ProductMainList {
-  id: string;
-  productCode: string;
-  name: string;
-  description?: string;
-  categoryId: string;
-  subCategoryId: string;
-  itemGroup: string;
-  basePrice: number;
-  currency: string;
-  isActive: boolean;
-  primaryInventoryUnitId: string;
+enum ProductField {
+  NAME = 'name',
+  CODE = 'code',
+  DESCRIPYION = 'description',
+  CATEGORY = 'category',
+  SUBCATEGORY = 'subcategory',
+  ITEM_GROUP = 'itemGroup',
+  STATUS = 'product_status_type',
 }
+
+const fields: FieldConfig<ProductCreateModel>[] = [
+  { key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
+  { key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+  { key: ProductField.DESCRIPYION as keyof ProductCreateModel, label: 'Description' },
+  { key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
+  { key: ProductField.SUBCATEGORY as keyof ProductCreateModel, label: 'Subcategory' },
+  { key: ProductField.ITEM_GROUP as keyof ProductCreateModel, label: 'Item Group' },
+  { key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
+];
+
 const ProductList = () => {
   const { accessToken } = useAuth();
   const token = accessToken || '';
   const tenantId = 'DUMMY';
-  const [products, setProducts] = useState<ProductMainList[]>([]);
+  const [products, setProducts] = useState<ProductCreateModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL('search');
   const [status, setStatus] = useURL('status');
-  const fetchProducts = () => {
+  const [page, setPage] = useURL('page');
+  const [perpage, setPerpage] = useURL('perpage');
+  const [totalPage, setTotalPage] = useURL('totalPage');
+
+  const fetchData = async () => {
     try {
       setIsLoading(true);
-      setProducts(productListData.products)
+      const data = await fetchProducts(token, tenantId, {
+        search,
+        status,
+        page,
+        perpage
+      });
+
+      console.log('data', data);
+      setProducts(data.data);
+      setPage(data.pagination.page);
+      setPerpage(data.pagination.perpage);
+      setTotalPage(data.pagination.total);
     } catch (error) {
       console.log('error', error);
-
+      toastError({ message: 'Failed to fetch products' });
     } finally {
       setIsLoading(false);
     }
-  }
-
-  useEffect(() => {
-    fetchProducts();
-  }, [token, tenantId]);
-
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSearch(event.currentTarget.search.value);
   };
 
-  const title = 'Product List';
+  useEffect(() => {
+    fetchData();
+  }, [token, tenantId, search, status]);
+
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
 
   const actionButtons = (
-    <div className="action-btn-container">
-      <Button asChild variant={'outline'} size={'sm'}>
+    <div className="flex items-center gap-2">
+      <Button asChild variant="outline" size="sm">
         <Link href="/vendor-management/vendors/new">
-          <Plus className="h-4 w-4" />
-          Product
+          <Plus className="h-4 w-4 mr-2" />
+          New product
         </Link>
       </Button>
-      <Button variant="outline" className="group" size={'sm'}>
-        <FileDown className="h-4 w-4" />
+      <Button variant="outline" className="group" size="sm">
+        <FileDown className="h-4 w-4 mr-2" />
         {m.export_text()}
       </Button>
-      <Button variant="outline" size={'sm'}>
-        <Printer className="h-4 w-4" />
+      <Button variant="outline" size="sm">
+        <Printer className="h-4 w-4 mr-2" />
         {m.print_text()}
       </Button>
     </div>
@@ -97,86 +107,46 @@ const ProductList = () => {
       <SearchForm
         onSearch={setSearch}
         defaultValue={search}
-        placeholder={`${m.Search()} ${m.Vendor()}...`}
+        placeholder={`${m.Search()} ...`}
       />
       <div className="all-center gap-2">
-        <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={statusOpen}
-              className="btn-combobox"
-              size={'sm'}
-            >
-              {status
-                ? statusOptions.find((option) => option.value === status)?.label
-                : `${m.select_status()}`}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="pop-content">
-            <Command>
-              <CommandInput placeholder={`${m.Search()} ${m.status_text()}`} className="h-9" />
-              <CommandList>
-                <CommandEmpty>No status found.</CommandEmpty>
-                <CommandGroup>
-                  {statusOptions.map((option) => (
-                    <CommandItem
-                      key={option.value}
-                      value={option.value}
-                      onSelect={() => {
-                        setStatus(option.value);
-                        setStatusOpen(false);
-                      }}
-                    >
-                      {option.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <StatusSearchDropdown
+          options={statusOptions}
+          value={status}
+          onChange={setStatus}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+        />
+        <SortDropDown
+          fieldConfigs={fields}
+          items={products}
+          onSort={setProducts}
+        />
       </div>
+
     </div>
   );
 
-  if (isLoading) {
-    return (
-      <>
-        <div className='block md:hidden'>
-          <SkeltonCardLoading />
-        </div>
-        <div className='hidden md:block'>
-          <SkeletonTableLoading />;
-        </div>
-      </>
-    )
-  }
+  if (isLoading) return <SkeltonLoad />
 
   const content = (
-    <>
-      <div className="block md:hidden">
-        <ProductCard
-          products={products}
-        />
-      </div>
-      <div className="hidden md:block">
-        <ProductTable
-          products={products}
-        />
-      </div>
-    </>
+    <ProductDisplay
+      products={products}
+      fields={fields}
+      page={+page}
+      totalPage={+totalPage}
+    />
   );
+
 
   return (
     <DataDisplayTemplate
-      title={title}
+      title='Products List'
       actionButtons={actionButtons}
       filters={filter}
       content={content}
     />
-  )
-}
+  );
+};
 
-export default ProductList
+export default ProductList;
