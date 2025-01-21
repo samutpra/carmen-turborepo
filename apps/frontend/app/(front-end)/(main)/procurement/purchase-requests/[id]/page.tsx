@@ -1,17 +1,9 @@
-"use client";
+import React from 'react'
 
-import React from 'react';
-import { useParams } from 'next/navigation';
-import { FormAction } from '@/lib/types';
-import PurchaseRequestComponent from '../components/PurchaseRequestComponent';
-
-const PurchaseRequestByIDPage = () => {
-    const params = useParams();
-    const id = params.id as string;
-    const mode = id === FormAction.CREATE ? FormAction.CREATE : FormAction.VIEW;
+const PurchaseRequestIdPage = () => {
     return (
-        <PurchaseRequestComponent id={id} prMode={mode} />
+        <div>PurchaseRequestIdPage</div>
     )
 }
 
-export default PurchaseRequestByIDPage
+export default PurchaseRequestIdPage

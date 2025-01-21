@@ -1,16 +1,8 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   ProductCreateDto,
@@ -39,6 +31,10 @@ export class ProductsService {
   logger = new Logger(ProductsService.name);
 
   async getByItemsGroup(req: Request, q: QueryParams, id: string) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.getByItemsGroup.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
@@ -60,7 +56,7 @@ export class ProductsService {
       data: listObj,
       pagination: {
         page: q.page,
-        perPage: q.perpage,
+        perpage: q.perpage,
         total: max,
       },
     };
@@ -68,6 +64,10 @@ export class ProductsService {
   }
 
   async _getById(db_tenant: dbTenant, id: string): Promise<tb_product> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this._getById.name,
+    });
     const res = await db_tenant.tb_product.findUnique({
       where: {
         id: id,
@@ -77,6 +77,10 @@ export class ProductsService {
   }
 
   async findOne(req: Request, id: string): Promise<ResponseSingle<tb_product>> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.findOne.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -95,29 +99,42 @@ export class ProductsService {
     req: Request,
     q: QueryParams,
   ): Promise<ResponseList<tb_product>> {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.findAll.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const max = await this.db_tenant.tb_product.count({
       where: q.where(),
     });
-    const listObj = await this.db_tenant.tb_product.findMany(q.findMany());
+
+    const include = {
+      ...q.findMany(),
+      include: {
+        tb_product_info: true,
+      },
+    };
+
+    const listObj = await this.db_tenant.tb_product.findMany(include);
 
     const res: ResponseList<tb_product> = {
       data: listObj,
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perpage,
+        perpage: q.perpage,
         pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };
     return res;
   }
 
-  async create(
-    req: Request,
-    createDto: ProductCreateDto,
-  ): Promise<ResponseId<string>> {
+  async create(req: Request, createDto: ProductCreateDto) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.create.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
 
@@ -134,22 +151,68 @@ export class ProductsService {
         id: found.id,
       });
     }
-    const createObj = await this.db_tenant.tb_product.create({
-      data: {
-        ...createDto,
-        primary_unit: createDto.primaryUnit_id || null,
+
+    const tx = this.db_tenant.$transaction(async (transactionClient) => {
+      const product_obj: any = {
+        code: createDto.code,
+        name: createDto.name,
+        local_name: createDto.local_name,
+        description: createDto.description,
+        primary_unit_id: createDto.primary_unit_id,
+        product_status_type: createDto.product_status_type,
         created_by_id: user_id,
         created_at: new Date(),
         updated_by_id: user_id,
         updated_at: new Date(),
-      },
+      };
+
+      this.logger.debug(product_obj);
+
+      const createObj = await transactionClient.tb_product.create({
+        data: {
+          ...product_obj,
+          created_by_id: user_id,
+          created_at: new Date(),
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+
+      const product_Info_obj: any = {
+        product_id: createObj.id,
+        product_item_group_id: createDto.product_item_group_id,
+        price: createDto.price,
+        tax_type: createDto.tax_type,
+        tax_rate: createDto.tax_rate,
+        is_ingredients: createDto.is_ingredients,
+        price_deviation_limit: createDto.price_deviation_limit,
+        info: createDto.info,
+      };
+
+      this.logger.debug(product_obj);
+
+      await transactionClient.tb_product_info.create({
+        data: {
+          ...product_Info_obj,
+          created_by_id: user_id,
+          created_at: new Date(),
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+
+      const res: ResponseId<string> = { id: createObj.id };
+      return res;
     });
 
-    const res: ResponseId<string> = { id: createObj.id };
-    return res;
+    return tx;
   }
 
   async update(req: Request, id: string, updateDto: ProductUpdateDto) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.update.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -157,17 +220,6 @@ export class ProductsService {
     if (!oneObj) {
       throw new NotFoundException('Product not found');
     }
-
-    // const obj: Prisma.ProductUpdateInput = {
-    //   id: updateDto.id,
-    //   code: updateDto.code,
-    //   name: updateDto.name,
-    //   description: updateDto.description,
-    //   isActive: updateDto.isActive,
-    //   // ProductInfo: null,
-    //   // ProductVendor: null,
-    //   // UnitConversion: updateDto.UnitConversion,
-    // };
 
     const updateObj = await this.db_tenant.tb_product.update({
       where: {
@@ -184,6 +236,10 @@ export class ProductsService {
   }
 
   async delete(req: Request, id: string) {
+    this.logger.debug({
+      file: ProductsService.name,
+      function: this.delete.name,
+    });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
@@ -192,10 +248,18 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    await this.db_tenant.tb_product.delete({
-      where: {
-        id,
-      },
+    const tx = this.db_tenant.$transaction(async (transactionClient) => {
+      await transactionClient.tb_product_info.deleteMany({
+        where: {
+          product_id: id,
+        },
+      });
+
+      await transactionClient.tb_product.delete({
+        where: {
+          id,
+        },
+      });
     });
   }
 }

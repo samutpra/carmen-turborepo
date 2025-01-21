@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Post (Pool bar)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/delivery-point
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Pool bar - delivery point",
+    "is_active": true
+  }
+}

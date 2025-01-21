@@ -75,7 +75,7 @@ const PeriodEndList = () => {
     const filter = (
         <div className="filter-container">
             <SearchForm
-                onSubmit={handleSearch}
+                onSearch={setSearch}
                 defaultValue={search}
                 placeholder={`${m.Search()} ${m.store_requisitions()}...`}
             />

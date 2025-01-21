@@ -1,6 +1,11 @@
 "use client"
 
 import React, { useState } from 'react'
+
+interface CustomJwtPayload {
+    username: string;
+    email: string;
+}
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from '@/lib/i18n';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
@@ -8,7 +13,7 @@ import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { CustomJwtPayload, PayloadRecoverPasswordType, RecoverPasswordSchema, RecoverPasswordType } from '@/lib/types';
+import { PayloadRecoverPasswordType, RecoverPasswordSchema, RecoverPasswordType } from '@/lib/types';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { submitForgotPassword } from '../actions/actions';
 

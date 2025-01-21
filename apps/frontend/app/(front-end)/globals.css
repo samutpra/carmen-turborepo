@@ -105,4 +105,7 @@ body {
 	.flex-between {
 		@apply flex items-center justify-between;
 	}
+	.auth-container {
+		@apply my-auto mb-auto mt-8 flex flex-col md:mt-[70px] w-[350px] max-w-[450px] mx-auto md:max-w-[450px] lg:mt-[130px] lg:max-w-[450px];
+	}
 }

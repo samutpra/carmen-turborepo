@@ -5,18 +5,18 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/currencies?sort=code,name:asc&searchfields=code,name,description,is_active:bool&perpage=2
+  url: {{host}}/api/v1/currencies
   body: none
   auth: bearer
 }
 
 params:query {
-  sort: code,name:asc
-  searchfields: code,name,description,is_active:bool
-  perpage: 2
+  ~sort: code,name:asc
+  ~searchfields: code,name,description,is_active:bool
+  ~perpage: 2
+  ~filter[name]: th
   ~page: 1
   ~filter[isActive: bool]: 1
-  ~filter[code]: us
   ~search: baht
   ~advance: {'where':{'code':'usd'}}
 }

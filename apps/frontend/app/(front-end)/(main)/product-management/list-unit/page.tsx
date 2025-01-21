@@ -208,7 +208,7 @@ const UnitList = () => {
     const filter = (
         <div className="filter-container">
             <SearchForm
-                onSubmit={handleSearch}
+                onSearch={setSearch}
                 defaultValue={search}
                 placeholder="Search Unit..."
             />

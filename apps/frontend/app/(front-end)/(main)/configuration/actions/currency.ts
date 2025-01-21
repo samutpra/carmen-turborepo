@@ -5,7 +5,13 @@ import { APIError } from "@carmensoftware/shared-types/src/pagination";
 export const fetchCurrencies = async (
     token: string,
     tenantId: string,
-    params: { search?: string; status?: string } = {}
+    params: {
+        search?: string;
+        status?: string,
+        page?: string,
+        perpage?: string,
+        sort?: string
+    } = {}
 ) => {
     try {
         if (!token) {
@@ -20,6 +26,18 @@ export const fetchCurrencies = async (
 
         if (params.status) {
             query.append('filter[is_active:bool]', params.status);
+        }
+
+        if (params.page) {
+            query.append('page', params.page);
+        }
+
+        if (params.perpage) {
+            query.append('perpage', params.perpage);
+        }
+
+        if (params.sort) {
+            query.append('sort', params.sort);
         }
 
         const url = `/api/configuration/currency?${query}`;
@@ -96,4 +114,29 @@ export const submitCurrency = async (data: CurrencyType, mode: formType, token: 
 
     const result = await response.json();
     return result;
+};
+
+
+export const fetchSystemCurrencies = async (
+    token: string,
+    tenantId: string,
+    page: number,
+    perpage: number,
+    search: string,
+    sort: string
+) => {
+    const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
+        },
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new APIError(response.status, 'Failed to fetch currencies');
+    }
+    return await response.json();
 };

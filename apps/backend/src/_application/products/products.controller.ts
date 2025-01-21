@@ -42,7 +42,7 @@ export class ProductsController {
 
   private readonly logger = new Logger(ProductsController.name);
 
-  @Get()
+  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'id',
@@ -50,6 +50,10 @@ export class ProductsController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.findOne.name,
+    });
     this.logger.debug({ id: id });
     return this.productsService.findOne(req, id);
   }
@@ -66,6 +70,10 @@ export class ProductsController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.findAll.name,
+    });
     const defaultSearchFields: string[] = ['code', 'name', 'description'];
 
     this.logger.debug({
@@ -106,6 +114,10 @@ export class ProductsController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.getByItemsGroup.name,
+    });
     const defaultSearchFields: string[] = [];
 
     this.logger.debug({
@@ -139,6 +151,10 @@ export class ProductsController {
     description: 'ProductCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.findOne.name,
+    });
     this.logger.debug({ createDto: createDto });
     return this.productsService.create(req, createDto);
   }
@@ -159,6 +175,10 @@ export class ProductsController {
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.update.name,
+    });
     const { ...updatedto } = updateDto;
     updatedto.id = id;
     this.logger.debug({ id: id, updateDto: updateDto });
@@ -173,6 +193,10 @@ export class ProductsController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.delete.name,
+    });
     this.logger.debug({ id: id });
     return this.productsService.delete(req, id);
   }

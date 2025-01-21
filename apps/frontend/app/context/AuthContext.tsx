@@ -1,64 +1,81 @@
+// context/AuthContext.tsx
 "use client";
+
 import { useRouter } from '@/lib/i18n';
-import { AuthContextType, AuthState } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+type AuthState = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	user: any | null;
+	refresh_token: string;
+	access_token?: string;
+};
 
-const ACCESS_TOKEN = 'access_token';
-const USER_DATA = 'user_data';
+type AuthContextType = {
+	authState: AuthState;
+	accessToken: string | null;
+	isAuthenticated: boolean;
+	handleLogin: (data: AuthState, token: string) => void;
+	handleLogout: () => void;
+	updateAccessToken: (token: string) => void;
+};
+
+// สร้าง default value เพื่อป้องกัน undefined
+const defaultAuthContext: AuthContextType = {
+	authState: { user: null, refresh_token: '' },
+	accessToken: null,
+	isAuthenticated: false,
+	handleLogin: () => {},
+	handleLogout: () => {},
+	updateAccessToken: () => {},
+};
+
+export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const router = useRouter();
-
-	const [authState, setAuthState] = useState<AuthState>(() => {
-		if (typeof window !== 'undefined') {
-			const storedUser = localStorage.getItem(USER_DATA);
-			return storedUser
-				? JSON.parse(storedUser)
-				: { user: null, refresh_token: '' };
-		}
-		return { user: null, refresh_token: '' };
+	const [authState, setAuthState] = useState<AuthState>({
+		user: null,
+		refresh_token: '',
 	});
-
-	const [accessToken, setAccessToken] = useState<string | null>(() => {
-		if (typeof window !== 'undefined') {
-			return localStorage.getItem(ACCESS_TOKEN);
-		}
-		return null;
-	});
+	const [accessToken, setAccessToken] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (accessToken !== null) {
-			localStorage.setItem(ACCESS_TOKEN, accessToken);
+		if (typeof window !== 'undefined') {
+			const storedUser = localStorage.getItem('user_data');
+			const storedToken = localStorage.getItem('access_token');
+			if (storedUser) setAuthState(JSON.parse(storedUser));
+			if (storedToken) setAccessToken(storedToken);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (accessToken) {
+			localStorage.setItem('access_token', accessToken);
 		} else {
-			localStorage.removeItem(ACCESS_TOKEN);
+			localStorage.removeItem('access_token');
 			router.push('/sign-in');
 		}
-	}, [accessToken]);
+	}, [accessToken, router]);
 
 	useEffect(() => {
 		if (authState.user) {
-			localStorage.setItem(USER_DATA, JSON.stringify(authState));
+			localStorage.setItem('user_data', JSON.stringify(authState));
 		} else {
-			localStorage.removeItem(USER_DATA);
+			localStorage.removeItem('user_data');
 		}
 	}, [authState]);
 
 	const handleLogin = (data: AuthState, token: string) => {
 		setAuthState(data);
 		setAccessToken(token);
-		localStorage.setItem(USER_DATA, JSON.stringify(data));
-		localStorage.setItem(ACCESS_TOKEN, token);
 	};
 
 	const handleLogout = () => {
-		setAuthState({ user: null, refresh_token: '', access_token: '' });
+		setAuthState({ user: null, refresh_token: '' });
 		setAccessToken(null);
-		localStorage.removeItem(USER_DATA);
-		localStorage.removeItem(ACCESS_TOKEN);
 	};
 
 	const updateAccessToken = (token: string) => {
@@ -66,23 +83,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	};
 
 	const value = {
-		...authState,
-		isAuthenticated: !!authState.user,
+		authState,
 		accessToken,
+		isAuthenticated: !!authState.user,
 		handleLogin,
 		handleLogout,
 		updateAccessToken,
-		authState,
-		setAccessToken,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+// แยก hook ไปอยู่ในฟังก์ชันใหม่
+export function useAuth(): AuthContextType {
+	const context = useContext(AuthContext);
+	if (!context) {
+		throw new Error('useAuth must be used within an AuthProvider');
+	}
+	return context;
+}

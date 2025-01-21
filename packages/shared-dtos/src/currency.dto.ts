@@ -7,7 +7,7 @@ export const CurrencyCreateSchema = z.object({
 	symbol: z.string().max(5).nullable().optional(),
 	description: z.string().nullable().optional(),
 	is_active: z.boolean().default(true).nullable().optional(),
-	rate: z.number().default(1).nullable().optional(),
+	exchange_rate: z.number().default(1).nullable().optional(),
 });
 
 export type CurrencyCreateModel = z.infer<typeof CurrencyCreateSchema>;
@@ -19,8 +19,14 @@ export class CurrencyCreateDto implements CurrencyCreateModel {
 	symbol?: string | null;
 	description?: string | null;
 	is_active?: boolean | null;
-	rate?: number | null;
+	exchange_rate?: number | null;
 }
+
+export class CurrencyCreateDtoList {
+	list! : CurrencyCreateDto[]
+}
+
+// Update
 
 export const CurrencyUpdateSchema = z.object({
 	id: z.string().uuid(),
@@ -29,7 +35,7 @@ export const CurrencyUpdateSchema = z.object({
 	symbol: z.string().max(5).nullable().optional(),
 	description: z.string().nullable().optional(),
 	is_active: z.boolean().default(true).nullable().optional(),
-	rate: z.number().default(1).nullable().optional(),
+	exchange_rate: z.number().default(1).nullable().optional(),
 });
 
 export type CurrencyUpdateModel = z.infer<typeof CurrencyUpdateSchema>;
@@ -41,7 +47,7 @@ export class CurrencyUpdateDto implements CurrencyUpdateModel {
 	symbol?: string | null;
 	description?: string | null;
 	is_active?: boolean | null;
-	rate?: number | null;
+	exchange_rate?: number | null;
 }
 
 export const mockCurrencies = [
@@ -52,7 +58,7 @@ export const mockCurrencies = [
 		symbol: '฿',
 		description: 'สกุลเงินบาทไทย',
 		is_active: true,
-		rate: 1
+		exchange_rate: 1
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440001',
@@ -61,7 +67,7 @@ export const mockCurrencies = [
 		symbol: '$',
 		description: 'สกุลเงินดอลลาร์สหรัฐ',
 		is_active: true,
-		rate: 35.5
+		exchange_rate: 35.5
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440002',
@@ -70,7 +76,7 @@ export const mockCurrencies = [
 		symbol: '€',
 		description: 'สกุลเงินยูโร',
 		is_active: true,
-		rate: 38.2
+		exchange_rate: 38.2
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440003',
@@ -79,7 +85,7 @@ export const mockCurrencies = [
 		symbol: '£',
 		description: 'สกุลเงินปอนด์สเตอร์ลิง',
 		is_active: true,
-		rate: 44.5
+		exchange_rate: 44.5
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440004',
@@ -88,7 +94,7 @@ export const mockCurrencies = [
 		symbol: '¥',
 		description: 'สกุลเงินเยนญี่ปุ่น',
 		is_active: true,
-		rate: 0.24
+		exchange_rate: 0.24
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440005',
@@ -97,7 +103,7 @@ export const mockCurrencies = [
 		symbol: '¥',
 		description: 'สกุลเงินหยวนจีน',
 		is_active: true,
-		rate: 4.9
+		exchange_rate: 4.9
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440006',
@@ -106,7 +112,7 @@ export const mockCurrencies = [
 		symbol: 'S$',
 		description: 'สกุลเงินดอลลาร์สิงคโปร์',
 		is_active: true,
-		rate: 26.3
+		exchange_rate: 26.3
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440007',
@@ -115,7 +121,7 @@ export const mockCurrencies = [
 		symbol: 'HK$',
 		description: 'สกุลเงินดอลลาร์ฮ่องกง',
 		is_active: true,
-		rate: 4.5
+		exchange_rate: 4.5
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440008',
@@ -124,7 +130,7 @@ export const mockCurrencies = [
 		symbol: '₩',
 		description: 'สกุลเงินวอนเกาหลีใต้',
 		is_active: true,
-		rate: 0.027
+		exchange_rate: 0.027
 	},
 	{
 		id: '550e8400-e29b-41d4-a716-446655440009',
@@ -133,6 +139,6 @@ export const mockCurrencies = [
 		symbol: 'A$',
 		description: 'สกุลเงินดอลลาร์ออสเตรเลีย',
 		is_active: true,
-		rate: 23.1
+		exchange_rate: 23.1
 	}
 ];

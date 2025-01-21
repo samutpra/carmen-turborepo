@@ -147,19 +147,16 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Vendor</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Are you sure you want to delete this vendor?
-                                        This action cannot be undone.
-                                    </AlertDialogDescription>
+                                    <AlertDialogTitle>{m.are_you_sure()}</AlertDialogTitle>
+                                    <AlertDialogDescription>{m.delete_dialog_des()}</AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>{m.cancel_text()}</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={() => vendor?.id && onDelete(vendor.id)}
                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     >
-                                        Delete
+                                        {m.delete_text()}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -189,54 +186,6 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
                     onSubmit={onSubmit}
                 />
             </Card>
-            {/* 
-            {mode === formType.EDIT && (
-                <Card className='p-4'>
-                    <h1 className="text-lg font-medium">Environmental Impact</h1>
-                    <EnvironmentalProfile
-                        vendorId={vendor?.id?.toString() || ''}
-                        environmentalData={{
-                            carbonFootprint: {
-                                value: 2450,
-                                unit: 'tCO2e',
-                                trend: -12
-                            },
-                            energyEfficiency: {
-                                value: 85,
-                                benchmark: 80,
-                                trend: 5
-                            },
-                            wasteReduction: {
-                                value: 45,
-                                trend: 15
-                            },
-                            complianceRate: {
-                                value: 98,
-                                trend: 3
-                            },
-                            lastUpdated: '2024-03-15',
-                            esgScore: 'A+',
-                            certifications: [
-                                {
-                                    name: 'ISO 14001',
-                                    status: 'Active',
-                                    expiry: '2025-12-31'
-                                },
-                                {
-                                    name: 'Carbon Trust',
-                                    status: 'Active',
-                                    expiry: '2024-08-15'
-                                },
-                                {
-                                    name: 'ESG Rating A+',
-                                    status: 'Active',
-                                    expiry: '2024-12-31'
-                                }
-                            ]
-                        }}
-                    />
-                </Card>
-            )} */}
 
             <Card className='p-4'>
                 <AddressesSection isEdit={isEditing} />

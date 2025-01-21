@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
 const RefreshToken = () => {
-	const { authState, setAccessToken, accessToken } = useAuth();
+	const { authState, updateAccessToken, accessToken } = useAuth();
 	const { refresh_token } = authState;
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +43,7 @@ const RefreshToken = () => {
 			const data = await response.json();
 			console.log('data >>>', data);
 
-			setAccessToken(data.access_token);
+			updateAccessToken(data.access_token);
 			setOpen(false);
 			toast.success('Token refreshed successfully');
 		} catch (error) {

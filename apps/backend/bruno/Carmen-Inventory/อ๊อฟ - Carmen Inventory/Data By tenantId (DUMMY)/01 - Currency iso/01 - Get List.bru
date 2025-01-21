@@ -1,0 +1,27 @@
+meta {
+  name: 01 - Get List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/system-api/v1/system-currency-iso?perpage=10
+  body: none
+  auth: bearer
+}
+
+params:query {
+  perpage: 10
+  ~page: 1
+  ~filter[isActive: bool]: 1
+  ~search: baht
+  ~advance: {'where':{'code':'usd'}}
+}
+
+headers {
+  x-tenant-id: {{tenantId}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

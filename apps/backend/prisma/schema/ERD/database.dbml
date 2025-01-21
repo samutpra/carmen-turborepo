@@ -6,6 +6,13 @@ Project Carmen_Inventory {
   Note: 'Carmen Inventory Project 2024'
 }
 
+TABLE CARMEN_SYSTEM.tb_currency_iso {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  iso_code varchar(3) [not null, unique]
+  name varchar(255) [not null]
+  symbol varchar(10) [not null]
+}
+
 TABLE CARMEN_SYSTEM.tb_user {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   username varchar(30) [unique, not null]
@@ -13,12 +20,12 @@ TABLE CARMEN_SYSTEM.tb_user {
 
   is_active bool [default: false]
   is_consent bool [default: false]
-  consent timestamp [null]
+  consent timestamptz [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -32,9 +39,9 @@ TABLE CARMEN_SYSTEM.tb_password {
   user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
   hash text [not null]
   is_active bool [default: false]
-  expired_on date [not null, default: `now() + '90 day'::interval`]
+  expired_on timestamptz [not null, default: `now() + '90 day'::interval`]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -52,7 +59,7 @@ Table CARMEN_SYSTEM.tb_user_login_session {
   token text [not null, unique]
   token_type CARMEN_SYSTEM.enum_token_type [not null, default: 'access_token']
   user_id uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
-  expired_on timestamp [not null, default: `now() + '1 day'::interval`]
+  expired_on timestamptz [not null, default: `now() + '1 day'::interval`]
 }
 
 TABLE CARMEN_SYSTEM.tb_user_profile {
@@ -65,10 +72,10 @@ TABLE CARMEN_SYSTEM.tb_user_profile {
 
   bio json [null, default: '{}']
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -85,10 +92,10 @@ TABLE CARMEN_SYSTEM.tb_cluster {
 
   info json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -108,10 +115,10 @@ TABLE CARMEN_SYSTEM.tb_business_unit {
   is_hq bool [default: true]
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -127,10 +134,10 @@ TABLE CARMEN_SYSTEM.tb_user_tb_business_unit {
   business_unit_id uuid [ref: > CARMEN_SYSTEM.tb_business_unit.id]
 
   is_active bool [default: true]
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -144,10 +151,10 @@ TABLE CARMEN_SYSTEM.tb_module {
   name        varchar   [not null, unique]
   description text
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -160,10 +167,10 @@ TABLE CARMEN_SYSTEM.tb_business_unit_tb_module {
   business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
   module_id uuid [not null, ref: > CARMEN_SYSTEM.tb_module.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -182,22 +189,21 @@ TABLE CARMEN_SYSTEM.tb_subscription {
   cluster_id uuid [not null, ref: > CARMEN_SYSTEM.tb_cluster.id]
 
   subscription_number varchar [not null]
-  start_date date [not null]
-  end_date date [not null]
+  start_date timestamptz [not null]
+  end_date timestamptz [not null]
 
   status CARMEN_SYSTEM.enum_subscription_status [not null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
     (cluster_id, subscription_number) [unique, name: "subscription_cluster_subscription_number_u"]
   }
 }
-
 
 TABLE CARMEN_SYSTEM.tb_subscription_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
@@ -206,10 +212,10 @@ TABLE CARMEN_SYSTEM.tb_subscription_detail {
   business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
   module_id uuid [not null, ref: > CARMEN_SYSTEM.tb_module.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -217,17 +223,16 @@ TABLE CARMEN_SYSTEM.tb_subscription_detail {
   }
 }
 
-
 TABLE CARMEN_SYSTEM.tb_application_role {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   business_unit_id uuid [not null, ref: > CARMEN_SYSTEM.tb_business_unit.id]
   name        varchar   [not null, unique]
   description text
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -242,10 +247,10 @@ TABLE CARMEN_SYSTEM.tb_user_tb_application_role {
   user_id   uuid [not null, ref: > CARMEN_SYSTEM.tb_user.id]
   application_role_id   uuid [not null, ref: > CARMEN_SYSTEM.tb_application_role.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   Indexes {
@@ -259,10 +264,10 @@ TABLE CARMEN_SYSTEM.tb_permission {
   name varchar   [ not null]
   description text
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -275,10 +280,10 @@ TABLE CARMEN_SYSTEM.tb_application_role_tb_permission {
   application_role_id       uuid [not null, ref: > CARMEN_SYSTEM.tb_application_role.id]
   permission_id uuid [not null, ref: > CARMEN_SYSTEM.tb_permission.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   Indexes {
@@ -298,10 +303,10 @@ TABLE CARMEN_SYSTEM.tb_message_format {
   is_sms bool [default: false]
   is_in_app bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -316,10 +321,10 @@ TABLE CARMEN_SYSTEM.tb_notification {
   is_read bool [default: false]
   is_sent bool [default: false]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
   indexes {
@@ -377,7 +382,7 @@ TABLE TENANT_DUMMY.tb_activity {
   user_agent text [null]
   description text
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
   indexes {
@@ -397,10 +402,10 @@ TABLE TENANT_DUMMY.tb_menu {
   is_active bool [default: true]
   is_lock bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -416,12 +421,12 @@ TABLE TENANT_DUMMY.tb_currency {
   description text [default: ""]
 
   is_active bool [default: true]
-  rate float [default: 1]
+  exchange_rate numeric(15,5) [default: 1]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -432,14 +437,14 @@ TABLE TENANT_DUMMY.tb_currency {
 TABLE TENANT_DUMMY.tb_exchange_rate {
   id uuid [not null, pk, default: `gen_random_uuid()`]
 
-  at_date timestamp [default: `now()`]
+  at_date timestamptz [default: `now()`]
   currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
-  rate float [default: 1]
+  exchange_rate numeric(15,5) [default: 1]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -453,6 +458,12 @@ enum TENANT_DUMMY.enum_location_type {
   consignment
 }
 
+enum TENANT_DUMMY.enum_location_status_type {
+  active
+  inactive
+  maintenance
+}
+
 TABLE TENANT_DUMMY.tb_location {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   name varchar [unique, not null]
@@ -460,14 +471,16 @@ TABLE TENANT_DUMMY.tb_location {
   location_type TENANT_DUMMY.enum_location_type [not null]
 
   description text
+  info json [null]
+
   is_active bool [default: true]
 
   delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -480,10 +493,10 @@ TABLE TENANT_DUMMY.tb_delivery_point {
   name varchar [unique, not null]
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -497,10 +510,10 @@ TABLE TENANT_DUMMY.tb_unit {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -519,17 +532,17 @@ TABLE TENANT_DUMMY.tb_unit_conversion {
   product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
   unit_type TENANT_DUMMY.enum_unit_type [not null]
   from_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
-  from_unit_qty float [default: 1]
+  from_unit_qty numeric(20,5) [default: 1]
   to_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
-  to_unit_qty float [default: 1]
+  to_unit_qty numeric(20,5) [default: 1]
   description text
 
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -543,10 +556,10 @@ TABLE TENANT_DUMMY.tb_department {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -554,20 +567,29 @@ TABLE TENANT_DUMMY.tb_department {
   }
 }
 
+enum TENANT_DUMMY.enum_product_status_type {
+  active
+  inactive
+  discontinued
+}
+
 TABLE TENANT_DUMMY.tb_product {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   code varchar [unique, not null]
   name varchar [unique, not null]
+  local_name varchar [null]
   description text
 
-  primary_unit uuid [not null, ref: > TENANT_DUMMY.tb_unit.id]
+  primary_unit_id uuid [not null, ref: > TENANT_DUMMY.tb_unit.id]
 
-  is_active bool [default: true]
+  product_status_type TENANT_DUMMY.enum_product_status_type [not null, default: "active"]
+  // is_active bool [default: true]
+
   
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -577,23 +599,47 @@ TABLE TENANT_DUMMY.tb_product {
   }
 }
 
+enum TENANT_DUMMY.enum_tax_type {
+  none
+  vat
+}
+
 TABLE TENANT_DUMMY.tb_product_info {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   product_id uuid [unique, not null, ref: - TENANT_DUMMY.tb_product.id]
-  price Float
+  product_item_group_id uuid [ref: > TENANT_DUMMY.tb_product_item_group.id]
+
+  is_ingredients bool [default: false]
+
+  price numeric(20,5)
+  tax_type TENANT_DUMMY.enum_tax_type [default: "vat"]
+  tax_rate numeric(15,5) [default: 0]
+  price_deviation_limit numeric(20,5) [default: 10]
 
   info json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
     product_id [name: "productinfo_product_u"]
   }
 }
+
+TABLE TENANT_DUMMY.tb_product_location {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  product_id uuid [not null, ref: > TENANT_DUMMY.tb_product.id]
+  location_id uuid [not null, ref: > TENANT_DUMMY.tb_location.id]
+
+  indexes {
+    (product_id, location_id) [name : "product_location_u", unique]
+  }
+}
+
+
 
 TABLE TENANT_DUMMY.tb_product_category {
   id uuid [not null, pk, default: `gen_random_uuid()`]
@@ -602,10 +648,10 @@ TABLE TENANT_DUMMY.tb_product_category {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -623,10 +669,10 @@ TABLE TENANT_DUMMY.tb_product_sub_category {
 
   product_category_id uuid [not null,ref: > TENANT_DUMMY.tb_product_category.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -644,10 +690,10 @@ TABLE TENANT_DUMMY.tb_product_item_group {
 
   product_subcategory_id uuid [not null, ref: > TENANT_DUMMY.tb_product_sub_category.id]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -670,10 +716,10 @@ TABLE TENANT_DUMMY.tb_workflow {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -691,23 +737,31 @@ TABLE TENANT_DUMMY.tb_purchase_request {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   reference_name varchar [unique, not null]
 
-  purchase_request_date date
+  purchase_request_date timestamptz
   workflow_id uuid [ref: > TENANT_DUMMY.tb_workflow.id]
 
   workflow_obj json
   workflow_history json
+
+  current_workflow_status varchar
 
   purchase_request_status TENANT_DUMMY.enum_purchase_request_doc_status [default: 'draft']
 
   requestor_id uuid
   department_id uuid
 
+  job_code varchar
+  budget_code varchar
+  allocated_budget_amount numeric(20,5)
+
+  // delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
+
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -719,33 +773,71 @@ TABLE TENANT_DUMMY.tb_purchase_request_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   purchase_request_id uuid [ref: > TENANT_DUMMY.tb_purchase_request.id]
 
-  location_id uuid
-  product_id uuid
-  unit_id uuid
+  location_id uuid [ref: > TENANT_DUMMY.tb_location.id]
+  product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
+  unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  vendor_name varchar
+
+  price_list_id uuid [ref: > TENANT_DUMMY.tb_price_list.id]
 
   description text
 
-  requested_qty float
-  approved_qty float
+  requested_qty numeric(20,5)
+  approved_qty numeric(20,5)
 
-  currency_id uuid
-  currency_rate float
+  currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
+  exchange_rate numeric(15,5)
+  exchange_rate_date timestamptz
 
-  price numeric(15,5)
-  total_price numeric(15,5)
+  price numeric(20,5)
+  total_price numeric(20,5)
+  foc numeric(20,5)
 
-  workflow_history json
+  is_tax_included bool
+  is_tax_adjustment bool
+  is_discount bool
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  discount_rate numeric(15,5)
+  discount_amount numeric(20,5)
+
+  tax_rate numeric(15,5)
+  tax_amount numeric(20,5)
+
+  is_active bool [default: true]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
     // name [name: "PR1_name_u"]
   }
 }
+
+// TABLE TENANT_DUMMY.tb_purchase_order_detail {
+//   id uuid [not null, pk, default: `gen_random_uuid()`]
+//   purchase_order_id uuid [ref: > TENANT_DUMMY.tb_purchase_order.id]
+
+//   delivery_date timestamptz
+//   delivery_point_id uuid [ref: > TENANT_DUMMY.tb_delivery_point.id]
+
+
+//   workflow_history json
+
+//   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+//   created_by_id uuid 
+
+//   updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+//   updated_by_id uuid
+
+//   indexes {
+//     // name [name: "PR1_name_u"]
+//   }
+// }
 
 enum TENANT_DUMMY.enum_purchase_request_workflow_status {
   draft
@@ -772,16 +864,35 @@ TABLE TENANT_DUMMY.tb_purchase_order {
   purchase_order_status TENANT_DUMMY.enum_purchase_order_doc_status [default: 'open']
 
   description text
-  order_date date
+
+  order_date timestamptz
+  delivery_date timestamptz
+
+  vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+  vendor_name varchar
+
+  currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
+  currency_name varchar
+  base_currency_id uuid [ref: > TENANT_DUMMY.tb_currency.id]
+  base_currency_name varchar
+
+  exchange_rate numeric(15,5)
+  notes text [null]
+
+  approval_date timestamptz [null]
+  email varchar
+  buyer_name varchar
+  credit_term varchar
+  remarks text [null]
 
   history json
 
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
   
   indexes {
@@ -800,12 +911,37 @@ TABLE TENANT_DUMMY.tb_purchase_order_detail {
 
   purchase_request_detail_id uuid [ref: > TENANT_DUMMY.tb_purchase_request_detail.id]
 
+  exchange_rate numeric(15,5)
+  order_qty numeric(20,5)
+  order_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+  order_unit_name varchar
+
+  base_qty numeric(20,5)
+  base_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+  base_unit_name varchar
+
+  unit_price numeric(20,5)
+  sub_total_price numeric(20,5)
+  base_sub_total_price numeric(20,5)
+  is_foc bool [default: false]
+  is_tax_included bool [default: false]
+  tax_rate numeric(15,5) [default: 0]
+  tax_amount numeric(20,5) [default: 0]
+  discount_rate numeric(15,5) [default: 0]
+  discount_amount numeric(20,5) [default: 0]
+
+  net_amount numeric(20,5) [default: 0]
+  base_net_amount numeric(20,5) [default: 0]
+
+  total_price numeric(20,5)
+  base_total_price numeric(20,5)
+
   history json
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -820,10 +956,10 @@ TABLE TENANT_DUMMY.tb_vendor {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -831,10 +967,27 @@ TABLE TENANT_DUMMY.tb_vendor {
   }
 }
 
+TABLE TENANT_DUMMY.tb_price_list{
+   id uuid [not null, pk, default: `gen_random_uuid()`]
+   vendor_id uuid [ref: > TENANT_DUMMY.tb_vendor.id]
+   from_date timestamptz [not null, default: `CURRENT_TIMESTAMP`]
+   to_date timestamptz [not null, default: `CURRENT_TIMESTAMP`]
+   product_id uuid [ref: > TENANT_DUMMY.tb_product.id]
+   price numeric(20,5) [not null]
+   unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
+
+   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+   created_by_id uuid 
+
+   updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+   updated_by_id uuid
+}
+
 enum TENANT_DUMMY.enum_vendor_contact_type {
   phone
   email
 }
+
 
 TABLE TENANT_DUMMY.tb_vendor_contact {
   id uuid [not null, pk, default: `gen_random_uuid()`]
@@ -845,10 +998,10 @@ TABLE TENANT_DUMMY.tb_vendor_contact {
 
   info json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -870,10 +1023,10 @@ TABLE TENANT_DUMMY.tb_vendor_address {
   address json [null]
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -892,10 +1045,10 @@ TABLE TENANT_DUMMY.tb_product_tb_vendor {
   description text
   is_active bool [default: true]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -917,10 +1070,10 @@ TABLE TENANT_DUMMY.tb_inventory_transaction {
   name varchar [unique, not null]
   inventory_doc_type TENANT_DUMMY.enum_inventory_doc_type [not null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -937,13 +1090,16 @@ TABLE TENANT_DUMMY.tb_inventory_transaction_detail {
   from_lot_name uuid
   current_lot_name varchar
 
-  qty decimal
-  cost numeric(15,5)
+  qty numeric(20,5)
+  unit_cost numeric(20,5)
+  total_cost numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  info json [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -956,13 +1112,13 @@ TABLE TENANT_DUMMY.tb_inventory_transaction_closing_balance {
   lot_name varchar
   lot_index integer [not null, default: 1]
 
-  qty decimal
-  cost numeric(15,5)
+  qty numeric(20,5)
+  cost numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -976,13 +1132,14 @@ TABLE TENANT_DUMMY.tb_good_receive_note {
   inventory_transaction_id uuid [not null, ref: - TENANT_DUMMY.tb_inventory_transaction.id]
 
   name varchar
+  ref_no varchar
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -992,14 +1149,42 @@ TABLE TENANT_DUMMY.tb_good_receive_note_detail {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   good_receive_note_id uuid [not null, ref: > TENANT_DUMMY.tb_good_receive_note.id]
   
-  name varchar
+  purchase_order_detail_id uuid [not null, ref: - TENANT_DUMMY.tb_purchase_order_detail.id]
+  // item_id uuid
+  location_id uuid [not null, ref: - TENANT_DUMMY.tb_location.id]
 
-  qty decimal
+  received_qty numeric(20,5)
+  received_unit_id uuid [not null, ref: - TENANT_DUMMY.tb_unit.id]
+  received_unit_name varchar
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  is_foc bool [default: false]
+
+  price numeric(20,5)
+  tax_amount numeric(20,5)
+  total_amount numeric(20,5)
+
+  delivery_point_id uuid [null, ref: - TENANT_DUMMY.tb_delivery_point.id]
+
+  base_price numeric(20,5)
+  base_qty numeric(20,5)
+
+  extra_cost numeric(20,5)
+  total_cost numeric(20,5)
+
+  is_discount bool [default: false]
+  discount_amount numeric(20,5) 
+
+  is_tax_adjustment bool [default: false]
+
+  lot_number varchar
+  expired_date timestamptz
+
+  comment text [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1013,10 +1198,10 @@ TABLE TENANT_DUMMY.tb_store_requisition {
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1028,12 +1213,12 @@ TABLE TENANT_DUMMY.tb_store_requisition_detail {
   
   name varchar
 
-  qty decimal
+  qty numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1048,10 +1233,10 @@ TABLE TENANT_DUMMY.tb_stock_in {
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1063,12 +1248,12 @@ TABLE TENANT_DUMMY.tb_stock_in_detail {
   
   name varchar
 
-  qty decimal
+  qty numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1083,10 +1268,10 @@ TABLE TENANT_DUMMY.tb_stock_out {
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1098,12 +1283,12 @@ TABLE TENANT_DUMMY.tb_stock_out_detail {
   
   name varchar
 
-  qty decimal
+  qty numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid 
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
 }
@@ -1116,10 +1301,10 @@ TABLE TENANT_DUMMY.tb_credit_note {
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -1133,13 +1318,13 @@ TABLE TENANT_DUMMY.tb_credit_note_detail {
 
   name varchar
 
-  qty decimal
-  amount numeric(15,5)
+  qty numeric(20,5)
+  amount numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 
   indexes {
@@ -1155,10 +1340,10 @@ TABLE TENANT_DUMMY.tb_stock_take {
 
   workflow json [null]
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 }
 
@@ -1168,11 +1353,103 @@ TABLE TENANT_DUMMY.tb_stock_take_detail {
 
   name varchar
   
-  qty decimal
+  qty numeric(20,5)
 
-  created_at timestamp [default: `CURRENT_TIMESTAMP` ]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
 
-  updated_at timestamp [null, default: `CURRENT_TIMESTAMP`]
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+enum  TENANT_DUMMY.enum_count_stock_type {
+  physical
+  spot
+}
+
+enum  TENANT_DUMMY.enum_count_stock_status {
+  draft
+  in_progress
+  completed
+  cancelled
+}
+
+
+TABLE TENANT_DUMMY.tb_count_stock {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  start_date timestamptz [not null, default: `CURRENT_TIMESTAMP` ]
+  end_date timestamptz [ null]
+  location_id uuid [not null]
+  notes text [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+TABLE TENANT_DUMMY.tb_count_stock_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  count_stock_id uuid [not null, ref: > TENANT_DUMMY.tb_count_stock.id]
+  product_id uuid [not null, ref: > TENANT_DUMMY.tb_product.id]
+  qty numeric(20,5) [not null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+enum TENANT_DUMMY.enum_jv_status {
+  draft
+  posted
+}
+
+TABLE TENANT_DUMMY.tb_jv_header {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  exchange_rate numeric(15,5) [not null]
+  base_currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  jv_type varchar(255) [not null]
+  jv_number varchar(255) [not null]
+  jv_date timestamptz [not null]
+  jv_description text [null]
+  jv_status TENANT_DUMMY.enum_jv_status [not null]
+
+  workflow json [null]
+  info json [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+TABLE TENANT_DUMMY.tb_jv_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  jv_header_id uuid [not null, ref: > TENANT_DUMMY.tb_jv_header.id]
+
+  account_department_id uuid [not null]
+  // account_code uuid [not null, ref: > TENANT_DUMMY.tb_account_code.id]
+  account_name varchar [not null]
+
+  currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  exchange_rate numeric(15,5) [not null]
+
+  debit numeric(15,5) [not null, default: 0.0]
+  credit numeric(15,5) [not null, default: 0.0]
+
+  base_currency_id uuid [not null, ref: > TENANT_DUMMY.tb_currency.id]
+  base_debit numeric(15,5) [not null, default: 0.0]
+  base_credit numeric(15,5) [not null, default: 0.0]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
 }

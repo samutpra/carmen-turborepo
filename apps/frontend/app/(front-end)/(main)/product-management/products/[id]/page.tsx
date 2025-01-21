@@ -11,7 +11,6 @@ import { AlertCircle, ImageIcon, Package, UploadIcon, XIcon } from 'lucide-react
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import StatusBadge from '@/components/ui-custom/custom-status-badge';
 import Link from 'next/link';
 import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
@@ -20,6 +19,7 @@ import EnvironmentImpact from './components/tab/EnvironmentImpact';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 const ProductIdPage = () => {
 	const { id } = useParams() as { id: string }
@@ -379,7 +379,7 @@ const ProductIdPage = () => {
 														{location.parLevel.toLocaleString()}
 													</TableCell>
 													<TableCell className="text-center">
-														<StatusBadge status={isLow ? 'below-min' : needsReorder ? 'reorder' : isHigh ? 'over-max' : 'normal'} />
+														<Badge>{isLow ? 'below-min' : needsReorder ? 'reorder' : isHigh ? 'over-max' : 'normal'}</Badge>
 													</TableCell>
 												</TableRow>
 											)

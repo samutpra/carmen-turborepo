@@ -30,6 +30,7 @@ import { SystemClusterModule } from './_system/system-cluster/system-cluster.mod
 import { SystemUserBusinessUnitModule } from './_system/system-user-business-unit/system-user-business-unit.module';
 import { SystemUserProfileModule } from './_system/system-user-profile/system-user-profile.module';
 import { SystemUserModule } from './_system/system-users/system-users.module';
+import { SystemCurrencyIsoModule } from './_system/system_currency_iso/system_currency_iso.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -73,6 +74,7 @@ import { AppService } from './app.service';
     UserBusinessUnitModule,
     UserPermissionModule,
     DeliveryPointModule,
+    SystemCurrencyIsoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

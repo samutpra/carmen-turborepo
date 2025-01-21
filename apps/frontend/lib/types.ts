@@ -1315,9 +1315,17 @@ export type IProductList = z.infer<typeof ProductListSchema>;
 export type PaginationType = {
 	page?: number | 0;
 	pages?: number | 0;
-	perPage?: number | 10;
+	perpage?: number | 10;
 	total?: number | 0;
 };
+
+export interface SignInResponse {
+	id: string;
+	username: string;
+	refresh_token: string;
+	access_token: string;
+	message?: string;
+}
 
 export const SignInSchema = z.object({
 	username: z.string().min(2, {
@@ -1327,6 +1335,8 @@ export const SignInSchema = z.object({
 		message: `${m.password_zod_error()}`,
 	}),
 });
+
+export type SignInType = z.infer<typeof SignInSchema>;
 
 export interface User {
 	id: string;

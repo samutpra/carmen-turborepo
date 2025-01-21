@@ -216,5 +216,8 @@
 	"sort_by": "Sort by",
 	"sort_text": "Sort",
 	"no_result_found": "No results found.",
-	"no_result": "No results found."
+	"no_result": "No results found.",
+	"recipe_library": "Recipe Library",
+	"costing": "Costing",
+	"media_gallery": "Media Gallery"
 }
