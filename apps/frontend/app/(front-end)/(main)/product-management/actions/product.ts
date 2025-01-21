@@ -35,14 +35,12 @@ export const fetchProducts = async (
 		};
 		const response = await fetch(url, options);
 
-		console.log('response >>>', response);
-
 		if (!response.ok) {
 			throw new Error('Failed to fetch store locations');
 		}
 		const result = await response.json();
-		console.log('result', result);
-		return result.data;
+		
+		return result;
 	} catch (error) {
 		console.error('Error fetching store locations:', error);
 		throw error;

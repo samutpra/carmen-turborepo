@@ -20,13 +20,13 @@ import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import ProductDisplay from './ProductDisplay';
 
 enum ProductField {
-  NAME = 'name',
-  CODE = 'code',
-  DESCRIPYION = 'description',
-  CATEGORY = 'category',
-  SUBCATEGORY = 'subcategory',
-  ITEM_GROUP = 'itemGroup',
-  STATUS = 'product_status_type',
+	NAME = 'name',
+	CODE = 'code',
+	DESCRIPYION = 'description',
+	CATEGORY = 'category_name',
+	SUBCATEGORY = 'sub_category_name',
+	ITEM_GROUP = 'item_group_name',
+	STATUS = 'product_status_type',
 }
 
 const fields: FieldConfig<ProductCreateModel>[] = [
