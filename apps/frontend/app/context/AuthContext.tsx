@@ -37,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	const [authState, setAuthState] = useState<AuthState>({ user: null, refresh_token: '' });
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 
+	console.log('accessToken', accessToken);
+
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			const storedUser = localStorage.getItem('user_data');
@@ -46,20 +48,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		}
 	}, []);
 
-	// useEffect(() => {
-	// 	if (accessToken) {
-	// 		localStorage.setItem('access_token', accessToken);
-	// 	} else {
-	// 		localStorage.removeItem('access_token');
-	// 		router.push('/sign-in');
-	// 	}
-	// }, [accessToken, router]);
-
 	useEffect(() => {
 		if (accessToken) {
 			localStorage.setItem('access_token', accessToken);
+		} else {
+			localStorage.removeItem('access_token');
+			router.push('/sign-in');
 		}
 	}, [accessToken, router]);
+
 
 	useEffect(() => {
 		if (authState.user) {

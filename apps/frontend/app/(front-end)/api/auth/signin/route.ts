@@ -30,14 +30,17 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({ username, password }),
         });
 
-        const data = await response.json();
 
-        if (!response.ok) {
-            return NextResponse.json(
-                { error: data.error || "Authentication failed" },
-                { status: response.status }
-            );
-        }
+
+				const data = await response.json();
+
+				if (!response.ok) {
+					console.error('Authentication error:', data.error);
+					return NextResponse.json(
+						{ error: data.error || 'Authentication failed' },
+						{ status: response.status }
+					);
+				}
 
         // Return the response data to the client
         return NextResponse.json(data, { status: 200 });

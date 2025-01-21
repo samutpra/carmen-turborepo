@@ -10,18 +10,24 @@ export const GET = async (request: NextRequest) => {
                 { status: 400 }
             );
         }
+        const { searchParams } = new URL(request.url);
+				const search = searchParams.get('search') || '';
+				const page = searchParams.get('page') || '1';
 
-        const URL = `${API_URL}/v1/products`;
-        const options = {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'x-tenant-id': 'DUMMY',
-                'Content-Type': 'application/json',
-            },
-        };
+				console.log('page >>>', page);
 
-        const response = await fetch(URL, options);
+				const PRODUCT_URL = `${API_URL}/v1/products?search=${search}&page=${page}`;
+
+				const options = {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'x-tenant-id': 'DUMMY',
+						'Content-Type': 'application/json',
+					},
+				};
+
+				const response = await fetch(PRODUCT_URL, options);
         if (response.status === 401) {
             return NextResponse.json(
                 { error: 'Unauthorized access - Invalid or expired token' },

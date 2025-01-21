@@ -49,94 +49,91 @@ const ProductList = () => {
   const [search, setSearch] = useURL('search');
   const [status, setStatus] = useURL('status');
   const [page, setPage] = useURL('page');
-  const [perpage, setPerpage] = useURL('perpage');
-  const [totalPage, setTotalPage] = useURL('totalPage');
+  const [pages, setPages] = useURL('pages');
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await fetchProducts(token, tenantId, {
-        search,
-        status,
-        page,
-        perpage
-      });
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchProducts(token, tenantId, {
+				search,
+				status,
+				page,
+			});
+			setProducts(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
+		} catch (error) {
+			console.log('error', error);
+			toastError({ message: 'Failed to fetch products' });
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-      console.log('data', data);
-      setProducts(data.data);
-      setPage(data.pagination.page);
-      setPerpage(data.pagination.perpage);
-      setTotalPage(data.pagination.total);
-    } catch (error) {
-      console.log('error', error);
-      toastError({ message: 'Failed to fetch products' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status, page]);
 
-  useEffect(() => {
-    fetchData();
-  }, [token, tenantId, search, status]);
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
 
-  const handlePageChange = (newPage: number) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
-  };
+	const actionButtons = (
+		<div className="flex items-center gap-2">
+			<Button asChild variant="outline" size="sm">
+				<Link href="/vendor-management/vendors/new">
+					<Plus className="h-4 w-4 mr-2" />
+					New product
+				</Link>
+			</Button>
+			<Button variant="outline" className="group" size="sm">
+				<FileDown className="h-4 w-4 mr-2" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size="sm">
+				<Printer className="h-4 w-4 mr-2" />
+				{m.print_text()}
+			</Button>
+		</div>
+	);
 
-  const actionButtons = (
-    <div className="flex items-center gap-2">
-      <Button asChild variant="outline" size="sm">
-        <Link href="/vendor-management/vendors/new">
-          <Plus className="h-4 w-4 mr-2" />
-          New product
-        </Link>
-      </Button>
-      <Button variant="outline" className="group" size="sm">
-        <FileDown className="h-4 w-4 mr-2" />
-        {m.export_text()}
-      </Button>
-      <Button variant="outline" size="sm">
-        <Printer className="h-4 w-4 mr-2" />
-        {m.print_text()}
-      </Button>
-    </div>
-  );
+	const filter = (
+		<div className="filter-container">
+			<SearchForm
+				onSearch={setSearch}
+				defaultValue={search}
+				placeholder={`${m.Search()} ...`}
+			/>
+			<div className="all-center gap-2">
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+				/>
+				<SortDropDown
+					fieldConfigs={fields}
+					items={products}
+					onSort={setProducts}
+				/>
+			</div>
+		</div>
+	);
 
-  const filter = (
-    <div className="filter-container">
-      <SearchForm
-        onSearch={setSearch}
-        defaultValue={search}
-        placeholder={`${m.Search()} ...`}
-      />
-      <div className="all-center gap-2">
-        <StatusSearchDropdown
-          options={statusOptions}
-          value={status}
-          onChange={setStatus}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-        />
-        <SortDropDown
-          fieldConfigs={fields}
-          items={products}
-          onSort={setProducts}
-        />
-      </div>
+	if (isLoading) return <SkeltonLoad />;
 
-    </div>
-  );
-
-  if (isLoading) return <SkeltonLoad />
-
-  const content = (
-    <ProductDisplay
-      products={products}
-      fields={fields}
-      page={+page}
-      totalPage={+totalPage}
-    />
-  );
+	const content = (
+		<ProductDisplay
+			products={products}
+			fields={fields}
+			page={+page}
+			totalPage={+pages}
+			handlePageChange={handlePageChange}
+		/>
+	);
 
 
   return (
