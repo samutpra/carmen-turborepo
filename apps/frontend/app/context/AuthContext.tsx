@@ -4,9 +4,14 @@
 import { useRouter } from '@/lib/i18n';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+type User = {
+	id: string;
+	name: string;
+	// Add other user properties as needed
+};
+
 type AuthState = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	user: any | null;
+	user: User | null;
 	refresh_token: string;
 	access_token?: string;
 };
@@ -25,23 +30,35 @@ const defaultAuthContext: AuthContextType = {
 	authState: { user: null, refresh_token: '' },
 	accessToken: null,
 	isAuthenticated: false,
-	handleLogin: () => { },
-	handleLogout: () => { },
-	updateAccessToken: () => { },
+	handleLogin: () => {},
+	handleLogout: () => {},
+	updateAccessToken: () => {},
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+	children,
+}) => {
 	const router = useRouter();
-	const [authState, setAuthState] = useState<AuthState>({ user: null, refresh_token: '' });
+	const [authState, setAuthState] = useState<AuthState>({
+		user: null,
+		refresh_token: '',
+	});
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			const storedUser = localStorage.getItem('user_data');
 			const storedToken = localStorage.getItem('access_token');
-			if (storedUser) setAuthState(JSON.parse(storedUser));
+			if (storedUser) {
+				try {
+					setAuthState(JSON.parse(storedUser));
+				} catch (error) {
+					console.error('Failed to parse user data from localStorage:', error);
+					localStorage.removeItem('user_data'); // Clear invalid data
+				}
+			}
 			if (storedToken) setAccessToken(storedToken);
 		}
 	}, []);
@@ -54,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			router.push('/sign-in');
 		}
 	}, [accessToken, router]);
-
 
 	useEffect(() => {
 		if (authState.user) {
