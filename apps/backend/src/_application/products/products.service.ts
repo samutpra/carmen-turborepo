@@ -68,9 +68,13 @@ export class ProductsService {
       file: ProductsService.name,
       function: this._getById.name,
     });
+
     const res = await db_tenant.tb_product.findUnique({
       where: {
         id: id,
+      },
+      include: {
+        tb_product_info: true,
       },
     });
     return res;
