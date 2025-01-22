@@ -1,6 +1,5 @@
 import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
-import { Product } from '../route';
 import { extractToken } from '@/lib/util/auth';
 import { fetchData } from '@/app/(front-end)/services/client';
 import {
@@ -26,12 +25,9 @@ export async function GET(
 		// Fetch product data
 		const productUrl = `${API_URL}/v1/products/${params.id}`;
 		const productResponse = await fetchData(productUrl, token, tenantId);
-		const productData: Product = await productResponse.json();
-
-		console.log('productData', productData);
 
 		const productItemGroupId =
-			productData.tb_product_info.product_item_group_id;
+			productResponse.data.tb_product_info.product_item_group_id;
 		const itemGroupData = await fetchProductItemGroup(
 			productItemGroupId,
 			token,
@@ -53,7 +49,7 @@ export async function GET(
 		);
 
 		const product = {
-			...productData,
+			...productResponse,
 			item_group_name: itemGroupData.data.name,
 			sub_category_name: subCategoryData.data.name,
 			category_name: categoryData.data.name,
