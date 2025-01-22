@@ -56,9 +56,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			localStorage.setItem('access_token', accessToken);
 		} else {
 			localStorage.removeItem('access_token');
-			router.push('/sign-in');
+			if (window.location.pathname === '/sign-in') {
+				setAccessToken(null);
+			} else {
+				router.push('/sign-in');
+			}
 		}
-	}, [accessToken, router]);
+	}, [accessToken]);
+
+	console.log('accessToken', accessToken);
 
 	useEffect(() => {
 		if (authState.user) {

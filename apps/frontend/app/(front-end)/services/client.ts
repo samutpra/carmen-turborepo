@@ -3,6 +3,7 @@ export const fetchData = async (
 	token: string,
 	tenantId: string
 ) => {
+
 	const options = {
 		method: 'GET',
 		headers: {

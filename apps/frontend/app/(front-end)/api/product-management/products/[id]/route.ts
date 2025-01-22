@@ -1,7 +1,5 @@
 import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
-import { extractToken } from '@/lib/util/auth';
-import { fetchData } from '@/app/(front-end)/services/client';
 import {
 	fetchProductItemGroup,
 	fetchProductSubcategory,
@@ -13,21 +11,34 @@ export async function GET(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = extractToken(request);
+		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 		if (!token) {
 			return NextResponse.json(
 				{ error: 'Token is missing from the headers' },
 				{ status: 400 }
 			);
 		}
+
 		const tenantId = 'DUMMY';
 
-		// Fetch product data
 		const productUrl = `${API_URL}/v1/products/${params.id}`;
-		const productResponse = await fetchData(productUrl, token, tenantId);
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const productResponse = await fetch(productUrl, options);
+
+		const productData = await productResponse.json();
 
 		const productItemGroupId =
-			productResponse.data.tb_product_info.product_item_group_id;
+			productData.data.tb_product_info.product_item_group_id;
+
 		const itemGroupData = await fetchProductItemGroup(
 			productItemGroupId,
 			token,
@@ -49,7 +60,7 @@ export async function GET(
 		);
 
 		const product = {
-			...productResponse,
+			...productData,
 			item_group_name: itemGroupData.data.name,
 			sub_category_name: subCategoryData.data.name,
 			category_name: categoryData.data.name,
