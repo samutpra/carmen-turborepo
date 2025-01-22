@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/system-api/v1/system-currency-iso?perpage=10
+  url: {{host}}/system-api/v1/system-currency-iso?perpage=10&page=2
   body: none
   auth: bearer
 }
 
 params:query {
   perpage: 10
-  ~page: 1
+  page: 2
   ~filter[isActive: bool]: 1
   ~search: baht
   ~advance: {'where':{'code':'usd'}}

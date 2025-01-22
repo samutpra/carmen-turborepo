@@ -2,34 +2,34 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Eye } from 'lucide-react';
-import Link from 'next/link';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
 import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import PaginationComponent from '@/components/PaginationComponent';
+import { Link } from '@/lib/i18n';
 
 interface Props {
-    products: ProductCreateModel[];
-    fields?: FieldConfig<ProductCreateModel>[];
-    page: number;
-    totalPage: number;
-    handlePageChange: (newPage: number) => void;
+	products: ProductCreateModel[];
+	fields?: FieldConfig<ProductCreateModel>[];
+	page: number;
+	totalPage: number;
+	handlePageChange: (newPage: number) => void;
 }
 
 const ProductDisplay: React.FC<Props> = ({
-    products,
-    fields = [],
-    page,
-    totalPage,
-    handlePageChange,
+	products,
+	fields = [],
+	page,
+	totalPage,
+	handlePageChange,
 }) => {
 	return (
 		<>
@@ -87,7 +87,7 @@ const ProductDisplay: React.FC<Props> = ({
 								))}
 								<TableCell className="text-right">
 									<Button asChild variant="ghost" size="sm">
-										<Link href={`/vendor-management/vendors/${product.id}`}>
+										<Link href={`/product-management/products/${product.id}`}>
 											<Eye className="h-4 w-4" />
 										</Link>
 									</Button>

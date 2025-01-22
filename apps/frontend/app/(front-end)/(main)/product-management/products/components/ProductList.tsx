@@ -83,17 +83,17 @@ const ProductList = () => {
 	const actionButtons = (
 		<div className="flex items-center gap-2">
 			<Button asChild variant="outline" size="sm">
-				<Link href="/vendor-management/vendors/new">
-					<Plus className="h-4 w-4 mr-2" />
+				<Link href="/product-management/products/new">
+					<Plus className="h-4 w-4" />
 					New product
 				</Link>
 			</Button>
 			<Button variant="outline" className="group" size="sm">
-				<FileDown className="h-4 w-4 mr-2" />
+				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
 			<Button variant="outline" size="sm">
-				<Printer className="h-4 w-4 mr-2" />
+				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
 		</div>
