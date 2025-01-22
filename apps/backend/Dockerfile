@@ -1,24 +1,24 @@
 ARG IMAGE=node:latest
 
 # Common
-FROM $IMAGE as builder
+FROM $IMAGE AS builder
 
 WORKDIR /app
-RUN npm install turbo
+RUN npm i -g @nestjs/cli turbo
 COPY . .
 RUN npm i
+RUN npm run build
 
 # Dev
-FROM builder as dev
+FROM builder AS dev
 CMD [""]
 
 # PROD middle step
-FROM builder as prod-build
-RUN npm run build
+FROM builder AS prod-build
 RUN npm prune --production
 
 # Prod
-FROM $IMAGE as prod
+FROM $IMAGE AS prod
 COPY --chown=node:node --from=prod-build /app/dist /app/dist
 COPY --chown=node:node --from=prod-build /app/node_modules /app/node_modules
 COPY --chown=node:node --from=prod-build /app/.env /app/.env
