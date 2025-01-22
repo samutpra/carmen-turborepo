@@ -32,9 +32,9 @@ async function bootstrap() {
     .addServer(
       'https://carmen-inventory-backend.vercel.app/',
       'Dev Cloud Environment',
-    )
+    )s
     .addServer(
-      'https://carmen-inventory-api.vercel.app/',
+      'https://carmen-api.semapru.com/',
       'Production Cloud Environment',
     )
     // .addSecurity('token', {
