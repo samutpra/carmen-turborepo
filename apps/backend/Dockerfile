@@ -8,6 +8,7 @@ RUN npm i -g @nestjs/cli turbo
 COPY . .
 RUN npm i
 RUN npm run build
+RUN npm run prisma:deploy
 
 # Dev
 FROM builder AS dev
