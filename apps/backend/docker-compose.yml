@@ -38,20 +38,20 @@ services:
       target: dev
     working_dir: /app
     ports:
-      - "4001:4000"
+      - "4000:4000"
     environment:
       # - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/carmen_db
-      - FRONTEND_URL=http://localhost:3500
-      - JWT_SECRET=4bDFs8qwAHRw9AMURufYt3UblS5FT4wCJV18ASte
-      - JWT_EXPIRES_IN=1d
-      - JWT_REFRESH_EXPIRES_IN=7d
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432?schema=public
-      - DATABASE_URL_SYSTEM=postgresql://postgres:postgres@postgres:5432?schema=CARMEN_SYSTEM
-      - DATABASE_URL_TENANT=postgresql://postgres:postgres@postgres:5432?schema=TENANT_DUMMY
-      - RESEND_TOKEN=re_2sry5ThE_L1XbBnv7waauFQkgjqMS6s1W
-      - EMAIL_FROM=no-reply@mail.semapru.com
-      - EMAIL_FORGOT_PASSWORD_EXPIRES_IN=1h
-      - EMAIL_REGISTER_CONFIRM_EXPIRES_IN=1h
+      # - FRONTEND_URL=http://localhost:3500
+      # - JWT_SECRET=4bDFs8qwAHRw9AMURufYt3UblS5FT4wCJV18ASte
+      # - JWT_EXPIRES_IN=1d
+      # - JWT_REFRESH_EXPIRES_IN=7d
+      # - DATABASE_URL=postgresql://postgres:postgres@www.semapru.com:5432?schema=public
+      # - DATABASE_URL_SYSTEM=postgresql://postgres:postgres@www.semapru.com:5432?schema=CARMEN_SYSTEM
+      # - DATABASE_URL_TENANT=postgresql://postgres:postgres@www.semapru.com:5432?schema=TENANT_DUMMY
+      # - RESEND_TOKEN=re_2sry5ThE_L1XbBnv7waauFQkgjqMS6s1W
+      # - EMAIL_FROM=no-reply@mail.semapru.com
+      # - EMAIL_FORGOT_PASSWORD_EXPIRES_IN=1h
+      # - EMAIL_REGISTER_CONFIRM_EXPIRES_IN=1h
       - NODE_ENV=production
     depends_on:
       postgres:
@@ -59,7 +59,7 @@ services:
     networks:
       - app-network
     # restart: always
-    command: [sh, -c, 'npm run start']
+    command: [sh, -c, 'npm run run:dev']
     # volumes:
       # - .:/app:delegated
       # - app/node_modules

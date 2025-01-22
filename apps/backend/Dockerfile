@@ -4,11 +4,11 @@ ARG IMAGE=node:latest
 FROM $IMAGE AS builder
 
 WORKDIR /app
-RUN npm i -g @nestjs/cli turbo
+RUN npm i -g @nestjs/cli turbo prisma
 COPY . .
 RUN npm i
 RUN npm run build
-RUN npm run prisma:deploy
+# RUN ["npm", "run", "prisma:deploy"]
 
 # Dev
 FROM builder AS dev
