@@ -1,10 +1,10 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
-
 import {
   VendorCreateDto,
   VendorUpdateDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+
 import {
   Body,
   Controller,

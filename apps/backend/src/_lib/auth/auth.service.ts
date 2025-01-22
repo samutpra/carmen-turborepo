@@ -15,17 +15,17 @@ import {
   hashPassword,
 } from 'lib/utils/password';
 import {
-  SystemUsersService,
-} from 'src/_system/system-users/system-users.service';
-
-import {
   AuthChangePasswordDto,
   AuthLoginResponseDto,
   AuthPayloadDto,
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import {
+  SystemUsersService,
+} from 'src/_system/system-users/system-users.service';
+
 import {
   HttpException,
   Injectable,

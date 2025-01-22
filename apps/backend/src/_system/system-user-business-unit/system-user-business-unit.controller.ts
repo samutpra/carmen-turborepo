@@ -1,14 +1,14 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitCreateSchema,
   UserBusinessUnitUpdateDto,
   UserBusinessUnitUpdateSchema,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   BadRequestException,
   Body,
@@ -32,7 +32,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { SystemUserBusinessUnitService } from './system-user-business-unit.service';
+import {
+  SystemUserBusinessUnitService,
+} from './system-user-business-unit.service';
 
 @Controller('system-api/v1/user-business-unit')
 @ApiTags('system/user business-nit')

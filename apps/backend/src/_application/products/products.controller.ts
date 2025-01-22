@@ -1,11 +1,11 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-
 import {
   ProductCreateDto,
   ProductUpdateDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   Body,
   Controller,
