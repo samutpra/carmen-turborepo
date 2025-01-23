@@ -51,107 +51,108 @@ const COLORS = ['#0ea5e9', '#6366f1', '#7dd3fc', '#818cf8', '#a5b4fc']
 
 const EnvironmentImpact = () => {
     return (
-        <div className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
-                            Total Carbon Footprint
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">900kg CO₂e</div>
-                        <p className="text-xs text-muted-foreground">
-                            Per unit produced
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
-                            Water Usage
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">2,140L</div>
-                        <p className="text-xs text-muted-foreground">
-                            Per unit produced
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
-                            Energy Consumption
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">1,665 kWh</div>
-                        <p className="text-xs text-muted-foreground">
-                            Per unit produced
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
+			<div className="space-y-6">
+				{/* Summary Cards */}
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<Card>
+						<CardHeader className="pb-2">
+							<CardTitle className="text-xs font-medium text-muted-foreground">
+								Total Carbon Footprint
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">900kg CO₂e</div>
+							<p className="text-xs text-muted-foreground">Per unit produced</p>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardHeader className="pb-2">
+							<CardTitle className="text-xs font-medium text-muted-foreground">
+								Water Usage
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">2,140L</div>
+							<p className="text-xs text-muted-foreground">Per unit produced</p>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardHeader className="pb-2">
+							<CardTitle className="text-xs font-medium text-muted-foreground">
+								Energy Consumption
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">1,665 kWh</div>
+							<p className="text-xs text-muted-foreground">Per unit produced</p>
+						</CardContent>
+					</Card>
+				</div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Carbon Footprint Breakdown */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Carbon Footprint Breakdown</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={carbonFootprintData}
-                                        cx="50%"
-                                        cy="50%"
-                                        labelLine={false}
-                                        label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                                        outerRadius={80}
-                                        dataKey="value"
-                                    >
-                                        {carbonFootprintData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip formatter={tooltipFormatter} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
+				{/* Charts */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* Carbon Footprint Breakdown */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Carbon Footprint Breakdown</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="h-[300px]">
+								<ResponsiveContainer width="100%" height="100%">
+									<PieChart>
+										<Pie
+											data={carbonFootprintData}
+											cx="50%"
+											cy="50%"
+											labelLine={false}
+											label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+											outerRadius={80}
+											dataKey="value"
+										>
+											{carbonFootprintData.map((entry, index) => (
+												<Cell
+													key={`cell-${index}`}
+													fill={COLORS[index % COLORS.length]}
+												/>
+											))}
+										</Pie>
+										<Tooltip formatter={tooltipFormatter} />
+										<Legend />
+									</PieChart>
+								</ResponsiveContainer>
+							</div>
+						</CardContent>
+					</Card>
 
-                {/* Monthly Impact Trends */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Monthly Environmental Impact</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={monthlyImpactData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="month" />
-                                    <YAxis tickFormatter={formatNumber} />
-                                    <Tooltip formatter={tooltipFormatter} />
-                                    <Legend />
-                                    <Bar dataKey="carbon" name="Carbon (kg CO₂e)" fill="#0ea5e9" />
-                                    <Bar dataKey="water" name="Water (L)" fill="#6366f1" />
-                                    <Bar dataKey="energy" name="Energy (kWh)" fill="#7dd3fc" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    )
+					{/* Monthly Impact Trends */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Monthly Environmental Impact</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="h-[300px]">
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart data={monthlyImpactData}>
+										<CartesianGrid strokeDasharray="3 3" />
+										<XAxis dataKey="month" />
+										<YAxis tickFormatter={formatNumber} />
+										<Tooltip formatter={tooltipFormatter} />
+										<Legend />
+										<Bar
+											dataKey="carbon"
+											name="Carbon (kg CO₂e)"
+											fill="#0ea5e9"
+										/>
+										<Bar dataKey="water" name="Water (L)" fill="#6366f1" />
+										<Bar dataKey="energy" name="Energy (kWh)" fill="#7dd3fc" />
+									</BarChart>
+								</ResponsiveContainer>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
+		);
 }
 
 export default EnvironmentImpact
