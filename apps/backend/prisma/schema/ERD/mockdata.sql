@@ -217,52 +217,39 @@ INSERT INTO "TENANT_DUMMY"."tb_product_item_group" (id, code, name, description,
 (gen_random_uuid(), 'FLOOR', 'Floor Cleaning', 'Floor cleaning supplies', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'CLEANING'), true),
 (gen_random_uuid(), 'SURFACE', 'Surface Cleaning', 'Surface cleaning supplies', (SELECT id FROM "TENANT_DUMMY"."tb_product_sub_category" WHERE code = 'CLEANING'), true);
 
-
 -- Insert Products
-INSERT INTO "TENANT_DUMMY"."tb_product" (id, code, name, description, primary_unit_id, product_status_type) VALUES
-(gen_random_uuid(), 'AM001', 'Shower Gel 30ml', 'Guest Amenity Shower Gel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
-(gen_random_uuid(), 'AM002', 'Shampoo 30ml', 'Guest Amenity Shampoo', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
-(gen_random_uuid(), 'LN001', 'Towel', 'Guest Room Towel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
-(gen_random_uuid(), 'LN002', 'Bed Sheet', 'Guest Room Bed Sheet', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
-(gen_random_uuid(), 'MB001', 'Water Bottle', 'Minibar Water Bottle', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'inactive'),
-(gen_random_uuid(), 'CL001', 'Floor Cleaner', 'Floor Cleaning Solution', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), 'discontinued');
-
+INSERT INTO "TENANT_DUMMY"."tb_product" (id, code, name, local_name, description, primary_unit_id, product_status_type) VALUES
+(gen_random_uuid(), 'SOAP-001', 'Bath Soap', 'สบู่อาบน้ำ', 'Luxury bath soap for guest rooms', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'SHAM-001', 'Shampoo', 'แชมพู', 'Premium hair shampoo', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), 'active'),
+(gen_random_uuid(), 'TOWEL-001', 'Bath Towel', 'ผ้าเช็ดตัว', 'Large bath towel', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'TISSUE-001', 'Facial Tissue', 'กระดาษทิชชู่', 'Soft facial tissue box', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BOX'), 'active'),
+(gen_random_uuid(), 'WATER-001', 'Mineral Water', 'น้ำแร่', 'Premium mineral water 500ml', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), 'active'),
+(gen_random_uuid(), 'SNACK-001', 'Mixed Nuts', 'ถั่วรวม', 'Assorted premium nuts', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'CLEAN-001', 'Floor Cleaner', 'น้ำยาถูพื้น', 'Multi-surface floor cleaner', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'BTL'), 'active'),
+(gen_random_uuid(), 'SHEET-001', 'Bed Sheet', 'ผ้าปูที่นอน', 'King size bed sheet', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'SET'), 'active'),
+(gen_random_uuid(), 'PILLOW-001', 'Pillow Case', 'ปลอกหมอน', 'Standard pillow case', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'EA'), 'active'),
+(gen_random_uuid(), 'PAPER-001', 'Toilet Paper', 'กระดาษชำระ', 'Toilet paper roll', (SELECT id FROM "TENANT_DUMMY"."tb_unit" WHERE name = 'ROLL'), 'active');
 
 -- Insert Product Info
-INSERT INTO "TENANT_DUMMY"."tb_product_info" (id, product_id, product_item_group_id, price, info) VALUES
-(gen_random_uuid(), 
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'AM001'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'),
- 15.00,
- '{"brand": "Luxury Bath", "supplier": "ABC Amenities", "min_stock": 100}'
-),
-(gen_random_uuid(),
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'AM002'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'),
- 15.00, 
- '{"brand": "Luxury Bath", "supplier": "ABC Amenities", "min_stock": 100}'
-),
-(gen_random_uuid(),
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'LN001'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH_LIN'),
- 120.00,
- '{"brand": "Premium Textile", "supplier": "XYZ Linen", "min_stock": 50}'
-),
-(gen_random_uuid(),
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'LN002'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BED'),
- 250.00,
- '{"brand": "Premium Textile", "supplier": "XYZ Linen", "min_stock": 30}'
-),
-(gen_random_uuid(),
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'MB001'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'DRINK'),
- 25.00,
- '{"brand": "Crystal Clear", "supplier": "Water Co Ltd", "min_stock": 200}'
-),
-(gen_random_uuid(),
- (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'CL001'),
- (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'FLOOR'),
- 180.00,
- '{"brand": "CleanPro", "supplier": "Cleaning Supply Co", "min_stock": 20}'
-);
+INSERT INTO "TENANT_DUMMY"."tb_product_info" (id, product_id, product_item_group_id, is_ingredients, price, tax_type, tax_rate) VALUES
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'SOAP-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'), false, 50.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'SHAM-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'), false, 80.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'TOWEL-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH_LIN'), false, 250.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'TISSUE-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'), false, 45.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'WATER-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'DRINK'), false, 25.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'SNACK-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'SNACK'), false, 120.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'CLEAN-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'FLOOR'), false, 180.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'SHEET-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BED'), false, 850.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'PILLOW-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BED'), false, 350.00, 'vat', 7),
+(gen_random_uuid(), (SELECT id FROM "TENANT_DUMMY"."tb_product" WHERE code = 'PAPER-001'), (SELECT id FROM "TENANT_DUMMY"."tb_product_item_group" WHERE code = 'BATH'), false, 35.00, 'vat', 7);
+
+-- Insert Product Locations
+INSERT INTO "TENANT_DUMMY"."tb_product_location" (id, product_id, location_id) 
+SELECT 
+    gen_random_uuid(),
+    p.id,
+    l.id
+FROM "TENANT_DUMMY"."tb_product" p
+CROSS JOIN "TENANT_DUMMY"."tb_location" l
+WHERE p.code IN ('SOAP-001', 'SHAM-001', 'TOWEL-001', 'TISSUE-001', 'WATER-001', 'SNACK-001', 'CLEAN-001', 'SHEET-001', 'PILLOW-001', 'PAPER-001');
+
