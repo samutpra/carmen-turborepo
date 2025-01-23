@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
-import { UnitType } from '@carmensoftware/shared-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import { UnitCreateModel } from '@/dtos/unit.dto';
 
 enum UnitField {
 	Name = 'name',
@@ -28,12 +28,12 @@ enum UnitField {
 	Status = 'is_active',
 }
 
-const sortFields: FieldConfig<UnitType>[] = [
+const sortFields: FieldConfig<UnitCreateModel>[] = [
 	{ key: UnitField.Name, label: `${m.unit_name_label()}` },
 	{ key: UnitField.Status, label: `${m.status_text()}`, type: 'badge' },
 ];
 
-const unitFields: FieldConfig<UnitType>[] = [
+const unitFields: FieldConfig<UnitCreateModel>[] = [
 	...sortFields,
 	{ key: 'description', label: `${m.unit_des_label()}` },
 ];
@@ -41,7 +41,7 @@ const UnitList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [units, setUnits] = useState<UnitType[]>([]);
+	const [units, setUnits] = useState<UnitCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -74,13 +74,16 @@ const UnitList = () => {
 		);
 	}
 
-	const handleSuccess = useCallback((updatedUnit: UnitType) => {
-		setUnits((prev) => {
-			const unitsMap = new Map(prev.map((u) => [u.id, u])); // สร้าง Map เพื่อใช้ id เป็น key
-			unitsMap.set(updatedUnit.id, updatedUnit); // อัปเดตหรือเพิ่ม updatedUnit
-			return Array.from(unitsMap.values()); // แปลง Map กลับเป็น array
-		});
-	}, [setUnits]);
+	const handleSuccess = useCallback(
+		(updatedUnit: UnitCreateModel) => {
+			setUnits((prev) => {
+				const unitsMap = new Map(prev.map((u) => [u.id, u])); // สร้าง Map เพื่อใช้ id เป็น key
+				unitsMap.set(updatedUnit.id, updatedUnit); // อัปเดตหรือเพิ่ม updatedUnit
+				return Array.from(unitsMap.values()); // แปลง Map กลับเป็น array
+			});
+		},
+		[setUnits]
+	);
 
 	const handleDelete = useCallback(
 		async (id: string) => {
@@ -93,12 +96,16 @@ const UnitList = () => {
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
+						toastError({
+							message: 'Your session has expired. Please login again.',
+						});
 					} else {
 						toastError({ message: `Failed to delete unit: ${error.message}` });
 					}
 				} else {
-					toastError({ message: 'An unknown error occurred while deleting the unit.' });
+					toastError({
+						message: 'An unknown error occurred while deleting the unit.',
+					});
 				}
 			}
 		},
@@ -145,9 +152,8 @@ const UnitList = () => {
 		</div>
 	);
 
-
 	const content = (
-		<DisplayComponent<UnitType>
+		<DisplayComponent<UnitCreateModel>
 			items={units}
 			fields={unitFields}
 			idField="id"
@@ -164,7 +170,7 @@ const UnitList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />
+		return <SkeltonLoad />;
 	}
 
 	if (units.length === 0) {

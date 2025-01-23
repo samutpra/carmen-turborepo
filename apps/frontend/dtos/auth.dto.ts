@@ -17,8 +17,9 @@ export const authLoginSchema = z.object({
 export type AuthLoginModel = z.infer<typeof authLoginSchema>;
 
 export const authChangePassword = z.object({
-  old_pass: z.string({ required_error: 'request old password' }),
-  new_pass: z.string({ required_error: 'request new password' }),
+	old_pass: z.string({ required_error: 'request old password' }),
+	new_pass: z.string({ required_error: 'request new password' }),
+	confirm_pass: z.string({ required_error: 'request confirm password' }),
 });
 
 export type AuthChangePasswordModel = z.infer<typeof authChangePassword>;
@@ -26,19 +27,20 @@ export type AuthChangePasswordModel = z.infer<typeof authChangePassword>;
 //#endregion Zod
 
 export class AuthPayloadDto {
-  id?: string;
-  username!: string;
-  password!: string;
+	id?: string;
+	username!: string;
+	password!: string;
 }
 
 export class AuthLoginDto implements AuthLoginModel {
-  username!: string;
-  password!: string;
+	username!: string;
+	password!: string;
 }
 
 export class AuthChangePasswordDto implements AuthChangePasswordModel {
-  old_pass!: string;
-  new_pass!: string;
+	old_pass!: string;
+	new_pass!: string;
+	confirm_pass!: string;
 }
 
 export class AuthLoginResponseDto {
