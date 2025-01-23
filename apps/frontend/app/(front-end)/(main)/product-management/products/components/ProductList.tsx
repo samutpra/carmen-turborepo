@@ -100,7 +100,7 @@ const ProductList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container my-4">
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}

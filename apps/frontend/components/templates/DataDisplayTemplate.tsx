@@ -20,11 +20,9 @@ const DataDisplayTemplate: React.FC<Props> = ({
 			<div className="sticky top-0 z-10">
 				<div className="md:flex justify-between items-start">
 					<h1 className="text-2xl font-semibold">{title}</h1>
-					{actionButtons && (
-						<div className="mt-4 md:mt-0">{actionButtons}</div>
-					)}
+					{actionButtons && <div className="mt-4 md:mt-0">{actionButtons}</div>}
 				</div>
-				{filters && <div className="my-4">{filters}</div>}
+				{filters && <div>{filters}</div>}
 				{bulkActions && <div className="mb-4">{bulkActions}</div>}
 			</div>
 			<div className="flex-1 overflow-y-auto bg-background max-h-[calc(100vh-200px)] rounded-lg">
