@@ -15,72 +15,26 @@ import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
 import StockCountUnit from './components/tab/StockCountUnit';
 import EnvironmentImpact from './components/tab/EnvironmentImpact';
-
-interface ProductInfo {
-	data: {
-		id: string;
-		code: string;
-		name: string;
-		description: string;
-		tb_product_info?: {
-			price: string;
-			info: {
-				brand: string;
-			};
-		};
-		product_status_type: string;
-	};
-	item_group_name: string;
-	sub_category_name: string;
-	category_name: string;
-}
-
-const fetchProduct = async (id: string, token: string, tenantId: string) => {
-	const URL = `/api/product-management/products/${id}`;
-
-	const options = {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'x-tenant-id': tenantId,
-			'Content-Type': 'application/json',
-		},
-	};
-
-	try {
-		const response = await fetch(URL, options);
-		if (!response.ok) {
-			throw new Error('Failed to fetch product data');
-		}
-
-		const data = await response.json();
-
-		console.log('data >>>', data);
-
-		return data.data;
-	} catch (err: unknown) {
-		console.log('err >>>', err);
-		return err as string;
-	}
-};
+import { fetchData } from '@/app/(front-end)/services/client';
+import { ProductInfoClient } from '@/dtos/product.dto';
+import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [product, setProduct] = useState<ProductInfo | null>(null);
+	const [product, setProduct] = useState<ProductInfoClient | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 	const router = useRouter();
+	const API_URL = `/api/product-management/products/${params.id}`;
 
 	useEffect(() => {
 		const loadProduct = async () => {
 			setLoading(true);
 			try {
-				const data = await fetchProduct(params.id, token, tenantId);
-
-				console.log('data >>>', data);
-				setProduct(data);
+				const data = await fetchData(API_URL, token, tenantId);
+				setProduct(data.data);
 			} catch (err: unknown) {
 				console.log('error: ', err);
 				toastError({ message: 'Failed to fetch product data' });
@@ -102,7 +56,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	};
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return <SkeltonCardLoading />;
 	}
 
 	const content = (

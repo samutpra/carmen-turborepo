@@ -25,7 +25,6 @@ interface AuthContextType {
 	authState: AuthState;
 	accessToken: string | null;
 	isAuthenticated: boolean;
-	isLoading: boolean;
 	handleLogin: (data: AuthState, token: string) => Promise<void>;
 	handleLogout: () => Promise<void>;
 	updateAccessToken: (token: string) => void;
@@ -46,7 +45,6 @@ const defaultAuthContext: AuthContextType = {
 	authState: defaultAuthState,
 	accessToken: null,
 	isAuthenticated: false,
-	isLoading: true,
 	handleLogin: async () => {},
 	handleLogout: async () => {},
 	updateAccessToken: () => {},
@@ -61,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	// const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [authState, setAuthState] = useState<AuthState>(defaultAuthState);
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 
@@ -93,8 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		} catch (error) {
 			console.error('Auth initialization error:', error);
 			clearAuth();
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
@@ -146,15 +142,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		authState,
 		accessToken,
 		isAuthenticated: !!authState.user && !!accessToken,
-		isLoading,
+		// isLoading,
 		handleLogin,
 		handleLogout,
 		updateAccessToken,
 	};
-
-	if (isLoading) {
-		return <div>Loading...</div>; // Consider using a proper loading component
-	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

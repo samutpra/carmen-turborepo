@@ -218,3 +218,22 @@ export type ProductDto = {
 	created_at: Date;
 	updated_at: Date;
 };
+
+export interface ProductInfoClient {
+	data: {
+		id: string;
+		code: string;
+		name: string;
+		description: string;
+		tb_product_info?: {
+			price: string;
+			info: {
+				brand: string;
+			};
+		};
+		product_status_type: string;
+	};
+	item_group_name: string;
+	sub_category_name: string;
+	category_name: string;
+}
