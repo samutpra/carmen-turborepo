@@ -7,7 +7,7 @@ const ROUTES = {
 	PUBLIC: ['/', '/sign-in'],
 	ADMIN: ['/admin'],
 	PROTECTED: menuItems.flatMap((item) => [
-		item.path, // path หลัก
+		item.path,
 		...item.subItems.map((subItem) => subItem.path), // path ใน subItems
 	]),
 } as const;
@@ -37,11 +37,6 @@ export async function middleware(request: NextRequest) {
 			const url = new URL('/sign-in', request.url);
 			url.searchParams.set('from', pathname);
 			return NextResponse.redirect(url);
-		}
-
-		// Don't redirect authenticated users from public routes unless it's the login page
-		if (isAuthenticated && pathname === '/sign-in') {
-			return NextResponse.redirect(new URL('/dashboard', request.url));
 		}
 
 		// 3. Handle tenant
