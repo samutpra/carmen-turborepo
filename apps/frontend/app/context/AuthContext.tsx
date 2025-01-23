@@ -8,8 +8,9 @@ import { useRouter } from '@/lib/i18n';
 // Define User type
 interface User {
 	id: string;
-	email: string;
-	name: string;
+	email?: string;
+	name?: string;
+	username: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any; // for additional user properties
 }
