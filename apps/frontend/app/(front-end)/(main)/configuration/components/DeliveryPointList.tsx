@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import {
 	deleteDeliveryPoint,
 	fetchDeliveryPoints,
@@ -19,7 +18,6 @@ import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
@@ -176,27 +174,13 @@ const DeliveryPointList = () => {
 		/>
 	);
 
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
-	if (deliveryPoints.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.no_delivery_point_found()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
-	}
-
 	return (
 		<DataDisplayTemplate
 			title={title}
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

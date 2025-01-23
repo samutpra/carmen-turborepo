@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
@@ -17,7 +16,6 @@ import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { CurrencyCreateModel } from '@/dtos/currency.dto';
@@ -209,27 +207,13 @@ const CurrencyList = () => {
 		/>
 	);
 
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
-	if (currencies.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.no_currency_found_text()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
-	}
-
 	return (
 		<DataDisplayTemplate
 			title={title}
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

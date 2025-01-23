@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import {
 	deleteStoreLocation,
 	fetchStoreLocations,
@@ -19,7 +18,6 @@ import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
@@ -56,27 +54,6 @@ const StoreLocationList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-
-	const fetchData = async () => {
-		try {
-			setIsLoading(true);
-			const data = await fetchStoreLocations(token, tenantId, {
-				search,
-				status,
-			});
-			setStoreLocations(data.data);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'An error occurred');
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchData();
-	}, [token, tenantId, search, status]);
-
-	if (error) return <ErrorCard message={error} />;
 
 	const handleSuccess = useCallback(
 		(values: LocationCreateModel) => {
@@ -116,8 +93,27 @@ const StoreLocationList = () => {
 				}
 			}
 		},
-		[token, tenantId, deleteStoreLocation]
+		[token, tenantId]
 	);
+
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchStoreLocations(token, tenantId, {
+				search,
+				status,
+			});
+			setStoreLocations(data.data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, [token, tenantId, search, status]);
 
 	const title = `${m.store_location()}`;
 
@@ -176,19 +172,8 @@ const StoreLocationList = () => {
 		/>
 	);
 
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
-	if (storeLocations.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.not_found_store_location()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
+	if (error) {
+		return <ErrorCard message={error} />;
 	}
 
 	return (
@@ -197,6 +182,7 @@ const StoreLocationList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

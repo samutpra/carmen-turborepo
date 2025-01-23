@@ -14,7 +14,6 @@ import { statusOptions } from '@/lib/statusOptions';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import VendorDisplay from './VendorDisplay';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
@@ -106,8 +105,6 @@ const VendorList = () => {
 		</div>
 	);
 
-	if (isLoading) return <SkeltonLoad />;
-
 	const content = <VendorDisplay vendors={vendors} />;
 
 	return (
@@ -116,6 +113,7 @@ const VendorList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

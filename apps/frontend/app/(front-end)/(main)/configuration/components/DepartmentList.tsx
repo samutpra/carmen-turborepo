@@ -2,11 +2,9 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteDepartment, fetchDepartments } from '../actions/department';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
@@ -17,10 +15,10 @@ import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { DepartmentCreateModel } from '@/dtos/department.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum DepartmentFields {
 	Name = 'name',
@@ -148,28 +146,7 @@ const DepartmentList = () => {
 	);
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">Error loading departments: {error}</p>
-				</CardContent>
-			</Card>
-		);
-	}
-
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
-	if (departments.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description="No Departments found"
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	return (
@@ -178,6 +155,7 @@ const DepartmentList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

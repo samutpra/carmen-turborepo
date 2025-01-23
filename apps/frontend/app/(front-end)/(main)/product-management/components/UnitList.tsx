@@ -17,7 +17,6 @@ import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { UnitCreateModel } from '@/dtos/unit.dto';
@@ -64,22 +63,12 @@ const UnitList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">Error loading units: {error}</p>
-				</CardContent>
-			</Card>
-		);
-	}
-
 	const handleSuccess = useCallback(
 		(updatedUnit: UnitCreateModel) => {
 			setUnits((prev) => {
-				const unitsMap = new Map(prev.map((u) => [u.id, u])); // สร้าง Map เพื่อใช้ id เป็น key
-				unitsMap.set(updatedUnit.id, updatedUnit); // อัปเดตหรือเพิ่ม updatedUnit
-				return Array.from(unitsMap.values()); // แปลง Map กลับเป็น array
+				const unitsMap = new Map(prev.map((u) => [u.id, u]));
+				unitsMap.set(updatedUnit.id, updatedUnit);
+				return Array.from(unitsMap.values());
 			});
 		},
 		[setUnits]
@@ -109,8 +98,18 @@ const UnitList = () => {
 				}
 			}
 		},
-		[token, tenantId, deleteUnit]
+		[token, tenantId]
 	);
+
+	if (error) {
+		return (
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-destructive">Error loading units: {error}</p>
+				</CardContent>
+			</Card>
+		);
+	}
 
 	const title = `${m.unit()}`;
 
@@ -169,10 +168,6 @@ const UnitList = () => {
 		/>
 	);
 
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
 	if (units.length === 0) {
 		return (
 			<EmptyState
@@ -190,6 +185,7 @@ const UnitList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };

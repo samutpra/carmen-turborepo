@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react'
+import SkeltonLoad from '../ui-custom/Loading/SkeltonLoad';
 
 interface Props {
 	title: string;
@@ -6,6 +7,7 @@ interface Props {
 	filters?: ReactNode;
 	content: ReactNode;
 	bulkActions?: ReactNode;
+	isLoading?: boolean;
 }
 
 const DataDisplayTemplate: React.FC<Props> = ({
@@ -14,6 +16,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
 	filters,
 	content,
 	bulkActions,
+	isLoading,
 }) => {
 	return (
 		<div className="flex flex-col p-6 justify-center">
@@ -26,10 +29,10 @@ const DataDisplayTemplate: React.FC<Props> = ({
 				{bulkActions && <div className="mb-4">{bulkActions}</div>}
 			</div>
 			<div className="flex-1 overflow-y-auto bg-background max-h-[calc(100vh-200px)] rounded-lg">
-				{content}
+				{isLoading ? <SkeltonLoad /> : content}
 			</div>
 		</div>
 	);
-}
+};
 
 export default DataDisplayTemplate

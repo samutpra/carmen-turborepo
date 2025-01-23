@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Link } from '@/lib/i18n';
 import React, { useEffect, useState } from 'react';
@@ -15,7 +15,6 @@ import { toastError } from '@/components/ui-custom/Toast';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import { FieldConfig } from '@/lib/util/uiConfig';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import ProductDisplay from './ProductDisplay';
 import { ProductCreateModel } from '@/dtos/product.dto';
 
@@ -30,26 +29,35 @@ enum ProductField {
 }
 
 const fields: FieldConfig<ProductCreateModel>[] = [
-  { key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
-  { key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
-  { key: ProductField.DESCRIPYION as keyof ProductCreateModel, label: 'Description' },
-  { key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
-  { key: ProductField.SUBCATEGORY as keyof ProductCreateModel, label: 'Subcategory' },
-  { key: ProductField.ITEM_GROUP as keyof ProductCreateModel, label: 'Item Group' },
-  { key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
+	{ key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
+	{ key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+	{
+		key: ProductField.DESCRIPYION as keyof ProductCreateModel,
+		label: 'Description',
+	},
+	{ key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
+	{
+		key: ProductField.SUBCATEGORY as keyof ProductCreateModel,
+		label: 'Subcategory',
+	},
+	{
+		key: ProductField.ITEM_GROUP as keyof ProductCreateModel,
+		label: 'Item Group',
+	},
+	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
 ];
 
 const ProductList = () => {
-  const { accessToken } = useAuth();
-  const token = accessToken || '';
-  const tenantId = 'DUMMY';
-  const [products, setProducts] = useState<ProductCreateModel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [search, setSearch] = useURL('search');
-  const [status, setStatus] = useURL('status');
-  const [page, setPage] = useURL('page');
-  const [pages, setPages] = useURL('pages');
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [products, setProducts] = useState<ProductCreateModel[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 
 	const fetchData = async () => {
 		try {
@@ -123,8 +131,6 @@ const ProductList = () => {
 		</div>
 	);
 
-	if (isLoading) return <SkeltonLoad />;
-
 	const content = (
 		<ProductDisplay
 			products={products}
@@ -135,15 +141,15 @@ const ProductList = () => {
 		/>
 	);
 
-
-  return (
-    <DataDisplayTemplate
-      title='Products List'
-      actionButtons={actionButtons}
-      filters={filter}
-      content={content}
-    />
-  );
+	return (
+		<DataDisplayTemplate
+			title="Products List"
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+			isLoading={isLoading}
+		/>
+	);
 };
 
 export default ProductList;
