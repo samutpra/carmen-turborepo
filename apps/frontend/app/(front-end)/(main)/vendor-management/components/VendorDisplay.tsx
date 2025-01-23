@@ -1,22 +1,22 @@
 import { Badge } from '@/components/ui-custom/is-active-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { vendor_type } from '@carmensoftware/shared-types'
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
+import { VendorCreateModel } from '@/dtos/vendor.dto';
 
 interface VendorDisplayProps {
-    vendors: vendor_type[];
+	vendors: VendorCreateModel[];
 }
 const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/app/context/AuthContext';
-import { vendor_type } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus, Printer } from 'lucide-react';
@@ -18,6 +17,7 @@ import VendorDisplay from './VendorDisplay';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { VendorCreateModel } from '@/dtos/vendor.dto';
 
 enum VendorFields {
 	Name = 'name',
@@ -25,7 +25,7 @@ enum VendorFields {
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<vendor_type>[] = [
+const sortFields: FieldConfig<VendorCreateModel>[] = [
 	{ key: VendorFields.Name, label: m.vendor_name_label() },
 	{ key: VendorFields.isActive, label: m.status_text(), type: 'badge' },
 ];
@@ -34,7 +34,7 @@ const VendorList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [vendors, setVendors] = useState<vendor_type[]>([]);
+	const [vendors, setVendors] = useState<VendorCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -106,13 +106,9 @@ const VendorList = () => {
 		</div>
 	);
 
-	if (isLoading) return <SkeltonLoad />
+	if (isLoading) return <SkeltonLoad />;
 
-	const content = (
-		<VendorDisplay
-			vendors={vendors}
-		/>
-	)
+	const content = <VendorDisplay vendors={vendors} />;
 
 	return (
 		<DataDisplayTemplate
