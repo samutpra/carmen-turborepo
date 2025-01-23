@@ -4,8 +4,6 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
 	try {
-		console.log('request >>>', request);
-
 		const body = await request.json();
 
 		const { username, password } = body;

@@ -101,6 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	useEffect(() => {
 		if (pathname === '/sign-in') {
 			clearAuth();
+			router.push('/sign-in');
 		}
 	}, [pathname]);
 

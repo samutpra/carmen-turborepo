@@ -50,6 +50,11 @@ const CategorieList = () => {
 	const [selectedItemGroup, setSelectedItemGroup] =
 		useState<ProductItemGroupCreateModel | null>(null);
 
+	console.log('category', selectedCategory);
+	console.log('sub', selectedSubCategory);
+	console.log('it group', itemGroups);
+	
+
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);

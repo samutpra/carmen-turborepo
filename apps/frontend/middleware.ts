@@ -1,16 +1,16 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { TenantMiddleware } from './tenantmiddleware';
 import { middleware as i18nMiddleware } from '@/lib/i18n';
-import { menuItems } from './lib/util/menuItems';
+// import { menuItems } from './lib/util/menuItems';
 
-const ROUTES = {
-	PUBLIC: ['/', '/sign-in'],
-	ADMIN: ['/admin'],
-	PROTECTED: menuItems.flatMap((item) => [
-		item.path,
-		...item.subItems.map((subItem) => subItem.path), // path ใน subItems
-	]),
-} as const;
+// const ROUTES = {
+// 	PUBLIC: ['/', '/sign-in'],
+// 	ADMIN: ['/admin'],
+// 	PROTECTED: menuItems.flatMap((item) => [
+// 		item.path,
+// 		...item.subItems.map((subItem) => subItem.path), // path ใน subItems
+// 	]),
+// } as const;
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
@@ -26,18 +26,10 @@ export async function middleware(request: NextRequest) {
 		const response = i18nMiddleware.getResponse(request, lang);
 
 		// 2. Handle authentication
-		const accessToken = request.cookies.get('access_token')?.value;
-		const isAuthenticated = !!accessToken;
+		// const accessToken = request.cookies.get('access_token')?.value;
+		// const isAuthenticated = !!accessToken;
 
 		// Only redirect if trying to access protected routes without auth
-		if (
-			!isAuthenticated &&
-			ROUTES.PROTECTED.some((route) => pathname.startsWith(route))
-		) {
-			const url = new URL('/sign-in', request.url);
-			url.searchParams.set('from', pathname);
-			return NextResponse.redirect(url);
-		}
 
 		// 3. Handle tenant
 		const tenantResponse = TenantMiddleware(request);

@@ -94,14 +94,14 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 
 	return (
 		<div className="container mx-auto py-4">
-			<div className="flex flex-col gap-6">
+			<div className="flex flex-col">
 				<div className="px-6">
 					<Card>
-						<CardContent className="">
-							<div className="flex flex-col gap-6">
+						<CardContent className="py-4">
+							<div className="flex flex-col gap-4">
 								<div className="flex items-center justify-between">
-									<div className="flex flex-col gap-1">
-										<div className="flex items-center gap-3">
+									<div className="flex flex-col">
+										<div className="flex items-center gap-2">
 											<div className="text-xl font-bold">
 												{product?.data.name}
 											</div>
@@ -141,7 +141,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 										)}
 									</div>
 								</div>
-								<div className="border-t grid grid-cols-3 gap-4 py-6 text-xs">
+								<div className="border-t grid grid-cols-3 gap-4 py-4 text-xs">
 									<div>
 										<p className="text-muted-foreground">Description</p>
 										<p>{product?.data.description}</p>

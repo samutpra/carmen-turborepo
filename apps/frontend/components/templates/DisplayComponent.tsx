@@ -131,64 +131,77 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
     );
 
     return (
-        <>
-            {/* Mobile */}
-            <div className="block md:hidden">
-                <div className="grid grid-cols-1 gap-4">
-                    {items.map((item) => (
-                        <Card key={String(item[idField])} className="hover:shadow-md transition-all">
-                            <CardContent className="p-4 space-y-2">
-                                {fields.map((field) => (
-                                    <div key={String(field.key)} className="grid grid-cols-10 gap-4">
-                                        <span className="text-sm text-muted-foreground col-span-3">
-                                            {field.label}
-                                        </span>
-                                        <span className="col-span-7">{renderField(field, item)}</span>
-                                    </div>
-                                ))}
-                            </CardContent>
-                            <CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">{renderActions(item)}</CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+			<>
+				{/* Mobile */}
+				<div className="block md:hidden">
+					<div className="grid grid-cols-1 gap-4">
+						{items.map((item) => (
+							<Card
+								key={String(item[idField])}
+								className="hover:shadow-md transition-all"
+							>
+								<CardContent className="p-4 space-y-2">
+									{fields.map((field) => (
+										<div
+											key={String(field.key)}
+											className="grid grid-cols-10 gap-4"
+										>
+											<span className="text-sm text-muted-foreground col-span-3">
+												{field.label}
+											</span>
+											<span className="col-span-7">
+												{renderField(field, item)}
+											</span>
+										</div>
+									))}
+								</CardContent>
+								<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
+									{renderActions(item)}
+								</CardFooter>
+							</Card>
+						))}
+					</div>
+				</div>
 
-            {/* Desktop */}
-            <div className="hidden md:block">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {showIndex && <TableHead className="w-10">#</TableHead>}
-                            {fields.map((field) => (
-                                <TableHead key={String(field.key)} style={{ width: field.width }}>
-                                    {field.label}
-                                </TableHead>
-                            ))}
-                            <TableHead className="text-right">{m.action_text()}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {items.map((item, index) => (
-                            <TableRow key={String(item[idField])}>
-                                {showIndex && <TableCell>{index + 1}</TableCell>}
-                                {fields.map((field) => (
-                                    <TableCell
-                                        key={String(field.key)}
-                                        className={`text-${field.align || 'left'}`}
-                                    >
-                                        {renderField(field, item)}
-                                    </TableCell>
-                                ))}
-                                <TableCell className="text-right">
-                                    {renderActions(item)}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-        </>
-    );
+				{/* Desktop */}
+				<div className="hidden md:block">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								{showIndex && <TableHead className="w-10">#</TableHead>}
+								{fields.map((field) => (
+									<TableHead
+										key={String(field.key)}
+										style={{ width: field.width }}
+									>
+										{field.label}
+									</TableHead>
+								))}
+								<TableHead className="text-right">{m.action_text()}</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{items.map((item, index) => (
+								<TableRow key={String(item[idField])} className="text-xs">
+									{showIndex && <TableCell>{index + 1}</TableCell>}
+									{fields.map((field) => (
+										<TableCell
+											key={String(field.key)}
+											className={`text-${field.align || 'left'}`}
+										>
+											{renderField(field, item)}
+										</TableCell>
+									))}
+									<TableCell className="text-right">
+										{renderActions(item)}
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</div>
+			</>
+		);
 };
 
 export default DisplayComponent;
