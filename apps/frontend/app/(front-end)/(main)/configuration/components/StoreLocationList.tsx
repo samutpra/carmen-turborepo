@@ -36,10 +36,27 @@ const sortFields: FieldConfig<LocationCreateModel>[] = [
 	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' },
 ];
 const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
-	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
-	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
-	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' },
-	{ key: StoreLocationField.Description, label: m.description() },
+	{
+		key: StoreLocationField.Name,
+		label: m.store_location_name_label(),
+		className: 'w-40',
+	},
+	{
+		key: StoreLocationField.LocationType,
+		label: m.location_type_label(),
+		className: 'w-40',
+	},
+	{
+		key: StoreLocationField.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-24',
+	},
+	{
+		key: StoreLocationField.Description,
+		label: m.description(),
+		className: 'w-40',
+	},
 ];
 
 const StoreLocationList = () => {
