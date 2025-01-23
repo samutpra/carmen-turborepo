@@ -69,9 +69,11 @@ const ProductDisplay: React.FC<Props> = ({
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead className="w-[100px]">#</TableHead>
+							<TableHead className="w-[50px]">#</TableHead>
 							{fields.map((field) => (
-								<TableHead key={field.key}>{field.label}</TableHead>
+								<TableHead key={field.key} className="text-xs">
+									{field.label}
+								</TableHead>
 							))}
 							<TableHead className="text-right">{m.action_text()}</TableHead>
 						</TableRow>
@@ -79,9 +81,11 @@ const ProductDisplay: React.FC<Props> = ({
 					<TableBody>
 						{products.map((product, index) => (
 							<TableRow key={product.id}>
-								<TableCell className="font-medium">{index + 1}</TableCell>
+								<TableCell className="font-medium text-xs">
+									{index + 1}
+								</TableCell>
 								{fields.map((field) => (
-									<TableCell key={field.key}>
+									<TableCell key={field.key} className="text-xs">
 										{String(product[field.key as keyof ProductCreateModel])}
 									</TableCell>
 								))}
