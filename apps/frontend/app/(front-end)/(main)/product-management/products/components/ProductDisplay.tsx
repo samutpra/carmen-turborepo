@@ -11,10 +11,10 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
-import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import PaginationComponent from '@/components/PaginationComponent';
 import { Link } from '@/lib/i18n';
+import { ProductCreateModel } from '@/dtos/product.dto';
 
 interface Props {
 	products: ProductCreateModel[];

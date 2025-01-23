@@ -10,7 +10,6 @@ import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
 import { fetchProducts } from '../../actions/product';
 import { toastError } from '@/components/ui-custom/Toast';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
@@ -18,6 +17,7 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import ProductDisplay from './ProductDisplay';
+import { ProductCreateModel } from '@/dtos/product.dto';
 
 enum ProductField {
 	NAME = 'name',
