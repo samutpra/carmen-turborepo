@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { LocationType, LocationSchema } from '@carmensoftware/shared-types';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -38,11 +37,12 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitStoreLocation } from '../actions/store_location';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
+import { LocationCreateModel, LocationCreateSchema } from '@/dtos/location.dto';
 
 interface StoreLocationDialogProps {
 	mode: formType;
-	defaultValues?: LocationType;
-	onSuccess: (values: LocationType) => void;
+	defaultValues?: LocationCreateModel;
+	onSuccess: (values: LocationCreateModel) => void;
 }
 
 const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
@@ -56,19 +56,20 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultLocationValues: LocationType = {
+	const defaultLocationValues: LocationCreateModel = {
 		name: '',
 		location_type: 'inventory',
 		description: '',
 		is_active: true,
-		delivery_point_id: null,
-	}
+		deliveryPointId: '',
+	};
 
-	const form = useForm<LocationType>({
-		resolver: zodResolver(LocationSchema),
-		defaultValues: mode === formType.EDIT && defaultValues
-			? { ...defaultValues }
-			: defaultLocationValues,
+	const form = useForm<LocationCreateModel>({
+		resolver: zodResolver(LocationCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultLocationValues,
 	});
 
 	useEffect(() => {
@@ -79,12 +80,12 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		}
 	}, [mode, defaultValues, form]);
 
-	const onSubmit = async (data: LocationType) => {
+	const onSubmit = async (data: LocationCreateModel) => {
 		setIsLoading(true);
 		try {
 			const id = defaultValues?.id || '';
 			const result = await submitStoreLocation(data, mode, token, tenantId, id);
-			const submitData: LocationType = {
+			const submitData: LocationCreateModel = {
 				id: result.id,
 				...data,
 			};
@@ -93,20 +94,23 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 				setOpen(false);
 				form.reset();
 				toastSuccess({
-					message: `${m.store_location()} ${mode === formType.ADD
-						? `${m.create_txt()}`
-						: `${m.edit_txt()}`} ${m.successfully()}`
+					message: `${m.store_location()} ${
+						mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+					} ${m.successfully()}`,
 				});
 			} else {
-				toastError({ message: `${m.fail_to_text()} ${mode} ${m.store_location()}` });
+				toastError({
+					message: `${m.fail_to_text()} ${mode} ${m.store_location()}`,
+				});
 			}
 		} catch (error) {
-			toastError({ message: error instanceof Error ? error.message : String(error) });
+			toastError({
+				message: error instanceof Error ? error.message : String(error),
+			});
 		} finally {
 			setIsLoading(false);
 		}
-	}
-
+	};
 
 	const handleClose = () => {
 		setOpen(false);
@@ -133,7 +137,9 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? `${m.store_location()}` : `${m.store_location()}`}
+						{mode === formType.ADD
+							? `${m.store_location()}`
+							: `${m.store_location()}`}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -199,7 +205,9 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-2">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+										<FormLabel className="text-base">
+											{m.status_active_text()}
+										</FormLabel>
 									</div>
 									<FormControl>
 										<Switch

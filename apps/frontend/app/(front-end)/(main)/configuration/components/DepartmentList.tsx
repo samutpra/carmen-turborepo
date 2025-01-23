@@ -3,7 +3,6 @@
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { DepartmentType } from '@carmensoftware/shared-types/src/department';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import DepartmentDialog from './DepartmentDialog';
@@ -21,6 +20,7 @@ import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import { DepartmentCreateModel } from '@/dtos/department.dto';
 
 enum DepartmentFields {
 	Name = 'name',
@@ -28,12 +28,12 @@ enum DepartmentFields {
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<DepartmentType>[] = [
+const sortFields: FieldConfig<DepartmentCreateModel>[] = [
 	{ key: DepartmentFields.Name, label: m.department_name_label() },
 	{ key: DepartmentFields.isActive, label: m.status_text(), type: 'badge' },
 ];
 
-const departmentFields: FieldConfig<DepartmentType>[] = [
+const departmentFields: FieldConfig<DepartmentCreateModel>[] = [
 	...sortFields,
 	{ key: DepartmentFields.Description, label: m.description() },
 ];
@@ -42,7 +42,7 @@ const DepartmentList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [departments, setDepartments] = useState<DepartmentType[]>([]);
+	const [departments, setDepartments] = useState<DepartmentCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -65,7 +65,7 @@ const DepartmentList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	const handleSuccess = useCallback((values: DepartmentType) => {
+	const handleSuccess = useCallback((values: DepartmentCreateModel) => {
 		setDepartments((prev) => {
 			const mapValues = new Map(prev.map((u) => [u.id, u]));
 			mapValues.set(values.id, values);
@@ -73,17 +73,22 @@ const DepartmentList = () => {
 		});
 	}, []);
 
-	const handleDelete = useCallback(async (id: string) => {
-		try {
-			await deleteDepartment(id, token, tenantId);
-			setDepartments((prev) => prev.filter((department) => department.id !== id));
-			toastSuccess({ message: m.del_department_success() });
-		} catch (error) {
-			const message = error instanceof Error ? error.message : m.error_del_text();
-			toastError({ message: `${m.fail_del_department()}: ${message}` });
-		}
-	}, [token, tenantId]);
-
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				await deleteDepartment(id, token, tenantId);
+				setDepartments((prev) =>
+					prev.filter((department) => department.id !== id)
+				);
+				toastSuccess({ message: m.del_department_success() });
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : m.error_del_text();
+				toastError({ message: `${m.fail_del_department()}: ${message}` });
+			}
+		},
+		[token, tenantId]
+	);
 
 	const title = m.department();
 
@@ -126,7 +131,7 @@ const DepartmentList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<DepartmentType>
+		<DisplayComponent<DepartmentCreateModel>
 			items={departments}
 			fields={departmentFields}
 			idField="id"
@@ -153,7 +158,7 @@ const DepartmentList = () => {
 	}
 
 	if (isLoading) {
-		return <SkeltonLoad />
+		return <SkeltonLoad />;
 	}
 
 	if (departments.length === 0) {

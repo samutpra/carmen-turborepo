@@ -4,7 +4,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
 import EmptyState from '@/components/ui-custom/EmptyState';
@@ -21,7 +20,7 @@ import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
-import { CurrencyCreateModel } from '../../../../../../backend/shared-dtos/currency.dto';
+import { CurrencyCreateModel } from '@/dtos/currency.dto';
 
 enum CurrencyField {
 	Code = 'code',
@@ -70,7 +69,7 @@ const CurrencyList = () => {
 			setCurrencies(data);
 			setShowRefreshToken(false);
 		} catch (err) {
-			if (err instanceof APIError && err.status === 401) {
+			if (err instanceof Error && err.message === 'Unauthorized') {
 				toastError({
 					message: 'Your session has expired. Please login again.',
 				});

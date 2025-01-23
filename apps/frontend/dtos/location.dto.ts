@@ -16,36 +16,36 @@ export type location_info = {
 };
 
 export const LocationCreateSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string().min(1, 'name must be at least 1 character'),
-  description: z.string().nullable().optional(),
-  is_active: z.boolean().default(true).nullable().optional(),
-  location_type: z.enum(
-    Object.values(enum_location_type) as [string, ...string[]],
-  ),
-  deliveryPointId: z.string().uuid().nullable().optional(),
-  info: z
-    .object({
-      floor: z.number().optional(),
-      building: z.string().optional(),
-      capacity: z.number().optional(),
-      responsibleDepartment: z.string().optional(),
-      itemCount: z.number().optional(),
-      lastCount: z.string().optional(),
-    })
-    .optional(),
+	id: z.string().uuid().optional(),
+	name: z.string().min(1, 'name must be at least 1 character'),
+	description: z.string().optional(),
+	is_active: z.boolean().default(true).optional(),
+	location_type: z.enum(
+		Object.values(enum_location_type) as [string, ...string[]]
+	),
+	deliveryPointId: z.string().uuid().optional(),
+	info: z
+		.object({
+			floor: z.number().optional(),
+			building: z.string().optional(),
+			capacity: z.number().optional(),
+			responsibleDepartment: z.string().optional(),
+			itemCount: z.number().optional(),
+			lastCount: z.string().optional(),
+		})
+		.optional(),
 });
 
 export type LocationCreateModel = z.infer<typeof LocationCreateSchema>;
 
 export class LocationCreateDto implements LocationCreateModel {
-  id?: string;
-  name!: string;
-  description?: string | null;
-  is_active?: boolean | null;
-  location_type!: enum_location_type;
-  deliveryPointId?: string | null;
-  info?: location_info;
+	id?: string;
+	name!: string;
+	description?: string;
+	is_active?: boolean;
+	location_type!: enum_location_type;
+	deliveryPointId?: string;
+	info?: location_info;
 }
 
 export const LocationUpdateSchema = z.object({

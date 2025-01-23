@@ -19,10 +19,7 @@ import {
 	FormMessage,
 } from '@/components/ui-custom/FormCustom';
 import { Switch } from '@/components/ui/switch';
-import {
-	deliveryPointSchema,
-	DeliveryPointType,
-} from '@carmensoftware/shared-types';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PencilIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -33,10 +30,15 @@ import { submitDeliveryPoint } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
+import {
+	DeliveryPointCreateModel,
+	DeliveryPointCreateSchema,
+} from '@/dtos/delivery-point.dto';
+
 export interface DeliveryPointDialogProps {
 	mode: formType;
-	defaultValues?: DeliveryPointType;
-	onSuccess: (point: DeliveryPointType) => void;
+	defaultValues?: DeliveryPointCreateModel;
+	onSuccess: (point: DeliveryPointCreateModel) => void;
 }
 
 export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
@@ -50,43 +52,45 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultDeliveryPointValues: DeliveryPointType = {
+	const defaultDeliveryPointValues: DeliveryPointCreateModel = {
 		name: '',
 		is_active: true,
 	};
 
-	const form = useForm<DeliveryPointType>({
-		resolver: zodResolver(deliveryPointSchema),
-		defaultValues: mode === formType.EDIT && defaultValues
-			? { ...defaultValues } : defaultDeliveryPointValues,
+	const form = useForm<DeliveryPointCreateModel>({
+		resolver: zodResolver(DeliveryPointCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultDeliveryPointValues,
 	});
 
 	useEffect(() => {
 		if (mode === formType.EDIT && defaultValues) {
 			form.reset({ ...defaultValues });
 		} else {
-			form.reset({ ...defaultDeliveryPointValues })
+			form.reset({ ...defaultDeliveryPointValues });
 		}
-	}, [mode, defaultValues, form])
+	}, [mode, defaultValues, form]);
 
-	const onSubmit = async (data: DeliveryPointType) => {
+	const onSubmit = async (data: DeliveryPointCreateModel) => {
 		setIsLoading(true);
 		try {
 			const id = defaultValues?.id || '';
 			const result = await submitDeliveryPoint(data, mode, token, tenantId, id);
 
-			const submitData: DeliveryPointType = {
+			const submitData: DeliveryPointCreateModel = {
 				id: result.id,
 				...data,
-			}
+			};
 
 			onSuccess(submitData);
 			setOpen(false);
 			form.reset();
 			toastSuccess({
-				message: `${m.delivery_point()} ${mode === formType.ADD
-					? `${m.create_txt()}`
-					: `${m.edit_txt()}`} ${m.successfully()}`
+				message: `${m.delivery_point()} ${
+					mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+				} ${m.successfully()}`,
 			});
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);
@@ -127,10 +131,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit(onSubmit)}
-						className="space-y-4"
-					>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 						<FormField
 							control={form.control}
 							name="name"
@@ -155,7 +156,9 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+										<FormLabel className="text-base">
+											{m.status_active_text()}
+										</FormLabel>
 									</div>
 									<FormControl>
 										<Switch

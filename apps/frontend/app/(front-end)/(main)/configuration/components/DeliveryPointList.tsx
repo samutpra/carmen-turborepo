@@ -1,13 +1,15 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
-import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import { deleteDeliveryPoint, fetchDeliveryPoints } from '../actions/delivery_point';
+import {
+	deleteDeliveryPoint,
+	fetchDeliveryPoints,
+} from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
@@ -20,22 +22,29 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
 
 enum DeliveryPointField {
 	Name = 'name',
 	isActive = 'is_active',
 }
 
-const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
+const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
 	{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
-	{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' }
+	{
+		key: DeliveryPointField.isActive,
+		label: `${m.status_text()}`,
+		type: 'badge',
+	},
 ];
 
 const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointType[]>([]);
+	const [deliveryPoints, setDeliveryPoints] = useState<
+		DeliveryPointCreateModel[]
+	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -60,13 +69,16 @@ const DeliveryPointList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	const handleSuccess = useCallback((values: DeliveryPointType) => {
-		setDeliveryPoints((prev) => {
-			const mapValues = new Map(prev.map((u) => [u.id, u]));
-			mapValues.set(values.id, values);
-			return Array.from(mapValues.values());
-		});
-	}, [setDeliveryPoints]);
+	const handleSuccess = useCallback(
+		(values: DeliveryPointCreateModel) => {
+			setDeliveryPoints((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		},
+		[setDeliveryPoints]
+	);
 
 	const handleDelete = useCallback(
 		async (id: string) => {
@@ -81,14 +93,19 @@ const DeliveryPointList = () => {
 					if (error.message === 'Unauthorized') {
 						toastError({ message: `${m.session_expire()}` });
 					} else {
-						toastError({ message: `${m.fail_del_delivery_point()}: ${error.message}` });
+						toastError({
+							message: `${m.fail_del_delivery_point()}: ${error.message}`,
+						});
 					}
 				} else {
-					toastError({ message: `${m.error_del_text()} ${m.delivery_point()}.` });
+					toastError({
+						message: `${m.error_del_text()} ${m.delivery_point()}.`,
+					});
 				}
 			}
-		}, [token, tenantId, deleteDeliveryPoint]
-	)
+		},
+		[token, tenantId, deleteDeliveryPoint]
+	);
 
 	if (error) {
 		return (
@@ -143,7 +160,7 @@ const DeliveryPointList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<DeliveryPointType>
+		<DisplayComponent<DeliveryPointCreateModel>
 			items={deliveryPoints}
 			fields={deliveryPointsFields}
 			idField="id"
@@ -160,7 +177,7 @@ const DeliveryPointList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />
+		return <SkeltonLoad />;
 	}
 
 	if (deliveryPoints.length === 0) {

@@ -2,12 +2,14 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LocationType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
 import EmptyState from '@/components/ui-custom/EmptyState';
-import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
+import {
+	deleteStoreLocation,
+	fetchStoreLocations,
+} from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
@@ -21,6 +23,7 @@ import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { LocationCreateModel } from '@/dtos/location.dto';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -29,21 +32,25 @@ enum StoreLocationField {
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<LocationType>[] = [
+const sortFields: FieldConfig<LocationCreateModel>[] = [
 	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
 	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
-	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' }
+	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' },
 ];
-const storeLocationFields: FieldConfig<LocationType>[] = [
-	...sortFields,
-	{ key: StoreLocationField.Description, label: m.description() }
+const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
+	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
+	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
+	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' },
+	{ key: StoreLocationField.Description, label: m.description() },
 ];
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [storeLocations, setStoreLocations] = useState<LocationType[]>([]);
+	const [storeLocations, setStoreLocations] = useState<LocationCreateModel[]>(
+		[]
+	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -71,13 +78,16 @@ const StoreLocationList = () => {
 
 	if (error) return <ErrorCard message={error} />;
 
-	const handleSuccess = useCallback((values: LocationType) => {
-		setStoreLocations((prev) => {
-			const mapValues = new Map(prev.map((u) => [u.id, u]));
-			mapValues.set(values.id, values);
-			return Array.from(mapValues.values());
-		});
-	}, [setStoreLocations]);
+	const handleSuccess = useCallback(
+		(values: LocationCreateModel) => {
+			setStoreLocations((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		},
+		[setStoreLocations]
+	);
 
 	const handleDelete = useCallback(
 		async (id: string) => {
@@ -90,16 +100,24 @@ const StoreLocationList = () => {
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
+						toastError({
+							message: 'Your session has expired. Please login again.',
+						});
 					} else {
-						toastError({ message: `Failed to delete store location: ${error.message}` });
+						toastError({
+							message: `Failed to delete store location: ${error.message}`,
+						});
 					}
 				} else {
-					toastError({ message: 'An unknown error occurred while deleting the store location.' });
+					toastError({
+						message:
+							'An unknown error occurred while deleting the store location.',
+					});
 				}
 			}
-		}, [token, tenantId, deleteStoreLocation]
-	)
+		},
+		[token, tenantId, deleteStoreLocation]
+	);
 
 	const title = `${m.store_location()}`;
 
@@ -142,7 +160,7 @@ const StoreLocationList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<LocationType>
+		<DisplayComponent<LocationCreateModel>
 			items={storeLocations}
 			fields={storeLocationFields}
 			idField="id"
@@ -159,7 +177,7 @@ const StoreLocationList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />
+		return <SkeltonLoad />;
 	}
 
 	if (storeLocations.length === 0) {

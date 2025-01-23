@@ -27,7 +27,14 @@ import {
 import * as m from '@/paraglide/messages.js';
 import { FieldConfig } from '@/lib/util/uiConfig';
 
-type FieldValue = string | number | boolean | null | undefined;
+type FieldValue =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	| Record<string, any>;
 
 type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
 

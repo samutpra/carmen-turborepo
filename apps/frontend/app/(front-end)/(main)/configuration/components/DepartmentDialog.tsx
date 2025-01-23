@@ -2,10 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	DepartmentSchema,
-	DepartmentType,
-} from '@carmensoftware/shared-types/src/department';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -34,11 +30,15 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitDepartment } from '../actions/department';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
+import {
+	DepartmentCreateModel,
+	DepartmentCreateSchema,
+} from '@/dtos/department.dto';
 
 export interface DepartmentDialogProps {
 	mode: formType;
-	defaultValues?: DepartmentType;
-	onSuccess: (department: DepartmentType) => void;
+	defaultValues?: DepartmentCreateModel;
+	onSuccess: (department: DepartmentCreateModel) => void;
 }
 
 const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
@@ -52,17 +52,18 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultDepartmentValues: DepartmentType = {
+	const defaultDepartmentValues: DepartmentCreateModel = {
 		name: '',
 		description: '',
 		is_active: true,
 	};
 
-	const form = useForm<DepartmentType>({
-		resolver: zodResolver(DepartmentSchema),
-		defaultValues: mode === formType.EDIT && defaultValues
-			? { ...defaultValues }
-			: defaultDepartmentValues,
+	const form = useForm<DepartmentCreateModel>({
+		resolver: zodResolver(DepartmentCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultDepartmentValues,
 	});
 
 	useEffect(() => {
@@ -73,37 +74,36 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 		}
 	}, [mode, defaultValues, form]);
 
-	const onSubmit = async (data: DepartmentType) => {
+	const onSubmit = async (data: DepartmentCreateModel) => {
 		setIsLoading(true);
 		try {
 			const id = defaultValues?.id || '';
 			const result = await submitDepartment(data, mode, token, tenantId, id);
 
 			if (result) {
-				const submitData: DepartmentType = {
+				const submitData: DepartmentCreateModel = {
 					id: result.id,
 					...data,
-				}
+				};
 				onSuccess(submitData);
 				setOpen(false);
 				form.reset();
 
 				toastSuccess({
-					message: `${m.department()} ${mode === formType.ADD
-						? `${m.create_txt()}`
-						: `${m.edit_txt()}`} ${m.successfully()}`
+					message: `${m.department()} ${
+						mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+					} ${m.successfully()}`,
 				});
 			} else {
 				toastError({ message: `Failed to ${mode} department` });
 			}
-
 		} catch (error) {
 			console.error(`Error ${mode}ing department:`, error);
 			toastError({ message: `${m.fail_to_text()} ${mode} ${m.department()}` });
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	};
 
 	const handleClose = () => {
 		setOpen(false);
@@ -130,7 +130,8 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`} {m.department()}
+						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`}{' '}
+						{m.department()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -173,7 +174,9 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+										<FormLabel className="text-base">
+											{m.status_active_text()}
+										</FormLabel>
 									</div>
 									<FormControl>
 										<Switch

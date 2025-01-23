@@ -2,10 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	CurrencySchema,
-	SystemCurrencyType,
-} from '@carmensoftware/shared-types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -41,7 +37,7 @@ import {
 import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
 import { fetchSystemCurrencies } from '../actions/currency';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
-import { CurrencyCreateModel } from '../../../../../../backend/shared-dtos/currency.dto';
+import { CurrencyCreateModel, CurrencyCreateSchema } from '@/dtos/currency.dto';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
@@ -61,7 +57,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyType[]>(
+	const [listCurrencies, setListCurrencies] = useState<CurrencyCreateModel[]>(
 		[]
 	);
 	const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
@@ -127,7 +123,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	};
 
 	const form = useForm<CurrencyCreateModel>({
-		resolver: zodResolver(CurrencySchema),
+		resolver: zodResolver(CurrencyCreateSchema),
 		defaultValues:
 			mode === formType.EDIT && defaultValues
 				? { ...defaultValues }
@@ -255,14 +251,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							<TableBody>
 								{listCurrencies.map((currency) => (
 									<TableRow key={currency.id}>
-										<TableCell>{currency.iso_code}</TableCell>
+										<TableCell>{currency.code}</TableCell>
 										<TableCell>{currency.name}</TableCell>
 										<TableCell>{currency.symbol}</TableCell>
 										<TableCell>
 											<Switch
-												checked={selectedCurrencies.includes(currency.iso_code)}
+												checked={selectedCurrencies.includes(currency.code)}
 												onCheckedChange={(checked) =>
-													handleSwitchChange(currency.iso_code, checked)
+													handleSwitchChange(currency.code, checked)
 												}
 												aria-label={`Select ${currency.name}`}
 												disabled={isLoading}

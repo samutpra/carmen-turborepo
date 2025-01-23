@@ -1,5 +1,5 @@
-import { formType } from "@/types/form_type";
-import { CurrencyCreateModel } from '../../../../../../backend/shared-dtos/currency.dto';
+import { CurrencyCreateModel } from '@/dtos/currency.dto';
+import { formType } from '@/types/form_type';
 
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
 
@@ -126,27 +126,26 @@ export const submitCurrency = async (
 	return result;
 };
 
-
 export const fetchSystemCurrencies = async (
-    token: string,
-    tenantId: string,
-    page: number,
-    perpage: number,
-    search: string,
-    sort: string
+	token: string,
+	tenantId: string,
+	page: number,
+	perpage: number,
+	search: string,
+	sort: string
 ) => {
-    const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
-    const options = {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    };
-    const response = await fetch(url, options);
-    if (!response.ok) {
-        throw new APIError(response.status, 'Failed to fetch currencies');
-    }
-    return await response.json();
+	const url = `/api/system/system-currency-iso?page=${page}&perpage=${perpage}&search=${search}&sort=${sort}`;
+	const options = {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'x-tenant-id': tenantId,
+			'Content-Type': 'application/json',
+		},
+	};
+	const response = await fetch(url, options);
+	if (!response.ok) {
+		throw new APIError(response.status, 'Failed to fetch currencies');
+	}
+	return await response.json();
 };
