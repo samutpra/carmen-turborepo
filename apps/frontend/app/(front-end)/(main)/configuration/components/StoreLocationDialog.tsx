@@ -61,7 +61,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		location_type: 'inventory',
 		description: '',
 		is_active: true,
-		deliveryPointId: '',
+		delivery_point_id: '',
 	};
 
 	const form = useForm<LocationCreateModel>({

@@ -23,14 +23,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	subCategorySchema,
-	SubCategoryType,
-} from '@carmensoftware/shared-types';
 import { formType } from '@/types/form_type';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitSubCategory } from '../actions/sub_category';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import {
+	ProductSubCategoryCreateModel,
+	ProductSubCategoryCreateSchema,
+} from '@/dtos/product-sub-category.dto';
 
 interface Props {
 	open: boolean;
@@ -38,8 +38,10 @@ interface Props {
 	mode: formType;
 	product_category_id: string;
 	product_category_name?: string;
-	setSubProducts: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
-	subCategory?: SubCategoryType | null;
+	setSubProducts: React.Dispatch<
+		React.SetStateAction<ProductSubCategoryCreateModel[]>
+	>;
+	subCategory?: ProductSubCategoryCreateModel | null;
 }
 
 const SubCatDialog: React.FC<Props> = ({
@@ -55,7 +57,7 @@ const SubCatDialog: React.FC<Props> = ({
 	const token = accessToken || '';
 	const [isLoading, setIsLoading] = useState(false);
 
-	const formValues: SubCategoryType = {
+	const formValues: ProductSubCategoryCreateModel = {
 		id: '',
 		name: '',
 		description: '',
@@ -63,9 +65,10 @@ const SubCatDialog: React.FC<Props> = ({
 		product_category_id: product_category_id,
 	};
 
-	const form = useForm<SubCategoryType>({
-		resolver: zodResolver(subCategorySchema),
-		defaultValues: mode === formType.EDIT && subCategory ? { ...subCategory } : formValues,
+	const form = useForm<ProductSubCategoryCreateModel>({
+		resolver: zodResolver(ProductSubCategoryCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && subCategory ? { ...subCategory } : formValues,
 	});
 
 	useEffect(() => {
@@ -76,7 +79,7 @@ const SubCatDialog: React.FC<Props> = ({
 		}
 	}, [subCategory, mode]);
 
-	const handleSubmit = async (values: SubCategoryType) => {
+	const handleSubmit = async (values: ProductSubCategoryCreateModel) => {
 		setIsLoading(true);
 		const payload = {
 			...values,
@@ -84,7 +87,12 @@ const SubCatDialog: React.FC<Props> = ({
 		};
 
 		try {
-			const response = await submitSubCategory(payload, token, mode, subCategory?.id || '');
+			const response = await submitSubCategory(
+				payload,
+				token,
+				mode,
+				subCategory?.id || ''
+			);
 
 			if (!response) {
 				toastError({ message: `Failed to ${mode} sub-category` });
@@ -95,7 +103,10 @@ const SubCatDialog: React.FC<Props> = ({
 					...payload,
 					id: response.id,
 				};
-				setSubProducts((prev: SubCategoryType[]) => [...prev, newSubCategory]);
+				setSubProducts((prev: ProductSubCategoryCreateModel[]) => [
+					...prev,
+					newSubCategory,
+				]);
 				toastSuccess({ message: 'Sub-category added successfully' });
 			} else {
 				setSubProducts((prev) =>
@@ -139,6 +150,19 @@ const SubCatDialog: React.FC<Props> = ({
 							placeholder="Enter name"
 							defaultValue={product_category_name}
 							disabled
+						/>
+						<FormField
+							control={form.control}
+							name="code"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Code</FormLabel>
+									<FormControl>
+										<Input placeholder="Enter code" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
 
 						<FormField

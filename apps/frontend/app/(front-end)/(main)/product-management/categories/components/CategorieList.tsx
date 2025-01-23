@@ -2,15 +2,7 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import React, { useEffect, useState } from 'react';
-import {
-	fetchItemGroup,
-} from '../actions/item_group';
-import {
-	CategoryFormData,
-	CategoryType,
-	ProductItemGroupType,
-	SubCategoryType,
-} from '@carmensoftware/shared-types';
+import { fetchItemGroup } from '../actions/item_group';
 import SummaryCard from './SummaryCard';
 import { Folder, Tag, LayoutGrid } from 'lucide-react';
 import CategoryDialog from './CategoryDialog';
@@ -22,9 +14,16 @@ import ItemGroupDialog from './ItemGroupDialog';
 import SkeltonCategory from '@/components/ui-custom/Loading/SkeltonCategory';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
-import { deleteCategory, fetchCategoryList, submitCategory } from '../actions/category';
+import {
+	deleteCategory,
+	fetchCategoryList,
+	submitCategory,
+} from '../actions/category';
 import { fetchSubProduct } from '../actions/sub_category';
 import * as m from '@/paraglide/messages.js';
+import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
+import { ProductSubCategoryCreateModel } from '@/dtos/product-sub-category.dto';
+import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
 
 type CategorySummary = {
 	totalCategories: number;
@@ -34,18 +33,21 @@ type CategorySummary = {
 
 const CategorieList = () => {
 	const { accessToken } = useAuth();
-	const [categorys, setCategorys] = useState<CategoryType[]>([]);
-	const [subCategorys, setSubCategorys] = useState<SubCategoryType[]>([]);
-	const [itemGroups, setItemGroups] = useState<ProductItemGroupType[]>([]);
-
-	const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
-		null
+	const [categorys, setCategorys] = useState<ProductCategoryCreateModel[]>([]);
+	const [subCategorys, setSubCategorys] = useState<
+		ProductSubCategoryCreateModel[]
+	>([]);
+	const [itemGroups, setItemGroups] = useState<ProductItemGroupCreateModel[]>(
+		[]
 	);
+
+	const [selectedCategory, setSelectedCategory] =
+		useState<ProductCategoryCreateModel | null>(null);
 	const [selectedSubCategory, setSelectedSubCategory] =
-		useState<SubCategoryType | null>(null);
+		useState<ProductSubCategoryCreateModel | null>(null);
 
 	const [selectedItemGroup, setSelectedItemGroup] =
-		useState<ProductItemGroupType | null>(null);
+		useState<ProductItemGroupCreateModel | null>(null);
 
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -70,10 +72,14 @@ const CategorieList = () => {
 				setCategorys(
 					Array.isArray(productResponse.data.data)
 						? productResponse.data.data
-						: ([productResponse.data.data] as CategoryType[])
+						: ([productResponse.data.data] as ProductCategoryCreateModel[])
 				);
-				setSubCategorys(subProductResponse.data.data as SubCategoryType[]);
-				setItemGroups(itemGroupResponse.data.data as ProductItemGroupType[]);
+				setSubCategorys(
+					subProductResponse.data.data as ProductSubCategoryCreateModel[]
+				);
+				setItemGroups(
+					itemGroupResponse.data.data as ProductItemGroupCreateModel[]
+				);
 			} catch (err) {
 				console.error(err);
 				setError('An error occurred while fetching data');
@@ -87,14 +93,14 @@ const CategorieList = () => {
 
 	const filteredItemGroups = selectedSubCategory
 		? itemGroups.filter(
-			(group) => group.product_subcategory_id === selectedSubCategory.id
-		)
+				(group) => group.product_subcategory_id === selectedSubCategory.id
+			)
 		: [];
 
 	const filteredSubCategories = selectedCategory
 		? subCategorys.filter(
-			(subCategory) => subCategory.product_category_id === selectedCategory.id
-		)
+				(subCategory) => subCategory.product_category_id === selectedCategory.id
+			)
 		: [];
 
 	const handleDeleteProduct = async (productId: string) => {
@@ -118,12 +124,13 @@ const CategorieList = () => {
 		}
 	};
 
-	const handleAddCategory = async (formData: CategoryFormData) => {
+	const handleAddCategory = async (formData: ProductCategoryCreateModel) => {
 		try {
 			const response = await submitCategory(formData, token, formType.ADD, '');
 			if (response) {
-				const newCategory: CategoryType = {
+				const newCategory: ProductCategoryCreateModel = {
 					id: response.id,
+					code: formData.code,
 					name: formData.name,
 					description: formData.description,
 					is_active: formData.is_active,
@@ -140,14 +147,12 @@ const CategorieList = () => {
 		}
 	};
 
-	const handleEditCategory = async (id: string, formData: CategoryFormData) => {
+	const handleEditCategory = async (
+		id: string,
+		formData: ProductCategoryCreateModel
+	) => {
 		try {
-			const response = await submitCategory(
-				formData,
-				token,
-				formType.EDIT,
-				id
-			);
+			const response = await submitCategory(formData, token, formType.EDIT, id);
 			if (response) {
 				setCategorys((prev) =>
 					prev.map((product) =>
@@ -163,7 +168,7 @@ const CategorieList = () => {
 		}
 	};
 
-	if (loading) return <SkeltonCategory />
+	if (loading) return <SkeltonCategory />;
 
 	if (error) return <div>Error: {error}</div>;
 

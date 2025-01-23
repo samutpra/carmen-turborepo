@@ -1,8 +1,4 @@
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	ProductItemGroupType,
-	productItemGroupSchema,
-} from '@carmensoftware/shared-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,6 +25,10 @@ import { formType } from '@/types/form_type';
 import { submitItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import {
+	ProductItemGroupCreateModel,
+	ProductItemGroupCreateSchema,
+} from '@/dtos/product-item-group.dto';
 
 interface Props {
 	open: boolean;
@@ -36,8 +36,10 @@ interface Props {
 	mode: formType;
 	subcategory_id: string;
 	subcategory_name?: string;
-	setItemGroup: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
-	itemGroup?: ProductItemGroupType | null;
+	setItemGroup: React.Dispatch<
+		React.SetStateAction<ProductItemGroupCreateModel[]>
+	>;
+	itemGroup?: ProductItemGroupCreateModel | null;
 }
 const ItemGroupDialog: React.FC<Props> = ({
 	open,
@@ -51,7 +53,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isLoading, setIsLoading] = useState(false);
-	const defaultValues: ProductItemGroupType = {
+	const defaultValues: ProductItemGroupCreateModel = {
 		id: '',
 		code: '',
 		name: '',
@@ -60,9 +62,10 @@ const ItemGroupDialog: React.FC<Props> = ({
 		product_subcategory_id: subcategory_id,
 	};
 
-	const form = useForm<ProductItemGroupType>({
-		resolver: zodResolver(productItemGroupSchema),
-		defaultValues: mode === formType.EDIT && itemGroup ? { ...itemGroup } : defaultValues,
+	const form = useForm<ProductItemGroupCreateModel>({
+		resolver: zodResolver(ProductItemGroupCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && itemGroup ? { ...itemGroup } : defaultValues,
 	});
 
 	useEffect(() => {
@@ -73,7 +76,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 		}
 	}, [itemGroup, mode, form]);
 
-	const handleSubmit = async (values: ProductItemGroupType) => {
+	const handleSubmit = async (values: ProductItemGroupCreateModel) => {
 		setIsLoading(true);
 		const payload = {
 			...values,
@@ -81,7 +84,12 @@ const ItemGroupDialog: React.FC<Props> = ({
 		};
 
 		try {
-			const response = await submitItemGroup(token, payload, mode, values.id);
+			const response = await submitItemGroup(
+				token,
+				payload,
+				mode,
+				values.id || ''
+			);
 			if (!response) {
 				toastError({ message: `Failed to ${mode} item group` });
 			}
@@ -91,7 +99,10 @@ const ItemGroupDialog: React.FC<Props> = ({
 					...payload,
 					id: response.id,
 				};
-				setItemGroup((prev: ProductItemGroupType[]) => [...prev, newItemGroup]);
+				setItemGroup((prev: ProductItemGroupCreateModel[]) => [
+					...prev,
+					newItemGroup,
+				]);
 				toastSuccess({ message: 'Item group added successfully' });
 			} else {
 				setItemGroup((prev) =>

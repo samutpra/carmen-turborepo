@@ -1,9 +1,6 @@
 'use client';
 
-import {
-	CategoryFormData,
-	CategoryType,
-} from '@carmensoftware/shared-types/dist/productCategorySchema';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import React, { useState, MouseEvent } from 'react';
@@ -22,15 +19,16 @@ import { Button } from '@/components/ui/button';
 import CategoryDialog from './CategoryDialog';
 import { formType } from '@/types/form_type';
 import { toastError } from '@/components/ui-custom/Toast';
+import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
 
 interface Props {
-	products: CategoryType[];
-	selectedProduct: CategoryType | null;
-	onSelectCategory: (product: CategoryType) => void;
+	products: ProductCategoryCreateModel[];
+	selectedProduct: ProductCategoryCreateModel | null;
+	onSelectCategory: (product: ProductCategoryCreateModel) => void;
 	onDeleteCategory: (productId: string) => Promise<void>;
 	onEditCategory: (
 		productId: string,
-		formData: CategoryFormData
+		formData: ProductCategoryCreateModel
 	) => Promise<void>;
 }
 
@@ -41,16 +39,24 @@ const CategoryItemList: React.FC<Props> = ({
 	onDeleteCategory,
 	onEditCategory,
 }) => {
-	const [productToDelete, setProductToDelete] = useState<CategoryType>();
+	const [productToDelete, setProductToDelete] =
+		useState<ProductCategoryCreateModel>();
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
-	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
+	const [productToEdit, setProductToEdit] =
+		useState<ProductCategoryCreateModel | null>(null);
 
-	const handleDeleteClick = (e: MouseEvent, product: CategoryType) => {
+	const handleDeleteClick = (
+		e: MouseEvent,
+		product: ProductCategoryCreateModel
+	) => {
 		e.stopPropagation();
 		setProductToDelete(product);
 	};
 
-	const handleEditClick = (e: MouseEvent, product: CategoryType) => {
+	const handleEditClick = (
+		e: MouseEvent,
+		product: ProductCategoryCreateModel
+	) => {
 		e.stopPropagation();
 		setProductToEdit(product);
 		setEditDialogOpen(true);
@@ -67,7 +73,7 @@ const CategoryItemList: React.FC<Props> = ({
 		}
 	};
 
-	const handleEdit = async (formData: CategoryType) => {
+	const handleEdit = async (formData: ProductCategoryCreateModel) => {
 		if (!productToEdit?.id) return;
 		await onEditCategory(productToEdit.id, formData);
 		setEditDialogOpen(false);
@@ -102,7 +108,6 @@ const CategoryItemList: React.FC<Props> = ({
 					size={'sm'}
 					onClick={(e) => handleEditClick(e, category)}
 					aria-label={`Edit ${category.name}`}
-
 				>
 					<Pencil className="h-4 w-4" />
 				</Button>
@@ -155,10 +160,11 @@ const CategoryItemList: React.FC<Props> = ({
 				initialData={
 					productToEdit
 						? {
-							name: productToEdit.name,
-							description: productToEdit.description || '',
-							is_active: productToEdit.is_active ?? true,
-						}
+								code: productToEdit.code,
+								name: productToEdit.name,
+								description: productToEdit.description || '',
+								is_active: productToEdit.is_active ?? true,
+							}
 						: undefined
 				}
 				mode={formType.EDIT}

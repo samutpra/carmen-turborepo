@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubCategoryType } from '@carmensoftware/shared-types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,13 +21,16 @@ import { useAuth } from '@/app/context/AuthContext';
 import { formType } from '@/types/form_type';
 import { deleteSubCategory } from '../actions/sub_category';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { ProductSubCategoryCreateModel } from '@/dtos/product-sub-category.dto';
 
 interface Props {
-	data: SubCategoryType[];
-	setData: React.Dispatch<React.SetStateAction<SubCategoryType[]>>;
+	data: ProductSubCategoryCreateModel[];
+	setData: React.Dispatch<
+		React.SetStateAction<ProductSubCategoryCreateModel[]>
+	>;
 	categoryId: string;
 	categoryName: string;
-	onSelectSubCategory: (subCategory: SubCategoryType) => void;
+	onSelectSubCategory: (subCategory: ProductSubCategoryCreateModel) => void;
 }
 
 const SubCategoryList: React.FC<Props> = ({
@@ -41,10 +43,9 @@ const SubCategoryList: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-	const [subCategory, setSubCategory] = useState<SubCategoryType>();
-	const [subCategoryID, setSubCategoryID] = useState<string | null>(
-		null
-	);
+	const [subCategory, setSubCategory] =
+		useState<ProductSubCategoryCreateModel>();
+	const [subCategoryID, setSubCategoryID] = useState<string | null>(null);
 	const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<
 		string | null
 	>(null);
@@ -54,6 +55,7 @@ const SubCategoryList: React.FC<Props> = ({
 		setSubCategory(undefined);
 		onSelectSubCategory({
 			id: '',
+			code: '',
 			name: '',
 			description: '',
 			is_active: true,
@@ -61,7 +63,7 @@ const SubCategoryList: React.FC<Props> = ({
 		});
 	}, [categoryId, onSelectSubCategory]);
 
-	const handleEditClick = (subCategory: SubCategoryType) => {
+	const handleEditClick = (subCategory: ProductSubCategoryCreateModel) => {
 		setSubCategory(subCategory);
 		setIsEditDialogOpen(true);
 	};
