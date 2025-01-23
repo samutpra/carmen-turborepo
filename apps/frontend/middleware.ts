@@ -12,8 +12,6 @@ const ROUTES = {
 	]),
 } as const;
 
-console.log('ROUTES.PROTECTED', ROUTES.PROTECTED);
-
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
