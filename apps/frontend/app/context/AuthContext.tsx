@@ -84,11 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 				// setAuthState(prev => ({ ...prev, user: userData }));
 
 				// Redirect logic
-				if (
-					pathname === '/sign-in' ||
-					pathname === '/login' ||
-					pathname === '/'
-				) {
+				if (pathname === '/sign-in' || pathname === '/') {
 					await router.push('/dashboard');
 				}
 			} else if (pathname !== '/sign-in') {
