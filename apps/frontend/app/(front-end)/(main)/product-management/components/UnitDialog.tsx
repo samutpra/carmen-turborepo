@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/app/context/AuthContext';
-import { UnitSchema } from '@carmensoftware/shared-types';
-import { UnitType } from '@carmensoftware/shared-types';
 import {
 	Form,
 	FormControl,
@@ -32,10 +30,11 @@ import { submitUnit } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
+import { UnitCreateModel, UnitCreateSchema } from '@/dtos/unit.dto';
 interface UnitDialogProps {
-	mode: formType
-	defaultValues?: UnitType;
-	onSuccess: (values: UnitType) => void;
+	mode: formType;
+	defaultValues?: UnitCreateModel;
+	onSuccess: (values: UnitCreateModel) => void;
 }
 
 const UnitDialog: React.FC<UnitDialogProps> = ({
@@ -49,17 +48,18 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultUnitValues: UnitType = {
+	const defaultUnitValues: UnitCreateModel = {
 		name: '',
 		description: '',
 		is_active: true,
 	};
 
-	const form = useForm<UnitType>({
-		resolver: zodResolver(UnitSchema),
-		defaultValues: mode === formType.EDIT && defaultValues
-			? { ...defaultValues }
-			: defaultUnitValues,
+	const form = useForm<UnitCreateModel>({
+		resolver: zodResolver(UnitCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultUnitValues,
 	});
 
 	useEffect(() => {
@@ -70,13 +70,23 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 		}
 	}, [mode, defaultValues, form]);
 
-	const onSubmit = async (values: UnitType) => {
+	const onSubmit = async (values: UnitCreateModel) => {
 		setIsLoading(true);
 		try {
 			const url = defaultValues?.id || '';
-			const result = await submitUnit(values, mode, token, tenantId, url);
+			const result = await submitUnit(
+				{
+					...values,
+					description: values.description || '',
+					is_active: values.is_active ?? true,
+				},
+				mode,
+				token,
+				tenantId,
+				url
+			);
 
-			const data: UnitType = {
+			const data: UnitCreateModel = {
 				id: result.id,
 				...values,
 			};
@@ -90,11 +100,13 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 				toastError({ message: `${m.fail_to_text()} ${mode} ${m.unit()}` });
 			}
 		} catch (error) {
-			toastError({ message: error instanceof Error ? error.message : String(error) });
+			toastError({
+				message: error instanceof Error ? error.message : String(error),
+			});
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	};
 	const handleClose = () => {
 		setOpen(false);
 		form.reset();
@@ -120,9 +132,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD
-							? `${m.create_txt()}`
-							: `${m.edit_txt()}`}
+						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`}
 						{m.unit()}
 					</DialogTitle>
 				</DialogHeader>
@@ -153,7 +163,10 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 								<FormItem>
 									<FormLabel>{m.unit_des_label()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder={m.placeholder_unit_des()} {...field} />
+										<Textarea
+											placeholder={m.placeholder_unit_des()}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -165,7 +178,9 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 							name="is_active"
 							render={({ field }) => (
 								<FormItem className="flex-between rounded-lg border p-4">
-									<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+									<FormLabel className="text-base">
+										{m.status_active_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
