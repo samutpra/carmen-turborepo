@@ -199,3 +199,22 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
   price?: number | null;
   info?: Product_info;
 }
+
+export type ProductDto = {
+	id: string;
+	product_code: string;
+	product_name: string;
+	local_name?: string;
+	description?: string;
+	is_active: boolean;
+	primary_unit_id?: string;
+	product_status_type: enum_product_status_type;
+	product_item_group_id: string;
+	price?: number;
+	tax_type?: string;
+	tax_rate?: number;
+	is_ingredients?: boolean;
+	price_deviation_limit?: number;
+	created_at: Date;
+	updated_at: Date;
+};

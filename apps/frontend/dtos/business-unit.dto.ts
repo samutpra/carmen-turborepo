@@ -86,6 +86,17 @@ export class BusinessUnitUpdateDto implements BusinessUnitUpdateModel {
 
 //#endregion Zod Update
 
+export type BusinessUnitDto = {
+	id: string;
+	cluster_id: string;
+	unit_code: string;
+	unit_name: string;
+	is_hq: boolean;
+	is_active: boolean;
+	created_at: Date;
+	updated_at: Date;
+};
+
 export const mockBusinessUnits = [
   {
     id: '550e8400-e29b-41d4-a716-446655440000',

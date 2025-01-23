@@ -49,47 +49,27 @@ export class AuthLoginResponseDto {
 }
 
 export class UserRegisterDto {
-  username!: string;
-  email!: string;
-  password!: string;
-  emailToken!: string;
-  consent!: boolean;
-
-  userInfo?: UserProfile;
+	username!: string;
+	email!: string;
+	password!: string;
+	email_token!: string;
+	consent!: boolean;
+	user_fnfo?: UserProfile;
 }
 
 export class UserProfile {
-  firstName!: string;
-  middleName?: string;
-  lastName!: string;
-  bio?: JSON;
+	first_name!: string;
+	middle_name?: string;
+	last_name!: string;
+	bio?: JSON;
 }
 
 export class EmailDto {
-  email!: string;
+	email!: string;
 }
 
 export class UserForgotPassDto {
-  username!: string;
-  password!: string;
-  emailToken!: string;
+	username!: string;
+	password!: string;
+	email_token!: string;
 }
-
-export const mockUserLogins: AuthLoginDto[] = [
-  {
-    username: 'john@example.com',
-    password: 'password123',
-  },
-  {
-    username: 'jane@example.com',
-    password: 'password123',
-  },
-  {
-    username: 'bob@example.com',
-    password: 'password123',
-  },
-  {
-    username: 'alice@example.com',
-    password: 'password123',
-  },
-];

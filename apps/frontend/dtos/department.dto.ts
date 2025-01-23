@@ -31,3 +31,13 @@ export class DepartmentUpdateDto implements DepartmentUpdateModel {
 	description?: string;
 	is_active?: boolean;
 }
+
+export type DepartmentDto = {
+	id: string;
+	department_name: string;
+	department_code: string;
+	description: string;
+	is_active: boolean;
+	created_at: Date;
+	updated_at: Date;
+};

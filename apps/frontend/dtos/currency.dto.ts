@@ -50,3 +50,15 @@ export class CurrencyUpdateDto implements CurrencyUpdateModel {
 	exchange_rate?: number | null;
 }
 
+export type CurrencyDto = {
+	id: string;
+	currency_name: string;
+	currency_code: string;
+	currency_symbol: string;
+	decimal_places: number;
+	exchange_rate: number;
+	is_active: boolean;
+	created_at: Date;
+	updated_at: Date;
+};
+
