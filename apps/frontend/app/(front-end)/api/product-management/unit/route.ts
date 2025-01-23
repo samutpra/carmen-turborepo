@@ -1,5 +1,5 @@
+import { UnitCreateSchema } from '@/dtos/unit.dto';
 import { API_URL } from '@/lib/util/api';
-import { UnitSchema } from '@carmensoftware/shared-types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -61,7 +61,7 @@ export const POST = async (request: NextRequest) => {
 			);
 		}
 		const body = await request.json();
-		const result = UnitSchema.safeParse(body);
+		const result = UnitCreateSchema.safeParse(body);
 
 		if (!result.success) {
 			return NextResponse.json(
