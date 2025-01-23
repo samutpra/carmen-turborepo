@@ -86,13 +86,10 @@ const ItemGroupList: React.FC<Props> = ({
 	};
 
 	const itemGroupListItems = data.map((itemGroup) => (
-		<div
-			key={itemGroup.id}
-			className="flex items-center p-2 justify-between gap-2"
-		>
+		<div key={itemGroup.id} className="flex items-center p-1 justify-between">
 			<div
 				className={cn(
-					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					'cursor-pointer hover:bg-accent rounded-lg p-1 w-full',
 					selectedItemGroupId === itemGroup.id && 'bg-accent'
 				)}
 				onClick={() => {
@@ -112,7 +109,7 @@ const ItemGroupList: React.FC<Props> = ({
 				aria-label={`Select ${itemGroup.name} item group`}
 				aria-selected={selectedItemGroupId === itemGroup.id}
 			>
-				{itemGroup.name}
+				<span className="text-xs">{itemGroup.name}</span>
 			</div>
 			<div className="flex">
 				<Button
@@ -121,7 +118,7 @@ const ItemGroupList: React.FC<Props> = ({
 					aria-label="Edit item group"
 					onClick={() => handleEditClick(itemGroup)}
 				>
-					<Pencil className="h-4 w-4" />
+					<Pencil />
 				</Button>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
@@ -131,7 +128,7 @@ const ItemGroupList: React.FC<Props> = ({
 							aria-label="Delete item group"
 							onClick={() => setIdToDelete(itemGroup.id || '')}
 						>
-							<Trash className="h-4 w-4" />
+							<Trash />
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
@@ -161,7 +158,7 @@ const ItemGroupList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
+				<CardContent className="p-2">{itemGroupListItems}</CardContent>
 			</Card>
 			<ItemGroupDialog
 				open={isEditDialogOpen}

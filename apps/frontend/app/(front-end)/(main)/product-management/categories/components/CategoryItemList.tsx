@@ -80,13 +80,10 @@ const CategoryItemList: React.FC<Props> = ({
 	};
 
 	const categoryListItems = products.map((category) => (
-		<div
-			key={category.id}
-			className="flex items-center p-2 justify-between gap-2"
-		>
+		<div key={category.id} className="flex items-center p-1 justify-between">
 			<div
 				className={cn(
-					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					'cursor-pointer hover:bg-accent rounded-lg p-1 w-full',
 					selectedProduct?.id === category.id && 'bg-accent'
 				)}
 				onClick={() => onSelectCategory(category)}
@@ -100,7 +97,7 @@ const CategoryItemList: React.FC<Props> = ({
 				aria-label={`Select ${category.name} category`}
 				aria-selected={selectedProduct?.id === category.id}
 			>
-				<span>{category.name}</span>
+				<span className="text-xs">{category.name}</span>
 			</div>
 			<div className="flex">
 				<Button
@@ -109,7 +106,7 @@ const CategoryItemList: React.FC<Props> = ({
 					onClick={(e) => handleEditClick(e, category)}
 					aria-label={`Edit ${category.name}`}
 				>
-					<Pencil className="h-4 w-4" />
+					<Pencil />
 				</Button>
 				<Button
 					variant="ghost"
@@ -125,8 +122,8 @@ const CategoryItemList: React.FC<Props> = ({
 
 	return (
 		<>
-			<Card>
-				<CardContent>{categoryListItems}</CardContent>
+			<Card className="">
+				<CardContent className="p-2">{categoryListItems}</CardContent>
 			</Card>
 			<AlertDialog
 				open={!!productToDelete}

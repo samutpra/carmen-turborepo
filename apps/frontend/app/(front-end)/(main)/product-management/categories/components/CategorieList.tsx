@@ -24,6 +24,7 @@ import * as m from '@/paraglide/messages.js';
 import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
 import { ProductSubCategoryCreateModel } from '@/dtos/product-sub-category.dto';
 import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 type CategorySummary = {
 	totalCategories: number;
@@ -170,7 +171,7 @@ const CategorieList = () => {
 
 	if (loading) return <SkeltonCategory />;
 
-	if (error) return <div>Error: {error}</div>;
+	if (error) return <ErrorDisplay errMessage="error fetch data" />;
 
 	const summary: CategorySummary = {
 		totalCategories: categorys.length,
@@ -239,13 +240,15 @@ const CategorieList = () => {
 					disabled={!selectedCategory}
 					nameSelect={selectedSubCategory?.name}
 				/>
-				<SubCategoryList
-					data={filteredSubCategories}
-					setData={setSubCategorys}
-					categoryId={selectedCategory?.id || ''}
-					categoryName={selectedCategory?.name || ''}
-					onSelectSubCategory={setSelectedSubCategory}
-				/>
+				{selectedCategory && (
+					<SubCategoryList
+						data={filteredSubCategories}
+						setData={setSubCategorys}
+						categoryId={selectedCategory?.id || ''}
+						categoryName={selectedCategory?.name || ''}
+						onSelectSubCategory={setSelectedSubCategory}
+					/>
+				)}
 			</div>
 			<ItemGroupDialog
 				open={isAddItemGroupOpen}
@@ -265,13 +268,15 @@ const CategorieList = () => {
 					disabled={!selectedSubCategory}
 					nameSelect={selectedItemGroup?.name}
 				/>
-				<ItemGroupList
-					data={filteredItemGroups}
-					setData={setItemGroups}
-					subCategoryId={selectedSubCategory?.id || ''}
-					subCategoryName={selectedSubCategory?.name || ''}
-					onSelectItemGroup={setSelectedItemGroup}
-				/>
+				{selectedSubCategory && (
+					<ItemGroupList
+						data={filteredItemGroups}
+						setData={setItemGroups}
+						subCategoryId={selectedSubCategory?.id || ''}
+						subCategoryName={selectedSubCategory?.name || ''}
+						onSelectItemGroup={setSelectedItemGroup}
+					/>
+				)}
 			</div>
 		</div>
 	);

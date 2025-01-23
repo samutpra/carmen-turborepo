@@ -89,13 +89,10 @@ const SubCategoryList: React.FC<Props> = ({
 	};
 
 	const subCategoryListItems = data.map((subCategory) => (
-		<div
-			key={subCategory.id}
-			className="flex items-center p-2 justify-between gap-2"
-		>
+		<div key={subCategory.id} className="flex items-center p-1 justify-between">
 			<div
 				className={cn(
-					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					'cursor-pointer hover:bg-accent rounded-lg p-1 w-full',
 					selectedSubCategoryId === subCategory.id && 'bg-accent'
 				)}
 				role="button"
@@ -115,7 +112,7 @@ const SubCategoryList: React.FC<Props> = ({
 				aria-selected={selectedSubCategoryId === subCategory.id}
 				tabIndex={0}
 			>
-				<span>{subCategory.name}</span>
+				<span className="text-xs">{subCategory.name}</span>
 			</div>
 			<div className="flex">
 				<Button
@@ -165,7 +162,7 @@ const SubCategoryList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardContent className="space-y-2">{subCategoryListItems}</CardContent>
+				<CardContent className="p-2">{subCategoryListItems}</CardContent>
 			</Card>
 			<SubCatDialog
 				open={isEditDialogOpen}
