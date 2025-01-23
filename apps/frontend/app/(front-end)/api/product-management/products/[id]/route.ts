@@ -10,6 +10,9 @@ export async function GET(
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
+	console.log('request.url', request);
+
+
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 		if (!token) {

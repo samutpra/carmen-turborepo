@@ -20,6 +20,9 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toastError } from '@/components/ui-custom/Toast';
+import { redirect } from 'next/dist/server/api-utils';
+import { useRouter } from '@/lib/i18n';
 
 interface ProductInfo {
 	data: {
@@ -27,7 +30,7 @@ interface ProductInfo {
 		code: string;
 		name: string;
 		description: string;
-		tb_product_info: {
+		tb_product_info?: {
 			price: string;
 			info: {
 				brand: string;
@@ -42,10 +45,12 @@ interface ProductInfo {
 // Fetch product function
 const fetchProduct = async (id: string, token: string) => {
 	const URL = `/api/product-management/products/${id}`;
+
 	const options = {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${token}`,
+			'x-tenant-id': 'DUMMY',
 			'Content-Type': 'application/json',
 		},
 	};
@@ -58,37 +63,52 @@ const fetchProduct = async (id: string, token: string) => {
 
 		const data = await response.json();
 
-		console.log('data', data);
+		console.log('data >>>', data);
 
 		return data.data; // Return the fetched data
+
 	} catch (err: unknown) {
-		throw new Error(err as string); // Throw error to be caught in the calling function
+		console.log('err >>>', err);
+		return err as string; // Return the error message
 	}
 };
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
+
+	console.log('token front end >>>', token);
+
+
 	const [product, setProduct] = useState<ProductInfo | null>(null); // Use the defined type
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
 	const [isEditing, setIsEditing] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		const loadProduct = async () => {
 			setLoading(true); // Set loading to true before fetching
 			try {
 				const data = await fetchProduct(params.id, token); // Fetch product data
+
+				console.log('data >>>', data);
 				setProduct(data); // Set product state with fetched data
 			} catch (err: unknown) {
 				setError(err as string); // Set error state if fetching fails
+				toastError({ message: 'Failed to fetch product data' });
+				router.push('/product-management/products');
 			} finally {
 				setLoading(false); // Set loading to false after fetching
+
 			}
 		};
 
 		loadProduct();
 	}, [params.id, token]);
+
+	console.log('product >>>', product);
+
 
 	const handleEdit = () => {
 		setIsEditing(true);
@@ -97,9 +117,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const handleCancel = () => {
 		setIsEditing(false);
 	};
-
-	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
 
 	const actionButtons = (
 		<>
@@ -127,140 +144,14 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 
 	const content = (
 		<>
-			<Tabs defaultValue="basic">
-				<TabsTrigger value="basic" className="text-xs">
-					Basic Info
-				</TabsTrigger>
-				<TabsTrigger value="inventory" className="text-xs">
-					Inventory
-				</TabsTrigger>
-				<TabsTrigger value="orderUnit" className="text-xs">
-					Order Unit
-				</TabsTrigger>
-				<TabsTrigger value="ingredientUnit" className="text-xs">
-					Ingredient Unit
-				</TabsTrigger>
-				<TabsTrigger value="stockCount" className="text-xs">
-					Stock Count
-				</TabsTrigger>
-				<TabsTrigger value="environment" className="text-xs">
-					Environmental Impact
-				</TabsTrigger>
-			</Tabs>
-			<TabsContent value="basic">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-					<div className="space-y-6">
-						<Card>
-							<CardHeader>
-								<CardTitle>Product Attributes</CardTitle>
-							</CardHeader>
-							<CardContent className="grid gap-4">
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Size
-										</label>
-										<p className="text-sm mt-1">1</p>
-									</div>
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Color
-										</label>
-										<p className="text-sm mt-1">White</p>
-									</div>
-								</div>
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Weight
-										</label>
-										<p className="text-sm mt-1">2</p>
-									</div>
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Shelf Life
-										</label>
-										<p className="text-sm mt-1">365 days</p>
-									</div>
-								</div>
-								<div>
-									<label className="text-sm font-medium text-muted-foreground">
-										Dimensions (L × W × H)
-									</label>
-									<p className="text-sm mt-1">10 × 15 × 20 cm</p>
-								</div>
-								<div>
-									<label className="text-sm font-medium text-muted-foreground">
-										Storage Instructions
-									</label>
-									<p className="text-sm mt-1">
-										Store in a cool, dry place away from direct sunlight
-									</p>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardHeader>
-								<CardTitle>Pricing Information</CardTitle>
-							</CardHeader>
-							<CardContent className="grid gap-4">
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Base Price
-										</label>
-										<p className="text-sm mt-1">35.5 THB</p>
-									</div>
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Standard Cost
-										</label>
-										<p className="text-sm mt-1">28.4 THB</p>
-									</div>
-								</div>
-
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Tax Type
-										</label>
-										<p className="text-sm mt-1">VAT</p>
-									</div>
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Tax Rate
-										</label>
-										<p className="text-sm mt-1">10 %</p>
-									</div>
-								</div>
-
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Price Deviation Limit
-										</label>
-										<p className="text-sm mt-1">10 %</p>
-									</div>
-									<div>
-										<label className="text-sm font-medium text-muted-foreground">
-											Last Cost
-										</label>
-										<p className="text-sm mt-1">29.75 THB</p>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
-			</TabsContent>
 			<h1>{product?.data.name}</h1>
 			<p>Code: {product?.data.code}</p>
 			<p>Description: {product?.data.description}</p>
-			<p>Price: ${product?.data.tb_product_info.price}</p>
+			<p>Price: ${product?.data.tb_product_info?.price}</p>
 			<p>Item Group: {product?.item_group_name}</p>
 			<p>Subcategory: {product?.sub_category_name}</p>
 			<p>Category: {product?.category_name}</p>
-			<p>Brand: {product?.data.tb_product_info.info.brand}</p>
+			<p>Brand: {product?.data.tb_product_info?.info.brand}</p>
 		</>
 	);
 

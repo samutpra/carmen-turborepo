@@ -1,32 +1,53 @@
-// context/AuthContext.tsx
-"use client";
+'use client';
 
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from '@/lib/i18n';
-import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type AuthState = {
+// Define User type
+interface User {
+	id: string;
+	email: string;
+	name: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	user: any | null;
+	[key: string]: any; // for additional user properties
+}
+
+interface AuthState {
+	user: User | null;
 	refresh_token: string;
 	access_token?: string;
-};
+}
 
-type AuthContextType = {
+interface AuthContextType {
 	authState: AuthState;
 	accessToken: string | null;
 	isAuthenticated: boolean;
-	handleLogin: (data: AuthState, token: string) => void;
-	handleLogout: () => void;
+	isLoading: boolean;
+	handleLogin: (data: AuthState, token: string) => Promise<void>;
+	handleLogout: () => Promise<void>;
 	updateAccessToken: (token: string) => void;
+}
+
+const COOKIE_OPTIONS = {
+	maxAge: 30 * 24 * 60 * 60, // 30 days
+	secure: process.env.NODE_ENV === 'production',
+	sameSite: true,
+} as const;
+
+const defaultAuthState: AuthState = {
+	user: null,
+	refresh_token: '',
 };
 
-// สร้าง default value เพื่อป้องกัน undefined
 const defaultAuthContext: AuthContextType = {
-	authState: { user: null, refresh_token: '' },
+	authState: defaultAuthState,
 	accessToken: null,
 	isAuthenticated: false,
-	handleLogin: () => {},
-	handleLogout: () => {},
+	isLoading: true,
+	handleLogin: async () => {},
+	handleLogout: async () => {},
 	updateAccessToken: () => {},
 };
 
@@ -36,71 +57,111 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const router = useRouter();
-	const [authState, setAuthState] = useState<AuthState>({
-		user: null,
-		refresh_token: '',
-	});
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [authState, setAuthState] = useState<AuthState>(defaultAuthState);
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 
-	useEffect(() => {
-		if (typeof window !== 'undefined') {
-			const storedUser = localStorage.getItem('user_data');
-			const storedToken = localStorage.getItem('access_token');
-			if (storedUser) setAuthState(JSON.parse(storedUser));
-			if (storedToken) setAccessToken(storedToken);
-		}
-	}, []);
-
-	useEffect(() => {
-		if (accessToken) {
-			localStorage.setItem('access_token', accessToken);
-		} else {
-			localStorage.removeItem('access_token');
-			if (window.location.pathname === '/sign-in') {
-				setAccessToken(null);
-			} else {
-				router.push('/sign-in');
-			}
-		}
-	}, [accessToken]);
-
-	console.log('accessToken', accessToken);
-
-	useEffect(() => {
-		if (authState.user) {
-			localStorage.setItem('user_data', JSON.stringify(authState));
-		} else {
-			localStorage.removeItem('user_data');
-		}
-	}, [authState]);
-
-	const handleLogin = (data: AuthState, token: string) => {
-		setAuthState(data);
-		setAccessToken(token);
-	};
-
-	const handleLogout = () => {
-		setAuthState({ user: null, refresh_token: '' });
+	const clearAuth = () => {
+		setAuthState(defaultAuthState);
 		setAccessToken(null);
+		deleteCookie('access_token');
+		localStorage.removeItem('access_token');
 	};
 
-	const updateAccessToken = (token: string) => {
-		setAccessToken(token);
+	const initializeAuth = async () => {
+		try {
+			const token = getCookie('access_token') as string | undefined;
+
+			if (token) {
+				setAccessToken(token);
+
+				// Optional: Validate token and get user data
+				// const userData = await validateToken(token);
+				// setAuthState(prev => ({ ...prev, user: userData }));
+
+				// Redirect logic
+				if (
+					pathname === '/sign-in' ||
+					pathname === '/login' ||
+					pathname === '/'
+				) {
+					await router.push('/dashboard');
+				}
+			} else if (pathname !== '/sign-in') {
+				await router.push('/sign-in');
+			}
+		} catch (error) {
+			console.error('Auth initialization error:', error);
+			clearAuth();
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const value = {
+	useEffect(() => {
+		initializeAuth();
+	}, [pathname]);
+
+	useEffect(() => {
+		if (pathname === '/sign-in') {
+			clearAuth();
+		}
+	}, [pathname]);
+
+	const handleLogin = async (data: AuthState, token: string): Promise<void> => {
+		try {
+			setAuthState(data);
+			setAccessToken(token);
+			setCookie('access_token', token, COOKIE_OPTIONS);
+
+			const from = searchParams.get('from');
+			await router.push(from || '/dashboard');
+		} catch (error) {
+			console.error('Login error:', error);
+			throw error;
+		}
+	};
+
+	const handleLogout = async (): Promise<void> => {
+		try {
+			clearAuth();
+			await router.push('/sign-in');
+		} catch (error) {
+			console.error('Logout error:', error);
+			throw error;
+		}
+	};
+
+	const updateAccessToken = (token: string): void => {
+		try {
+			setAccessToken(token);
+			setCookie('access_token', token, COOKIE_OPTIONS);
+		} catch (error) {
+			console.error('Token update error:', error);
+			clearAuth();
+		}
+	};
+
+	const value: AuthContextType = {
 		authState,
 		accessToken,
-		isAuthenticated: !!authState.user,
+		isAuthenticated: !!authState.user && !!accessToken,
+		isLoading,
 		handleLogin,
 		handleLogout,
 		updateAccessToken,
 	};
 
+	if (isLoading) {
+		return <div>Loading...</div>; // Consider using a proper loading component
+	}
+
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// แยก hook ไปอยู่ในฟังก์ชันใหม่
 export function useAuth(): AuthContextType {
 	const context = useContext(AuthContext);
 	if (!context) {

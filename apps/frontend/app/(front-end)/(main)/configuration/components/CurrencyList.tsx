@@ -4,7 +4,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CurrencyType } from '@carmensoftware/shared-types';
 import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
@@ -22,33 +21,34 @@ import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import { CurrencyCreateModel } from '../../../../../../backend/shared-dtos/currency.dto';
 
 enum CurrencyField {
 	Code = 'code',
 	Name = 'name',
 	Symbol = 'symbol',
 	Description = 'description',
-	Rate = 'rate',
+	Rate = 'exchange_rate',
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<CurrencyType>[] = [
+const sortFields: FieldConfig<CurrencyCreateModel>[] = [
 	{ key: CurrencyField.Code, label: `${m.code_label()}` },
 	{ key: CurrencyField.Name, label: `${m.currency_name()}` },
 	{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
-	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
-]
+	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' },
+];
 
-const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 	...sortFields,
 	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
-]
+];
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
+	const [currencies, setCurrencies] = useState<CurrencyCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -65,13 +65,15 @@ const CurrencyList = () => {
 				search,
 				status,
 				page,
-				perpage
+				perpage,
 			});
 			setCurrencies(data);
 			setShowRefreshToken(false);
 		} catch (err) {
 			if (err instanceof APIError && err.status === 401) {
-				toastError({ message: 'Your session has expired. Please login again.' });
+				toastError({
+					message: 'Your session has expired. Please login again.',
+				});
 				setShowRefreshToken(true);
 				setCurrencies([]);
 			} else {
@@ -87,13 +89,16 @@ const CurrencyList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	const handleSuccess = useCallback((values: CurrencyType) => {
-		setCurrencies((prev) => {
-			const mapValues = new Map(prev.map((u) => [u.id, u]));
-			mapValues.set(values.id, values);
-			return Array.from(mapValues.values());
-		});
-	}, [setCurrencies]);
+	const handleSuccess = useCallback(
+		(values: CurrencyCreateModel) => {
+			setCurrencies((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		},
+		[setCurrencies]
+	);
 
 	const handleDelete = useCallback(
 		async (id: string) => {
@@ -108,15 +113,17 @@ const CurrencyList = () => {
 					if (error.message === 'Unauthorized') {
 						toastError({ message: `${m.session_expire()}` });
 					} else {
-						toastError({ message: `${m.fail_del_currency()}: ${error.message}` });
+						toastError({
+							message: `${m.fail_del_currency()}: ${error.message}`,
+						});
 					}
 				} else {
 					toastError({ message: `${m.error_del_text()} ${m.currency()}.` });
 				}
 			}
-		}, [token, tenantId, deleteCurrency]
-	)
-
+		},
+		[token, tenantId, deleteCurrency]
+	);
 
 	if (showRefreshToken) {
 		return (
@@ -147,7 +154,9 @@ const CurrencyList = () => {
 
 	const actionButtons = (
 		<div className="action-btn-container">
-			<Button variant={'outline'} size={'sm'}>Refresh Exchange Rate</Button>
+			<Button variant={'outline'} size={'sm'}>
+				Refresh Exchange Rate
+			</Button>
 			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
 			<Button variant="outline" className="group" size={'sm'}>
 				<FileDown className="h-4 w-4" />
@@ -185,7 +194,7 @@ const CurrencyList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<CurrencyType>
+		<DisplayComponent<CurrencyCreateModel>
 			items={currencies}
 			fields={currenciesFiltered}
 			idField="id"
@@ -202,7 +211,7 @@ const CurrencyList = () => {
 	);
 
 	if (isLoading) {
-		return <SkeltonLoad />
+		return <SkeltonLoad />;
 	}
 
 	if (currencies.length === 0) {
