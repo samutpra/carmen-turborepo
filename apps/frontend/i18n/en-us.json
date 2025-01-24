@@ -230,5 +230,7 @@
 	"add_cat_success": "Category added successfully",
 	"del_catetory_success": "Product deleted successfully",
 	"fail_del_cat": "Failed to delete category",
-	"fail_edit_cat": "Failed to update category"
+	"fail_edit_cat": "Failed to update category",
+	"del_store_success": "Store location deleted successfully",
+	"fail_del_store": "Failed to delete store location"
 }

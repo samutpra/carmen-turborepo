@@ -89,7 +89,7 @@ const StoreLocationList = () => {
 				const res = await deleteStoreLocation(id, token, tenantId);
 				if (res) {
 					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: 'Store location deleted successfully' });
+					toastSuccess({ message: `${m.store_location()} deleted successfully` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {
@@ -99,7 +99,7 @@ const StoreLocationList = () => {
 						});
 					} else {
 						toastError({
-							message: `Failed to delete store location: ${error.message}`,
+							message: `${m.fail_del_store()}: ${error.message}`,
 						});
 					}
 				} else {
