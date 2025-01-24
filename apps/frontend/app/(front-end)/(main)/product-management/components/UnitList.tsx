@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import UnitDialog from './UnitDialog';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import { deleteUnit, fetchUnits } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
@@ -167,17 +166,6 @@ const UnitList = () => {
 			)}
 		/>
 	);
-
-	if (units.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.not_found_unit()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
-	}
 
 	return (
 		<DataDisplayTemplate

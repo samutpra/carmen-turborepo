@@ -44,49 +44,49 @@ const StatusSearchDropdown: React.FC<SearchableDropdownProps> = ({
     popoverClassName = "pop-content"
 }) => {
     return (
-        <Popover open={open} onOpenChange={onOpenChange}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className={buttonClassName}
-                    size="sm"
-                >
-                    {value
-                        ? options.find((option) => option.value === value)?.label
-                        : `${m.select_status()}`}
-                    <ChevronDown className="h-4 w-4" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className={popoverClassName}>
-                <Command>
-                    <CommandInput
-                        placeholder={`${m.Search()} ${m.status_text()}`}
-                        className="h-9 text-xs"
-                    />
-                    <CommandList>
-                        <CommandEmpty>No result found.</CommandEmpty>
-                        <CommandGroup>
-                            {options.map((option) => (
-                                <CommandItem
-                                    key={option.value}
-                                    value={option.value}
-                                    onSelect={() => {
-                                        onChange(option.value);
-                                        onOpenChange(false);
-                                    }}
-                                    className='text-xs'
-                                >
-                                    {option.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    );
+			<Popover open={open} onOpenChange={onOpenChange}>
+				<PopoverTrigger asChild>
+					<Button
+						variant="outline"
+						role="combobox"
+						aria-expanded={open}
+						className={buttonClassName}
+						size="sm"
+					>
+						{value
+							? options.find((option) => option.value === value)?.label
+							: `${m.select_status()}`}
+						<ChevronDown className="h-4 w-4" />
+					</Button>
+				</PopoverTrigger>
+				<PopoverContent className={popoverClassName}>
+					<Command>
+						<CommandInput
+							placeholder={`${m.Search()} ${m.status_text()}`}
+							className="h-9 text-xs"
+						/>
+						<CommandList>
+							<CommandEmpty>No result found.</CommandEmpty>
+							<CommandGroup>
+								{options.map((option) => (
+									<CommandItem
+										key={option.value}
+										value={option.value}
+										onSelect={() => {
+											onChange(option.value);
+											onOpenChange(false);
+										}}
+										className="text-xs cursor-pointer"
+									>
+										{option.label}
+									</CommandItem>
+								))}
+							</CommandGroup>
+						</CommandList>
+					</Command>
+				</PopoverContent>
+			</Popover>
+		);
 };
 
 export default StatusSearchDropdown;

@@ -17,6 +17,7 @@ import {
 } from '../ui-custom/drawer';
 import MenuContent from './MenuContent';
 import useResponsive from '@/hooks/useResponsive';
+import MenuModule from './MenuModule';
 
 const Navbar = () => {
 	const { isAuthenticated } = useAuth();
@@ -31,8 +32,8 @@ const Navbar = () => {
 
 	return (
 		<header className="fixed top-0 left-0 right-0 border-b bg-background">
-			<div className="px-4 py-2 sm:px-6">
-				<div className="flex justify-end h-10">
+			<div className="px-4 py-2 sm:p-[8px]">
+				<div className="flex justify-end h-12">
 					<div className="flex items-center">
 						<div className="md:hidden">
 							<Button
@@ -50,6 +51,8 @@ const Navbar = () => {
 							<MenuContent />
 						</div>
 						<Notifications />
+						<MenuModule />
+						{/* <MenuDialog /> */}
 						{isAuthenticated ? (
 							<UserProfile />
 						) : (
