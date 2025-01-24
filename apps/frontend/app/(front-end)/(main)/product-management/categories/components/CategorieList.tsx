@@ -50,11 +50,6 @@ const CategorieList = () => {
 	const [selectedItemGroup, setSelectedItemGroup] =
 		useState<ProductItemGroupCreateModel | null>(null);
 
-	console.log('category', selectedCategory);
-	console.log('sub', selectedSubCategory);
-	console.log('it group', itemGroups);
-	
-
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
@@ -99,14 +94,14 @@ const CategorieList = () => {
 
 	const filteredItemGroups = selectedSubCategory
 		? itemGroups.filter(
-				(group) => group.product_subcategory_id === selectedSubCategory.id
-			)
+			(group) => group.product_subcategory_id === selectedSubCategory.id
+		)
 		: [];
 
 	const filteredSubCategories = selectedCategory
 		? subCategorys.filter(
-				(subCategory) => subCategory.product_category_id === selectedCategory.id
-			)
+			(subCategory) => subCategory.product_category_id === selectedCategory.id
+		)
 		: [];
 
 	const handleDeleteProduct = async (productId: string) => {
@@ -120,13 +115,11 @@ const CategorieList = () => {
 					setSelectedCategory(null);
 					setSelectedSubCategory(null);
 				}
-				toastSuccess({ message: 'Product deleted successfully' });
-			} else {
-				throw new Error('Failed to delete category');
+				toastSuccess({ message: m.del_catetory_success() });
 			}
 		} catch (error) {
 			console.error('Error deleting category:', error);
-			toastError({ message: 'Failed to delete category' });
+			toastError({ message: m.fail_del_cat() });
 		}
 	};
 
@@ -142,14 +135,14 @@ const CategorieList = () => {
 					is_active: formData.is_active,
 				};
 				setCategorys((prev) => [...prev, newCategory]);
-				toastSuccess({ message: 'Category added successfully' });
+				toastSuccess({ message: m.add_cat_success() });
 				setIsAddCategoryOpen(false);
 			} else {
 				toastError({ message: response.statusText });
 			}
 		} catch (error) {
 			console.log(error);
-			toastError({ message: 'Failed to add category' });
+			toastError({ message: m.add_cat_success() });
 		}
 	};
 
@@ -165,12 +158,12 @@ const CategorieList = () => {
 						product.id === id ? { ...product, ...formData } : product
 					)
 				);
-				toastSuccess({ message: 'Category updated successfully' });
+				toastSuccess({ message: m.del_cat_success() });
 				setIsAddCategoryOpen(false);
 			}
 		} catch (error) {
 			console.error('Error updating product:', error);
-			toastError({ message: 'Failed to update category' });
+			toastError({ message: m.fail_edit_cat() });
 		}
 	};
 
@@ -197,18 +190,22 @@ const CategorieList = () => {
 	};
 
 	const onAddItemGroup = () => {
+		if (!selectedSubCategory) {
+			toastError({ message: 'Please select a sub category first' });
+			return;
+		}
 		setIsAddItemGroupOpen(true);
 	};
 
 	return (
-		<div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+		<div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 			<CategoryDialog
 				open={isAddCategoryOpen}
 				onOpenChange={setIsAddCategoryOpen}
 				onSubmit={handleAddCategory}
 				mode={formType.ADD}
 			/>
-			<div className="flex flex-col space-y-4">
+			<div className="flex flex-col space-y-6">
 				<SummaryCard
 					title={m.categories()}
 					count={summary.totalCategories}
@@ -222,21 +219,24 @@ const CategorieList = () => {
 					onSelectCategory={(product) => {
 						setSelectedCategory(product);
 						setSelectedSubCategory(null);
+						setSelectedItemGroup(null);
 					}}
 					onDeleteCategory={handleDeleteProduct}
 					onEditCategory={handleEditCategory}
 				/>
 			</div>
-			<SubCatDialog
-				open={isAddSubCategoryOpen}
-				onOpenChange={setIsAddSubCategoryOpen}
-				mode={formType.ADD}
-				product_category_id={selectedCategory?.id || ''}
-				product_category_name={selectedCategory?.name}
-				setSubProducts={setSubCategorys}
-			/>
+			{selectedCategory && (
+				<SubCatDialog
+					open={isAddSubCategoryOpen}
+					onOpenChange={setIsAddSubCategoryOpen}
+					mode={formType.ADD}
+					product_category_id={selectedCategory?.id || ''}
+					product_category_name={selectedCategory?.name}
+					setSubProducts={setSubCategorys}
+				/>
+			)}
 
-			<div className="flex flex-col space-y-4">
+			<div className="flex flex-col space-y-6">
 				<SummaryCard
 					title={m.sub_cattegory()}
 					count={filteredSubCategories.length}
@@ -245,13 +245,14 @@ const CategorieList = () => {
 					disabled={!selectedCategory}
 					nameSelect={selectedSubCategory?.name}
 				/>
-				{selectedCategory && (
+				{selectedCategory && filteredSubCategories.length > 0 && (
 					<SubCategoryList
 						data={filteredSubCategories}
 						setData={setSubCategorys}
 						categoryId={selectedCategory?.id || ''}
 						categoryName={selectedCategory?.name || ''}
 						onSelectSubCategory={setSelectedSubCategory}
+
 					/>
 				)}
 			</div>
@@ -264,7 +265,7 @@ const CategorieList = () => {
 				setItemGroup={setItemGroups}
 			/>
 
-			<div className="flex flex-col space-y-4">
+			<div className="flex flex-col space-y-6">
 				<SummaryCard
 					title={m.item_group()}
 					count={filteredItemGroups.length}
@@ -273,7 +274,7 @@ const CategorieList = () => {
 					disabled={!selectedSubCategory}
 					nameSelect={selectedItemGroup?.name}
 				/>
-				{selectedSubCategory && (
+				{selectedSubCategory && filteredItemGroups.length > 0 && (
 					<ItemGroupList
 						data={filteredItemGroups}
 						setData={setItemGroups}

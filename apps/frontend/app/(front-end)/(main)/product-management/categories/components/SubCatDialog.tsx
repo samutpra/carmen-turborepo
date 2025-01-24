@@ -8,7 +8,6 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
 } from '@/components/ui/dialog';
 import {
 	Form,
@@ -31,6 +30,9 @@ import {
 	ProductSubCategoryCreateModel,
 	ProductSubCategoryCreateSchema,
 } from '@/dtos/product-sub-category.dto';
+import * as m from '@/paraglide/messages.js';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { Label } from '@/components/ui/label';
 
 interface Props {
 	open: boolean;
@@ -138,7 +140,7 @@ const SubCatDialog: React.FC<Props> = ({
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Sub Category' : 'Edit Sub Category'}
+						{mode === formType.ADD ? m.add_sub_cat() : m.edit_sub_cat()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -146,9 +148,11 @@ const SubCatDialog: React.FC<Props> = ({
 						onSubmit={form.handleSubmit(handleSubmit)}
 						className="space-y-4"
 					>
+						<Label>{m.categories()}</Label>
 						<Input
 							placeholder="Enter name"
 							defaultValue={product_category_name}
+							className="text-xs"
 							disabled
 						/>
 						<FormField
@@ -156,9 +160,9 @@ const SubCatDialog: React.FC<Props> = ({
 							name="code"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Code</FormLabel>
+									<FormLabel>{m.code_label()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter code" {...field} />
+										<InputCustom placeholder={m.code_label()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -170,9 +174,9 @@ const SubCatDialog: React.FC<Props> = ({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.sub_cattegory()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter name" {...field} />
+										<InputCustom placeholder={m.sub_cattegory()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -184,12 +188,12 @@ const SubCatDialog: React.FC<Props> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Enter description"
-											className="resize-none"
+											placeholder={m.description()}
 											{...field}
+											className="placeholder:text-xs"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -202,9 +206,9 @@ const SubCatDialog: React.FC<Props> = ({
 							name="is_active"
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-									<div className="space-y-0.5">
-										<FormLabel>Active Status</FormLabel>
-									</div>
+									<FormLabel className="text-base">
+										{m.status_active_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
@@ -215,27 +219,28 @@ const SubCatDialog: React.FC<Props> = ({
 							)}
 						/>
 
-						<DialogFooter>
+						<div className="flex justify-end space-x-2">
 							<Button
 								type="button"
-								variant="outline"
+								variant={'outline'}
 								onClick={handleClose}
-								className="mr-2"
+								size={'sm'}
 							>
-								Cancel
+								{m.cancel_text()}
 							</Button>
 							<LoaderButton
 								type="submit"
 								disabled={isLoading}
 								isLoading={isLoading}
+								size={'sm'}
 							>
 								{isLoading
-									? 'Saving...'
+									? `${m.saving()}...`
 									: mode === formType.EDIT
-										? 'Save Changes'
-										: 'Add'}
+										? `${m.save_change_text()}`
+										: `${m.add_text()}`}
 							</LoaderButton>
-						</DialogFooter>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>

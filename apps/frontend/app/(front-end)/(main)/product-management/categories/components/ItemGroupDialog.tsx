@@ -7,7 +7,6 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
 } from '@/components/ui/dialog';
 import {
 	Form,
@@ -29,6 +28,9 @@ import {
 	ProductItemGroupCreateModel,
 	ProductItemGroupCreateSchema,
 } from '@/dtos/product-item-group.dto';
+import * as m from '@/paraglide/messages.js';
+import { Label } from '@/components/ui/label';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 interface Props {
 	open: boolean;
@@ -133,7 +135,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Item Group' : 'Edit Item Group'}
+						{mode === formType.ADD ? m.add_itg() : m.edit_itg()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -141,19 +143,21 @@ const ItemGroupDialog: React.FC<Props> = ({
 						onSubmit={form.handleSubmit(handleSubmit)}
 						className="space-y-4"
 					>
+						<Label>{m.sub_cattegory()}</Label>
 						<Input
-							placeholder="Enter name"
+							placeholder={m.sub_cattegory()}
 							defaultValue={subcategory_name}
 							disabled
+							className="text-xs"
 						/>
 						<FormField
 							control={form.control}
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.item_group()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter name" {...field} />
+										<InputCustom placeholder={m.item_group()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -164,10 +168,11 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="code"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Code</FormLabel>
+									<FormLabel>{m.code_label()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter code" {...field} />
+										<InputCustom placeholder={m.code_label()} {...field} />
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -176,10 +181,15 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea
+											placeholder={m.description()}
+											{...field}
+											className="placeholder:text-xs"
+										/>
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -188,9 +198,9 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="is_active"
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-									<div className="space-y-0.5">
-										<FormLabel>Active Status</FormLabel>
-									</div>
+									<FormLabel className="text-base">
+										{m.status_active_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
@@ -200,23 +210,28 @@ const ItemGroupDialog: React.FC<Props> = ({
 								</FormItem>
 							)}
 						/>
-						<DialogFooter>
+						<div className="flex justify-end space-x-2">
 							<Button
 								type="button"
-								variant="outline"
+								variant={'outline'}
 								onClick={handleClose}
-								className="mr-2"
+								size={'sm'}
 							>
-								Cancel
+								{m.cancel_text()}
 							</Button>
-							<LoaderButton type="submit" disabled={isLoading}>
+							<LoaderButton
+								type="submit"
+								disabled={isLoading}
+								isLoading={isLoading}
+								size={'sm'}
+							>
 								{isLoading
-									? 'Processing...'
-									: mode === formType.ADD
-										? 'Add Category'
-										: 'Save Changes'}
+									? `${m.saving()}...`
+									: mode === formType.EDIT
+										? `${m.save_change_text()}`
+										: `${m.add_text()}`}
 							</LoaderButton>
-						</DialogFooter>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>

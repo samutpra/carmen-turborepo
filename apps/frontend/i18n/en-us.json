@@ -219,5 +219,16 @@
 	"no_result": "No results found.",
 	"recipe_library": "Recipe Library",
 	"costing": "Costing",
-	"media_gallery": "Media Gallery"
+	"media_gallery": "Media Gallery",
+	"add_new_cat": "Add New Category",
+	"edit_cat": "Edit Category",
+	"add_sub_cat": "Add New Sub Category",
+	"edit_sub_cat": "Edit Sub Category",
+	"add_itg": "Add New Item Group",
+	"edit_itg": "Edit Item Group",
+	"del_cat_success": "Category updated successfully",
+	"add_cat_success": "Category added successfully",
+	"del_catetory_success": "Product deleted successfully",
+	"fail_del_cat": "Failed to delete category",
+	"fail_edit_cat": "Failed to update category"
 }
