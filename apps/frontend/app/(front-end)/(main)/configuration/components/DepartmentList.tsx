@@ -27,8 +27,17 @@ enum DepartmentFields {
 }
 
 const sortFields: FieldConfig<DepartmentCreateModel>[] = [
-	{ key: DepartmentFields.Name, label: m.department_name_label() },
-	{ key: DepartmentFields.isActive, label: m.status_text(), type: 'badge' },
+	{
+		key: DepartmentFields.Name,
+		label: m.department_name_label(),
+		className: 'w-40',
+	},
+	{
+		key: DepartmentFields.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-24',
+	},
 ];
 
 const departmentFields: FieldConfig<DepartmentCreateModel>[] = [

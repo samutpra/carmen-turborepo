@@ -24,12 +24,13 @@ const SubMenuButton = ({
 	depth?: number;
 }) => {
 	return (
-		<>
+		<div>
 			<Button
 				key={subItem.path}
 				variant="outline"
 				asChild
-				className="w-full justify-start"
+				className={`w-full justify-start h-14 text-center ${depth > 0 ? 'ml-4' : ''
+					}`}
 			>
 				<Link
 					href={subItem.path}
@@ -38,7 +39,7 @@ const SubMenuButton = ({
 					aria-label={`Navigate to ${subItem.name}`}
 				>
 					{depth > 0 && (
-						<span style={{ marginLeft: `${depth * 16}px` }}>
+						<span style={{ marginLeft: `${depth * 8}px` }}>
 							<ChevronRight className="h-4 w-4" />
 						</span>
 					)}
@@ -46,6 +47,7 @@ const SubMenuButton = ({
 				</Link>
 			</Button>
 
+			{/* Render nested sub-items */}
 			{subItem.subItems?.map((nestedItem) => (
 				<SubMenuButton
 					key={nestedItem.path}
@@ -53,7 +55,7 @@ const SubMenuButton = ({
 					depth={depth + 1}
 				/>
 			))}
-		</>
+		</div>
 	);
 };
 
@@ -63,11 +65,16 @@ const SubMenuList: React.FC<SubMenuListProps> = ({ pathName }) => {
 	);
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full space-y-8">
+		<div className="p-6 w-full">
 			{currentMenuItem?.subItems && currentMenuItem.subItems.length > 0 && (
-				<div className="flex flex-col gap-2 w-full max-w-md">
+				<div className="grid gap-4 w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 					{currentMenuItem.subItems.map((subItem) => (
-						<SubMenuButton key={subItem.path} subItem={subItem} />
+						<div key={subItem.path}>
+							{/* Render root-level items */}
+							<SubMenuButton subItem={subItem} />
+
+							{/* Nested sub-items are handled in SubMenuButton */}
+						</div>
 					))}
 				</div>
 			)}

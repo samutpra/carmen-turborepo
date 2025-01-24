@@ -44,7 +44,7 @@ const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
 	{
 		key: StoreLocationField.LocationType,
 		label: m.location_type_label(),
-		className: 'w-40',
+		className: 'w-32',
 	},
 	{
 		key: StoreLocationField.isActive,

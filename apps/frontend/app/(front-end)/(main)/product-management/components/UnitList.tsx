@@ -27,8 +27,17 @@ enum UnitField {
 }
 
 const sortFields: FieldConfig<UnitCreateModel>[] = [
-	{ key: UnitField.Name, label: `${m.unit_name_label()}` },
-	{ key: UnitField.Status, label: `${m.status_text()}`, type: 'badge' },
+	{
+		key: UnitField.Name,
+		label: `${m.unit_name_label()}`,
+		className: 'w-24',
+	},
+	{
+		key: UnitField.Status,
+		label: `${m.status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
 ];
 
 const unitFields: FieldConfig<UnitCreateModel>[] = [

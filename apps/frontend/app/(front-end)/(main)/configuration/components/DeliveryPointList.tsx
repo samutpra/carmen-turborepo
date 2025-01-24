@@ -28,7 +28,11 @@ enum DeliveryPointField {
 }
 
 const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
-	{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
+	{
+		key: DeliveryPointField.Name,
+		label: `${m.delivery_point_label()}`,
+		className: 'w-40',
+	},
 	{
 		key: DeliveryPointField.isActive,
 		label: `${m.status_text()}`,

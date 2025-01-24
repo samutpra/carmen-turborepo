@@ -30,15 +30,15 @@ enum CurrencyField {
 }
 
 const sortFields: FieldConfig<CurrencyCreateModel>[] = [
-	{ key: CurrencyField.Code, label: `${m.code_label()}` },
-	{ key: CurrencyField.Name, label: `${m.currency_name()}` },
-	{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
-	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' },
+	{ key: CurrencyField.Code, label: `${m.code_label()}`, className: 'w-20' },
+	{ key: CurrencyField.Name, label: `${m.currency_name()}`, className: 'w-40' },
+	{ key: CurrencyField.Rate, label: `${m.rate_label()}`, className: 'w-20', },
+	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge', className: 'w-24' },
 ];
 
 const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 	...sortFields,
-	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
+	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}`, className: 'w-20' },
 ];
 
 const CurrencyList = () => {

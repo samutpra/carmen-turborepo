@@ -5,18 +5,18 @@ import { Eye } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 
 interface VendorDisplayProps {
-	vendors: VendorCreateModel[];
+    vendors: VendorCreateModel[];
 }
 const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
 
@@ -74,9 +74,9 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">#</TableHead>
-                            <TableHead>{m.vendor_name_label()}</TableHead>
-                            <TableHead>{m.description()}</TableHead>
+                            <TableHead className="w-[50px]">#</TableHead>
+                            <TableHead className='w-[200px]'>{m.vendor_name_label()}</TableHead>
+                            <TableHead className='w-[200px]'>{m.description()}</TableHead>
                             <TableHead>{m.status_text()}</TableHead>
                             <TableHead className="text-right">{m.action_text()}</TableHead>
                         </TableRow>
