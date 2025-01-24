@@ -1,10 +1,16 @@
-import React from 'react'
-import ComingSoon from '@/components/ComingSoon'
+'use client';
+
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
 
 const HelpSupportPage = () => {
-    return (
-        <ComingSoon title="Help - Support" />
-    )
-}
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'procurement';
 
-export default HelpSupportPage
+	return <SubMenuList pathName={path} />;
+};
+
+export default HelpSupportPage;

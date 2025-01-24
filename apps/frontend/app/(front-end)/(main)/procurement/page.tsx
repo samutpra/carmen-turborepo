@@ -1,11 +1,16 @@
-import ComingSoon from '@/components/ComingSoon'
-import React from 'react'
+'use client';
 
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
 
 const ProcurementPage = () => {
-    return (
-        <ComingSoon title="Procurement" />
-    )
-}
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'procurement';
 
-export default ProcurementPage
+	return <SubMenuList pathName={path} />;
+};
+
+export default ProcurementPage;

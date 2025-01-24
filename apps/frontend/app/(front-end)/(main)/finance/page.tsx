@@ -1,11 +1,16 @@
 'use client';
 
-import ComingSoon from '@/components/ComingSoon';
 import React from 'react';
-import { useRouter } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
 
-export default function FinancePage() {
-	const router = useRouter();
-	router.push('/dashboard');
-	return null;
-}
+const FinancePage = () => {
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'finance';
+
+	return <SubMenuList pathName={path} />;
+};
+
+export default FinancePage;

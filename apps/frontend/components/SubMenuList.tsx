@@ -1,12 +1,8 @@
-import React from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { menuItems } from '@/lib/util/menuItems';
+import React from 'react';
+import { Button } from './ui/button';
+import { Link } from '@/lib/i18n';
 import { ChevronRight } from 'lucide-react';
-
-export interface ComingSoonProps {
-	title: string;
-}
 
 interface SubMenuItem {
 	name: string;
@@ -14,6 +10,10 @@ interface SubMenuItem {
 	visible?: boolean;
 	enabled?: boolean;
 	subItems?: SubMenuItem[];
+}
+
+interface SubMenuListProps {
+	pathName: string;
 }
 
 const SubMenuButton = ({
@@ -57,9 +57,9 @@ const SubMenuButton = ({
 	);
 };
 
-export default function ComingSoon({ title }: ComingSoonProps) {
+const SubMenuList: React.FC<SubMenuListProps> = ({ pathName }) => {
 	const currentMenuItem = menuItems.find(
-		(item) => item.title.toLowerCase() === title.toLowerCase()
+		(item) => item.title.toLowerCase() === pathName.toLowerCase()
 	);
 
 	return (
@@ -73,4 +73,6 @@ export default function ComingSoon({ title }: ComingSoonProps) {
 			)}
 		</div>
 	);
-}
+};
+
+export default SubMenuList;
