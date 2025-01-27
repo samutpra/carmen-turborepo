@@ -19,6 +19,7 @@ import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { CurrencyCreateModel } from '@/dtos/currency.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum CurrencyField {
 	Code = 'code',
@@ -32,13 +33,22 @@ enum CurrencyField {
 const sortFields: FieldConfig<CurrencyCreateModel>[] = [
 	{ key: CurrencyField.Code, label: `${m.code_label()}`, className: 'w-20' },
 	{ key: CurrencyField.Name, label: `${m.currency_name()}`, className: 'w-40' },
-	{ key: CurrencyField.Rate, label: `${m.rate_label()}`, className: 'w-20', },
-	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge', className: 'w-24' },
+	{ key: CurrencyField.Rate, label: `${m.rate_label()}`, className: 'w-20' },
+	{
+		key: CurrencyField.isActive,
+		label: `${m.status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
 ];
 
 const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 	...sortFields,
-	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}`, className: 'w-20' },
+	{
+		key: CurrencyField.Symbol,
+		label: `${m.symbol_label()}`,
+		className: 'w-20',
+	},
 ];
 
 const CurrencyList = () => {
@@ -52,7 +62,7 @@ const CurrencyList = () => {
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('sort');
-	const [perpage, setPerpage] = useURL('perpage');
+	const [pages, setPages] = useURL('pages');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const fetchData = async () => {
@@ -62,9 +72,10 @@ const CurrencyList = () => {
 				search,
 				status,
 				page,
-				perpage,
 			});
-			setCurrencies(data);
+			setCurrencies(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 			setShowRefreshToken(false);
 		} catch (err) {
 			if (err instanceof Error && err.message === 'Unauthorized') {
@@ -136,15 +147,7 @@ const CurrencyList = () => {
 	}
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	const title = `${m.currency()}`;
@@ -152,7 +155,7 @@ const CurrencyList = () => {
 	const actionButtons = (
 		<div className="action-btn-container">
 			<Button variant={'outline'} size={'sm'}>
-				Refresh Exchange Rate
+				{m.refresh_exchange_rate()}
 			</Button>
 			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
 			<Button variant="outline" className="group" size={'sm'}>
@@ -204,6 +207,9 @@ const CurrencyList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
 		/>
 	);
 

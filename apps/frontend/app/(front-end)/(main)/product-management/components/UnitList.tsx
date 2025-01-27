@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/app/context/AuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import React, { useCallback, useEffect, useState } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,7 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { UnitCreateModel } from '@/dtos/unit.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum UnitField {
 	Name = 'name',
@@ -54,12 +54,16 @@ const UnitList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('sort');
+	const [pages, setPages] = useURL('pages');
 
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
 			const data = await fetchUnits(token, tenantId, { search, status });
 			setUnits(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -110,13 +114,7 @@ const UnitList = () => {
 	);
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">Error loading units: {error}</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	const title = `${m.unit()}`;
@@ -173,6 +171,9 @@ const UnitList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
 		/>
 	);
 

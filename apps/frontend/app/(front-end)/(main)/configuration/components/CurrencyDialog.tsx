@@ -37,7 +37,7 @@ import {
 import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
 import { fetchSystemCurrencies } from '../actions/currency';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
-import { CurrencyCreateModel, CurrencyCreateSchema } from '@/dtos/currency.dto';
+import { CurrencyCreateModel, SystemCurrencyCreateModel, SystemCurrencyCreateSchema } from '@/dtos/currency.dto';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
@@ -57,7 +57,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	const [listCurrencies, setListCurrencies] = useState<CurrencyCreateModel[]>(
+	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyCreateModel[]>(
 		[]
 	);
 	const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
@@ -114,16 +114,16 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		});
 	};
 
-	const defaultCurrencyValues: CurrencyCreateModel = {
-		code: '',
+	const defaultCurrencyValues: SystemCurrencyCreateModel = {
+		iso_code: '',
 		name: '',
 		symbol: '',
 		exchange_rate: 0,
 		is_active: true,
 	};
 
-	const form = useForm<CurrencyCreateModel>({
-		resolver: zodResolver(CurrencyCreateSchema),
+	const form = useForm<SystemCurrencyCreateModel>({
+		resolver: zodResolver(SystemCurrencyCreateSchema),
 		defaultValues:
 			mode === formType.EDIT && defaultValues
 				? { ...defaultValues }
@@ -224,9 +224,8 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									{sortFields.map(({ key, label }) => (
 										<DropdownMenuItem
 											key={key}
-											className={`flex justify-between items-center ${
-												sort.startsWith(key) ? 'font-bold text-blue-500' : ''
-											}`}
+											className={`flex justify-between items-center ${sort.startsWith(key) ? 'font-bold text-blue-500' : ''
+												}`}
 											onClick={() => handleSortChange(key)}
 											aria-selected={sort.startsWith(key)}
 										>
@@ -251,14 +250,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							<TableBody>
 								{listCurrencies.map((currency) => (
 									<TableRow key={currency.id}>
-										<TableCell>{currency.code}</TableCell>
+										<TableCell>{currency.iso_code}</TableCell>
 										<TableCell>{currency.name}</TableCell>
 										<TableCell>{currency.symbol}</TableCell>
 										<TableCell>
 											<Switch
-												checked={selectedCurrencies.includes(currency.code)}
+												checked={selectedCurrencies.includes(currency.iso_code)}
 												onCheckedChange={(checked) =>
-													handleSwitchChange(currency.code, checked)
+													handleSwitchChange(currency.iso_code, checked)
 												}
 												aria-label={`Select ${currency.name}`}
 												disabled={isLoading}

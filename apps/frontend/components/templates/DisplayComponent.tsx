@@ -4,15 +4,15 @@ import React from 'react';
 import { Badge } from '../ui-custom/is-active-badge';
 import { Button } from '@/components/ui/button';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Trash } from 'lucide-react';
@@ -26,6 +26,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '../ui/table';
+import PaginationComponent from '../PaginationComponent';
 
 type FieldValue =
 	| string
@@ -56,6 +57,9 @@ interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 		onSuccess: (updatedItem: T) => void;
 	}) => React.ReactNode;
 	deleteDialogProps?: DeleteProps;
+	page: number;
+	totalPage: number;
+	setPage: (newPage: string) => void;
 }
 
 const DisplayComponent = <T extends Record<string, FieldValue>>({
@@ -71,6 +75,9 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 		description: `${m.delete_dialog_des()}`,
 		confirmLabel: `${m.delete_text()}`,
 	},
+	page,
+	totalPage,
+	setPage,
 }: DisplayComponentProps<T>): React.ReactElement => {
 	const renderField = (field: FieldConfig<T>, item: T): React.ReactNode => {
 		const value = item[field.key];
@@ -100,7 +107,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	};
 
 	const renderActions = (item: T): React.ReactNode => (
-		<div className="flex justify-end">
+		<div className="flex grow-0 justify-center">
 			{editComponent &&
 				editComponent({
 					item,
@@ -135,6 +142,11 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 		</div>
 	);
 
+	const handlePageChange = (newPage: number) => {
+		if (newPage < 1 || newPage > totalPage) return;
+		setPage(newPage.toString());
+	};
+
 	return (
 		<>
 			{/* Mobile */}
@@ -160,7 +172,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									</div>
 								))}
 							</CardContent>
-							<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
+							<CardFooter className="flex justify-start gap-2 pt-0 pb-2 px-2">
 								{renderActions(item)}
 							</CardFooter>
 						</Card>
@@ -183,7 +195,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									{field.label}
 								</TableHead>
 							))}
-							<TableHead className="text-right">{m.action_text()}</TableHead>
+							<TableHead className="text-center">{m.action_text()}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -198,7 +210,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 										{renderField(field, item)}
 									</TableCell>
 								))}
-								<TableCell className="text-right">
+								<TableCell className="text-center w-1">
 									{renderActions(item)}
 								</TableCell>
 							</TableRow>
@@ -206,6 +218,11 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 					</TableBody>
 				</Table>
 			</div>
+			<PaginationComponent
+				currentPage={page}
+				totalPages={totalPage}
+				onPageChange={handlePageChange}
+			/>
 		</>
 	);
 };

@@ -54,7 +54,7 @@ const Sidebar = () => {
                 className={cn(
                     "fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out",
                     isSidebarOpen || isDesktop ? "translate-x-0 md:sticky" : "-translate-x-full",
-                    isExpanded ? "w-[280px]" : "w-[64px]"
+                    isExpanded ? "w-[280px]" : "w-[70px]"
                 )}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}

@@ -21,20 +21,20 @@ import { Card, CardContent } from '../ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } =
-	{
-		LayoutDashboard,
-		ShoppingCart,
-		Package,
-		Users,
-		MonitorCog,
-		Store,
-		CalendarClock,
-		Factory,
-		BarChart2,
-		DollarSign,
-		Settings,
-		HelpCircle,
-	};
+{
+	LayoutDashboard,
+	ShoppingCart,
+	Package,
+	Users,
+	MonitorCog,
+	Store,
+	CalendarClock,
+	Factory,
+	BarChart2,
+	DollarSign,
+	Settings,
+	HelpCircle,
+};
 
 const MenuModule = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +61,7 @@ const MenuModule = () => {
 						return (
 							<div key={index} className="relative">
 								<Link href={item.path} onClick={handleMenuClick}>
-									<Card className="aspect-square flex flex-col items-center justify-center hover:bg-slate-50 relative">
+									<Card className="aspect-square flex flex-col items-center justify-center hover:bg-slate-50 relative border rounded-md shadow-sm">
 										<div className="absolute top-0 right-1 flex gap-1">
 											<LockKeyhole className="w-2 md:w-4 h-2 md:h-4 text-gray-500 hover:text-gray-700" />
 											<ShoppingCart className="w-2 md:w-4 h-2 md:h-4 text-gray-500 hover:text-gray-700" />

@@ -55,12 +55,16 @@ const DepartmentList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 
 	const fetchData = useCallback(async () => {
 		setIsLoading(true);
 		try {
 			const data = await fetchDepartments(token, tenantId, { search, status });
 			setDepartments(data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -151,6 +155,9 @@ const DepartmentList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
 		/>
 	);
 

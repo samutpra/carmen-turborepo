@@ -4,7 +4,13 @@ import { formType } from '@/types/form_type';
 export const fetchDeliveryPoints = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string } = {}
+	params: {
+		search?: string;
+		status?: string;
+		page?: string;
+		pages?: string;
+		sort?: string;
+	} = {}
 ) => {
 	try {
 		const query = new URLSearchParams();
@@ -16,6 +22,12 @@ export const fetchDeliveryPoints = async (
 		if (params.status) {
 			query.append('filter[is_active:bool]', params.status);
 		}
+
+		if (params.page) {
+			query.append('page', params.page);
+		}
+
+		console.log('query', query);
 
 		const url = `/api/configuration/delivery-point?${query}`;
 

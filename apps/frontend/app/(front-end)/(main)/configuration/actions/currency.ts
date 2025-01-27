@@ -57,7 +57,7 @@ export const fetchCurrencies = async (
 		}
 
 		const result = await response.json();
-		return result.data;
+		return result;
 	} catch (error) {
 		console.error('Error fetching currencies:', error);
 		throw error;

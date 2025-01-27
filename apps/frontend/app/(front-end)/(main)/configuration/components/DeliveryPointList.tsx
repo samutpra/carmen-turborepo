@@ -1,7 +1,6 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
@@ -21,6 +20,7 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
 enum DeliveryPointField {
 	Name = 'name',
@@ -52,14 +52,19 @@ const DeliveryPointList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
 			const data = await fetchDeliveryPoints(token, tenantId, {
 				search,
 				status,
+				page,
 			});
 			setDeliveryPoints(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -110,15 +115,7 @@ const DeliveryPointList = () => {
 	);
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	const title = `${m.delivery_point()}`;
@@ -175,6 +172,9 @@ const DeliveryPointList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
 		/>
 	);
 

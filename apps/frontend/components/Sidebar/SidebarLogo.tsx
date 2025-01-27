@@ -3,6 +3,7 @@ import { Link } from '@/lib/i18n';
 import { Button } from "@/components/ui/button";
 import { Pin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarImage } from '../ui/avatar';
 
 interface Props {
     isExpanded: boolean;
@@ -16,7 +17,7 @@ const SidebarLogo: React.FC<Props> = ({
     togglePin
 }) => {
     return (
-        <div className="px-4 pt-4 w-full flex items-center justify-between">
+        <div className="px-3 pt-4 w-full flex items-center justify-between">
             <Link href="/" className="all-center">
                 {isExpanded ? (
                     <div className="ml-2">
@@ -26,9 +27,9 @@ const SidebarLogo: React.FC<Props> = ({
                         </span>
                     </div>
                 ) : (
-                    <div className="bg-blue-900 h-8 w-8 rounded-full all-center">
-                        {isExpanded && <span className="text-xl font-bold"></span>}
-                    </div>
+                    <Avatar>
+                        <AvatarImage src="/images/carmen_pic.png" alt="@shadcn" className='h-10 w-10' />
+                    </Avatar>
                 )}
             </Link>
             {isExpanded && (

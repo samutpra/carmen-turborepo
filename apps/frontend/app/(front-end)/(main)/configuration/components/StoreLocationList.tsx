@@ -71,6 +71,8 @@ const StoreLocationList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 
 	const handleSuccess = useCallback(
 		(values: LocationCreateModel) => {
@@ -89,7 +91,9 @@ const StoreLocationList = () => {
 				const res = await deleteStoreLocation(id, token, tenantId);
 				if (res) {
 					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: `${m.store_location()} deleted successfully` });
+					toastSuccess({
+						message: `${m.store_location()} deleted successfully`,
+					});
 				}
 			} catch (error) {
 				if (error instanceof Error) {
@@ -121,6 +125,8 @@ const StoreLocationList = () => {
 				status,
 			});
 			setStoreLocations(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -186,6 +192,9 @@ const StoreLocationList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
 		/>
 	);
 

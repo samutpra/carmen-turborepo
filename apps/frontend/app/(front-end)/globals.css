@@ -79,7 +79,7 @@ body {
 	scrollbar-width: none;
 }
 
-.half-star { 
+.half-star {
 	clip-path: inset(0 50% 0 0);
 }
 

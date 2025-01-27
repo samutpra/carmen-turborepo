@@ -90,9 +90,8 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 				form.reset();
 
 				toastSuccess({
-					message: `${m.department()} ${
-						mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
-					} ${m.successfully()}`,
+					message: `${m.department()} ${mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+						} ${m.successfully()}`,
 				});
 			} else {
 				toastError({ message: `Failed to ${mode} department` });
@@ -114,7 +113,7 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
 				>
 					{mode === formType.ADD ? (
