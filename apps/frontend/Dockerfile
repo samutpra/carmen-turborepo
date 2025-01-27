@@ -7,12 +7,12 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Copy the rest of the application code
-COPY . .
-
 # Install dependencies
 RUN npm install next@14.2.23
 RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application code
+COPY . .
 
 # Build the application
 RUN npm run build
