@@ -104,13 +104,30 @@ const DepartmentList = () => {
 	const title = m.department();
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<DepartmentDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" size="sm" aria-label={m.export_text()}>
+		<div
+			className="action-btn-container"
+			data-id="department-action-btn-container"
+		>
+			<DepartmentDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="department-add-dialog"
+			/>
+			<Button
+				variant="outline"
+				size="sm"
+				aria-label={m.export_text()}
+				data-id="department-export-button"
+			>
 				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size="sm" aria-label={m.print_text()}>
+			<Button
+				variant="outline"
+				size="sm"
+				aria-label={m.print_text()}
+				data-id="department-print-button"
+			>
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
@@ -118,24 +135,30 @@ const DepartmentList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="department-filter-container">
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.department()}...`}
+				data-id="department-search-form"
 			/>
-			<div className="all-center gap-2">
+			<div
+				className="all-center gap-2"
+				data-id="department-filter-container-center"
+			>
 				<StatusSearchDropdown
 					options={statusOptions}
 					value={status}
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="department-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={sortFields}
 					items={departments}
 					onSort={setDepartments}
+					data-id="department-sort-dropdown"
 				/>
 			</div>
 		</div>
@@ -158,11 +181,12 @@ const DepartmentList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			data-id="department-display-component"
 		/>
 	);
 
 	if (error) {
-		return <ErrorCard message={error} />;
+		return <ErrorCard message={error} data-id="department-error-card" />;
 	}
 
 	return (
@@ -172,6 +196,7 @@ const DepartmentList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="department-data-display-template"
 		/>
 	);
 };
