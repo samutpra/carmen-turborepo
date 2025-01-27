@@ -11,6 +11,7 @@ COPY package*.json ./
 COPY . .
 
 # Install dependencies
+RUN npm install next@14.2.23
 RUN npm install --legacy-peer-deps
 
 # Build the application
