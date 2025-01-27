@@ -33,8 +33,9 @@ export const fetchAllVendors = async (
 			throw new Error('Failed to fetch vendors');
 		}
 		const result = await response.json();
+		console.log(result);
 
-		return result.data;
+		return result;
 	} catch (error) {
 		console.error('Error fetching vendors:', error);
 		throw error;

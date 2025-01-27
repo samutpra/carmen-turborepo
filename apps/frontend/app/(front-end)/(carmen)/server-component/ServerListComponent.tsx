@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { fetchUnits } from './api';
-import { UnitCreateModel } from '../../../../../backend/shared-dtos/unit.dto';
+import { UnitCreateModel } from '@/dtos/unit.dto';
 interface Props {
 	token: string;
 	tenantId: string;

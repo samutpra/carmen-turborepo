@@ -47,6 +47,7 @@ const VendorList = () => {
 		try {
 			setIsLoading(true);
 			const data = await fetchAllVendors(token, tenantId, { search, status });
+			console.log('data>>>', data.data);
 			setVendors(data.data);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
