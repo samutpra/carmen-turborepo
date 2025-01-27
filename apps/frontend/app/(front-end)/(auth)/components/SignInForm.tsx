@@ -48,7 +48,11 @@ const SignInForm = () => {
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 auth-container">
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="space-y-4 auth-container"
+				data-cy="sign-in-form"
+			>
 				<p className="text-[32px] font-bold">{m.signIn_title()}</p>
 				<p className="mb-2.5 mt-2.5 font-normal">{m.des_signIn()}</p>
 				<FormField
@@ -65,6 +69,7 @@ const SignInForm = () => {
 									className="h-9"
 									disabled={loading}
 									aria-label={m.username()}
+									data-cy="username-input"
 								/>
 							</FormControl>
 							<FormMessage />
@@ -86,6 +91,7 @@ const SignInForm = () => {
 									className="h-9"
 									disabled={loading}
 									aria-label={m.password()}
+									data-cy="password-input"
 								/>
 							</FormControl>
 							<FormMessage />
@@ -98,6 +104,7 @@ const SignInForm = () => {
 					className="w-full mt-4 h-10"
 					loading={loading}
 					disabled={loading}
+					data-cy="sign-in-button"
 				>
 					{m.signIn_title()}
 				</CustomButton>

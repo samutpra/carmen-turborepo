@@ -121,7 +121,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
 				>
 					{mode === formType.ADD ? (

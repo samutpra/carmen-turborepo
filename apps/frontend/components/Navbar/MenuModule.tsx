@@ -54,14 +54,14 @@ const MenuModule = () => {
 					onClick={handleMenuClick}
 				/>
 			</PopoverTrigger>
-			<PopoverContent className="overflow-y-auto w-[90vw] md:w-[400px] px-4 py-12 mx-8">
-				<div className="grid grid-cols-3 md:grid-cols-4 gap-4 w-full">
+			<PopoverContent className="overflow-y-auto w-[60vw] md:w-[400px] px-4 py-12 mx-8">
+				<div className="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full">
 					{menuItems.map((item, index) => {
 						const IconComponent = iconMap[item.icon];
 						return (
 							<div key={index} className="relative">
 								<Link href={item.path} onClick={handleMenuClick}>
-									<Card className="aspect-square flex flex-col items-center justify-center hover:bg-slate-50 relative border rounded-md shadow-sm">
+									<Card className="w-14 md:w-20 aspect-square flex flex-col items-center justify-center hover:bg-slate-50 relative border rounded-md shadow-sm">
 										<div className="absolute top-0 right-1 flex gap-1">
 											<LockKeyhole className="w-2 md:w-4 h-2 md:h-4 text-gray-500 hover:text-gray-700" />
 											<ShoppingCart className="w-2 md:w-4 h-2 md:h-4 text-gray-500 hover:text-gray-700" />
@@ -70,7 +70,7 @@ const MenuModule = () => {
 											{IconComponent && <IconComponent className="w-8 h-8" />}
 										</CardContent>
 									</Card>
-									<p className="mt-2 font-medium text-xs text-center text-ellipsis overflow-clip">
+									<p className="mt-2 font-medium text-[8px] md:text-xs text-ellipsis overflow-clip">
 										{item.title}
 									</p>
 								</Link>

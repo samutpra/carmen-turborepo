@@ -178,7 +178,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		>
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
 					disabled={isLoading}
 				>
@@ -201,7 +201,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 					</DialogTitle>
 				</DialogHeader>
 				{mode === formType.EDIT && defaultValues ? (
-					<h1>Edit Currency</h1>
+					<h1>{m.edit_currency()}</h1>
 				) : (
 					<>
 						<div className="flex my-4">
@@ -219,13 +219,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="w-56">
-									<DropdownMenuLabel>Sort By</DropdownMenuLabel>
+									<DropdownMenuLabel>{m.sort_by()}</DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									{sortFields.map(({ key, label }) => (
 										<DropdownMenuItem
 											key={key}
-											className={`flex justify-between items-center ${sort.startsWith(key) ? 'font-bold text-blue-500' : ''
-												}`}
+											className={`flex justify-between items-center ${
+												sort.startsWith(key) ? 'font-bold text-blue-500' : ''
+											}`}
 											onClick={() => handleSortChange(key)}
 											aria-selected={sort.startsWith(key)}
 										>
@@ -241,10 +242,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead className="w-40">Code</TableHead>
-									<TableHead>Name</TableHead>
-									<TableHead>Symbol</TableHead>
-									<TableHead>Status</TableHead>
+									<TableHead className="w-40">{m.code_label()}</TableHead>
+									<TableHead>{m.currency_name()}</TableHead>
+									<TableHead>{m.symbol_label()}</TableHead>
+									<TableHead>{m.status_text()}</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>

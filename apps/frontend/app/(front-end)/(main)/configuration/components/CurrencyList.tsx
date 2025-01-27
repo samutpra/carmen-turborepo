@@ -86,7 +86,7 @@ const CurrencyList = () => {
 				setCurrencies([]);
 			} else {
 				setError(err instanceof Error ? err.message : 'An error occurred');
-				toastError({ message: 'Failed to fetch currencies' });
+				toastError({ message: `${m.fail_to_text()} ${m.currency()}` });
 			}
 		} finally {
 			setIsLoading(false);
@@ -138,7 +138,7 @@ const CurrencyList = () => {
 			<Card className="border-destructive w-full md:w-1/2">
 				<CardContent className="pt-6">
 					<div className="flex flex-col items-center gap-4">
-						<p className="text-destructive">Your session has expired.</p>
+						<p className="text-destructive">{m.session_expire()}</p>
 						<RefreshToken />
 					</div>
 				</CardContent>
