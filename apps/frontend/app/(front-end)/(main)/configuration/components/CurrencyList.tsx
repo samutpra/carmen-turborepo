@@ -135,9 +135,15 @@ const CurrencyList = () => {
 
 	if (showRefreshToken) {
 		return (
-			<Card className="border-destructive w-full md:w-1/2">
-				<CardContent className="pt-6">
-					<div className="flex flex-col items-center gap-4">
+			<Card
+				className="border-destructive w-full md:w-1/2"
+				data-id="currency-refresh-token-card"
+			>
+				<CardContent className="pt-6" data-id="currency-refresh-token-content">
+					<div
+						className="flex flex-col items-center gap-4"
+						data-id="currency-refresh-token-container"
+					>
 						<p className="text-destructive">{m.session_expire()}</p>
 						<RefreshToken />
 					</div>
@@ -147,22 +153,38 @@ const CurrencyList = () => {
 	}
 
 	if (error) {
-		return <ErrorCard message={error} />;
+		return <ErrorCard message={error} data-id="currency-error-card" />;
 	}
 
 	const title = `${m.currency()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<Button variant={'outline'} size={'sm'}>
+		<div
+			className="action-btn-container"
+			data-id="currency-action-btn-container"
+		>
+			<Button
+				variant={'outline'}
+				size={'sm'}
+				data-id="currency-refresh-exchange-rate-button"
+			>
 				{m.refresh_exchange_rate()}
 			</Button>
-			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
+			<CurrencyDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="currency-add-dialog"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="currency-export-button"
+			>
 				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
+			<Button variant="outline" size={'sm'} data-id="currency-print-button">
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
@@ -170,11 +192,12 @@ const CurrencyList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="currency-filter-container">
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
 				placeholder={`${m.Search()} ${m.currency()}..`}
+				data-id="currency-search-form"
 			/>
 			<div className="all-center gap-2">
 				<StatusSearchDropdown
@@ -183,6 +206,7 @@ const CurrencyList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="currency-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={sortFields}
@@ -205,11 +229,13 @@ const CurrencyList = () => {
 					mode={formType.EDIT}
 					defaultValues={item}
 					onSuccess={onSuccess}
+					data-id="currency-edit-dialog"
 				/>
 			)}
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			data-id="currency-display-component"
 		/>
 	);
 
@@ -220,6 +246,7 @@ const CurrencyList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="currency-data-display-template"
 		/>
 	);
 };
