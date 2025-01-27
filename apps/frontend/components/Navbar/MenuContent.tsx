@@ -3,8 +3,7 @@
 import React, { memo } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { SwitchTheme } from './SwitchTheme';
-import { TenantList } from './TenantList';
-
+import TenantList from './TenantList';
 const MenuContent = () => {
 	return (
 		<>
