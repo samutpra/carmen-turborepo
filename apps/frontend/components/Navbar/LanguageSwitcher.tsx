@@ -30,18 +30,32 @@ export default function LanguageSwitcher() {
 	};
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size={'sm'}>
-					<Globe size={20} />
+		<DropdownMenu data-id="language-switcher-dropdown-menu">
+			<DropdownMenuTrigger
+				asChild
+				data-id="language-switcher-dropdown-menu-trigger"
+			>
+				<Button
+					variant="ghost"
+					size={'sm'}
+					data-id="language-switcher-dropdown-menu-trigger-button"
+				>
+					<Globe
+						size={20}
+						data-id="language-switcher-dropdown-menu-trigger-button-globe"
+					/>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
+			<DropdownMenuContent
+				align="end"
+				data-id="language-switcher-dropdown-menu-content"
+			>
 				{availableLanguageTags.map((lang) => (
 					<DropdownMenuItem
 						key={lang}
 						onClick={() => setLanguage(lang)}
 						className="cursor-pointer"
+						data-id={`language-switcher-dropdown-menu-item-${lang}`}
 					>
 						{labels[lang]}
 					</DropdownMenuItem>
