@@ -13,7 +13,6 @@ const ConfigurationPage = () => {
 	return (
 		<SubMenuList pathName={path} data-id="configuration-page-sub-menu-list" />
 	);
-
 };
 
 export default ConfigurationPage;

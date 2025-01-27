@@ -31,7 +31,13 @@ const VendorIDPage = () => {
 		return <div>Error: {error}</div>;
 	}
 
-	return <VendorDetails vendor={vendor} mode={formType.EDIT} />;
+	return (
+		<VendorDetails
+			vendor={vendor}
+			mode={formType.EDIT}
+			data-id="vendor-details"
+		/>
+	);
 };
 
 export default VendorIDPage
