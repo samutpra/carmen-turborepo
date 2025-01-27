@@ -1,0 +1,35 @@
+meta {
+  name: Register-email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/auth/register/email-token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{register-email}}"
+  }
+}
+
+vars:post-response {
+  email_register_token: res.body.data
+}
+
+script:post-response {
+  
+  
+}
+
+tests {
+  test('Generate success', function(){
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(201);
+  })
+  
+  
+}
