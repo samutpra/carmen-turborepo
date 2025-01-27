@@ -161,9 +161,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	};
 
 	if (isLoading) {
-		<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
-			<Loader2 className="h-8 w-8 animate-spin text-primary" />
-		</div>;
+		return (
+			<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
+				<Loader2
+					className="h-8 w-8 animate-spin text-primary"
+					data-id="currency-loading-icon"
+				/>
+			</div>
+		);
 	}
 
 	return (
@@ -175,12 +180,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 					handleClose();
 				}
 			}}
+			data-id="currency-dialog"
 		>
-			<DialogTrigger asChild>
+			<DialogTrigger asChild data-id="currency-trigger">
 				<Button
 					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
 					disabled={isLoading}
+					data-id="currency-button"
 				>
 					{mode === formType.ADD ? (
 						<>
@@ -192,38 +199,50 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 					)}
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>
+			<DialogContent data-id="currency-content">
+				<DialogHeader data-id="currency-header">
+					<DialogTitle data-id="currency-title">
 						{mode === formType.ADD
 							? `${m.create_new_currency()}`
 							: `${m.edit_currency()}`}
 					</DialogTitle>
 				</DialogHeader>
 				{mode === formType.EDIT && defaultValues ? (
-					<h1>{m.edit_currency()}</h1>
+					<h1 data-id="currency-edit-title">{m.edit_currency()}</h1>
 				) : (
 					<>
-						<div className="flex my-4">
+						<div className="flex my-4" data-id="currency-search-container">
 							<SearchForm
 								defaultValue={search}
 								onSearch={setSearch}
 								placeholder={`${m.Search()} ${m.currency()}..`}
+								data-id="search-input"
 							/>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="outline" size="sm" aria-label="Sort options">
+							<DropdownMenu data-id="currency-sort-container">
+								<DropdownMenuTrigger asChild data-id="currency-sort-trigger">
+									<Button
+										variant="outline"
+										size="sm"
+										aria-label="Sort options"
+										data-id="sort-button"
+									>
 										{sortFields.find((f) => sort.startsWith(f.key))?.label ??
 											'Sort'}{' '}
 										{sort.endsWith(':desc') ? '↓' : sort ? '↑' : ''}
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="w-56">
-									<DropdownMenuLabel>{m.sort_by()}</DropdownMenuLabel>
-									<DropdownMenuSeparator />
+								<DropdownMenuContent
+									data-id="currency-sort-content"
+									className="w-56"
+								>
+									<DropdownMenuLabel data-id="currency-sort-label">
+										{m.sort_by()}
+									</DropdownMenuLabel>
+									<DropdownMenuSeparator data-id="currency-sort-separator" />
 									{sortFields.map(({ key, label }) => (
 										<DropdownMenuItem
 											key={key}
+											data-id={`sort-item-${key}`}
 											className={`flex justify-between items-center ${
 												sort.startsWith(key) ? 'font-bold text-blue-500' : ''
 											}`}
@@ -239,22 +258,36 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</div>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead className="w-40">{m.code_label()}</TableHead>
-									<TableHead>{m.currency_name()}</TableHead>
-									<TableHead>{m.symbol_label()}</TableHead>
-									<TableHead>{m.status_text()}</TableHead>
+						<Table data-id="currency-table">
+							<TableHeader data-id="currency-table-header">
+								<TableRow data-id="currency-table-row">
+									<TableHead data-id="currency-table-code" className="w-40">
+										{m.code_label()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-name">
+										{m.currency_name()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-symbol">
+										{m.symbol_label()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-status">
+										{m.status_text()}
+									</TableHead>
 								</TableRow>
 							</TableHeader>
-							<TableBody>
+							<TableBody data-id="currency-table-body">
 								{listCurrencies.map((currency) => (
-									<TableRow key={currency.id}>
-										<TableCell>{currency.iso_code}</TableCell>
-										<TableCell>{currency.name}</TableCell>
-										<TableCell>{currency.symbol}</TableCell>
-										<TableCell>
+									<TableRow key={currency.id} data-id="currency-table-row">
+										<TableCell data-id="currency-table-cell-code">
+											{currency.iso_code}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-name">
+											{currency.name}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-symbol">
+											{currency.symbol}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-status">
 											<Switch
 												checked={selectedCurrencies.includes(currency.iso_code)}
 												onCheckedChange={(checked) =>
@@ -262,6 +295,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 												}
 												aria-label={`Select ${currency.name}`}
 												disabled={isLoading}
+												data-id={`switch-${currency.iso_code}`}
 											/>
 										</TableCell>
 									</TableRow>
@@ -272,6 +306,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							currentPage={pagination.page}
 							totalPages={pagination.pages}
 							onPageChange={handlePageChange}
+							data-id="currency-pagination"
 						/>
 						<div className="text-right pt-2">
 							<LoaderButton
@@ -279,6 +314,7 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								disabled={isLoading}
 								isLoading={isLoading}
 								size={'sm'}
+								data-id="currency-submit-button"
 							>
 								{isLoading
 									? `${m.loading()}...`

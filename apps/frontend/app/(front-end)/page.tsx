@@ -11,7 +11,7 @@ export default function HomePage() {
 			<div className="space-x-4">
 				<Link
 					href="/sign-in"
-					data-cy="sign-in-link"
+					data-id="sign-in-link"
 					className="py-2 px-4 rounded-xl border"
 				>
 					Sign In
