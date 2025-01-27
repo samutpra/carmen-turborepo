@@ -142,37 +142,56 @@ const StoreLocationList = () => {
 
 	const actionButtons = (
 		<div className="action-btn-container">
-			<StoreLocationDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
+			<StoreLocationDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="store-location-dialog-add-button"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="store-location-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="store-location-export-icon" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
-				<Printer className="h-4 w-4" />
+			<Button
+				variant="outline"
+				size={'sm'}
+				data-id="store-location-print-button"
+			>
+				<Printer className="h-4 w-4" data-id="store-location-print-icon" />
 				{m.print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="store-location-filter-container">
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.store_location()}...`}
+				data-id="store-location-search-form"
 			/>
-			<div className="all-center gap-2">
+			<div
+				className="all-center gap-2"
+				data-id="store-location-filter-container"
+			>
 				<StatusSearchDropdown
 					options={statusOptions}
 					value={status}
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="store-location-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={sortFields}
 					items={storeLocations}
 					onSort={setStoreLocations}
+					data-id="store-location-sort-dropdown"
 				/>
 			</div>
 		</div>
@@ -195,11 +214,12 @@ const StoreLocationList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			data-id="store-location-display-component"
 		/>
 	);
 
 	if (error) {
-		return <ErrorCard message={error} />;
+		return <ErrorCard message={error} data-id="store-location-error-card" />;
 	}
 
 	return (
@@ -209,6 +229,7 @@ const StoreLocationList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="store-location-data-display-template"
 		/>
 	);
 };
