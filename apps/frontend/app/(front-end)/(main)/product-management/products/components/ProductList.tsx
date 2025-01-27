@@ -90,29 +90,46 @@ const ProductList = () => {
 
 	const actionButtons = (
 		<div className="flex items-center gap-2">
-			<Button asChild variant="outline" size="sm">
-				<Link href="/product-management/products/new">
+			<Button
+				asChild
+				variant="outline"
+				size="sm"
+				data-id="product-list-new-product-button"
+			>
+				<Link
+					href="/product-management/products/new"
+					data-id="product-list-new-product-button"
+				>
 					<Plus className="h-4 w-4" />
 					New product
 				</Link>
 			</Button>
-			<Button variant="outline" className="group" size="sm">
+			<Button
+				variant="outline"
+				className="group"
+				size="sm"
+				data-id="product-list-export-button"
+			>
 				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size="sm">
-				<Printer className="h-4 w-4" />
+			<Button variant="outline" size="sm" data-id="product-list-print-button">
+				<Printer className="h-4 w-4" data-id="product-list-print-button-icon" />
 				{m.print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container my-4">
+		<div
+			className="filter-container my-4"
+			data-id="product-list-filter-container"
+		>
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ...`}
+				data-id="product-list-search-form"
 			/>
 			<div className="all-center gap-2">
 				<StatusSearchDropdown
@@ -121,11 +138,13 @@ const ProductList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="product-list-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={fields}
 					items={products}
 					onSort={setProducts}
+					data-id="product-list-sort-dropdown"
 				/>
 			</div>
 		</div>
@@ -138,6 +157,7 @@ const ProductList = () => {
 			page={+page}
 			totalPage={+pages}
 			handlePageChange={handlePageChange}
+			data-id="product-list-product-display"
 		/>
 	);
 
@@ -148,6 +168,7 @@ const ProductList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="product-list-data-display-template"
 		/>
 	);
 };
