@@ -10,7 +10,12 @@ const SystemAdministrationPage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'system-administration';
 
-	return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="system-administration-page-sub-menu-list"
+		/>
+	);
 };
 
 export default SystemAdministrationPage;

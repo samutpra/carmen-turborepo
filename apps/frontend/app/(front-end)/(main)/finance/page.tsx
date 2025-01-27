@@ -10,7 +10,7 @@ const FinancePage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'finance';
 
-	return <SubMenuList pathName={path} />;
+	return <SubMenuList pathName={path} data-id="finance-page-sub-menu-list" />;
 };
 
 export default FinancePage;

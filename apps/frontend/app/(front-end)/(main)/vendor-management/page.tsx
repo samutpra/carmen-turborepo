@@ -10,7 +10,12 @@ const VendorManagementPage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'vendor-management';
 
-	return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="vendor-management-page-sub-menu-list"
+		/>
+	);
 };
 
 export default VendorManagementPage;

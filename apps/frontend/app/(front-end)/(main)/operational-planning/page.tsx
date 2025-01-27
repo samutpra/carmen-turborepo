@@ -10,7 +10,12 @@ const OperationPlaningPage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'operational-planning';
 
-	return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="operational-planning-page-sub-menu-list"
+		/>
+	);
 };
 
 export default OperationPlaningPage;

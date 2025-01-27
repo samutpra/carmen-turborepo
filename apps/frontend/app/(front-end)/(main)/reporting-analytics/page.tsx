@@ -10,7 +10,12 @@ const ReportingAnalyticsPage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'reporting-analytics';
 
-	return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="reporting-analytics-page-sub-menu-list"
+		/>
+	);
 };
 
 export default ReportingAnalyticsPage;

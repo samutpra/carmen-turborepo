@@ -10,7 +10,12 @@ const InventoryManagementPage = () => {
 	const menuItem = menuItems.find((item) => item.path === pathname);
 	const path = menuItem?.title || 'inventory-management';
 
-	return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="inventory-management-page-sub-menu-list"
+		/>
+	);
 };
 
 export default InventoryManagementPage;

@@ -10,7 +10,9 @@ const ConfigurationPage = () => {
     const menuItem = menuItems.find((item) => item.path === pathname);
     const path = menuItem?.title || 'configuration';
 
-    return <SubMenuList pathName={path} />;
+	return (
+		<SubMenuList pathName={path} data-id="configuration-page-sub-menu-list" />
+	);
 
 };
 
