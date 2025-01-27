@@ -41,6 +41,7 @@ const TenantList = () => {
 				<SelectValue
 					placeholder="Business Unit"
 					className="w-full md:w-[300px]"
+					data-id="tenant-list-select-value"
 				/>
 			</SelectTrigger>
 			<SelectContent data-id="tenant-list-select-content">
