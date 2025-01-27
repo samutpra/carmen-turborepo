@@ -114,31 +114,44 @@ const UnitList = () => {
 	);
 
 	if (error) {
-		return <ErrorCard message={error} />;
+		return <ErrorCard message={error} data-id="unit-list-error-card" />;
 	}
 
 	const title = `${m.unit()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<UnitDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
+		<div
+			className="action-btn-container"
+			data-id="unit-list-action-btn-container"
+		>
+			<UnitDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="unit-list-unit-dialog"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="unit-list-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="unit-list-export-button-icon" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
-				<Printer className="h-4 w-4" />
+			<Button variant="outline" size={'sm'} data-id="unit-list-print-button">
+				<Printer className="h-4 w-4" data-id="unit-list-print-button-icon" />
 				{m.print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="unit-list-filter-container">
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={m.placeholder_search_unit()}
+				data-id="unit-list-search-form"
 			/>
 			<div className="all-center gap-2">
 				<StatusSearchDropdown
@@ -147,11 +160,13 @@ const UnitList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="unit-list-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={sortFields}
 					items={units}
 					onSort={setUnits}
+					data-id="unit-list-sort-dropdown"
 				/>
 			</div>
 		</div>
@@ -174,6 +189,7 @@ const UnitList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			data-id="unit-list-display-component"
 		/>
 	);
 
@@ -184,6 +200,7 @@ const UnitList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="unit-list-data-display-template"
 		/>
 	);
 };

@@ -113,42 +113,57 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={setOpen} data-id="unit-dialog">
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
+					data-id="unit-dialog-trigger"
 				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="h-4 w-4" />
+							<PlusIcon
+								className="h-4 w-4"
+								data-id="unit-dialog-trigger-icon"
+							/>
 							{m.add_unit()}
 						</>
 					) : (
-						<PencilIcon className="w-4 h-4" />
+						<PencilIcon
+							className="w-4 h-4"
+							data-id="unit-dialog-trigger-icon"
+						/>
 					)}
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>
+			<DialogContent data-id="unit-dialog-content">
+				<DialogHeader data-id="unit-dialog-header">
+					<DialogTitle data-id="unit-dialog-title">
 						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`}
 						{m.unit()}
 					</DialogTitle>
 				</DialogHeader>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+				<Form {...form} data-id="unit-dialog-form">
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-4"
+						data-id="unit-dialog-form-submit"
+					>
 						<FormField
 							control={form.control}
 							name="name"
+							data-id="unit-dialog-form-name"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{m.unit_name_label()}</FormLabel>
+								<FormItem data-id="unit-dialog-form-name-item">
+									<FormLabel data-id="unit-dialog-form-name-label">
+										{m.unit_name_label()}
+									</FormLabel>
 									<FormControl>
 										<InputCustom
 											placeholder={m.placeholder_unit_name()}
 											error={!!form.formState.errors.name}
 											{...field}
+											data-id="unit-dialog-form-name-input"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -159,16 +174,20 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 						<FormField
 							control={form.control}
 							name="description"
+							data-id="unit-dialog-form-description"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{m.unit_des_label()}</FormLabel>
+								<FormItem data-id="unit-dialog-form-description-item">
+									<FormLabel data-id="unit-dialog-form-description-label">
+										{m.unit_des_label()}
+									</FormLabel>
 									<FormControl>
 										<Textarea
 											placeholder={m.placeholder_unit_des()}
 											{...field}
+											data-id="unit-dialog-form-description-textarea"
 										/>
 									</FormControl>
-									<FormMessage />
+									<FormMessage data-id="unit-dialog-form-description-message" />
 								</FormItem>
 							)}
 							required
@@ -176,27 +195,39 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 						<FormField
 							control={form.control}
 							name="is_active"
+							data-id="unit-dialog-form-is-active"
 							render={({ field }) => (
-								<FormItem className="flex-between rounded-lg border p-4">
-									<FormLabel className="text-base">
+								<FormItem
+									className="flex-between rounded-lg border p-4"
+									data-id="unit-dialog-form-is-active-item"
+								>
+									<FormLabel
+										className="text-base"
+										data-id="unit-dialog-form-is-active-label"
+									>
 										{m.status_active_text()}
 									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											data-id="unit-dialog-form-is-active-switch"
 										/>
 									</FormControl>
 								</FormItem>
 							)}
 						/>
-						<DialogFooter>
-							<div className="flex-end gap-2">
+						<DialogFooter data-id="unit-dialog-footer">
+							<div
+								className="flex-end gap-2"
+								data-id="unit-dialog-footer-button-container"
+							>
 								<Button
 									type="button"
 									variant={'outline'}
 									onClick={handleClose}
 									size={'sm'}
+									data-id="unit-dialog-footer-cancel-button"
 								>
 									{m.cancel_text()}
 								</Button>
@@ -205,6 +236,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 									disabled={isLoading}
 									isLoading={isLoading}
 									size={'sm'}
+									data-id="unit-dialog-footer-submit-button"
 								>
 									{isLoading
 										? `${m.saving()}...`
