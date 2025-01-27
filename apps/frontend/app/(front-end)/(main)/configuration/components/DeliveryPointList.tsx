@@ -54,6 +54,7 @@ const DeliveryPointList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
+
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -121,13 +122,29 @@ const DeliveryPointList = () => {
 	const title = `${m.delivery_point()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<DeliveryPointDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
+		<div
+			className="action-btn-container"
+			data-id="delivery-point-action-btn-container"
+		>
+			<DeliveryPointDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="delivery-point-add-dialog"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="delivery-point-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="delivery-point-export-icon" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
+			<Button
+				variant="outline"
+				size={'sm'}
+				data-id="delivery-point-print-button"
+			>
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
@@ -135,24 +152,30 @@ const DeliveryPointList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="delivery-point-filter-container">
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
 				placeholder={`${m.Search()} ${m.delivery_point()}...`}
+				data-id="delivery-point-search-form"
 			/>
-			<div className="all-center gap-2">
+			<div
+				className="all-center gap-2"
+				data-id="delivery-point-filter-container-center"
+			>
 				<StatusSearchDropdown
 					options={statusOptions}
 					value={status}
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="delivery-point-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={deliveryPointsFields}
 					items={deliveryPoints}
 					onSort={setDeliveryPoints}
+					data-id="delivery-point-sort-dropdown"
 				/>
 			</div>
 		</div>
@@ -175,6 +198,7 @@ const DeliveryPointList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			data-id="delivery-point-display-component"
 		/>
 	);
 
@@ -185,6 +209,7 @@ const DeliveryPointList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
+			data-id="delivery-point-data-display-template"
 		/>
 	);
 };

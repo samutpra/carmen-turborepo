@@ -106,11 +106,12 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
+		<Dialog open={open} onOpenChange={setOpen} data-id="delivery-point-dialog">
+			<DialogTrigger asChild data-id="delivery-point-trigger">
 				<Button
 					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
+					data-id="delivery-point-button"
 				>
 					{mode === formType.ADD ? (
 						<>
@@ -118,34 +119,47 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 							{m.add_text()} {m.delivery_point()}
 						</>
 					) : (
-						<PencilIcon className="w-4 h-4" />
+						<PencilIcon
+							className="w-4 h-4"
+							data-id="delivery-point-pencil-icon"
+						/>
 					)}
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="w-full md:w-[500px] rounded-lg">
-				<DialogHeader>
-					<DialogTitle>
+			<DialogContent
+				className="w-full md:w-[500px] rounded-lg"
+				data-id="delivery-point-dialog-content"
+			>
+				<DialogHeader data-id="delivery-point-dialog-header">
+					<DialogTitle data-id="delivery-point-dialog-title">
 						{mode === formType.ADD
 							? `${m.create_new_delvery_point()}`
 							: `${m.edit_delivery_point()}`}
 					</DialogTitle>
 				</DialogHeader>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+				<Form {...form} data-id="delivery-point-form">
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-4"
+						data-id="delivery-point-form-submit"
+					>
 						<FormField
 							control={form.control}
 							name="name"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{m.delivery_point_name_label()}</FormLabel>
+								<FormItem data-id="delivery-point-form-item">
+									<FormLabel data-id="delivery-point-form-label">
+										{m.delivery_point_name_label()}
+									</FormLabel>
 									<FormControl>
 										<InputCustom
 											placeholder={m.placeholder_delivery_point_name()}
 											error={!!form.formState.errors.name}
 											{...field}
+											data-id="delivery-point-form-input"
 										/>
 									</FormControl>
-									<FormMessage />
+									<FormMessage data-id="delivery-point-form-message" />
 								</FormItem>
 							)}
 							required
@@ -153,29 +167,44 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 						<FormField
 							control={form.control}
 							name="is_active"
+							data-id="delivery-point-form-active-field"
 							render={({ field }) => (
-								<FormItem className="flex-between rounded-lg border p-4">
-									<div className="space-y-0.5">
-										<FormLabel className="text-base">
+								<FormItem
+									className="flex-between rounded-lg border p-4"
+									data-id="delivery-point-form-active-item"
+								>
+									<div
+										className="space-y-0.5"
+										data-id="delivery-point-form-active-label-container"
+									>
+										<FormLabel
+											className="text-base"
+											data-id="delivery-point-form-active-label"
+										>
 											{m.status_active_text()}
 										</FormLabel>
 									</div>
-									<FormControl>
+									<FormControl data-id="delivery-point-form-active-control">
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											data-id="delivery-point-form-active-switch"
 										/>
 									</FormControl>
 								</FormItem>
 							)}
 						/>
-						<DialogFooter>
-							<div className="flex-end gap-2">
+						<DialogFooter data-id="delivery-point-dialog-footer">
+							<div
+								className="flex-end gap-2"
+								data-id="delivery-point-dialog-footer-container"
+							>
 								<Button
 									type="button"
 									variant={'outline'}
 									onClick={handleClose}
 									size={'sm'}
+									data-id="delivery-point-dialog-footer-cancel-button"
 								>
 									{m.cancel_text()}
 								</Button>
@@ -184,6 +213,7 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 									disabled={isLoading}
 									isLoading={isLoading}
 									size={'sm'}
+									data-id="delivery-point-dialog-footer-submit-button"
 								>
 									{isLoading
 										? `${m.saving()}...`
