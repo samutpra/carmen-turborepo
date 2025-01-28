@@ -1,10 +1,12 @@
 import { KafkaClient, Consumer } from 'kafka-node';
+import { NextRequest, NextResponse } from 'next/server';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
 	try {
+		console.log('request', req);
+
 		console.log('Consuming message');
-		// สร้าง Kafka client และ Consumer
 		const client = new KafkaClient({ kafkaHost: 'localhost:9092' });
 		const consumer = new Consumer(
 			client,
@@ -12,27 +14,28 @@ export async function GET(req: Request) {
 			{ autoCommit: true }
 		);
 
-		return new Promise((resolve, reject) => {
+		const message = await new Promise((resolve, reject) => {
 			consumer.on('message', (message) => {
 				console.log('Received message:', message);
-				resolve(
-					new Response(
-						JSON.stringify({
-							message: 'Received message from Kafka',
-							data: message,
-						}),
-						{ status: 200 }
-					)
-				);
+				resolve(message);
 			});
 
 			consumer.on('error', (err) => {
 				console.error('Consumer error:', err);
-				reject(new Response('Error consuming message', { status: 500 }));
+				reject(err);
 			});
 		});
+
+		// Close the consumer after receiving the message
+		consumer.close(() => {
+			console.log('Consumer closed');
+		});
+
+		// Return the message in the correct NextResponse format
+		return NextResponse.json({ data: message }, { status: 200 });
 	} catch (error) {
 		console.error('Error in handler:', error);
-		return new Response('Server error', { status: 500 });
+		return NextResponse.json({ error: 'Server error' }, { status: 500 });
 	}
 }
+
