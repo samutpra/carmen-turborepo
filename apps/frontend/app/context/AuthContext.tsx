@@ -161,7 +161,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			},
 			handleLogout: async (): Promise<void> => {
 				try {
-					clearAuth();
 					await router.push('/sign-in');
 				} catch (error) {
 					console.error('Logout error:', error);

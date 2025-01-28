@@ -102,7 +102,9 @@ const UserProfile = () => {
 				<DropdownMenuSeparator data-id="user-profile-dropdown-menu-separator" />
 				<DropdownMenuItem
 					className="cursor-pointer"
-					onClick={handleLogout}
+					onClick={() => {
+						handleLogout();
+					}}
 					data-id="user-profile-dropdown-menu-item-logout"
 				>
 					<LogOut

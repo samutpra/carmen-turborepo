@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-
 import { paraglide } from '@inlang/paraglide-next/plugin';
 
 const nextConfig = {
@@ -9,10 +8,12 @@ const nextConfig = {
 	logging: {
 		fetches: {
 			fullUrl: true,
-			hmrRefreshes: true,
 		},
 	},
 	transpilePackages: ['lucide-react'],
+	experimental: {
+		instrumentationHook: true,
+	},
 };
 
 export default paraglide({
