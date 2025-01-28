@@ -9,8 +9,7 @@
 		"start": "next start",
 		"lint": "next lint",
 		"postinstall": "paraglide-js compile --project ./project.inlang --outdir ./paraglide",
-		"build": "next build",
-		"cy:open": "cypress open"
+		"build": "next build"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
@@ -82,7 +81,6 @@
 		"@types/react": "^18",
 		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-dom": "^18",
-		"cypress": "^14.0.0",
 		"eslint": "^8.57.1",
 		"eslint-config-next": "14.2.12",
 		"eslint-plugin-react": "^7.36.1",
