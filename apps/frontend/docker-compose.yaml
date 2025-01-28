@@ -7,10 +7,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3500:3000"
+      - "3500:3500"
     environment:
       - NEXT_PUBLIC_API_URL=http://dev-api:4000
-      
+
     volumes:
-      - .:/app
+      - .:/app:delegated
       - /app/node_modules

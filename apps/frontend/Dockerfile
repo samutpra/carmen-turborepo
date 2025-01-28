@@ -6,15 +6,17 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
-
+COPY . .
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+
+RUN npm run postinstall
+COPY ./project.inlang ./app/project.inlang
 
 # Build the application
-RUN npm run build
+RUN npx next build
 
 # Expose the port the app runs on
 EXPOSE 3500

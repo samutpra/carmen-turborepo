@@ -5,10 +5,11 @@
 	"author": "www.carmensoftware.com",
 	"scripts": {
 		"dev": "next dev -p 3500",
-		"build": "next build",
+		"build-dev": "paraglide-js compile --project ./project.inlang --outdir ./paraglide && next build",
 		"start": "next start",
 		"lint": "next lint",
 		"postinstall": "paraglide-js compile --project ./project.inlang --outdir ./paraglide",
+		"build": "next build",
 		"cy:open": "cypress open"
 	},
 	"dependencies": {
