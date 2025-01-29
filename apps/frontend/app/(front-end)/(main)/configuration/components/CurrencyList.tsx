@@ -11,7 +11,6 @@ import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
-import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
@@ -20,6 +19,7 @@ import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { CurrencyCreateModel } from '@/dtos/currency.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { code_label, currency, currency_delete_success, currency_name, error_del_text, export_text, fail_del_currency, fail_to_text, print_text, rate_label, refresh_exchange_rate, Search, session_expire, status_text, symbol_label } from '@/paraglide/messages.js';
 
 enum CurrencyField {
 	Code = 'code',
@@ -31,12 +31,12 @@ enum CurrencyField {
 }
 
 const sortFields: FieldConfig<CurrencyCreateModel>[] = [
-	{ key: CurrencyField.Code, label: `${m.code_label()}`, className: 'w-20' },
-	{ key: CurrencyField.Name, label: `${m.currency_name()}`, className: 'w-40' },
-	{ key: CurrencyField.Rate, label: `${m.rate_label()}`, className: 'w-20' },
+	{ key: CurrencyField.Code, label: `${code_label()}`, className: 'w-20' },
+	{ key: CurrencyField.Name, label: `${currency_name()}`, className: 'w-40' },
+	{ key: CurrencyField.Rate, label: `${rate_label()}`, className: 'w-20' },
 	{
 		key: CurrencyField.isActive,
-		label: `${m.status_text()}`,
+		label: `${status_text()}`,
 		type: 'badge',
 		className: 'w-24',
 	},
@@ -46,7 +46,7 @@ const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 	...sortFields,
 	{
 		key: CurrencyField.Symbol,
-		label: `${m.symbol_label()}`,
+		label: `${symbol_label()}`,
 		className: 'w-20',
 	},
 ];
@@ -86,7 +86,7 @@ const CurrencyList = () => {
 				setCurrencies([]);
 			} else {
 				setError(err instanceof Error ? err.message : 'An error occurred');
-				toastError({ message: `${m.fail_to_text()} ${m.currency()}` });
+				toastError({ message: `${fail_to_text()} ${currency()}` });
 			}
 		} finally {
 			setIsLoading(false);
@@ -114,19 +114,19 @@ const CurrencyList = () => {
 				const res = await deleteCurrency(id, token, tenantId);
 				if (res) {
 					setCurrencies((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: `${m.currency_delete_success()}` });
+					toastSuccess({ message: `${currency_delete_success()}` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: `${m.session_expire()}` });
+						toastError({ message: `${session_expire()}` });
 					} else {
 						toastError({
-							message: `${m.fail_del_currency()}: ${error.message}`,
+							message: `${fail_del_currency()}: ${error.message}`,
 						});
 					}
 				} else {
-					toastError({ message: `${m.error_del_text()} ${m.currency()}.` });
+					toastError({ message: `${error_del_text()} ${currency()}.` });
 				}
 			}
 		},
@@ -144,7 +144,7 @@ const CurrencyList = () => {
 						className="flex flex-col items-center gap-4"
 						data-id="currency-refresh-token-container"
 					>
-						<p className="text-destructive">{m.session_expire()}</p>
+						<p className="text-destructive">{session_expire()}</p>
 						<RefreshToken />
 					</div>
 				</CardContent>
@@ -156,7 +156,7 @@ const CurrencyList = () => {
 		return <ErrorCard message={error} data-id="currency-error-card" />;
 	}
 
-	const title = `${m.currency()}`;
+	const title = `${currency()}`;
 
 	const actionButtons = (
 		<div
@@ -168,7 +168,7 @@ const CurrencyList = () => {
 				size={'sm'}
 				data-id="currency-refresh-exchange-rate-button"
 			>
-				{m.refresh_exchange_rate()}
+				{refresh_exchange_rate()}
 			</Button>
 			<CurrencyDialog
 				mode={formType.ADD}
@@ -182,11 +182,11 @@ const CurrencyList = () => {
 				data-id="currency-export-button"
 			>
 				<FileDown className="h-4 w-4" />
-				{m.export_text()}
+				{export_text()}
 			</Button>
 			<Button variant="outline" size={'sm'} data-id="currency-print-button">
 				<Printer className="h-4 w-4" />
-				{m.print_text()}
+				{print_text()}
 			</Button>
 		</div>
 	);
@@ -196,7 +196,7 @@ const CurrencyList = () => {
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
-				placeholder={`${m.Search()} ${m.currency()}..`}
+				placeholder={`${Search()} ${currency()}..`}
 				data-id="currency-search-form"
 			/>
 			<div className="all-center gap-2">
