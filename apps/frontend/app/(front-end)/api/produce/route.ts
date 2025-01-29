@@ -1,14 +1,6 @@
 import { KafkaClient, Producer, ProduceRequest } from 'kafka-node';
 import { NextRequest, NextResponse } from 'next/server';
-
-// Configuration
-const KAFKA_CONFIG = {
-	// host: process.env.KAFKA_HOST || 'localhost:9092',
-	// topic: process.env.KAFKA_TOPIC || 'my-topic',
-	host: 'localhost:9092',
-	topic: 'my-topic',
-	timeout: 10000, // 10 seconds timeout
-} as const;
+import KAFKA_CONFIG from '@/lib/util/kafka.config';
 
 // Singleton instances
 let producer: Producer | null = null;
