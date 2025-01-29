@@ -1,40 +1,147 @@
 import { KafkaClient, Producer, ProduceRequest } from 'kafka-node';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+// Configuration
+const KAFKA_CONFIG = {
+	// host: process.env.KAFKA_HOST || 'localhost:9092',
+	// topic: process.env.KAFKA_TOPIC || 'my-topic',
+	host: 'localhost:9092',
+	topic: 'my-topic',
+	timeout: 10000, // 10 seconds timeout
+} as const;
+
+// Singleton instances
+let producer: Producer | null = null;
+let client: KafkaClient | null = null;
+
+// Initialize Kafka client and producer
+const initializeProducer = async (): Promise<Producer> => {
+	if (!client || !producer) {
+		client = new KafkaClient({ kafkaHost: KAFKA_CONFIG.host });
+		producer = new Producer(client);
+
+		// Wait for producer to be ready
+		await new Promise<void>((resolve, reject) => {
+			const timeoutId = setTimeout(() => {
+				reject(new Error('Producer initialization timeout'));
+			}, KAFKA_CONFIG.timeout);
+
+			producer!.on('ready', () => {
+				clearTimeout(timeoutId);
+				resolve();
+			});
+
+			producer!.on('error', (error) => {
+				clearTimeout(timeoutId);
+				reject(error);
+			});
+		});
+
+		// Graceful shutdown
+		process.on('SIGTERM', () => {
+			if (producer) {
+				producer.close(() => {
+					console.log('Kafka producer closed due to application termination');
+					process.exit(0);
+				});
+			}
+		});
+	}
+	return producer;
+};
+
+// Validate message
+const validateMessage = (message: unknown): message is string => {
+	return typeof message === 'string' && message.trim().length > 0;
+};
+
+export const POST = async (req: NextRequest) => {
 	try {
-		const { message }: { message: string } = await req.json();
+		// Parse and validate request body
+		const body = await req.json();
 
-		// สร้าง Kafka client และ Producer
-		const client = new KafkaClient({ kafkaHost: 'localhost:9092' }); // ปรับ URL Kafka broker ของคุณ
-		const producer = new Producer(client);
+		if (!validateMessage(body.message)) {
+			return NextResponse.json(
+				{
+					error: 'Invalid message format. Message must be a non-empty string.',
+					status: 'error',
+				},
+				{ status: 400 }
+			);
+		}
 
+		// Initialize producer
+		const producer = await initializeProducer();
+
+		// Prepare message payload
 		const payloads: ProduceRequest[] = [
 			{
-				topic: 'my-topic',
-				messages: message || 'Hello Kafka from Next.js API!',
+				topic: KAFKA_CONFIG.topic,
+				messages: body.message,
 			},
 		];
 
-		return new Promise((resolve, reject) => {
-			producer.on('ready', () => {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				producer.send(payloads, (err, data) => {
-					if (err) {
-						return reject(
-							new Response('Failed to send message', { status: 500 })
-						);
-					}
-					resolve(new Response('Message sent successfully', { status: 200 }));
-				});
-			});
+		// Send message
+		const result = await new Promise<{
+			success: boolean;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			data?: any;
+			error?: Error;
+		}>((resolve, reject) => {
+			const timeoutId = setTimeout(() => {
+				reject(new Error('Message sending timeout'));
+			}, KAFKA_CONFIG.timeout);
 
-			producer.on('error', (err) => {
-				console.error('Producer error:', err);
-				reject(new Response('Producer error', { status: 500 }));
+			producer.send(payloads, (error, data) => {
+				clearTimeout(timeoutId);
+				if (error) {
+					reject(error);
+				} else {
+					resolve({ success: true, data });
+				}
 			});
 		});
+
+		// Return success response
+		return NextResponse.json(
+			{
+				data: {
+					message: body.message,
+					topic: KAFKA_CONFIG.topic,
+					timestamp: new Date().toISOString(),
+					metadata: result.data,
+				},
+				status: 'success',
+			},
+			{
+				status: 201,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		);
 	} catch (error) {
-		console.error('Error in handler:', error);
-		return new Response('Server error', { status: 500 });
+		console.error('Error in Kafka producer:', error);
+
+		const errorMessage =
+			error instanceof Error ? error.message : 'Unknown error';
+		const statusCode = errorMessage.includes('timeout')
+			? 504
+			: errorMessage.includes('initialization')
+				? 503
+				: 500;
+
+		return NextResponse.json(
+			{
+				error: errorMessage,
+				status: 'error',
+			},
+			{
+				status: statusCode,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		);
 	}
-}
+};
