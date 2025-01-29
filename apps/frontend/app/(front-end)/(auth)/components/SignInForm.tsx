@@ -7,12 +7,21 @@ import { SignInSchema, SignInType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
-import * as m from '@/paraglide/messages.js';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { handleSignInException, processLogin, signInAction } from '../action/sign-in';
+import {
+	handleSignInException,
+	processLogin,
+	signInAction,
+} from '../action/sign-in';
 import { toastError } from '@/components/ui-custom/Toast';
 import { useAuth } from '@/app/context/AuthContext';
+import {
+	des_signIn,
+	password,
+	signIn_title,
+	username,
+} from '@/paraglide/messages';
 
 const SignInForm = () => {
 	const router = useRouter();
@@ -38,7 +47,6 @@ const SignInForm = () => {
 				await processLogin(result, handleLogin);
 				router.push('/dashboard');
 			}
-
 		} catch (error) {
 			handleSignInException(error);
 		} finally {
@@ -53,22 +61,26 @@ const SignInForm = () => {
 				className="space-y-4 auth-container"
 				data-id="sign-in-form"
 			>
-				<p className="text-[32px] font-bold">{m.signIn_title()}</p>
-				<p className="mb-2.5 mt-2.5 font-normal">{m.des_signIn()}</p>
+				<p className="text-[32px] font-bold" data-id="sign-in-title">
+					{signIn_title()}
+				</p>
+				<p className="mb-2.5 mt-2.5 font-normal" data-id="sign-in-description">
+					{des_signIn()}
+				</p>
 				<FormField
 					control={form.control}
 					name="username"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{m.username()}</FormLabel>
+							<FormLabel>{username()}</FormLabel>
 							<FormControl>
 								<InputCustom
-									placeholder={m.username()}
+									placeholder={username()}
 									error={!!form.formState.errors.username}
 									{...field}
 									className="h-9"
 									disabled={loading}
-									aria-label={m.username()}
+									aria-label={username()}
 									data-id="username-input"
 								/>
 							</FormControl>
@@ -82,15 +94,15 @@ const SignInForm = () => {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{m.password()}</FormLabel>
+							<FormLabel>{password()}</FormLabel>
 							<FormControl>
 								<PasswordInput
-									placeholder={m.password()}
+									placeholder={password()}
 									error={!!form.formState.errors.password}
 									{...field}
 									className="h-9"
 									disabled={loading}
-									aria-label={m.password()}
+									aria-label={password()}
 									data-id="password-input"
 								/>
 							</FormControl>
@@ -106,7 +118,7 @@ const SignInForm = () => {
 					disabled={loading}
 					data-id="sign-in-button"
 				>
-					{m.signIn_title()}
+					{signIn_title()}
 				</CustomButton>
 			</form>
 		</Form>

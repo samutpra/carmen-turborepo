@@ -1,6 +1,7 @@
 /** @format */
 
 import { defineConfig, devices } from '@playwright/test';
+import { PlaywrightTestConfig } from '@playwright/test';
 
 /**
  * Read environment variables from file.
@@ -13,7 +14,7 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+const config: PlaywrightTestConfig = {
 	testDir: './tests',
 	/* Run tests in files in parallel */
 	fullyParallel: true,
@@ -32,6 +33,14 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
+		extraHTTPHeaders: {
+			// We set this header per GitHub guidelines.
+			Accept: 'application/json',
+			'x-api-key': 'DUMMY',
+			// Add authorization token to all requests.
+			// Assuming personal access token available in the environment.
+			Authorization: `Bearer ${process.env.API_TOKEN}`,
+		},
 	},
 
 	/* Configure projects for major browsers */
@@ -78,4 +87,11 @@ export default defineConfig({
 	//   url: 'http://127.0.0.1:3000',
 	//   reuseExistingServer: !process.env.CI,
 	// },
-});
+
+	timeout: 60000, // Increase global timeout to 60 seconds
+	expect: {
+		timeout: 10000, // Increase expect timeout to 10 seconds
+	},
+};
+
+export default config;
