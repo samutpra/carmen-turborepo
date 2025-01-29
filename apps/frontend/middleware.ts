@@ -12,11 +12,74 @@ import { middleware as i18nMiddleware } from '@/lib/i18n';
 // 	]),
 // } as const;
 
+// Rate limiting setup
+const RATE_LIMIT_WINDOW = 1000; // 1 second
+const requestTimes: { [key: string]: number[] } = {};
+
+// Function to check rate limit
+const isRateLimited = (identifier: string): boolean => {
+	const now = Date.now();
+	const windowStart = now - RATE_LIMIT_WINDOW;
+	
+	// Clean old requests
+	requestTimes[identifier] = (requestTimes[identifier] || [])
+		.filter(time => time > windowStart);
+		
+	// Add current request
+	requestTimes[identifier].push(now);
+	
+	// Allow only 1 request per window
+	return requestTimes[identifier].length > 1;
+};
+
+// Function to send logs to Kafka
+const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
+	try {
+		const identifier = `${request.method}-${request.nextUrl.pathname}`;
+		
+		// Skip if rate limited
+		if (isRateLimited(identifier)) {
+			return;
+		}
+
+		const protocol = request.headers.get('x-forwarded-proto') || 'http';
+		const host = request.headers.get('host') || 'localhost:3500';
+		const baseUrl = `${protocol}://${host}`;
+
+		// Additional paths to skip logging
+		const skipPaths = [
+			'/_next',
+			'/favicon.ico',
+			'/static',
+			'/images',
+			'/assets',
+			'/api/produce' // Skip logging API calls to prevent infinite loop
+		];
+
+		if (skipPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
+			return;
+		}
+
+		const response = await fetch(`${baseUrl}/api/produce`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ message: logMessage }),
+		});
+
+		if (!response.ok) {
+			console.error('Failed to send log to Kafka:', await response.text());
+		}
+	} catch (error) {
+		console.error('Error sending log to Kafka:', error);
+	}
+};
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
   
-	// Log timestamp และ request info
+	// Format timestamp
 	const now = new Date().toLocaleString('th-TH', {
 	  timeZone: 'Asia/Bangkok',
 	  hour: '2-digit',
@@ -29,12 +92,12 @@ export async function middleware(request: NextRequest) {
   
 	// Skip middleware for static files and API routes
 	if (pathname.match(/(\..*|_next|api|trpc)/)) {
-	  console.log(`[${now}] Skipping middleware for: ${pathname}`);
+	  await sendLogToKafka(`[${now}] Skipping middleware for: ${pathname}`, request);
 	  return NextResponse.next();
 	}
   
 	try {
-	  // Clone request เพื่ออ่าน body
+	  // Clone request for body reading
 	  const requestClone = request.clone();
 	  let body = '';
 	  
@@ -45,7 +108,7 @@ export async function middleware(request: NextRequest) {
 			body = JSON.parse(text);
 		  }
 		} catch {
-		  // ถ้า parse JSON ไม่ได้ ไม่ต้องแสดง body
+		  // Ignore body parse errors
 		}
 	  }
   
@@ -55,22 +118,25 @@ export async function middleware(request: NextRequest) {
 	  const tenantResponse = TenantMiddleware(request);
 	  const tenantId = tenantResponse.headers.get('x-tenant-id') || 'main';
   
-	  // Log request details
-	  console.log(`[${now}] ${request.method} ${pathname}${request.nextUrl.search}`);
-	  console.log(`Language: ${lang}`);
-	  console.log(`Tenant ID: ${tenantId}`);
-	  
-	  if (body) {
-		console.log('Request Body:', body);
-	  }
-	  
-	  // Log headers ที่สำคัญ
+	  // Prepare log message
 	  const importantHeaders = ['content-type', 'user-agent', 'accept-language'];
 	  const headers = Object.fromEntries(
 		Array.from(request.headers.entries())
 		  .filter(([key]) => importantHeaders.includes(key.toLowerCase()))
 	  );
-	  console.log('Important Headers:', headers);
+  
+	  const logData = {
+		timestamp: now,
+		method: request.method,
+		path: `${pathname}${request.nextUrl.search}`,
+		language: lang,
+		tenantId: tenantId,
+		headers: headers,
+		body: body || undefined
+	  };
+  
+	  // Send log to Kafka with request object
+	  await sendLogToKafka(JSON.stringify(logData), request);
   
 	  // Combine headers
 	  const finalResponse = NextResponse.next();
@@ -83,7 +149,15 @@ export async function middleware(request: NextRequest) {
   
 	  return finalResponse;
 	} catch (error) {
-	  console.error(`[${now}] Middleware error:`, error);
+	  // Log error
+	  const errorLog = {
+		timestamp: now,
+		type: 'ERROR',
+		path: pathname,
+		error: error instanceof Error ? error.message : 'Unknown error'
+	  };
+	  
+	  await sendLogToKafka(JSON.stringify(errorLog), request);
 	  return NextResponse.next();
 	}
   }

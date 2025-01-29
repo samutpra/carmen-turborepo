@@ -94,15 +94,19 @@ export const POST = async (req: NextRequest) => {
 			});
 		});
 
+		const data = {
+			message: body.message,
+			topic: KAFKA_CONFIG.topic,
+			timestamp: new Date().toISOString(),
+			metadata: result.data,
+		};
+
+		console.log('kafka data', data);
+
 		// Return success response
 		return NextResponse.json(
 			{
-				data: {
-					message: body.message,
-					topic: KAFKA_CONFIG.topic,
-					timestamp: new Date().toISOString(),
-					metadata: result.data,
-				},
+				data: data,
 				status: 'success',
 			},
 			{
