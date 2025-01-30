@@ -151,7 +151,7 @@ const RecipeCategoryList = () => {
 	const actionButtons = (
 		<div
 			className="action-btn-container"
-			data-id="delivery-point-action-btn-container"
+			data-id="recipe-category-action-btn-container"
 		>
 			<RecipeCategoryDialog
 				mode={formType.ADD}
@@ -164,13 +164,13 @@ const RecipeCategoryList = () => {
 				size={'sm'}
 				data-id="recipe-category-export-button"
 			>
-				<FileDown className="h-4 w-4" data-id="recipe-cuisine-export-icon" />
+				<FileDown className="h-4 w-4" data-id="recipe-category-export-icon" />
 				{m.export_text()}
 			</Button>
 			<Button
 				variant="outline"
 				size={'sm'}
-				data-id="recipe-cuisine-print-button"
+				data-id="recipe-category-print-button"
 			>
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
@@ -179,11 +179,14 @@ const RecipeCategoryList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container" data-id="delivery-point-filter-container">
+		<div
+			className="filter-container"
+			data-id="recipe-category-filter-container"
+		>
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
-				placeholder={`${m.Search()} ${m.delivery_point()}...`}
+				placeholder={`${m.Search()}...`}
 				data-id="recipe-category-search-form"
 			/>
 			<div

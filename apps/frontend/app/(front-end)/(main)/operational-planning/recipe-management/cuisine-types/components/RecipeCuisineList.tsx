@@ -147,7 +147,7 @@ const RecipeCuisineList = () => {
 	);
 
 	if (error) {
-		return <ErrorCard message={error} />;
+		return <ErrorCard message={error} data-id="recipe-cuisine-error-card" />;
 	}
 
 	const title = `${m.recipe_cuisine_types()}`;
@@ -155,7 +155,7 @@ const RecipeCuisineList = () => {
 	const actionButtons = (
 		<div
 			className="action-btn-container"
-			data-id="delivery-point-action-btn-container"
+			data-id="recipe-cuisine-action-btn-container"
 		>
 			<RecipeCuisineDialog
 				mode={formType.ADD}
@@ -183,16 +183,16 @@ const RecipeCuisineList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container" data-id="delivery-point-filter-container">
+		<div className="filter-container" data-id="recipe-cuisine-filter-container">
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
-				placeholder={`${m.Search()} ${m.delivery_point()}...`}
-				data-id="delivery-point-search-form"
+				placeholder={`${m.Search()} ${m.recipe_cuisine_types()}...`}
+				data-id="recipe-cuisine-search-form"
 			/>
 			<div
 				className="all-center gap-2"
-				data-id="delivery-point-filter-container-center"
+				data-id="recipe-cuisine-filter-container-center"
 			>
 				<StatusSearchDropdown
 					options={statusOptions}
@@ -200,7 +200,7 @@ const RecipeCuisineList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
-					data-id="delivery-point-status-search-dropdown"
+					data-id="recipe-cuisine-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={recipeCuisineFields}
@@ -229,7 +229,7 @@ const RecipeCuisineList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
-			data-id="delivery-point-display-component"
+			data-id="recipe-cuisine-display-component"
 		/>
 	);
 
@@ -240,7 +240,7 @@ const RecipeCuisineList = () => {
 			filters={filter}
 			content={content}
 			isLoading={isLoading}
-			data-id="delivery-point-data-display-template"
+			data-id="recipe-cuisine-data-display-template"
 		/>
 	);
 };

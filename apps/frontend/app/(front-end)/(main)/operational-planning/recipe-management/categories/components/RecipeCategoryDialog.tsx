@@ -161,19 +161,19 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 							control={form.control}
 							name="name"
 							render={({ field }) => (
-								<FormItem data-id="recipe-cuisine-form-item">
-									<FormLabel data-id="recipe-cuisine-form-label">
+								<FormItem data-id="recipe-category-form-item">
+									<FormLabel data-id="recipe-category-form-label">
 										Name
 									</FormLabel>
 									<FormControl>
 										<InputCustom
-											placeholder="Enter cuisine name"
+											placeholder="Enter category name"
 											error={!!form.formState.errors.name}
 											{...field}
-											data-id="recipe-cuisine-form-input"
+											data-id="recipe-category-form-input"
 										/>
 									</FormControl>
-									<FormMessage data-id="recipe-cuisine-form-message" />
+									<FormMessage data-id="recipe-category-form-message" />
 								</FormItem>
 							)}
 							required
@@ -182,8 +182,8 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 							control={form.control}
 							name="code"
 							render={({ field }) => (
-								<FormItem data-id="recipe-cuisine-form-item">
-									<FormLabel data-id="recipe-cuisine-form-label">
+								<FormItem data-id="recipe-category-form-item">
+									<FormLabel data-id="recipe-category-form-label">
 										{m.code_label()}
 									</FormLabel>
 									<FormControl>
@@ -191,10 +191,10 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 											placeholder={m.code_label()}
 											error={!!form.formState.errors.code}
 											{...field}
-											data-id="recipe-cuisine-form-input"
+											data-id="recipe-category-form-input"
 										/>
 									</FormControl>
-									<FormMessage data-id="recipe-cuisine-form-message" />
+									<FormMessage data-id="recipe-category-form-message" />
 								</FormItem>
 							)}
 							required
@@ -203,8 +203,8 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 							control={form.control}
 							name="description"
 							render={({ field }) => (
-								<FormItem data-id="recipe-cuisine-form-item">
-									<FormLabel data-id="recipe-cuisine-form-label">
+								<FormItem data-id="recipe-category-form-item">
+									<FormLabel data-id="recipe-category-form-label">
 										{m.description()}
 									</FormLabel>
 									<FormControl>
@@ -212,10 +212,10 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 											placeholder={m.description()}
 											error={!!form.formState.errors.description}
 											{...field}
-											data-id="recipe-cuisine-form-input"
+											data-id="recipe-category-form-input"
 										/>
 									</FormControl>
-									<FormMessage data-id="recipe-cuisine-form-message" />
+									<FormMessage data-id="recipe-category-form-message" />
 								</FormItem>
 							)}
 						/>
@@ -225,7 +225,7 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 							render={({ field }) => (
 								<FormItem
 									className="flex-between rounded-lg border p-4"
-									data-id="recipe-cuisine-form-status-item"
+									data-id="recipe-category-form-status-item"
 								>
 									<div className="space-y-0.5">
 										<FormLabel className="text-base">
@@ -238,7 +238,7 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 											onCheckedChange={(checked) =>
 												field.onChange(checked ? 'active' : 'inactive')
 											}
-											data-id="recipe-cuisine-form-status-switch"
+											data-id="recipe-category-form-status-switch"
 										/>
 									</FormControl>
 								</FormItem>
