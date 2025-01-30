@@ -131,7 +131,7 @@ const RecipeCuisineList = () => {
 			setCuisineData((prev) => {
 				if (!values.id) return prev;
 				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				mapValues.set(values.id, values);
+				mapValues.set(values.id, values as RecipeCuisine);
 				return Array.from(mapValues.values());
 			});
 		},
