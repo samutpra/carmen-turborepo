@@ -230,8 +230,9 @@
 	"del_catetory_success": "ลบสินค้าเรียบร้อยแล้ว",
 	"fail_del_cat": "ไม่สามารถลบหมวดหมู่ได้",
 	"fail_edit_cat": "ไม่สามารถอัพเดตหมวดหมู่ได้",
-	"department_label": "แผนก",
 	"del_store_success": "ลบตำแหน่งร้านค้าสำเร็จแล้ว",
 	"fail_del_store": "ไม่สามารถลบตำแหน่งร้านค้าได้",
-	"refresh_exchange_rate": "รีเฟรชอัตราแลกเปลี่ยน"
+	"refresh_exchange_rate": "รีเฟรชอัตราแลกเปลี่ยน",
+	"department_label": "แผนก",
+	"recipe_cuisine_types": "สูตรอาหาร ประเภทอาหาร"
 }

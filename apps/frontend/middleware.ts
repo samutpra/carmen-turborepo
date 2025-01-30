@@ -16,7 +16,41 @@ import { middleware as i18nMiddleware } from '@/lib/i18n';
 const RATE_LIMIT_WINDOW = 1000; // 1 second
 const requestTimes: { [key: string]: number[] } = {};
 
-// Function to check rate limit
+// Important frontend paths that we want to log
+// const IMPORTANT_PATHS = [
+// 	'/sign-in',
+// 	'/dashboard',
+// 	'/api/auth/signin',
+// 	'/api/auth/signout',
+// 	'/profile',
+// 	'/settings'
+// ];
+
+const shouldLogPath = (pathname: string): boolean => {
+
+	const skipPaths = [
+		'/_next',
+		'/favicon.ico',
+		'/static',
+		'/images',
+		'/assets',
+		'/api/produce', // Skip logging API calls to prevent infinite loop
+		'.js',
+		'.css',
+		'.ico',
+		'.png',
+		'.jpg',
+		'.svg',
+		'.json',
+		'.woff',
+		'.woff2'
+	];
+
+	return !skipPaths.some(path => 
+		pathname.startsWith(path) || pathname.endsWith(path)
+	);
+};
+
 const isRateLimited = (identifier: string): boolean => {
 	const now = Date.now();
 	const windowStart = now - RATE_LIMIT_WINDOW;
@@ -35,10 +69,16 @@ const isRateLimited = (identifier: string): boolean => {
 // Function to send logs to Kafka
 const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 	try {
-		const identifier = `${request.method}-${request.nextUrl.pathname}`;
+		const pathname = request.nextUrl.pathname;
+		const identifier = `${request.method}-${pathname}`;
 		
 		// Skip if rate limited
 		if (isRateLimited(identifier)) {
+			return;
+		}
+
+		// Check if we should log this path
+		if (!shouldLogPath(pathname)) {
 			return;
 		}
 
@@ -46,26 +86,26 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 		const host = request.headers.get('host') || 'localhost:3500';
 		const baseUrl = `${protocol}://${host}`;
 
-		// Additional paths to skip logging
-		const skipPaths = [
-			'/_next',
-			'/favicon.ico',
-			'/static',
-			'/images',
-			'/assets',
-			'/api/produce' // Skip logging API calls to prevent infinite loop
-		];
+		// Add user session info if available
+		const sessionId = request.cookies.get('session-id')?.value;
+		const userId = request.cookies.get('user-id')?.value;
 
-		if (skipPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
-			return;
-		}
+		// Enhance log message with additional context
+		const enhancedLogMessage = {
+			...JSON.parse(logMessage),
+			sessionId,
+			userId,
+			userAgent: request.headers.get('user-agent'),
+			referer: request.headers.get('referer'),
+			clientIp: request.headers.get('x-forwarded-for') || request.ip
+		};
 
 		const response = await fetch(`${baseUrl}/api/produce`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ message: logMessage }),
+			body: JSON.stringify({ message: JSON.stringify(enhancedLogMessage) }),
 		});
 
 		if (!response.ok) {

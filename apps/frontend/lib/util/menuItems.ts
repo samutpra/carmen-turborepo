@@ -194,10 +194,26 @@ export const menuItems = [
 				name: `${m.recipes_management()}`,
 				path: '/operational-planning/recipes-management',
 				subItems: [
-					{ name: `${m.recipe_library()}`, path: "/operational-planning/recipe-management/recipes" },
-					{ name: `${m.categories()}`, path: "/operational-planning/recipe-management/categories" },
-					{ name: `${m.costing()}`, path: "/operational-planning/recipe-management/costing" },
-					{ name: `${m.media_gallery()}`, path: "/operational-planning/recipe-management/media" },
+					{
+						name: `${m.recipe_library()}`,
+						path: '/operational-planning/recipe-management/recipes',
+					},
+					{
+						name: `${m.categories()}`,
+						path: '/operational-planning/recipe-management/categories',
+					},
+					{
+						name: `${m.recipe_cuisine_types()}`,
+						path: '/operational-planning/recipe-management/cuisine-types',
+					},
+					{
+						name: `${m.costing()}`,
+						path: '/operational-planning/recipe-management/costing',
+					},
+					{
+						name: `${m.media_gallery()}`,
+						path: '/operational-planning/recipe-management/media',
+					},
 				],
 				visible: true,
 				enabled: true,

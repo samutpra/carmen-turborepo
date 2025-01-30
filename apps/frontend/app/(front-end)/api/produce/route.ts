@@ -2,17 +2,14 @@ import { KafkaClient, Producer, ProduceRequest } from 'kafka-node';
 import { NextRequest, NextResponse } from 'next/server';
 import KAFKA_CONFIG from '@/lib/util/kafka.config';
 
-// Singleton instances
 let producer: Producer | null = null;
 let client: KafkaClient | null = null;
 
-// Initialize Kafka client and producer
 const initializeProducer = async (): Promise<Producer> => {
 	if (!client || !producer) {
 		client = new KafkaClient({ kafkaHost: KAFKA_CONFIG.host });
 		producer = new Producer(client);
 
-		// Wait for producer to be ready
 		await new Promise<void>((resolve, reject) => {
 			const timeoutId = setTimeout(() => {
 				reject(new Error('Producer initialization timeout'));
@@ -29,7 +26,6 @@ const initializeProducer = async (): Promise<Producer> => {
 			});
 		});
 
-		// Graceful shutdown
 		process.on('SIGTERM', () => {
 			if (producer) {
 				producer.close(() => {
@@ -42,14 +38,12 @@ const initializeProducer = async (): Promise<Producer> => {
 	return producer;
 };
 
-// Validate message
 const validateMessage = (message: unknown): message is string => {
 	return typeof message === 'string' && message.trim().length > 0;
 };
 
 export const POST = async (req: NextRequest) => {
 	try {
-		// Parse and validate request body
 		const body = await req.json();
 
 		if (!validateMessage(body.message)) {
@@ -62,10 +56,8 @@ export const POST = async (req: NextRequest) => {
 			);
 		}
 
-		// Initialize producer
 		const producer = await initializeProducer();
 
-		// Prepare message payload
 		const payloads: ProduceRequest[] = [
 			{
 				topic: KAFKA_CONFIG.topic,
@@ -73,7 +65,6 @@ export const POST = async (req: NextRequest) => {
 			},
 		];
 
-		// Send message
 		const result = await new Promise<{
 			success: boolean;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,7 +94,6 @@ export const POST = async (req: NextRequest) => {
 
 		console.log('kafka data', data);
 
-		// Return success response
 		return NextResponse.json(
 			{
 				data: data,

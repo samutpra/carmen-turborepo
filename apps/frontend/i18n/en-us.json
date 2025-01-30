@@ -233,5 +233,6 @@
 	"fail_edit_cat": "Failed to update category",
 	"del_store_success": "Store location deleted successfully",
 	"fail_del_store": "Failed to delete store location",
-	"refresh_exchange_rate": "Refresh Exchange Rate"
+	"refresh_exchange_rate": "Refresh Exchange Rate",
+	"recipe_cuisine_types": "Recipe Cuisine Types"
 }
