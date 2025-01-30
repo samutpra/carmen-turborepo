@@ -206,14 +206,6 @@ export const menuItems = [
 						name: `${m.recipe_cuisine_types()}`,
 						path: '/operational-planning/recipe-management/cuisine-types',
 					},
-					{
-						name: `${m.costing()}`,
-						path: '/operational-planning/recipe-management/costing',
-					},
-					{
-						name: `${m.media_gallery()}`,
-						path: '/operational-planning/recipe-management/media',
-					},
 				],
 				visible: true,
 				enabled: true,
