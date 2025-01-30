@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { mockCuisines } from '../mock-data';
-import { RecipeCuisine } from '@/dtos/cuisine-types.dto';
+import { mockCategories } from '../mock-data';
+import { RecipeCategory } from '@/dtos/recipe-category.dto';
 
-interface CuisineTypesResponse {
+interface RecipeCategoryResponse {
 	success: boolean;
-	data: RecipeCuisine[];
+	data: RecipeCategory[];
 	message?: string;
 }
 
-export async function GET(): Promise<NextResponse<CuisineTypesResponse>> {
+export async function GET(): Promise<NextResponse<RecipeCategoryResponse>> {
 	try {
 		return NextResponse.json({
 			success: true,
-			data: mockCuisines,
+			data: mockCategories,
 		});
 	} catch (error) {
 		console.error('Error fetching cuisine types:', error);
