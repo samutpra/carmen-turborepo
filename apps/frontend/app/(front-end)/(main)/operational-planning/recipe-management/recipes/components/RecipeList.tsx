@@ -1,13 +1,13 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
-import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { toastError } from '@/components/ui-custom/Toast';
 import { Button } from '@/components/ui/button';
 import { RecipeCreateModel } from '@/dtos/recipe.dto';
 import { useURL } from '@/hooks/useURL';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { FileDown, Printer, Plus, LayoutGrid, LayoutList } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as m from '@/paraglide/messages.js';
 import { Link } from '@/lib/i18n';
 import SearchForm from '@/components/ui-custom/SearchForm';
@@ -101,26 +101,6 @@ const RecipeList = () => {
 
 		fetchRecipes();
 	}, []);
-
-	const handleSuccess = useCallback(
-		(values: RecipeCreateModel) => {
-			setRecipeData((prev) => {
-				if (!values.id) return prev;
-				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				mapValues.set(values.id, values);
-				return Array.from(mapValues.values());
-			});
-		},
-		[setRecipeData]
-	);
-
-	const handleDelete = useCallback(
-		async (id: string) => {
-			alert(`delete ${id}`);
-			toastSuccess({ message: 'Recipe deleted successfully' });
-		},
-		[token, tenantId, setRecipeData]
-	);
 
 	if (error) {
 		return <ErrorCard message={error} data-id="recipe-error-card" />;
