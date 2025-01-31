@@ -19,11 +19,7 @@ const RecipeIDPage = () => {
 					method: 'GET',
 					cache: 'no-store',
 				});
-
-				console.log('response', response);
-
 				const data = await response.json();
-
 				if (data.success) {
 					setRecipe(data.data);
 				}
@@ -39,7 +35,6 @@ const RecipeIDPage = () => {
 		}
 	}, [id]);
 
-	console.log('recipe', recipe);
 	return <RecipeDetails recipe={recipe} isLoading={isLoading} />;
 };
 
