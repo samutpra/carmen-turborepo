@@ -1,124 +1,87 @@
-"use client";
-import React, { useState } from 'react'
-import { Recipe } from '../mockData'
-import { Card } from '@/components/ui/card';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { RecipeCreateModel } from '@/dtos/recipe.dto';
+import { CheckCircle2, XCircle } from 'lucide-react';
+import Image from 'next/image';
 import { Link } from '@/lib/i18n';
-import { Button } from '@/components/ui/button';
-import { Archive, Copy, Edit2, Loader2 } from 'lucide-react';
 
-interface RecipeCardProps {
-    recipe: Recipe
-}
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const handleClone = async () => {
-        setIsLoading(true)
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            console.log("Cloning recipe:", recipe.id)
-            // In real implementation, this would create a new recipe with copied data
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    const handleArchive = async () => {
-        setIsLoading(true)
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            console.log("Archiving recipe:", recipe.id)
-            // In real implementation, this would update the recipe status
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    return (
-        <Card className="overflow-hidden">
-            <div className="aspect-video relative">
-                <img
-                    src={recipe.thumbnail || "../images/placeholder-recipe.jpg"}
-                    alt={recipe.name}
-                    className="object-cover w-full h-full"
-                />
-                <Badge
-                    className="absolute top-2 right-2"
-                    variant={recipe.status === "active" ? "default" : "secondary"}
-                >
-                    {recipe.status}
-                </Badge>
-            </div>
-            <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{recipe.name}</h3>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex justify-between text-xs">
-                        <span>Category:</span>
-                        <span className="font-medium text-foreground">{recipe.category}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                        <span>Cost/Portion:</span>
-                        <span className="font-medium text-foreground">
-                            ${recipe.costPerPortion.toFixed(2)}
-                        </span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                        <span>Selling Price:</span>
-                        <span className="font-medium text-foreground">
-                            ${recipe.sellingPrice.toFixed(2)}
-                        </span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                        <span>Margin:</span>
-                        <span className="font-medium text-foreground">
-                            {recipe.grossMargin.toFixed(1)}%
-                        </span>
-                    </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                    <Link
-                        href={`/operational-planning/recipe-management/recipes/${recipe.id}`}
-                        className="flex-1"
-                    >
-                        <Button variant="outline" className="w-full" size={'sm'}>
-                            <Edit2 className="h-4 w-4 mr-2" />
-                            Edit
-                        </Button>
-                    </Link>
-                    <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={handleClone}
-                        disabled={isLoading}
-                        size={'sm'}
-                    >
-                        {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : (
-                            <Copy className="h-4 w-4 mr-2" />
-                        )}
-                        Clone
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={handleArchive}
-                        disabled={isLoading}
-                        size={'sm'}
-                    >
-                        {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : (
-                            <Archive className="h-4 w-4 mr-2" />
-                        )}
-                        Archive
-                    </Button>
-                </div>
-            </div>
-        </Card>
-    )
+interface RecipeCardCompactProps {
+	recipe: RecipeCreateModel;
 }
 
-export default RecipeCard
+const RecipeCard: React.FC<RecipeCardCompactProps> = ({ recipe }) => {
+	return (
+		<Card className="overflow-hidden transition-all hover:ring-2 hover:ring-primary/50 group-hover:shadow-lg">
+			<Link
+				href={`/operational-planning/recipe-management/recipes/${recipe.id}`}
+			>
+				<div className="relative">
+					<Image
+						src={recipe.image}
+						alt={recipe.name}
+						width={300}
+						height={300}
+						priority={false}
+					/>
+					<div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+					<Badge
+						variant={recipe.status === 'published' ? 'default' : 'secondary'}
+						className="absolute top-2 right-2"
+					>
+						{recipe.status === 'published' ? (
+							<CheckCircle2 className="h-3 w-3 mr-1" />
+						) : (
+							<XCircle className="h-3 w-3 mr-1" />
+						)}
+						{recipe.status}
+					</Badge>
+				</div>
+				<div className="p-4">
+					<h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+						{recipe.name}
+					</h3>
+					<div className="mt-2 text-sm text-muted-foreground">
+						<div className="flex justify-between">
+							<span>Cost/Portion</span>
+							<span className="font-medium">
+								${recipe.costPerPortion.toFixed(2)}
+							</span>
+						</div>
+						<div className="flex justify-between">
+							<span>Selling Price</span>
+							<span className="font-medium">
+								${recipe.sellingPrice.toFixed(2)}
+							</span>
+						</div>
+						<div className="flex justify-between">
+							<span>Margin</span>
+							<span className="font-medium">
+								{recipe.grossMargin.toFixed(1)}%
+							</span>
+						</div>
+						<div className="text-sm text-muted-foreground">
+							<div className="flex items-center gap-2">
+								<span>CO₂eq per Portion:</span>
+								<span className="font-medium">{recipe.carbonFootprint} kg</span>
+							</div>
+						</div>
+					</div>
+					<div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+						<Badge variant="secondary" className="font-normal">
+							{recipe.category}
+						</Badge>
+						{recipe.cuisine && (
+							<Badge variant="secondary" className="font-normal">
+								{recipe.cuisine}
+							</Badge>
+						)}
+					</div>
+				</div>
+			</Link>
+		</Card>
+	);
+};
+
+export default RecipeCard;

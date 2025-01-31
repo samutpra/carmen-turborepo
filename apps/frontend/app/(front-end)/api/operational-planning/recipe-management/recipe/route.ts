@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { mockCategories } from '../mock-data';
+import { mockRecipes } from '../mock-data';
 
 export async function GET() {
 	try {
 		return NextResponse.json({
 			success: true,
-			data: mockCategories,
+			data: mockRecipes,
 		});
 	} catch (error) {
 		console.error('Error fetching cuisine types:', error);
@@ -13,7 +13,7 @@ export async function GET() {
 			{
 				success: false,
 				data: [],
-				message: 'Failed to fetch cuisine types',
+				message: 'Failed to fetch recipes',
 			},
 			{ status: 500 }
 		);

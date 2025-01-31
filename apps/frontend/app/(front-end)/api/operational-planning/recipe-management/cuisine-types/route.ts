@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server';
 import { mockCuisines } from '../mock-data';
-import { RecipeCuisine } from '@/dtos/cuisine-types.dto';
 
-interface CuisineTypesResponse {
-	success: boolean;
-	data: RecipeCuisine[];
-	message?: string;
-}
-
-export async function GET(): Promise<NextResponse<CuisineTypesResponse>> {
+export async function GET() {
 	try {
 		return NextResponse.json({
 			success: true,
