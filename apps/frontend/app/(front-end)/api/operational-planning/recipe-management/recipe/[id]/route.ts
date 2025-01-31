@@ -7,10 +7,7 @@ export async function GET(
 ) {
 	try {
 		const { id } = params;
-		console.log('id', id);
 		const recipe = mockRecipes.find((r) => r.id === id);
-
-		console.log('recipe', recipe);
 
 		if (!recipe) {
 			return NextResponse.json(
