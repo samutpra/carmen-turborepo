@@ -1,5 +1,5 @@
 'use client';
-import { useAuth } from '@/app/context/AuthContext';
+
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { toastError } from '@/components/ui-custom/Toast';
 import { Button } from '@/components/ui/button';
@@ -66,9 +66,6 @@ const recipeFields: FieldConfig<RecipeCreateModel>[] = [
 ];
 
 const RecipeList = () => {
-	const { accessToken } = useAuth();
-	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [recipeData, setRecipeData] = useState<RecipeCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
