@@ -523,7 +523,7 @@ TABLE TENANT_DUMMY.tb_unit {
 
 Enum TENANT_DUMMY.enum_unit_type {
   order_unit
-  inventory_unit
+  count_unit
   recipe_unit
 }
 

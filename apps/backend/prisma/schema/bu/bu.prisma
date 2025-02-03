@@ -859,7 +859,7 @@ enum enum_purchase_request_workflow_status {
 
 enum enum_unit_type {
   order_unit
-  inventory_unit
+  count_unit
   recipe_unit
 }
 

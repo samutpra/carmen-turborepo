@@ -14,7 +14,7 @@ CREATE TYPE "enum_purchase_request_doc_status" AS ENUM ('draft', 'work_in_proces
 CREATE TYPE "enum_purchase_request_workflow_status" AS ENUM ('draft', 'pending', 'review', 'accept');
 
 -- CreateEnum
-CREATE TYPE "enum_unit_type" AS ENUM ('order_unit', 'inventory_unit', 'recipe_unit');
+CREATE TYPE "enum_unit_type" AS ENUM ('order_unit', 'count_unit', 'recipe_unit');
 
 -- CreateEnum
 CREATE TYPE "enum_activity_entity_type" AS ENUM ('user', 'business_unit', 'product', 'location', 'department', 'unit', 'currency', 'exchange_rate', 'menu', 'delivery_point', 'purchase_request', 'purchase_request_item', 'purchase_order', 'purchase_order_item', 'inventory_transaction', 'inventory_adjustment', 'store_requisition', 'store_requisition_item', 'stock_in', 'stock_out', 'stock_adjustment', 'stock_transfer', 'stock_count', 'stock_take', 'stock_take_item', 'other');

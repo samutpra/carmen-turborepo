@@ -65,7 +65,7 @@ CREATE TYPE "TENANT_DUMMY"."enum_location_status_type" AS ENUM (
 
 CREATE TYPE "TENANT_DUMMY"."enum_unit_type" AS ENUM (
   'order_unit',
-  'inventory_unit',
+  'count_unit',
   'recipe_unit'
 );
 
@@ -181,7 +181,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_password" (
 CREATE TABLE "CARMEN_SYSTEM"."tb_user_login_session" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "token" text UNIQUE NOT NULL,
-  "token_type" "CARMEN_SYSTEM"."enum_token_type" NOT NULL DEFAULT 'access_token',
+  "token_type" "CARMEN_SYSTEM".enum_token_type NOT NULL DEFAULT 'access_token',
   "user_id" uuid NOT NULL,
   "expired_on" timestamptz NOT NULL DEFAULT (now() + '1 day'::interval)
 );
@@ -262,7 +262,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_subscription" (
   "subscription_number" varchar NOT NULL,
   "start_date" timestamptz NOT NULL,
   "end_date" timestamptz NOT NULL,
-  "status" "CARMEN_SYSTEM"."enum_subscription_status" NOT NULL,
+  "status" "CARMEN_SYSTEM".enum_subscription_status NOT NULL,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -349,8 +349,8 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_notification" (
 
 CREATE TABLE "TENANT_DUMMY"."tb_activity" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
-  "action" "TENANT_DUMMY"."enum_activity_action",
-  "entity_type" "TENANT_DUMMY"."enum_activity_entity_type",
+  "action" "TENANT_DUMMY".enum_activity_action,
+  "entity_type" "TENANT_DUMMY".enum_activity_entity_type,
   "entity_id" uuid,
   "actor_id" uuid,
   "meta_data" json,
@@ -406,7 +406,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_exchange_rate" (
 CREATE TABLE "TENANT_DUMMY"."tb_location" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "location_type" "TENANT_DUMMY"."enum_location_type" NOT NULL,
+  "location_type" "TENANT_DUMMY".enum_location_type NOT NULL,
   "description" text,
   "info" json,
   "is_active" bool DEFAULT true,
@@ -441,7 +441,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_unit" (
 CREATE TABLE "TENANT_DUMMY"."tb_unit_conversion" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "product_id" uuid,
-  "unit_type" "TENANT_DUMMY"."enum_unit_type" NOT NULL,
+  "unit_type" "TENANT_DUMMY".enum_unit_type NOT NULL,
   "from_unit_id" uuid,
   "from_unit_qty" numeric(20,5) DEFAULT 1,
   "to_unit_id" uuid,
@@ -472,7 +472,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product" (
   "local_name" varchar,
   "description" text,
   "primary_unit_id" uuid NOT NULL,
-  "product_status_type" "TENANT_DUMMY"."enum_product_status_type" NOT NULL DEFAULT 'active',
+  "product_status_type" "TENANT_DUMMY".enum_product_status_type NOT NULL DEFAULT 'active',
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -485,7 +485,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product_info" (
   "product_item_group_id" uuid,
   "is_ingredients" bool DEFAULT false,
   "price" numeric(20,5),
-  "tax_type" "TENANT_DUMMY"."enum_tax_type" DEFAULT 'vat',
+  "tax_type" "TENANT_DUMMY".enum_tax_type DEFAULT 'vat',
   "tax_rate" numeric(15,5) DEFAULT 0,
   "price_deviation_limit" numeric(20,5) DEFAULT 10,
   "info" json,
@@ -542,7 +542,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product_item_group" (
 CREATE TABLE "TENANT_DUMMY"."tb_workflow" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "workflow_type" "TENANT_DUMMY"."enum_workflow_type" NOT NULL,
+  "workflow_type" "TENANT_DUMMY".enum_workflow_type NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -559,7 +559,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_purchase_request" (
   "workflow_obj" json,
   "workflow_history" json,
   "current_workflow_status" varchar,
-  "purchase_request_status" "TENANT_DUMMY"."enum_purchase_request_doc_status" DEFAULT 'draft',
+  "purchase_request_status" "TENANT_DUMMY".enum_purchase_request_doc_status DEFAULT 'draft',
   "requestor_id" uuid,
   "department_id" uuid,
   "job_code" varchar,
@@ -607,7 +607,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_purchase_request_detail" (
 CREATE TABLE "TENANT_DUMMY"."tb_purchase_order" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "purchase_order_status" "TENANT_DUMMY"."enum_purchase_order_doc_status" DEFAULT 'open',
+  "purchase_order_status" "TENANT_DUMMY".enum_purchase_order_doc_status DEFAULT 'open',
   "description" text,
   "order_date" timestamptz,
   "delivery_date" timestamptz,
@@ -694,7 +694,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_price_list" (
 CREATE TABLE "TENANT_DUMMY"."tb_vendor_contact" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "contact_type" "TENANT_DUMMY"."enum_vendor_contact_type" NOT NULL,
+  "contact_type" "TENANT_DUMMY".enum_vendor_contact_type NOT NULL,
   "description" text,
   "is_active" bool DEFAULT true,
   "info" json,
@@ -707,7 +707,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_vendor_contact" (
 CREATE TABLE "TENANT_DUMMY"."tb_vendor_address" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "vendor_id" uuid,
-  "address_type" "TENANT_DUMMY"."enum_vendor_address_type",
+  "address_type" "TENANT_DUMMY".enum_vendor_address_type,
   "address" json,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -732,7 +732,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_product_tb_vendor" (
 CREATE TABLE "TENANT_DUMMY"."tb_inventory_transaction" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar UNIQUE NOT NULL,
-  "inventory_doc_type" "TENANT_DUMMY"."enum_inventory_doc_type" NOT NULL,
+  "inventory_doc_type" "TENANT_DUMMY".enum_inventory_doc_type NOT NULL,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -951,7 +951,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_jv_header" (
   "jv_number" varchar(255) NOT NULL,
   "jv_date" timestamptz NOT NULL,
   "jv_description" text,
-  "jv_status" "TENANT_DUMMY"."enum_jv_status" NOT NULL,
+  "jv_status" "TENANT_DUMMY".enum_jv_status NOT NULL,
   "workflow" json,
   "info" json,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
