@@ -48,7 +48,7 @@ const CertificationsSection: React.FC<Props> = ({ isEdit }) => {
             </div>
             <Table>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className='text-xs'>
                         <TableHead>Name</TableHead>
                         <TableHead>Issuer</TableHead>
                         <TableHead>Valid Until</TableHead>
@@ -58,7 +58,7 @@ const CertificationsSection: React.FC<Props> = ({ isEdit }) => {
                 </TableHeader>
                 <TableBody>
                     {certifications.map((cert) => (
-                        <TableRow key={cert.id}>
+                        <TableRow key={cert.id} className='text-xs'>
                             <TableCell className="font-medium">{cert.name}</TableCell>
                             <TableCell>{cert.issuer}</TableCell>
                             <TableCell>{new Date(cert.validUntil).toLocaleDateString()}</TableCell>
@@ -70,7 +70,7 @@ const CertificationsSection: React.FC<Props> = ({ isEdit }) => {
                             </TableCell>
                             <TableCell>
                                 {isEdit && (
-                                    <div className="flex gap-2">
+                                    <div className="flex">
                                         <CertificateForm mode="edit"
                                             defaultValues={cert}
                                             onSuccess={handleSuccess} />

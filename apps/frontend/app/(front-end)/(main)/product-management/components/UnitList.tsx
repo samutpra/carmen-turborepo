@@ -60,7 +60,7 @@ const UnitList = () => {
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchUnits(token, tenantId, { search, status });
+			const data = await fetchUnits(token, tenantId, { search, status, page });
 			setUnits(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
@@ -73,7 +73,7 @@ const UnitList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page]);
 
 	const handleSuccess = useCallback(
 		(updatedUnit: UnitCreateModel) => {

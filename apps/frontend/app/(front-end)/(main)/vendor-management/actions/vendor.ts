@@ -4,7 +4,7 @@ import { formType } from '@/types/form_type';
 export const fetchAllVendors = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string } = {}
+	params: { search?: string; status?: string; page?: string } = {}
 ) => {
 	try {
 		const query = new URLSearchParams();
@@ -15,6 +15,10 @@ export const fetchAllVendors = async (
 
 		if (params.status) {
 			query.append('filter[is_active:bool]', params.status);
+		}
+
+		if (params.page) {
+			query.append('page', params.page);
 		}
 
 		const url = `/api/vendor-management/vendor?${query}`;
@@ -33,9 +37,7 @@ export const fetchAllVendors = async (
 			throw new Error('Failed to fetch vendors');
 		}
 		const result = await response.json();
-		console.log(result);
-
-		return result;
+		return result.data;
 	} catch (error) {
 		console.error('Error fetching vendors:', error);
 		throw error;

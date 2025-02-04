@@ -69,11 +69,11 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
             <DialogTrigger asChild>
                 <Button
                     variant={mode === 'add' ? 'default' : 'ghost'}
-                    size={mode === 'add' ? 'default' : 'sm'}
+                    size={'sm'}
                 >
                     {mode === 'add' ? (
                         <>
-                            <PlusIcon className="mr-2 h-4 w-4" />
+                            <PlusIcon className="h-4 w-4" />
                             Add Address
                         </>
                     ) : (
@@ -151,12 +151,12 @@ const AddressForm: React.FC<Props> = ({ mode, defaultValues, onSuccess }) => {
                         />
                         <DialogFooter>
                             <div className="flex-end gap-2">
-                                <Button type="button" variant="outline" onClick={handleClose}>
+                                <Button type="button" variant="outline" onClick={handleClose} size={'sm'}>
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-
+                                    size={'sm'}
                                 >
                                     {mode === 'add' ? 'Add' : 'Save'}
                                 </Button>

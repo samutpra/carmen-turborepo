@@ -119,7 +119,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 	);
 
 	const actionsButton = (
-		<div className="flex justify-center gap-2">
+		<div className="flex justify-center space-x-2">
 			{mode === formType.EDIT ? (
 				isEditing ? (
 					<>
@@ -170,7 +170,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 			) : (
 				<Button onClick={form.handleSubmit(onSubmit)}>
 					<Save className="h-4 w-4 mr-2" />
-					Save
+					{m.save_text()}
 				</Button>
 			)}
 		</div>

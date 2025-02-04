@@ -14,11 +14,15 @@ import {
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
+import PaginationComponent from '@/components/PaginationComponent';
 
 interface VendorDisplayProps {
     vendors: VendorCreateModel[];
+    page: number;
+    totalPage: number;
+    handlePageChange: (newPage: number) => void;
 }
-const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
+const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors, page, totalPage, handlePageChange }) => {
 
     return (
         <>
@@ -30,23 +34,23 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                             <CardContent className="p-4">
                                 <div className="space-y-3">
                                     <div className="grid grid-cols-10 gap-4">
-                                        <span className="text-sm text-muted-foreground col-span-3">
+                                        <span className="text-xs text-muted-foreground col-span-3">
                                             {m.vendor_name_label()}
                                         </span>
-                                        <span className="text-sm font-medium col-span-7">
+                                        <span className="text-xs font-medium col-span-7">
                                             {vendor.name}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-10 gap-4">
-                                        <span className="text-sm text-muted-foreground col-span-3">
+                                        <span className="text-xs text-muted-foreground col-span-3">
                                             {m.description()}
                                         </span>
-                                        <span className="text-sm font-medium col-span-7">
+                                        <span className="text-xs font-medium col-span-7">
                                             {vendor.description}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-10 gap-4">
-                                        <span className="text-sm text-muted-foreground col-span-3">
+                                        <span className="text-xs text-muted-foreground col-span-3">
                                             {m.status_text()}
                                         </span>
                                         <div className="col-span-7">
@@ -76,14 +80,14 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                         <TableRow>
                             <TableHead className="w-[50px]">#</TableHead>
                             <TableHead className='w-[200px]'>{m.vendor_name_label()}</TableHead>
-                            <TableHead className='w-[200px]'>{m.description()}</TableHead>
+                            <TableHead className='w-[400px]'>{m.description()}</TableHead>
                             <TableHead>{m.status_text()}</TableHead>
                             <TableHead className="text-right">{m.action_text()}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {vendors.map((vendor, index) => (
-                            <TableRow key={vendor.id}>
+                            <TableRow key={vendor.id} className='text-xs'>
                                 <TableCell className="font-medium">{index + 1}</TableCell>
                                 <TableCell>{vendor.name}</TableCell>
                                 <TableCell>{vendor.description}</TableCell>
@@ -103,6 +107,11 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({ vendors }) => {
                         ))}
                     </TableBody>
                 </Table>
+                <PaginationComponent
+                    currentPage={page}
+                    totalPages={totalPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </>
     )

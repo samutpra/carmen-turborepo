@@ -34,6 +34,7 @@ const VendorInfo: React.FC<Props> = ({ form, isInputDisabled, onSubmit }) => {
 									{...field}
 									disabled={isInputDisabled}
 									placeholder="Enter vendor name"
+									className='text-xs'
 								/>
 							</FormControl>
 							<FormMessage />
@@ -51,6 +52,7 @@ const VendorInfo: React.FC<Props> = ({ form, isInputDisabled, onSubmit }) => {
 									{...field}
 									disabled={isInputDisabled}
 									placeholder="Enter vendor description"
+									className='text-xs'
 								/>
 							</FormControl>
 							<FormMessage />

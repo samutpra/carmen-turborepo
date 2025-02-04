@@ -42,12 +42,16 @@ const VendorList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchAllVendors(token, tenantId, { search, status });
-			setVendors(data.data.data);
+			const data = await fetchAllVendors(token, tenantId, { search, status, page });
+			setVendors(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -57,11 +61,17 @@ const VendorList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page]);
 
 	if (error) {
 		return <ErrorCard message={error} />;
 	}
+
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
 
 	const title = `${m.vendors_title()}`;
 
@@ -108,7 +118,14 @@ const VendorList = () => {
 		</div>
 	);
 
-	const content = <VendorDisplay vendors={vendors} />;
+	const content = (
+		<VendorDisplay
+			vendors={vendors}
+			page={+page}
+			totalPage={+pages}
+			handlePageChange={handlePageChange}
+		/>
+	);
 
 	return (
 		<DataDisplayTemplate
