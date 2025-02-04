@@ -322,20 +322,8 @@ export const menuItems = [
 				enabled: true,
 			},
 			{
-				name: `${m.currency_management()}`,
-				path: '/finance/currency-management',
-				visible: true,
-				enabled: true,
-			},
-			{
 				name: `${m.exchange_rates()}`,
 				path: '/finance/exchange-rates',
-				visible: true,
-				enabled: true,
-			},
-			{
-				name: `${m.department_and_cost_center()}`,
-				path: '/finance/department-list',
 				visible: true,
 				enabled: true,
 			},
