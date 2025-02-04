@@ -61,7 +61,7 @@ const CurrencyList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [page, setPage] = useURL('sort');
+	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
