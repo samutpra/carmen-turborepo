@@ -58,24 +58,29 @@ const DepartmentList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 
-
-	const fetchData = useCallback(async () => {
-		setIsLoading(true);
+	const fetchData = async () => {
 		try {
-			const data = await fetchDepartments(token, tenantId, { search, status, page });
+			setIsLoading(true);
+			const data = await fetchDepartments(token, tenantId, {
+				search,
+				status,
+				page,
+			});
 			setDepartments(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'An error occurred');
+		} catch (error) {
+			setError(error instanceof Error ? error.message : 'An error occurred');
+			toastError({ message: 'Failed to fetch departments' });
 		} finally {
 			setIsLoading(false);
 		}
-	}, [token, tenantId, search, status]);
+	};
+
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page]);
 
 	const handleSuccess = useCallback((values: DepartmentCreateModel) => {
 		setDepartments((prev) => {
