@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Update
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/v1/departments/5850fe5a-83a7-4b5d-8eda-cbd63f7497d1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "finance xx",
+    "description": "finance xxx Description",
+    "is_active": true
+  }
+}

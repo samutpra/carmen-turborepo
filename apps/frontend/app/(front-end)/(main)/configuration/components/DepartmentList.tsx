@@ -58,11 +58,12 @@ const DepartmentList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 
+
 	const fetchData = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const data = await fetchDepartments(token, tenantId, { search, status });
-			setDepartments(data);
+			const data = await fetchDepartments(token, tenantId, { search, status, page });
+			setDepartments(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
 		} catch (err) {

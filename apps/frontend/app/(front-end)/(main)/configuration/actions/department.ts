@@ -4,7 +4,7 @@ import { formType } from '@/types/form_type';
 export const fetchDepartments = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string } = {}
+	params: { search?: string; status?: string, page?: string } = {}
 ) => {
 	try {
 		if (!token) {
@@ -15,6 +15,10 @@ export const fetchDepartments = async (
 
 		if (params.search) {
 			query.append('search', params.search);
+		}
+
+		if (params.page) {
+			query.append('page', params.page);
 		}
 
 		if (params.status) {
@@ -38,7 +42,9 @@ export const fetchDepartments = async (
 			throw new Error('Failed to fetch departments');
 		}
 		const result = await response.json();
-		return result.data;
+		console.log('result', result);
+
+		return result;
 	} catch (error) {
 		console.error('Error fetching departments:', error);
 		throw error;

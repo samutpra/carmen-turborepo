@@ -60,6 +60,7 @@ interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 	page: number;
 	totalPage: number;
 	setPage: (newPage: string) => void;
+	pages?: string;
 }
 
 const DisplayComponent = <T extends Record<string, FieldValue>>({
@@ -78,6 +79,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	page,
 	totalPage,
 	setPage,
+	pages
 }: DisplayComponentProps<T>): React.ReactElement => {
 	const renderField = (field: FieldConfig<T>, item: T): React.ReactNode => {
 		const value = item[field.key];
@@ -142,8 +144,14 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 		</div>
 	);
 
+	// const handlePageChange = (newPage: number) => {
+	// 	if (newPage < 1 || newPage > totalPage) return;
+	// 	setPage(newPage.toString());
+	// };
+
 	const handlePageChange = (newPage: number) => {
-		if (newPage < 1 || newPage > totalPage) return;
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
 		setPage(newPage.toString());
 	};
 
