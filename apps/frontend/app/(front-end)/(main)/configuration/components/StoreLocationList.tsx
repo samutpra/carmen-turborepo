@@ -123,6 +123,7 @@ const StoreLocationList = () => {
 			const data = await fetchStoreLocations(token, tenantId, {
 				search,
 				status,
+				page,
 			});
 			setStoreLocations(data.data);
 			setPage(data.pagination.page);
@@ -136,7 +137,7 @@ const StoreLocationList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page]);
 
 	const title = `${m.store_location()}`;
 

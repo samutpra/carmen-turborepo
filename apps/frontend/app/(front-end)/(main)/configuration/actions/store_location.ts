@@ -4,9 +4,13 @@ import { formType } from '@/types/form_type';
 export const fetchStoreLocations = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string } = {}
+	params: { search?: string; status?: string; page?: string } = {}
 ) => {
 	try {
+		if (!token) {
+			throw new Error('Access token is required');
+		}
+
 		const query = new URLSearchParams();
 
 		if (params.search) {
@@ -15,6 +19,10 @@ export const fetchStoreLocations = async (
 
 		if (params.status) {
 			query.append('filter[is_active:bool]', params.status);
+		}
+
+		if (params.page) {
+			query.append('page', params.page);
 		}
 
 		const url = `/api/configuration/locations?${query}`;

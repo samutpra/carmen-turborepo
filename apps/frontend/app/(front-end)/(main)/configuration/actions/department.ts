@@ -42,8 +42,6 @@ export const fetchDepartments = async (
 			throw new Error('Failed to fetch departments');
 		}
 		const result = await response.json();
-		console.log('result', result);
-
 		return result;
 	} catch (error) {
 		console.error('Error fetching departments:', error);

@@ -1,12 +1,12 @@
+import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL + '/v1/locations';
 
 export async function GET(request: NextRequest) {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 
 	const { searchParams } = new URL(request.url);
 	const search = searchParams.get('search') || '';
+	const page = searchParams.get('page') || '1';
 
 	const options = {
 		method: 'GET',
@@ -16,10 +16,10 @@ export async function GET(request: NextRequest) {
 		},
 	};
 
-	const url = `${API_URL}?search=${search}`;
+	const locationUrl = `${API_URL}/v1/locations?search=${search}&page=${page}`;
 
 	try {
-		const response = await fetch(url, options);
+		const response = await fetch(locationUrl, options);
 
 		if (!response.ok) {
 			return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 		}
 		const body = await request.json();
 
-		const response = await fetch(API_URL, {
+		const response = await fetch(API_URL + '/v1/locations', {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,

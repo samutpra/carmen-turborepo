@@ -8,9 +8,6 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const page = searchParams.get('page') || '1';
 
-    console.log('search', search);
-    console.log('page', page);
-
     const options = {
         method: 'GET',
         headers: {
