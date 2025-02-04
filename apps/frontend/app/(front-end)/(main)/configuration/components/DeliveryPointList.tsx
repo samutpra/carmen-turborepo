@@ -75,7 +75,7 @@ const DeliveryPointList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page]);
 
 	const handleSuccess = useCallback(
 		(values: DeliveryPointCreateModel) => {
