@@ -82,7 +82,7 @@ const AccountCodeMappingList = () => {
         [setAccountCodeMapping]
     );
 
-    const title = 'Account Code Mapping List';
+    const title = 'Account Code Mapping';
 
 
     const actionButtons = (
