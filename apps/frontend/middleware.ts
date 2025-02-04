@@ -26,6 +26,9 @@ const requestTimes: { [key: string]: number[] } = {};
 // 	'/settings'
 // ];
 
+// Add this type definition at the top of the file
+
+
 const shouldLogPath = (pathname: string): boolean => {
 
 	const skipPaths = [
@@ -71,7 +74,7 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 	try {
 		const pathname = request.nextUrl.pathname;
 		const identifier = `${request.method}-${pathname}`;
-		
+
 		// Skip if rate limited
 		if (isRateLimited(identifier)) {
 			return;
@@ -88,7 +91,8 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 
 		// Add user session info if available
 		const sessionId = request.cookies.get('session-id')?.value;
-		const userId = request.cookies.get('user-id')?.value;
+		const authState = localStorage.getItem('auth_state');
+		const userId = authState ? JSON.parse(authState)?.user?.id : null;
 
 		// Enhance log message with additional context
 		const enhancedLogMessage = {
@@ -97,7 +101,7 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 			userId,
 			userAgent: request.headers.get('user-agent'),
 			referer: request.headers.get('referer'),
-			clientIp: request.headers.get('x-forwarded-for') || request.ip
+			clientIp: request.headers.get('x-forwarded-for') || request.ip,
 		};
 
 		const response = await fetch(`${baseUrl}/api/produce`, {
@@ -118,89 +122,93 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-  
+
 	// Format timestamp
-	const now = new Date().toLocaleString('th-TH', {
-	  timeZone: 'Asia/Bangkok',
-	  hour: '2-digit',
-	  minute: '2-digit',
-	  second: '2-digit',
-	  day: '2-digit',
-	  month: '2-digit',
-	  year: 'numeric'
+	const now = new Date().toLocaleString('en-US', {
+		timeZone: 'Asia/Bangkok',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
 	});
-  
+
 	// Skip middleware for static files and API routes
 	if (pathname.match(/(\..*|_next|api|trpc)/)) {
-	  await sendLogToKafka(`[${now}] Skipping middleware for: ${pathname}`, request);
-	  return NextResponse.next();
+		await sendLogToKafka(
+			`[${now}] Skipping middleware for: ${pathname}`,
+			request
+		);
+		return NextResponse.next();
 	}
-  
+
 	try {
-	  // Clone request for body reading
-	  const requestClone = request.clone();
-	  let body = '';
-	  
-	  if (request.body) {
-		try {
-		  const text = await requestClone.text();
-		  if (text) {
-			body = JSON.parse(text);
-		  }
-		} catch {
-		  // Ignore body parse errors
+		// Clone request for body reading
+		const requestClone = request.clone();
+		let body = '';
+
+		if (request.body) {
+			try {
+				const text = await requestClone.text();
+				if (text) {
+					body = JSON.parse(text);
+				}
+			} catch {
+				// Ignore body parse errors
+			}
 		}
-	  }
-  
-	  const lang = i18nMiddleware.detectLanguage(request);
-	  const response = i18nMiddleware.getResponse(request, lang);
-  
-	  const tenantResponse = TenantMiddleware(request);
-	  const tenantId = tenantResponse.headers.get('x-tenant-id') || 'main';
-  
-	  // Prepare log message
-	  const importantHeaders = ['content-type', 'user-agent', 'accept-language'];
-	  const headers = Object.fromEntries(
-		Array.from(request.headers.entries())
-		  .filter(([key]) => importantHeaders.includes(key.toLowerCase()))
-	  );
-  
-	  const logData = {
-		timestamp: now,
-		method: request.method,
-		path: `${pathname}${request.nextUrl.search}`,
-		language: lang,
-		tenantId: tenantId,
-		headers: headers,
-		body: body || undefined
-	  };
-  
-	  // Send log to Kafka with request object
-	  await sendLogToKafka(JSON.stringify(logData), request);
-  
-	  // Combine headers
-	  const finalResponse = NextResponse.next();
-	  const responseHeaders = new Headers(response.headers);
-	  responseHeaders.set('x-tenant-id', tenantId);
-  
-	  responseHeaders.forEach((value, key) => {
-		finalResponse.headers.set(key, value);
-	  });
-  
-	  return finalResponse;
+
+		const lang = i18nMiddleware.detectLanguage(request);
+		const response = i18nMiddleware.getResponse(request, lang);
+
+		const tenantResponse = TenantMiddleware(request);
+		const tenantId = tenantResponse.headers.get('x-tenant-id') || 'main';
+
+		// Prepare log message
+		const importantHeaders = ['content-type', 'user-agent', 'accept-language'];
+		const headers = Object.fromEntries(
+			Array.from(request.headers.entries()).filter(([key]) =>
+				importantHeaders.includes(key.toLowerCase())
+			)
+		);
+
+		const logData = {
+			timestamp: now,
+			method: request.method,
+			path: `${pathname}${request.nextUrl.search}`,
+			language: lang,
+			tenantId: tenantId,
+			headers: headers,
+			body: body || undefined,
+		};
+
+		// Send log to Kafka with request object
+		await sendLogToKafka(JSON.stringify(logData), request);
+
+		// Combine headers
+		const finalResponse = NextResponse.next();
+		const responseHeaders = new Headers(response.headers);
+		responseHeaders.set('x-tenant-id', tenantId);
+
+		responseHeaders.forEach((value, key) => {
+			finalResponse.headers.set(key, value);
+		});
+
+		return finalResponse;
 	} catch (error) {
-	  // Log error
-	  const errorLog = {
-		timestamp: now,
-		type: 'ERROR',
-		path: pathname,
-		error: error instanceof Error ? error.message : 'Unknown error'
-	  };
-	  
-	  await sendLogToKafka(JSON.stringify(errorLog), request);
-	  return NextResponse.next();
+		// Log error
+		const errorLog = {
+			timestamp: now,
+			type: 'ERROR',
+			path: pathname,
+			error: error instanceof Error ? error.message : 'Unknown error',
+		};
+
+		await sendLogToKafka(JSON.stringify(errorLog), request);
+		return NextResponse.next();
 	}
-  }
+}
 
 
 // export async function middleware(request: NextRequest) {

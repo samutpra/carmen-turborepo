@@ -15,6 +15,7 @@ import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
 import StockCountUnit from './components/tab/StockCountUnit';
 import EnvironmentImpact from './components/tab/EnvironmentImpact';
+import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
 import { ProductInfoClient } from '@/dtos/product.dto';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
@@ -64,6 +65,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 			<Tabs defaultValue="basic">
 				<TabsList className="text-xs">
 					<TabsTrigger value="basic">Basic Info</TabsTrigger>
+					<TabsTrigger value="location">Location</TabsTrigger>
 					<TabsTrigger value="inventory">Inventory</TabsTrigger>
 					<TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
 					<TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
@@ -72,6 +74,9 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 				</TabsList>
 				<TabsContent value="basic">
 					<BasicInfo />
+				</TabsContent>
+				<TabsContent value="location">
+					<Location />
 				</TabsContent>
 				<TabsContent value="inventory">
 					<Inventory />
