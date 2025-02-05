@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Table,
 	TableBody,
@@ -9,13 +9,106 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Package } from 'lucide-react';
-import { inventoryData } from '../../../data';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/app/context/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
+const InventoryLoadoing = () => (
+
+	<div className='space-y-4'>
+		<Card>
+			<CardContent className="p-4">
+				<Skeleton className="h-[100px] w-full" />
+			</CardContent>
+		</Card>
+		<Card>
+			<CardContent className="p-4">
+				<Skeleton className="h-[400px] w-full" />
+			</CardContent>
+		</Card>
+	</div>
+
+);
+
+interface InventoryData {
+	totalStock: {
+		onHand: number;
+		onOrder: number;
+	};
+	locations: {
+		code: string;
+		name: string;
+		onHand: number;
+		onOrder: number;
+		minimum: number;
+		maximum: number;
+		reorderPoint: number;
+		parLevel: number;
+	}[];
+	aggregateSettings: {
+		minimum: number;
+		maximum: number;
+		reorderPoint: number;
+		parLevel: number;
+	};
+}
 const Inventory = () => {
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+
+
+	const [inventoryData, setInventoryData] = useState<InventoryData>({
+		totalStock: {
+			onHand: 0,
+			onOrder: 0,
+		},
+		locations: [],
+		aggregateSettings: {
+			minimum: 0,
+			maximum: 0,
+			reorderPoint: 0,
+			parLevel: 0,
+		},
+	});
+
+	const [isLoading, setIsLoading] = useState(false);
+
+	const API_URL = '/api/product-management/products/inventory';
+
+	const getInventory = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const res = await fetch(API_URL, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+
+			const data = await res.json();
+			setInventoryData(data.data);
+		} catch (err) {
+			console.error('Fetch error:', err);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [accessToken]);
+
+	useEffect(() => {
+		getInventory();
+	}, []);
+
+	if (isLoading) {
+		return <InventoryLoadoing />;
+	}
+
 	return (
-		<div className="space-y-6">
-			{/* Total Stock Summary */}
+		<div className='space-y-4'>
 			<Card>
 				<CardContent className="p-4">
 					<div className="flex items-center space-x-2 mb-4 border-b pb-4">
@@ -43,7 +136,6 @@ const Inventory = () => {
 				</CardContent>
 			</Card>
 
-			{/* Location Details */}
 			<Card>
 				<CardHeader>
 					<CardTitle>Stock by Location</CardTitle>

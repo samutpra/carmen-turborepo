@@ -21,13 +21,13 @@ import { ProductInfoClient } from '@/dtos/product.dto';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
+	const router = useRouter();
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [product, setProduct] = useState<ProductInfoClient | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
-	const router = useRouter();
 	const API_URL = `/api/product-management/products/${params.id}`;
 
 	useEffect(() => {
@@ -63,14 +63,14 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const content = (
 		<>
 			<Tabs defaultValue="basic">
-				<TabsList className="text-xs">
-					<TabsTrigger value="basic">Basic Info</TabsTrigger>
-					<TabsTrigger value="location">Location</TabsTrigger>
-					<TabsTrigger value="inventory">Inventory</TabsTrigger>
-					<TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
-					<TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
-					<TabsTrigger value="stockCount">Stock Count</TabsTrigger>
-					<TabsTrigger value="environment">Environmental Impact</TabsTrigger>
+				<TabsList>
+					<TabsTrigger className='text-xs' value="basic">Basic Info</TabsTrigger>
+					<TabsTrigger className='text-xs' value="location">Location</TabsTrigger>
+					<TabsTrigger className='text-xs' value="inventory">Inventory</TabsTrigger>
+					<TabsTrigger className='text-xs' value="orderUnit">Order Unit</TabsTrigger>
+					<TabsTrigger className='text-xs' value="ingredientUnit">Ingredient Unit</TabsTrigger>
+					<TabsTrigger className='text-xs' value="stockCount">Stock Count</TabsTrigger>
+					<TabsTrigger className='text-xs' value="environment">Environmental Impact</TabsTrigger>
 				</TabsList>
 				<TabsContent value="basic">
 					<BasicInfo />

@@ -20,6 +20,5 @@ export const fetchData = async (
 			`Failed to fetch from ${url}: ${response.status} ${response.statusText}`
 		);
 	}
-
 	return response.json();
 };
