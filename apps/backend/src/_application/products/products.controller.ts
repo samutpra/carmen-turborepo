@@ -1,7 +1,7 @@
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ProductCreateDto, ProductUpdateDto } from 'shared-dtos';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
+import QueryParams, { QueryAdvance } from "lib/types";
+import { ProductCreateDto, ProductUpdateDto } from "shared-dtos";
+import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
 
 import {
   Body,
@@ -15,23 +15,23 @@ import {
   Query,
   Req,
   UseGuards,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { ProductsService } from './products.service';
+import { ProductsService } from "./products.service";
 
-@Controller('api/v1/products')
-@ApiTags('products')
+@Controller("api/v1/products")
+@ApiTags("products")
 @ApiBearerAuth()
 @ApiHeader({
-  name: 'x-tenant-id',
-  description: 'tenant id',
+  name: "x-tenant-id",
+  description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
 export class ProductsController {
@@ -39,14 +39,14 @@ export class ProductsController {
 
   private readonly logger = new Logger(ProductsController.name);
 
-  @Get(':id')
+  @Get(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async findOne(@Param('id') id: string, @Req() req: Request) {
+  async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
       file: ProductsController.name,
       function: this.findOne.name,
@@ -59,19 +59,19 @@ export class ProductsController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page?: number,
-    @Query('perpage') perpage?: number,
-    @Query('search') search?: string,
-    @Query('searchfields') searchfields?: string,
-    @Query('filter') filter?: Record<string, string>,
-    @Query('sort') sort?: string,
-    @Query('advance') advance?: QueryAdvance,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+    @Query("searchfields") searchfields?: string,
+    @Query("filter") filter?: Record<string, string>,
+    @Query("sort") sort?: string,
+    @Query("advance") advance?: QueryAdvance,
   ) {
     this.logger.debug({
       file: ProductsController.name,
       function: this.findAll.name,
     });
-    const defaultSearchFields: string[] = ['code', 'name', 'description'];
+    const defaultSearchFields: string[] = ["code", "name", "description"];
 
     this.logger.debug({
       page: page,
@@ -98,18 +98,18 @@ export class ProductsController {
     return this.productsService.findAll(req, q);
   }
 
-  @Get('by-item-group-id/:id')
+  @Get("by-item-group-id/:id")
   @ApiUserFilterQueries()
   async getByItemsGroup(
     @Req() req: Request,
-    @Param('id') id: string,
-    @Query('page') page?: number,
-    @Query('perpage') perpage?: number,
-    @Query('search') search?: string,
-    @Query('searchfields') searchfields?: string,
-    @Query('filter') filter?: Record<string, string>,
-    @Query('sort') sort?: string,
-    @Query('advance') advance?: QueryAdvance,
+    @Param("id") id: string,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+    @Query("searchfields") searchfields?: string,
+    @Query("filter") filter?: Record<string, string>,
+    @Query("sort") sort?: string,
+    @Query("advance") advance?: QueryAdvance,
   ) {
     this.logger.debug({
       file: ProductsController.name,
@@ -142,10 +142,100 @@ export class ProductsController {
     return this.productsService.getByItemsGroup(req, q, id);
   }
 
+  @Get("order-unit/:id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  async getOrderUnitByProductId(
+    @Req() req: Request,
+    @Param("id") id: string,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+  ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.getOrderUnitByProductId.name,
+    });
+
+    this.logger.debug({
+      id: id,
+      page: page,
+      perpage: perpage,
+      search: search,
+    });
+
+    const q = new QueryParams(page, perpage, search);
+    return this.productsService.getOrderUnitByProductId(req, id, q);
+  }
+
+  @Get("count-unit/:id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  async getCountUnitByProductId(
+    @Req() req: Request,
+    @Param("id") id: string,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+  ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.getCountUnitByProductId.name,
+    });
+
+    this.logger.debug({
+      id: id,
+      page: page,
+      perpage: perpage,
+      search: search,
+    });
+
+    const q = new QueryParams(page, perpage, search);
+    return this.productsService.getCountUnitByProductId(req, id, q);
+  }
+
+  @Get("recipe-unit/:id")
+  @ApiParam({
+    name: "id",
+    description: "id",
+    required: true,
+    type: "uuid",
+  })
+  async getRecipeUnitByProductId(
+    @Req() req: Request,
+    @Param("id") id: string,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+  ) {
+    this.logger.debug({
+      file: ProductsController.name,
+      function: this.getRecipeUnitByProductId.name,
+    });
+
+    this.logger.debug({
+      id: id,
+      page: page,
+      perpage: perpage,
+      search: search,
+    });
+
+    const q = new QueryParams(page, perpage, search);
+    return this.productsService.getRecipeUnitByProductId(req, id, q);
+  }
+
   @Post()
   @ApiBody({
     type: ProductCreateDto,
-    description: 'ProductCreateDto',
+    description: "ProductCreateDto",
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({
@@ -156,19 +246,19 @@ export class ProductsController {
     return this.productsService.create(req, createDto);
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
   @ApiBody({
     type: ProductUpdateDto,
-    description: 'ProductUpdateDto',
+    description: "ProductUpdateDto",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -182,14 +272,14 @@ export class ProductsController {
     return this.productsService.update(req, id, updatedto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async delete(@Param('id') id: string, @Req() req: Request) {
+  async delete(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
       file: ProductsController.name,
       function: this.delete.name,

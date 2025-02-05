@@ -1,0 +1,17 @@
+meta {
+  name: 02 Get count unit by product id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/products/count-unit/d2eacf8e-7ad7-4a4c-addd-8390e2c223f0
+  body: none
+  auth: none
+}
+
+params:query {
+  ~page: 1
+  ~perpage: 10
+  ~search: 
+}

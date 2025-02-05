@@ -80,8 +80,9 @@ export class ProductLocationService {
     });
 
     const locations = query.map((item) => ({
-      id: item.tb_location.id,
-      name: item.tb_location.name,
+      id: item.id,
+      location_id: item.tb_location.id,
+      location_name: item.tb_location.name,
       location_type: item.tb_location.location_type,
     }));
 
