@@ -5,16 +5,15 @@ import {
 	fetchProductSubcategory,
 	fetchProductCategory,
 } from '@/app/(front-end)/services/products';
+import { extractToken } from '@/lib/util/auth';
 
 export async function GET(
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
-	console.log('request.url', request);
-
-
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+		// const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+		const token = extractToken(request)
 		if (!token) {
 			return NextResponse.json(
 				{ error: 'Token is missing from the headers' },

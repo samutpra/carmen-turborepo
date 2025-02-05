@@ -1,9 +1,11 @@
+'use client';
 import React from 'react'
+import { useParams } from 'next/navigation'
+import PrDetail from './components/PrDetail';
 
 const PurchaseRequestIdPage = () => {
-    return (
-        <div>PurchaseRequestIdPage</div>
-    )
+    const { id } = useParams() as { id: string };
+    return <PrDetail id={id} />
 }
 
 export default PurchaseRequestIdPage

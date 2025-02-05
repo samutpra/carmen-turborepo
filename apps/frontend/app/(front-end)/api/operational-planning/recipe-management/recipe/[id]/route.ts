@@ -7,6 +7,7 @@ export async function GET(
 ) {
 	try {
 		const { id } = params;
+
 		const recipe = mockRecipes.find((r) => r.id === id);
 
 		if (!recipe) {
