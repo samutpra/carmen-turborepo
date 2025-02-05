@@ -1,6 +1,7 @@
+import { NextResponse } from 'next/server';
 import { PrType } from "@/lib/types";
 
-export const sampleData: PrType[] = [
+const prData: PrType[] = [
     {
         id: "PR-001",
         type: "General Purchase",
@@ -18,7 +19,7 @@ export const sampleData: PrType[] = [
         description: "Weekly Groceries",
         requestor: "Jane Smith",
         department: "Catering",
-        date:  new Date("2023-06-14"),
+        date: new Date("2023-06-14"),
         status: "Approved",
         amount: 750,
         currentStage: "Procurement",
@@ -29,7 +30,7 @@ export const sampleData: PrType[] = [
         description: "Laptop Computers",
         requestor: "Mike Johnson",
         department: "IT",
-        date:  new Date("2023-06-13"),
+        date: new Date("2023-06-13"),
         status: "Rejected",
         amount: 3000,
         currentStage: "Final Review",
@@ -40,7 +41,7 @@ export const sampleData: PrType[] = [
         description: "Office Furniture",
         requestor: "Emily Brown",
         department: "HR",
-        date:  new Date("2023-06-12"),
+        date: new Date("2023-06-12"),
         status: "Draft",
         amount: 1200,
         currentStage: "Draft",
@@ -51,7 +52,7 @@ export const sampleData: PrType[] = [
         description: "Monthly Supplies",
         requestor: "David Lee",
         department: "Facilities",
-        date:  new Date("2023-06-11"),
+        date: new Date("2023-06-11"),
         status: "Submitted",
         amount: 900,
         currentStage: "Department Approval",
@@ -112,3 +113,22 @@ export const sampleData: PrType[] = [
         currentStage: "Draft",
     },
 ];
+
+
+export const GET = async () => {
+    try {
+        return NextResponse.json({
+            data: prData
+        });
+    } catch (error) {
+        // Return error response with 500 status code
+        return NextResponse.json(
+            {
+                message: 'Failed to fetch Pruchase requests',
+                error:
+                    error instanceof Error ? error.message : 'Unknown error occurred',
+            },
+            { status: 500 }
+        );
+    }
+};

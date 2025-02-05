@@ -11,9 +11,7 @@ import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import { statusOptions } from '@/lib/statusOptions';
 import { FieldConfig } from '@/lib/util/uiConfig';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { sampleData } from '../data/sampleData';
 import PurchaseDisplay from './PurchaseDisplay';
 import { Link } from '@/lib/i18n';
 
@@ -33,9 +31,9 @@ const sortFields: FieldConfig<PrType>[] = [
   { key: PrField.Type, label: 'Type' },
   { key: PrField.Requestor, label: 'Requestor' },
   { key: PrField.Department, label: 'Department' },
-  { key: PrField.Date, label: 'Date' },
+  { key: PrField.Date, label: 'Date', type: 'date' },
   { key: PrField.Status, label: 'Status', type: 'badge' },
-  { key: PrField.Amount, label: 'Amount' },
+  { key: PrField.Amount, label: 'Amount', type: 'amount' },
   { key: PrField.CurrentStage, label: 'Current Stage' },
 ]
 
@@ -50,8 +48,12 @@ const PurchaseRequestList = () => {
     setIsLoading(true);
     try {
       // Simulate an async operation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setPrList(sampleData);
+      const response = await fetch('/api/procurement/purchase-requests');
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to fetch credit notes');
+      }
+      setPrList(result.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       toastError({ message: 'Failed to fetch purchase requests' });
@@ -59,6 +61,8 @@ const PurchaseRequestList = () => {
       setIsLoading(false);
     }
   };
+
+  console.log('prList', prList);
 
   useEffect(() => {
     fetchPrList();
@@ -114,12 +118,9 @@ const PurchaseRequestList = () => {
   );
 
   const content = (
-    <PurchaseDisplay prData={prList} />
+    <PurchaseDisplay prData={prList} fields={sortFields} />
   )
 
-  if (isLoading) {
-    return <SkeltonLoad />
-  }
 
   return (
     <DataDisplayTemplate
@@ -127,6 +128,7 @@ const PurchaseRequestList = () => {
       actionButtons={actionButtons}
       filters={filter}
       content={content}
+      isLoading={isLoading}
     />
   )
 }
