@@ -5,12 +5,12 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/products
+  url: {{host}}/api/v1/products?search=PRD-2025-002
   body: none
   auth: none
 }
 
 params:query {
-  ~search: meat
-  ~page: 2
+  search: PRD-2025-002
+  ~page: 
 }

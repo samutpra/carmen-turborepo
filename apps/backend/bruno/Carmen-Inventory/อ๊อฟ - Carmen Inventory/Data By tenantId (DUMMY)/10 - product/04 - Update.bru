@@ -5,13 +5,21 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/products/d1cedc0d-a5f6-4165-b710-fdbd6fbcbfbc
+  url: {{host}}/api/v1/products/c3cec0c8-e4b4-4101-964c-2b4cad66d39c
   body: json
   auth: none
 }
 
 body:json {
   {
-    "product_status_type" : "discontinued"
+    "product_status_type": "discontinued"
+    //   "local_name": "กาแฟ"
+  //  ,   "locations": {
+  //       "add": [
+  //         {
+  //           "location_id": "192ba5d3-33c0-4893-9dec-fbf818cd3832"
+  //         }
+  //       ]
+  //     }
   }
 }
