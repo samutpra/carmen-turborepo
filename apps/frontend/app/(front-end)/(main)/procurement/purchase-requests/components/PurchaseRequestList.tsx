@@ -27,7 +27,7 @@ enum PrField {
   CurrentStage = 'currentStage'
 }
 
-const sortFields: FieldConfig<PrType>[] = [
+export const sortFields: FieldConfig<PrType>[] = [
   { key: PrField.Type, label: 'Type' },
   { key: PrField.Requestor, label: 'Requestor' },
   { key: PrField.Department, label: 'Department' },
