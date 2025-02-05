@@ -1,9 +1,6 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
-import {
-  UserProfileCreateDto,
-  UserProfileUpdateDto,
-} from 'shared-dtos';
+import { UserProfileCreateDto, UserProfileUpdateDto } from 'shared-dtos';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
 import {

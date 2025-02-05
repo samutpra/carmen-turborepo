@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum enum_product_status_type {
-  active = "active",
-  inactive = "inactive",
-  discontinued = "discontinued",
+  active = 'active',
+  inactive = 'inactive',
+  discontinued = 'discontinued',
 }
 
 export const product_location_item_schema = z.object({
@@ -63,8 +63,8 @@ export class Product_CountUnit_item implements ProductCountUnitModel {
 
 export const ProductCreateSchema = z.object({
   id: z.string().uuid().optional(),
-  code: z.string().min(1, "code must be at least 1 character"),
-  name: z.string().min(1, "name must be at least 1 character"),
+  code: z.string().min(1, 'code must be at least 1 character'),
+  name: z.string().min(1, 'name must be at least 1 character'),
   local_name: z.string().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
@@ -75,7 +75,7 @@ export const ProductCreateSchema = z.object({
   product_item_group_id: z
     .string()
     .uuid()
-    .min(1, "item group must be at least 1 character"),
+    .min(1, 'item group must be at least 1 character'),
   price: z.number().optional(),
   tax_type: z.string().optional(),
   tax_rate: z.number().optional(),
@@ -87,8 +87,8 @@ export const ProductCreateSchema = z.object({
 export type ProductCreateModel = z.infer<typeof ProductCreateSchema>;
 
 export enum enum_tax_type {
-  none = "NONE",
-  vat = "VAT",
+  none = 'NONE',
+  vat = 'VAT',
 }
 
 export class ProductCreateDto implements ProductCreateModel {

@@ -32,9 +32,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  SystemUserBusinessUnitService,
-} from './system-user-business-unit.service';
+import { SystemUserBusinessUnitService } from './system-user-business-unit.service';
 
 @Controller('system-api/v1/user-business-unit')
 @ApiTags('system/user business-nit')

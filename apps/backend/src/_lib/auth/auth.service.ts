@@ -1,19 +1,13 @@
 import 'dotenv/config';
 
-import {
-  ResponseId,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseSingle } from 'lib/helper/iResponse';
 import {
   DuplicateException,
   InvalidTokenException,
   NullException,
 } from 'lib/utils/exceptions';
 import { isWelformJWT } from 'lib/utils/functions';
-import {
-  comparePassword,
-  hashPassword,
-} from 'lib/utils/password';
+import { comparePassword, hashPassword } from 'lib/utils/password';
 import {
   AuthChangePasswordDto,
   AuthLoginResponseDto,
@@ -22,9 +16,7 @@ import {
   UserForgotPassDto,
   UserRegisterDto,
 } from 'shared-dtos';
-import {
-  SystemUsersService,
-} from 'src/_system/system-users/system-users.service';
+import { SystemUsersService } from 'src/_system/system-users/system-users.service';
 
 import {
   HttpException,
@@ -35,9 +27,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
-import {
-  PrismaClientManagerService,
-} from '../prisma-client-manager/prisma-client-manager.service';
+import { PrismaClientManagerService } from '../prisma-client-manager/prisma-client-manager.service';
 import { ExtractReqService } from './extract-req/extract-req.service';
 
 @Injectable()

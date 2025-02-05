@@ -1,23 +1,25 @@
+import QueryParams from 'lib/types';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   Controller,
   Get,
-  Req,
-  UseGuards,
   Logger,
   Param,
   Query,
-} from "@nestjs/common";
-import { ProductLocationService } from "./product-location.service";
-import { ApiBearerAuth, ApiHeader, ApiParam, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import QueryParams from "lib/types";
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("product-location")
-@Controller("api/v1/product-location")
+import { ProductLocationService } from './product-location.service';
+
+@ApiTags('product-location')
+@Controller('api/v1/product-location')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class ProductLocationController {
@@ -27,19 +29,19 @@ export class ProductLocationController {
 
   private readonly logger = new Logger(ProductLocationController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   async getLocationsByProductId(
     @Req() req: Request,
-    @Param("id") id: string,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
+    @Param('id') id: string,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
   ) {
     this.logger.debug({
       file: ProductLocationController.name,
