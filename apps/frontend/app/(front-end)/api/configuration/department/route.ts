@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const page = searchParams.get('page') || '1';
-
+    const sort = searchParams.get('sort') || '';
     const options = {
         method: 'GET',
         headers: {
@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
         }
     };
 
-    const departmentsUrl = `${API_URL}/v1/departments?search=${search}&page=${page}`;
+    const departmentsUrl = `${API_URL}/v1/departments?search=${search}&page=${page}&sort=${sort}`;
+
     try {
         const response = await fetch(departmentsUrl, options);
 

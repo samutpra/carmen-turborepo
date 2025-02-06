@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const search = searchParams.get('search') || '';
 	const page = searchParams.get('page') || '1';
+	const sort = searchParams.get('sort') || '';
 
 	const options = {
 		method: 'GET',
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
 		},
 	};
 
-	const locationUrl = `${API_URL}/v1/locations?search=${search}&page=${page}`;
+	const locationUrl = `${API_URL}/v1/locations?search=${search}&page=${page}&sort=${sort}`;
 
 	try {
 		const response = await fetch(locationUrl, options);

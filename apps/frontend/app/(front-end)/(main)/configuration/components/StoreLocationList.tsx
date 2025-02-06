@@ -16,12 +16,12 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { LocationCreateModel } from '@/dtos/location.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -31,21 +31,19 @@ enum StoreLocationField {
 }
 
 const sortFields: FieldConfig<LocationCreateModel>[] = [
-	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
-	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
-	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' },
-];
-const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
 	{
 		key: StoreLocationField.Name,
 		label: m.store_location_name_label(),
-		className: 'w-40',
+		className: 'w-24',
 	},
 	{
 		key: StoreLocationField.LocationType,
 		label: m.location_type_label(),
-		className: 'w-32',
+		className: 'w-24'
 	},
+];
+const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
+	...sortFields,
 	{
 		key: StoreLocationField.isActive,
 		label: m.status_text(),
@@ -73,6 +71,7 @@ const StoreLocationList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 
 	const handleSuccess = useCallback(
 		(values: LocationCreateModel) => {
@@ -124,6 +123,7 @@ const StoreLocationList = () => {
 				search,
 				status,
 				page,
+				sort
 			});
 			setStoreLocations(data.data);
 			setPage(data.pagination.page);
@@ -137,7 +137,7 @@ const StoreLocationList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const title = `${m.store_location()}`;
 
@@ -188,11 +188,11 @@ const StoreLocationList = () => {
 					onOpenChange={setStatusOpen}
 					data-id="store-location-status-search-dropdown"
 				/>
-				<SortDropDown
+				<SortComponent
 					fieldConfigs={sortFields}
-					items={storeLocations}
-					onSort={setStoreLocations}
-					data-id="store-location-sort-dropdown"
+					sort={sort}
+					setSort={setSort}
+					data-id="store-location-sort-component"
 				/>
 			</div>
 		</div>

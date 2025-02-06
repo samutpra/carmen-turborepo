@@ -4,7 +4,7 @@ import { formType } from '@/types/form_type';
 export const fetchUnits = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string; page?: string } = {}
+	params: { search?: string; status?: string; page?: string, sort?: string } = {}
 ) => {
 	try {
 		const query = new URLSearchParams();
@@ -19,6 +19,10 @@ export const fetchUnits = async (
 
 		if (params.page) {
 			query.append('page', params.page);
+		}
+
+		if (params.sort) {
+			query.append('sort', params.sort);
 		}
 
 		const url = `/api/product-management/unit?${query}`;

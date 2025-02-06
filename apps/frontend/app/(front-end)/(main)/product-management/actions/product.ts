@@ -23,6 +23,10 @@ export const fetchProducts = async (
 			query.append('page', params.page);
 		}
 
+		if (params.sort) {
+			query.append('sort', params.sort);
+		}
+
 		const url = `/api/product-management/products?${query}`;
 
 		const options = {

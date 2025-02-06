@@ -14,11 +14,11 @@ import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum UnitField {
 	Name = 'name',
@@ -54,13 +54,14 @@ const UnitList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [page, setPage] = useURL('sort');
+	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchUnits(token, tenantId, { search, status, page });
+			const data = await fetchUnits(token, tenantId, { search, status, page, sort });
 			setUnits(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
@@ -73,7 +74,7 @@ const UnitList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handleSuccess = useCallback(
 		(updatedUnit: UnitCreateModel) => {
@@ -162,12 +163,14 @@ const UnitList = () => {
 					onOpenChange={setStatusOpen}
 					data-id="unit-list-status-search-dropdown"
 				/>
-				<SortDropDown
-					fieldConfigs={sortFields}
-					items={units}
-					onSort={setUnits}
-					data-id="unit-list-sort-dropdown"
-				/>
+				<SortComponent
+					fieldConfigs={
+						[
+							{ key: "name", label: `${m.unit_name_label()}` }
+						]
+					}
+					sort={sort}
+					setSort={setSort} />
 			</div>
 		</div>
 	);

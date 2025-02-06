@@ -4,7 +4,7 @@ import { formType } from '@/types/form_type';
 export const fetchStoreLocations = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string; page?: string } = {}
+	params: { search?: string; status?: string; page?: string; sort?: string } = {}
 ) => {
 	try {
 		if (!token) {
@@ -23,6 +23,10 @@ export const fetchStoreLocations = async (
 
 		if (params.page) {
 			query.append('page', params.page);
+		}
+
+		if (params.sort) {
+			query.append('sort', params.sort);
 		}
 
 		const url = `/api/configuration/locations?${query}`;

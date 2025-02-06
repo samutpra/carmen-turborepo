@@ -13,10 +13,10 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { fetchProducts } from '../../actions/product';
 import { toastError } from '@/components/ui-custom/Toast';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ProductDisplay from './ProductDisplay';
 import { ProductCreateModel } from '@/dtos/product.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum ProductField {
 	NAME = 'name',
@@ -28,9 +28,13 @@ enum ProductField {
 	STATUS = 'product_status_type',
 }
 
-const fields: FieldConfig<ProductCreateModel>[] = [
+const sortFields: FieldConfig<ProductCreateModel>[] = [
 	{ key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
 	{ key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+];
+
+const fields: FieldConfig<ProductCreateModel>[] = [
+	...sortFields,
 	{
 		key: ProductField.DESCRIPYION as keyof ProductCreateModel,
 		label: 'Description',
@@ -58,7 +62,7 @@ const ProductList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
-
+	const [sort, setSort] = useURL('sort');
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -66,6 +70,7 @@ const ProductList = () => {
 				search,
 				status,
 				page,
+				sort
 			});
 			setProducts(data.data);
 			setPage(data.pagination.page);
@@ -80,7 +85,7 @@ const ProductList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handlePageChange = (newPage: number) => {
 		const numericTotalPages = Number(pages);
@@ -140,10 +145,10 @@ const ProductList = () => {
 					onOpenChange={setStatusOpen}
 					data-id="product-list-status-search-dropdown"
 				/>
-				<SortDropDown
-					fieldConfigs={fields}
-					items={products}
-					onSort={setProducts}
+				<SortComponent
+					fieldConfigs={sortFields}
+					sort={sort}
+					setSort={setSort}
 					data-id="product-list-sort-dropdown"
 				/>
 			</div>

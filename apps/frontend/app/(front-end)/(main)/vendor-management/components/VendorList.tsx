@@ -12,11 +12,11 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import VendorDisplay from './VendorDisplay';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum VendorFields {
 	Name = 'name',
@@ -29,7 +29,6 @@ const sortFields: FieldConfig<VendorCreateModel>[] = [
 		key: VendorFields.Name,
 		label: m.vendor_name_label(),
 	},
-	{ key: VendorFields.isActive, label: m.status_text(), type: 'badge' },
 ];
 
 const VendorList = () => {
@@ -44,11 +43,12 @@ const VendorList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchAllVendors(token, tenantId, { search, status, page });
+			const data = await fetchAllVendors(token, tenantId, { search, status, page, sort });
 			setVendors(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
@@ -61,7 +61,7 @@ const VendorList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	if (error) {
 		return <ErrorCard message={error} />;
@@ -109,11 +109,10 @@ const VendorList = () => {
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
 				/>
-				<SortDropDown
+				<SortComponent
 					fieldConfigs={sortFields}
-					items={vendors}
-					onSort={setVendors}
-				/>
+					sort={sort}
+					setSort={setSort} />
 			</div>
 		</div>
 	);

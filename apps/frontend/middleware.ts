@@ -49,7 +49,7 @@ const shouldLogPath = (pathname: string): boolean => {
 		'.woff2'
 	];
 
-	return !skipPaths.some(path => 
+	return !skipPaths.some(path =>
 		pathname.startsWith(path) || pathname.endsWith(path)
 	);
 };
@@ -57,14 +57,14 @@ const shouldLogPath = (pathname: string): boolean => {
 const isRateLimited = (identifier: string): boolean => {
 	const now = Date.now();
 	const windowStart = now - RATE_LIMIT_WINDOW;
-	
+
 	// Clean old requests
 	requestTimes[identifier] = (requestTimes[identifier] || [])
 		.filter(time => time > windowStart);
-		
+
 	// Add current request
 	requestTimes[identifier].push(now);
-	
+
 	// Allow only 1 request per window
 	return requestTimes[identifier].length > 1;
 };
@@ -103,6 +103,9 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 			referer: request.headers.get('referer'),
 			clientIp: request.headers.get('x-forwarded-for') || request.ip,
 		};
+
+		console.log('Sending log to Kafka:', enhancedLogMessage);
+
 
 		const response = await fetch(`${baseUrl}/api/produce`, {
 			method: 'POST',
@@ -182,6 +185,9 @@ export async function middleware(request: NextRequest) {
 			headers: headers,
 			body: body || undefined,
 		};
+
+		console.log('Logging request:', logData);
+
 
 		// Send log to Kafka with request object
 		await sendLogToKafka(JSON.stringify(logData), request);

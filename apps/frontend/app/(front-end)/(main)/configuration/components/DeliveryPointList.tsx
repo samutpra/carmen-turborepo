@@ -16,16 +16,20 @@ import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum DeliveryPointField {
 	Name = 'name',
 	isActive = 'is_active',
 }
+
+const sortFields: FieldConfig<DeliveryPointCreateModel>[] = [
+	{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}`, className: 'w-40' },
+];
 
 const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
 	{
@@ -33,11 +37,7 @@ const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
 		label: `${m.delivery_point_label()}`,
 		className: 'w-40',
 	},
-	{
-		key: DeliveryPointField.isActive,
-		label: `${m.status_text()}`,
-		type: 'badge',
-	},
+	{ key: DeliveryPointField.isActive, label: `${m.status_text()}`, type: 'badge' },
 ];
 
 const DeliveryPointList = () => {
@@ -54,7 +54,7 @@ const DeliveryPointList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
-
+	const [sort, setSort] = useURL('sort');
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -62,6 +62,7 @@ const DeliveryPointList = () => {
 				search,
 				status,
 				page,
+				sort
 			});
 			setDeliveryPoints(data.data);
 			setPage(data.pagination.page);
@@ -75,7 +76,7 @@ const DeliveryPointList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handleSuccess = useCallback(
 		(values: DeliveryPointCreateModel) => {
@@ -171,10 +172,10 @@ const DeliveryPointList = () => {
 					onOpenChange={setStatusOpen}
 					data-id="delivery-point-status-search-dropdown"
 				/>
-				<SortDropDown
-					fieldConfigs={deliveryPointsFields}
-					items={deliveryPoints}
-					onSort={setDeliveryPoints}
+				<SortComponent
+					fieldConfigs={sortFields}
+					sort={sort}
+					setSort={setSort}
 					data-id="delivery-point-sort-dropdown"
 				/>
 			</div>

@@ -59,8 +59,9 @@ export const GET = async (request: NextRequest) => {
 		const { searchParams } = new URL(request.url);
 		const search = searchParams.get('search') || '';
 		const page = searchParams.get('page') || '1';
+		const sort = searchParams.get('sort') || '';
 
-		const productUrl = `${API_URL}/v1/products?search=${search}&page=${page}`;
+		const productUrl = `${API_URL}/v1/products?search=${search}&page=${page}&sort=${sort}`;
 		const productResponse = await fetchData(productUrl, token, tenantId);
 
 		const data = await Promise.all(

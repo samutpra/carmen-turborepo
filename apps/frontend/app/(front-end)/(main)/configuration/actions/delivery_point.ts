@@ -27,7 +27,9 @@ export const fetchDeliveryPoints = async (
 			query.append('page', params.page);
 		}
 
-		console.log('query', query);
+		if (params.sort) {
+			query.append('sort', params.sort);
+		}
 
 		const url = `/api/configuration/delivery-point?${query}`;
 
