@@ -403,6 +403,7 @@ export interface PurchaseRequestItem {
     lastPrice: number;
     lastOrderDate: Date;
     lastVendor: string;
+    inventoryUnit: string;
   };
   accountCode: string;
   jobCode: string;
