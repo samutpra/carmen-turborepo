@@ -70,6 +70,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		},
 	}
 
+
 	const content = (
 		<>
 			<Tabs defaultValue="basic">

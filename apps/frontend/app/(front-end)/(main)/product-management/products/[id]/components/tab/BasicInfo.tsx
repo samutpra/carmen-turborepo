@@ -67,22 +67,17 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
-									Price
+									Base Price
 								</label>
 								<p className="text-xs">{info.price}</p>
 							</div>
-							{/* <div>
+							<div>
 								<label className="text-xs font-medium text-muted-foreground">
 									Standard Cost
 								</label>
 								<p className="text-xs">28.4 THB</p>
-							</div> */}
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Tax Rate
-								</label>
-								<p className="text-xs">{info.tax_rate}</p>
 							</div>
+
 						</div>
 
 						<div className="grid grid-cols-2 gap-4">
@@ -100,15 +95,20 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 							</div>
 						</div>
 
-						{/* <div className="grid grid-cols-2 gap-4">
-
+						<div className="grid grid-cols-2 gap-4">
+							<div>
+								<label className="text-xs font-medium text-muted-foreground">
+									Tax Rate
+								</label>
+								<p className="text-xs">{info.tax_rate}</p>
+							</div>
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
 									Last Cost
 								</label>
 								<p className="text-xs">29.75 THB</p>
 							</div>
-						</div> */}
+						</div>
 					</CardContent>
 				</Card>
 			</div>
