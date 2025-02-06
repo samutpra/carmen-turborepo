@@ -5,11 +5,12 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/units
+  url: {{host}}/api/v1/units?sort=name:desc
   body: none
   auth: bearer
 }
 
 params:query {
+  sort: name:desc
   ~search: fin
 }

@@ -1,7 +1,11 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ProductInfoDto } from '@/dtos/product.dto';
+interface Props {
+	info: ProductInfoDto;
+}
 
-const BasicInfo = () => {
+const BasicInfo: React.FC<Props> = ({ info }) => {
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 			<div className="space-y-4">
@@ -63,15 +67,21 @@ const BasicInfo = () => {
 						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
-									Base Price
+									Price
 								</label>
-								<p className="text-xs">35.5 THB</p>
+								<p className="text-xs">{info.price}</p>
 							</div>
-							<div>
+							{/* <div>
 								<label className="text-xs font-medium text-muted-foreground">
 									Standard Cost
 								</label>
 								<p className="text-xs">28.4 THB</p>
+							</div> */}
+							<div>
+								<label className="text-xs font-medium text-muted-foreground">
+									Tax Rate
+								</label>
+								<p className="text-xs">{info.tax_rate}</p>
 							</div>
 						</div>
 
@@ -80,30 +90,25 @@ const BasicInfo = () => {
 								<label className="text-xs font-medium text-muted-foreground">
 									Tax Type
 								</label>
-								<p className="text-xs">VAT</p>
+								<p className="text-xs">{info.tax_type}</p>
 							</div>
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Tax Rate
-								</label>
-								<p className="text-xs">7%</p>
-							</div>
-						</div>
-
-						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
 									Price Deviation Limit
 								</label>
-								<p className="text-xs">10%</p>
+								<p className="text-xs">{info.price_deviation_limit}</p>
 							</div>
+						</div>
+
+						{/* <div className="grid grid-cols-2 gap-4">
+
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
 									Last Cost
 								</label>
 								<p className="text-xs">29.75 THB</p>
 							</div>
-						</div>
+						</div> */}
 					</CardContent>
 				</Card>
 			</div>

@@ -17,7 +17,7 @@ import StockCountUnit from './components/tab/StockCountUnit';
 import EnvironmentImpact from './components/tab/EnvironmentImpact';
 import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
-import { ProductInfoClient } from '@/dtos/product.dto';
+import { ProductInfoClient, ProductInfoDto } from '@/dtos/product.dto';
 import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
@@ -60,6 +60,16 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		return <SkeltonCardLoading />;
 	}
 
+	const priceDetail: ProductInfoDto = {
+		price: product?.data.tb_product_info?.price || '',
+		tax_type: product?.data.tb_product_info?.tax_type || '',
+		tax_rate: product?.data.tb_product_info?.tax_rate || '',
+		price_deviation_limit: product?.data.tb_product_info?.price_deviation_limit || '',
+		info: {
+			brand: product?.data.tb_product_info?.info.brand || '',
+		},
+	}
+
 	const content = (
 		<>
 			<Tabs defaultValue="basic">
@@ -73,7 +83,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 					<TabsTrigger className='text-xs' value="environment">Environmental Impact</TabsTrigger>
 				</TabsList>
 				<TabsContent value="basic">
-					<BasicInfo />
+					<BasicInfo info={priceDetail} />
 				</TabsContent>
 				<TabsContent value="location">
 					<Location />
@@ -96,6 +106,8 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 			</Tabs>
 		</>
 	);
+
+
 
 	return (
 		<div className="container mx-auto py-4">

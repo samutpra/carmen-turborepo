@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/products?search=PRD-2025-002
+  url: {{host}}/api/v1/products?sort=code:decs
   body: none
   auth: none
 }
 
 params:query {
-  search: PRD-2025-002
+  sort: code:decs
+  ~search: PRD-2025-002
   ~page: 
 }

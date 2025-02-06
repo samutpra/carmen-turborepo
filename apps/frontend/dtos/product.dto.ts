@@ -201,39 +201,44 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
 }
 
 export type ProductDto = {
-	id: string;
-	product_code: string;
-	product_name: string;
-	local_name?: string;
-	description?: string;
-	is_active: boolean;
-	primary_unit_id?: string;
-	product_status_type: enum_product_status_type;
-	product_item_group_id: string;
-	price?: number;
-	tax_type?: string;
-	tax_rate?: number;
-	is_ingredients?: boolean;
-	price_deviation_limit?: number;
-	created_at: Date;
-	updated_at: Date;
+  id: string;
+  product_code: string;
+  product_name: string;
+  local_name?: string;
+  description?: string;
+  is_active: boolean;
+  primary_unit_id?: string;
+  product_status_type: enum_product_status_type;
+  product_item_group_id: string;
+  price?: number;
+  tax_type?: string;
+  tax_rate?: number;
+  is_ingredients?: boolean;
+  price_deviation_limit?: number;
+  created_at: Date;
+  updated_at: Date;
 };
 
+
+export type ProductInfoDto = {
+  price: string;
+  tax_type: string;
+  tax_rate: string;
+  price_deviation_limit: string;
+  info: {
+    brand: string;
+  };
+}
 export interface ProductInfoClient {
-	data: {
-		id: string;
-		code: string;
-		name: string;
-		description: string;
-		tb_product_info?: {
-			price: string;
-			info: {
-				brand: string;
-			};
-		};
-		product_status_type: string;
-	};
-	item_group_name: string;
-	sub_category_name: string;
-	category_name: string;
+  data: {
+    id: string;
+    code: string;
+    name: string;
+    description: string;
+    tb_product_info?: ProductInfoDto;
+    product_status_type: string;
+  };
+  item_group_name: string;
+  sub_category_name: string;
+  category_name: string;
 }
