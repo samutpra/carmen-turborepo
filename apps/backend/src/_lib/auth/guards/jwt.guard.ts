@@ -1,13 +1,7 @@
 import { InvalidTokenException } from 'lib/utils';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import {
-  ExecutionContext,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
