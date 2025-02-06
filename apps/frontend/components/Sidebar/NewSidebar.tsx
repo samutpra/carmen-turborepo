@@ -1,0 +1,173 @@
+import React, { useMemo } from 'react';
+import { useSidebar } from './useSidebar';
+import { menuItems } from '@/lib/util/menuItems';
+import SidebarLogo from './SidebarLogo';
+import { cn } from '@/lib/utils';
+import useResponsive from '@/hooks/useResponsive';
+import * as LucideIcons from 'lucide-react';
+import { Link } from '@/lib/i18n';
+import { Button } from '../ui/button';
+import { Pin } from 'lucide-react';
+
+export type LucideIconName = keyof typeof LucideIcons;
+interface DynamicIconProps {
+    iconName: LucideIconName;
+}
+interface SubItem {
+    path: string;
+    name: string;
+}
+
+interface MenuItem {
+    path: string;
+    title: string;
+    icon: LucideIconName;
+    subItems?: SubItem[];
+}
+
+const NewSidebar = () => {
+    const {
+        isSidebarOpen,
+        setIsSidebarOpen,
+        isExpanded,
+        setIsExpanded,
+        isPinned,
+        setIsPinned,
+        pathname,
+    } = useSidebar();
+
+    const { isDesktop } = useResponsive();
+
+    const activeMenuItem = useMemo(() => {
+        return menuItems.find(item =>
+            pathname.startsWith(item.path) ||
+            item.subItems?.some(subItem => pathname.startsWith(subItem.path))
+        );
+    }, [pathname]);
+
+    const handleMouseEnter = () => {
+        if (!isPinned) {
+            setIsExpanded(true);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (!isPinned) {
+            setIsExpanded(false);
+        }
+    };
+
+    const togglePin = () => {
+        setIsPinned(!isPinned);
+        setIsExpanded(!isPinned);
+    };
+
+    const onClose = () => {
+        setIsSidebarOpen(false);
+    };
+
+    const DynamicIcon: React.FC<DynamicIconProps> = ({ iconName }) => {
+        const IconComponent = LucideIcons[iconName as LucideIconName] as React.ElementType;
+        return IconComponent ? <IconComponent className="w-5 h-5" /> : null;
+    };
+
+    const renderSubItems = (item: MenuItem) => {
+        return item.subItems?.map((subItem: SubItem) => {
+            const isActive = pathname === subItem.path;
+            return (
+
+                <div
+                    className={cn(
+                        'text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden'
+                    )}
+                    key={subItem.path}
+                >
+                    <Link
+                        className={cn(
+                            'w-full p-1 rounded-lg',
+                            isActive
+                                ? 'text-primary font-medium'
+                                : 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
+                        )}
+                        href={subItem.path}
+                    >
+
+                        {subItem.name}
+
+                    </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        data-id="menu-item-pin-button"
+                        onClick={() => {
+                            alert(subItem.path)
+                        }}
+                    >
+                        <Pin
+                            data-id="pin-menu-item-icon"
+                        />
+                    </Button>
+
+                </div>
+
+            );
+        });
+    };
+
+    return (
+        <div
+            className="top-1 z-50 flex-col gap-4 relative bg-background"
+            data-id="sidebar-container"
+        >
+            {isSidebarOpen && !isDesktop && (
+                <div
+                    className="fixed md:sticky inset-0 z-40"
+                    onClick={onClose}
+                    data-id="sidebar-overlay"
+                />
+            )}
+
+            <aside
+                className={cn(
+                    'fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r transition-all duration-700 ease-in-out',
+                    isSidebarOpen || isDesktop ? 'translate-x-0 md:sticky' : '-translate-x-full',
+                    isExpanded ? 'w-[280px]' : 'w-[70px]'
+                )}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                data-id="sidebar-container"
+            >
+                <SidebarLogo
+                    isExpanded={isExpanded}
+                    isPinned={isPinned}
+                    togglePin={togglePin}
+                    data-id="sidebar-logo"
+                />
+
+                {activeMenuItem && (
+                    <div className="py-2 overflow-hidden whitespace-nowrap">
+                        <div
+                            className={cn(
+                                'flex items-center p-2',
+                                isExpanded ? 'justify-start' : 'justify-center'
+                            )}
+                        >
+                            <DynamicIcon iconName={activeMenuItem.icon} />
+                            {isExpanded && (
+                                <div className="ml-3 font-medium">
+                                    {activeMenuItem.title}
+                                </div>
+                            )}
+                        </div>
+                        <div className='p-2 mx-4'>
+                            {isExpanded && renderSubItems(activeMenuItem)}
+                        </div>
+
+                    </div>
+                )}
+            </aside>
+        </div>
+    );
+}
+
+export default NewSidebar;
