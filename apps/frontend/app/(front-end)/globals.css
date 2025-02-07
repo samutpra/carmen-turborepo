@@ -124,4 +124,7 @@ body {
 	.auth-container {
 		@apply my-auto mb-auto mt-8 flex flex-col md:mt-[70px] w-[350px] max-w-[450px] mx-auto md:max-w-[450px] lg:mt-[130px] lg:max-w-[450px];
 	}
+	.logo-container {
+		@apply p-3 w-full flex items-center justify-between overflow-hidden whitespace-nowrap;
+	}
 }

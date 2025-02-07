@@ -163,8 +163,6 @@ const NewSidebar = () => {
                     data-id="sidebar-logo"
                 />
 
-                <Separator className='mt-1' />
-
                 <div className="p-2 mt-2">
                     <div
                         className={cn(

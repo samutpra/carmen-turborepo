@@ -18,12 +18,12 @@ const SidebarLogo: React.FC<Props> = ({
 }) => {
 	return (
 		<div
-			className="px-3 pt-4 w-full flex items-center justify-between overflow-hidden whitespace-nowrap"
+			className="logo-container"
 			data-id="sidebar-logo-container"
 		>
 			<Link href="/" className="all-center" data-id="sidebar-logo-link">
 				{isExpanded ? (
-					<div className="ml-2 " data-id="sidebar-logo-text-container">
+					<div data-id="sidebar-logo-text-container">
 						<span
 							className="text-2xl font-bold block tracking-wide"
 							data-id="sidebar-logo-text"
