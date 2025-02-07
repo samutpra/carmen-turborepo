@@ -15,7 +15,7 @@ import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import SortComponent from '@/components/ui-custom/SortComponent';
@@ -42,7 +42,10 @@ const sortFields: FieldConfig<UnitCreateModel>[] = [
 
 const unitFields: FieldConfig<UnitCreateModel>[] = [
 	...sortFields,
-	{ key: 'description', label: `${m.unit_des_label()}` },
+	{
+		key: UnitField.Description,
+		label: `${m.unit_des_label()}`
+	},
 ];
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -192,6 +195,11 @@ const UnitList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 			data-id="unit-list-display-component"
 		/>
 	);
@@ -202,7 +210,6 @@ const UnitList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="unit-list-data-display-template"
 		/>
 	);

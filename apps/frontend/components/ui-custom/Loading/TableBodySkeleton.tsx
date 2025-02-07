@@ -9,7 +9,7 @@ interface TableBodySkeletonProps {
 }
 
 export const TableBodySkeleton: React.FC<TableBodySkeletonProps> = ({
-    rows = 5,
+    rows = 10,
     columns,
     withAction
 }) => (
