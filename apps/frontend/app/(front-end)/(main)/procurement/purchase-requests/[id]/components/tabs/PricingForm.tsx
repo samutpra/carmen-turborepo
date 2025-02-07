@@ -319,7 +319,7 @@ const PricingForm = ({
 
                 <div className="w-full md:w-1/2">
                     <h2 className="text-lg font-semibold mb-4">Calculated Amounts</h2>
-                    <SummaryPRTable
+                    {/* <SummaryPRTable
                         item={{
                             ...summaryFooter,
                             currency: formData.currency || "USD",
@@ -329,7 +329,7 @@ const PricingForm = ({
                         }}
                         currencyBase="THB"
                         currencyCurrent={formData.currency || "USD"}
-                    />
+                    /> */}
                 </div>
 
             </div>
