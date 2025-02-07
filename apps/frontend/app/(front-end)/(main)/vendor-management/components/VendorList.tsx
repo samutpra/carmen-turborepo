@@ -18,10 +18,10 @@ import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
 
-enum VendorFields {
+const enum VendorFields {
 	Name = 'name',
 	Description = 'description',
-	isActive = 'is_active',
+	IsActive = 'is_active',
 }
 
 const sortFields: FieldConfig<VendorCreateModel>[] = [
@@ -29,7 +29,18 @@ const sortFields: FieldConfig<VendorCreateModel>[] = [
 		key: VendorFields.Name,
 		label: m.vendor_name_label(),
 	},
+	{
+		key: VendorFields.Description,
+		label: m.description(),
+	},
+	{
+		key: VendorFields.IsActive,
+		label: m.status_text(),
+	},
 ];
+
+type SortDirection = 'asc' | 'desc';
+type SortQuery = `${VendorFields}:${SortDirection}` | '';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
@@ -120,9 +131,14 @@ const VendorList = () => {
 	const content = (
 		<VendorDisplay
 			vendors={vendors}
-			page={+page}
-			totalPage={+pages}
+			page={Number(page)}
+			totalPage={Number(pages)}
 			handlePageChange={handlePageChange}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 		/>
 	);
 
@@ -132,7 +148,6 @@ const VendorList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 		/>
 	);
 };

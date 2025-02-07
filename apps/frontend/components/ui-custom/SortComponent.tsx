@@ -36,9 +36,7 @@ const SortComponent = <T extends Record<string, unknown>>({ fieldConfigs, sort, 
         const isAscending = sortField === field && sortDirection === "asc";
         const newDirection = isAscending ? "desc" : "asc";
         const newSortParam = newDirection === "asc" ? String(field) : `${String(field)}:desc`;
-
         setSort(newSortParam);
-
         setSortField(field);
         setSortDirection(newDirection);
     };

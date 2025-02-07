@@ -84,9 +84,9 @@ const NewSidebar = () => {
                 >
                     <Link
                         className={cn(
-                            'w-full p-1 rounded-lg',
+                            'w-full p-2 rounded-lg',
                             isActive
-                                ? 'text-primary font-medium'
+                                ? 'font-medium bg-primary text-background'
                                 : 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
                         )}
                         href={subItem.path}
@@ -159,7 +159,7 @@ const NewSidebar = () => {
                                 </div>
                             )}
                         </div>
-                        <div className='p-2 mx-4'>
+                        <div className='p-2 mx-2'>
                             {isExpanded && renderSubItems(activeMenuItem)}
                         </div>
 

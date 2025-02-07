@@ -8,7 +8,6 @@ interface SearchFormProps {
 	onSearch: (value: string) => void;
 	placeholder?: string;
 	containerClassName?: string;
-	inputClassName?: string;
 	buttonClassName?: string;
 }
 
@@ -16,7 +15,6 @@ const SearchForm: React.FC<SearchFormProps> = ({
 	defaultValue = '',
 	placeholder = '',
 	containerClassName = 'w-full md:w-1/3',
-	inputClassName = 'h-8 pr-10 text-xs',
 	buttonClassName = 'absolute right-0 top-0 h-full px-3',
 	onSearch,
 }) => {
@@ -55,7 +53,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
 					value={inputValue}
 					onChange={handleInputChange}
 					onKeyDown={handleKeyDown}
-					className={inputClassName}
+					className='h-8 pr-10 text-xs'
 				/>
 				<Button
 					type="button"
