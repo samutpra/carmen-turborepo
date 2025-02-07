@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSidebar } from './useSidebar';
 import { menuItems } from '@/lib/util/menuItems';
 import SidebarLogo from './SidebarLogo';
@@ -7,7 +7,9 @@ import useResponsive from '@/hooks/useResponsive';
 import * as LucideIcons from 'lucide-react';
 import { Link } from '@/lib/i18n';
 import { Button } from '../ui/button';
-import { Pin } from 'lucide-react';
+import { Pin, Star } from 'lucide-react';
+import { Separator } from '../ui/separator';
+import { FavMenuItem } from '@/dtos/favorite-menu.dto';
 
 export type LucideIconName = keyof typeof LucideIcons;
 interface DynamicIconProps {
@@ -37,6 +39,23 @@ const NewSidebar = () => {
     } = useSidebar();
 
     const { isDesktop } = useResponsive();
+    const [favoriteMenu, setFavoriteMenu] = useState<FavMenuItem[]>([]);
+    useEffect(() => {
+        const fetchFavoriteMenu = async () => {
+            try {
+                const res = await fetch("/api/favorite-menu");
+                const data = await res.json();
+                setFavoriteMenu(data.data);
+            } catch (error) {
+                console.error("Failed to fetch favorite menu:", error);
+            }
+        };
+
+        fetchFavoriteMenu();
+    }, []);
+
+    console.log('faveriteMenu', favoriteMenu);
+
 
     const activeMenuItem = useMemo(() => {
         return menuItems.find(item =>
@@ -144,29 +163,56 @@ const NewSidebar = () => {
                     data-id="sidebar-logo"
                 />
 
-                {activeMenuItem && (
-                    <div className="py-2 overflow-hidden whitespace-nowrap">
-                        <div
-                            className={cn(
-                                'flex items-center p-2',
-                                isExpanded ? 'justify-start' : 'justify-center'
-                            )}
-                        >
-                            <DynamicIcon iconName={activeMenuItem.icon} />
-                            {isExpanded && (
-                                <div className="ml-3 font-medium">
-                                    {activeMenuItem.title}
-                                </div>
-                            )}
-                        </div>
-                        <div className='p-2 mx-2'>
-                            {isExpanded && renderSubItems(activeMenuItem)}
-                        </div>
+                <Separator className='mt-1' />
 
+                <div className="p-2 mt-2">
+                    <div
+                        className={cn(
+                            'flex items-center',
+                            isExpanded ? 'justify-start' : 'justify-center'
+                        )}
+
+                    >
+                        <Star />
+                        {isExpanded && <span className="ml-3 font-medium">Active Menu</span>}
                     </div>
-                )}
-            </aside>
-        </div>
+                    {favoriteMenu.length > 0 && (
+                        <div className="text-xs rounded-lg whitespace-nowrap flex flex-col">
+                            {favoriteMenu && favoriteMenu.map((item: FavMenuItem, index: number) => (
+                                <Link href={item.path} key={index} className="p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg">
+                                    {isExpanded && <span className="ml-3">{item.title}</span>}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <Separator />
+                {
+                    activeMenuItem && (
+                        <div className="py-2 overflow-hidden whitespace-nowrap">
+                            <div
+                                className={cn(
+                                    'flex items-center p-2',
+                                    isExpanded ? 'justify-start' : 'justify-center'
+                                )}
+                            >
+                                <DynamicIcon iconName={activeMenuItem.icon} />
+                                {isExpanded && (
+                                    <div className="ml-3 font-medium">
+                                        {activeMenuItem.title}
+                                    </div>
+                                )}
+                            </div>
+                            <div className='p-2 mx-2'>
+                                {isExpanded && renderSubItems(activeMenuItem)}
+                            </div>
+
+                        </div>
+                    )
+                }
+            </aside >
+        </div >
     );
 }
 

@@ -1,6 +1,6 @@
 import { my_approvals, purchase_requests } from "@/paraglide/messages";
 
-export interface MenuItem {
+export interface FavMenuItem {
     title: string;
     path: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,7 +9,7 @@ export interface MenuItem {
     enabled: boolean;
 }
 
-export const favoriteMenu: MenuItem[] = [
+export const favoriteMenu: FavMenuItem[] = [
     {
         title: `${my_approvals()}`,
         path: "/procurement/my-approvals",
