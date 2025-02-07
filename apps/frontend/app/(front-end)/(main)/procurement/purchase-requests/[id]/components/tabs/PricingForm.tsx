@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import SummaryPRTable from "./SummaryPRTable";
 
 type FormMode = "add" | "edit" | "view";
 
@@ -319,7 +320,7 @@ const PricingForm = ({
 
                 <div className="w-full md:w-1/2">
                     <h2 className="text-lg font-semibold mb-4">Calculated Amounts</h2>
-                    {/* <SummaryPRTable
+                    <SummaryPRTable
                         item={{
                             ...summaryFooter,
                             currency: formData.currency || "USD",
@@ -329,7 +330,7 @@ const PricingForm = ({
                         }}
                         currencyBase="THB"
                         currencyCurrent={formData.currency || "USD"}
-                    /> */}
+                    />
                 </div>
 
             </div>

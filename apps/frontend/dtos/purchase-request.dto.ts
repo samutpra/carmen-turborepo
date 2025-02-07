@@ -63,8 +63,7 @@ export type PurchaseRequestDetailCreateModel = z.infer<
 >;
 
 export class PurchaseRequestDetailCreateDto
-  implements PurchaseRequestDetailCreateModel
-{
+  implements PurchaseRequestDetailCreateModel {
   id?: string;
   purchase_request_id!: string;
   product_item_group_id!: string;
@@ -89,8 +88,7 @@ export type PurchaseRequestDetailUpdateModel = z.infer<
 >;
 
 export class PurchaseRequestDetailUpdateDto
-  implements PurchaseRequestDetailUpdateModel
-{
+  implements PurchaseRequestDetailUpdateModel {
   id!: string;
   purchase_request_id!: string;
   product_item_group_id!: string;
@@ -99,3 +97,31 @@ export class PurchaseRequestDetailUpdateDto
   total_price?: number;
   is_active?: boolean | null;
 }
+
+
+export const BudgetSchema = z.object({
+  id: z.string().uuid().optional(),
+  location: z.string(),
+  category: z.string(),
+  totalBudget: z.number(),
+  softCommitmentDeptHead: z.number(),
+  softCommitmentPO: z.number(),
+  hardCommitment: z.number(),
+  availableBudget: z.number(),
+  currentPRAmount: z.number(),
+});
+
+export type BudgetModel = z.infer<typeof BudgetSchema>;
+
+const StatusEnum = z.enum(["Approved", "Pending", "Rejected", "In Review", "On Hold"]);
+
+export const workFlowSchema = z.object({
+  id: z.string().uuid().optional(),
+  stage: z.string(),
+  approver: z.string(),
+  status: StatusEnum,
+  date: z.string().nullable(),
+  comments: z.string().nullable(),
+});
+
+export type WorkFlowModel = z.infer<typeof workFlowSchema>;

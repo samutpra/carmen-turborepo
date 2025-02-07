@@ -1,3 +1,4 @@
+import { WorkFlowModel } from '@/dtos/purchase-request.dto';
 import {
 	ActivityLogEntry,
 	Attachment,
@@ -1166,4 +1167,55 @@ export const itemDetails: PurchaseRequestItem[] = [
 		taxIncluded: true,
 	},
 ];
+
+export const budgetData = [
+	{
+		id: 'budget-001',
+		location: "Front Office",
+		category: "Computer",
+		totalBudget: 20000.00,
+		softCommitmentDeptHead: 1000.00,
+		softCommitmentPO: 3000.00,
+		hardCommitment: 2000.00,
+		availableBudget: 14000.00,
+		currentPRAmount: 15000.00,
+	},
+	{
+		id: 'budget-002',
+		location: "Accounting",
+		category: "Computer",
+		totalBudget: 20000.00,
+		softCommitmentDeptHead: 0.00,
+		softCommitmentPO: 0.00,
+		hardCommitment: 0.00,
+		availableBudget: 20000.00,
+		currentPRAmount: 13000.00,
+	},
+	{
+		id: 'budget-003',
+		location: "HouseKeeping",
+		category: "Computer",
+		totalBudget: 20000.00,
+		softCommitmentDeptHead: 0.00,
+		softCommitmentPO: 0.00,
+		hardCommitment: 0.00,
+		availableBudget: 20000.00,
+		currentPRAmount: 10000.00,
+	},
+];
+
+
+export const workFlowData: WorkFlowModel[] = [
+	{ id: "wf-001", stage: "Department Head Approval", approver: "Jane Smith", status: "Approved", date: "2023-07-16", comments: "Approved as per department policy" },
+	{ id: "wf-002", stage: "Finance Manager Approval", approver: "Mike Johnson", status: "Pending", date: null, comments: null },
+	{ id: "wf-003", stage: "CEO Approval", approver: "Sarah Lee", status: "Approved", date: "2023-07-18", comments: "Final approval granted" },
+	{ id: "wf-004", stage: "HR Review", approver: "David Brown", status: "Rejected", date: "2023-07-19", comments: "Missing required documents" },
+	{ id: "wf-005", stage: "IT Security Check", approver: "Emma Wilson", status: "Approved", date: "2023-07-20", comments: "No security concerns found" },
+	{ id: "wf-006", stage: "Compliance Review", approver: "Liam Carter", status: "Pending", date: null, comments: null },
+	{ id: "wf-007", stage: "Operations Approval", approver: "Sophia Green", status: "Approved", date: "2023-07-22", comments: "Reviewed and approved" },
+	{ id: "wf-008", stage: "Procurement Approval", approver: "James White", status: "Rejected", date: "2023-07-23", comments: "Budget exceeded" },
+	{ id: "wf-009", stage: "Legal Review", approver: "Olivia Harris", status: "In Review", date: null, comments: "Under legal consideration" },
+	{ id: "wf-010", stage: "Board Approval", approver: "Daniel Martinez", status: "On Hold", date: "2023-07-25", comments: "Further discussion required" }
+];
+
 
