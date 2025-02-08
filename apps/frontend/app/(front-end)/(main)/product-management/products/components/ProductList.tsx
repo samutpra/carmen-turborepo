@@ -13,15 +13,15 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { fetchProducts } from '../../actions/product';
 import { toastError } from '@/components/ui-custom/Toast';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ProductDisplay from './ProductDisplay';
 import { ProductCreateModel } from '@/dtos/product.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
 
-enum ProductField {
+export enum ProductField {
 	NAME = 'name',
 	CODE = 'code',
-	DESCRIPYION = 'description',
+	DESCRIPTION = 'description',
 	CATEGORY = 'category_name',
 	SUBCATEGORY = 'sub_category_name',
 	ITEM_GROUP = 'item_group_name',
@@ -36,7 +36,7 @@ const sortFields: FieldConfig<ProductCreateModel>[] = [
 const fields: FieldConfig<ProductCreateModel>[] = [
 	...sortFields,
 	{
-		key: ProductField.DESCRIPYION as keyof ProductCreateModel,
+		key: ProductField.DESCRIPTION as keyof ProductCreateModel,
 		label: 'Description',
 	},
 	{ key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
@@ -162,6 +162,11 @@ const ProductList = () => {
 			page={+page}
 			totalPage={+pages}
 			handlePageChange={handlePageChange}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 			data-id="product-list-product-display"
 		/>
 	);
@@ -172,7 +177,6 @@ const ProductList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="product-list-data-display-template"
 		/>
 	);

@@ -263,7 +263,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									className="hover:shadow-md transition-all"
 								>
 									<CardContent className="p-4">
-										<div className="space-y-2">
+										<div className="space-y-4">
 											{fields.map((field) => (
 												<div key={String(field.key)} className="flex items-center">
 													<span className="w-[30%] text-xs font-medium">{field.label}:</span>

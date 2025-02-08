@@ -190,7 +190,8 @@ const CreditNoteList = () => {
 	const content = error ? (
 		<ErrorCard message={error} data-id="credit-note-error-card" />
 	) : (
-		<DisplayComponent<CreditNoteModel>
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		<DisplayComponent<any>
 			items={creditNotes}
 			fields={creditNotesFiltered}
 			idField="id"
