@@ -269,6 +269,7 @@ export class ProductsController {
     const { ...updatedto } = updateDto;
     updatedto.id = id;
     this.logger.debug({ id: id, updateDto: updateDto });
+
     return this.productsService.update(req, id, updatedto);
   }
 

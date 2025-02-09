@@ -24,69 +24,91 @@ export class product_location_item implements ProductLocationModel {
   location_id!: string;
 }
 
+export const product_location_update_item_schema = z.object({
+  product_location_id: z.string().uuid(),
+  location_id: z.string().uuid(),
+});
+
+export type ProductLocationUpdateModel = z.infer<
+  typeof product_location_update_item_schema
+>;
+export class product_location_update_item
+  implements ProductLocationUpdateModel
+{
+  product_location_id!: string;
+  location_id!: string;
+}
+
+export const product_location_remove_item_schema = z.object({
+  product_location_id: z.string().uuid(),
+});
+
+export type ProductLocationRemoveModel = z.infer<
+  typeof product_location_remove_item_schema
+>;
+export class product_location_remove_item
+  implements ProductLocationRemoveModel
+{
+  product_location_id!: string;
+}
+
 // export class product_location_list {
 // 	locations : product_location_item[] = [];
 // }
 
-export const Product_OrderUnit_item_schema = z.object({
+export const Product_Unit_item_schema = z.object({
   unit_id: z.string().uuid(),
-  quantity: z.number(),
+  unit_quantity: z.number(),
   to_unit_id: z.string().uuid(),
-  to_quantity: z.number(),
+  to_unit_quantity: z.number(),
   description: z.string().nullable().optional(),
 });
 
-export type ProductOrderUnitModel = z.infer<
-  typeof Product_OrderUnit_item_schema
->;
-export class Product_OrderUnit_item implements ProductOrderUnitModel {
+export type ProductOrderUnitModel = z.infer<typeof Product_Unit_item_schema>;
+export class Product_Unit_item implements ProductOrderUnitModel {
   unit_id!: string;
-  quantity!: number;
+  unit_quantity!: number;
   to_unit_id!: string;
-  to_quantity!: number;
+  to_unit_quantity!: number;
   description?: string | null;
 }
+
+export const Product_Unit_update_item_schema = z.object({
+  product_order_unit_id: z.string().uuid(),
+  unit_id: z.string().uuid(),
+  unit_quantity: z.number(),
+  to_unit_id: z.string().uuid(),
+  to_unit_quantity: z.number(),
+  description: z.string().nullable().optional(),
+});
+
+export type ProductOrderUnitUpdateModel = z.infer<
+  typeof Product_Unit_update_item_schema
+>;
+export class Product_Unit_update_item implements ProductOrderUnitUpdateModel {
+  product_order_unit_id!: string;
+  unit_id!: string;
+  unit_quantity!: number;
+  to_unit_id!: string;
+  to_unit_quantity!: number;
+  description?: string | null;
+}
+
+export const Product_Unit_remove_item_schema = z.object({
+  product_order_unit_id: z.string().uuid(),
+});
+
+export type ProductUnitRemoveModel = z.infer<
+  typeof Product_Unit_remove_item_schema
+>;
+
+export class Product_Unit_remove_item implements ProductUnitRemoveModel {
+  product_order_unit_id!: string;
+}
+
 // export class Product_OrderUnit_list {
 // 	units : Product_OrderUnit_item[] = [];
 // }
-
-export const Product_RecipeUnit_item_schema = z.object({
-  unit_id: z.string().uuid(),
-  quantity: z.number(),
-  to_unit_id: z.string().uuid(),
-  to_quantity: z.number(),
-  description: z.string().nullable().optional(),
-});
-
-export type ProductRecipeUnitModel = z.infer<
-  typeof Product_RecipeUnit_item_schema
->;
-export class Product_RecipeUnit_item implements ProductRecipeUnitModel {
-  unit_id!: string;
-  quantity!: number;
-  to_unit_id!: string;
-  to_quantity!: number;
-  description?: string | null;
-}
-
-export const Product_CountUnit_item_schema = z.object({
-  unit_id: z.string().uuid(),
-  quantity: z.number(),
-  to_unit_id: z.string().uuid(),
-  to_quantity: z.number(),
-  description: z.string().nullable().optional(),
-});
-
-export type ProductCountUnitModel = z.infer<
-  typeof Product_CountUnit_item_schema
->;
-export class Product_CountUnit_item implements ProductCountUnitModel {
-  unit_id!: string;
-  quantity!: number;
-  to_unit_id!: string;
-  to_quantity!: number;
-  description?: string | null;
-}
 
 export const ProductCreateSchema = z.object({
   id: z.string().uuid().optional(),
@@ -138,13 +160,13 @@ export class ProductCreateDto implements ProductCreateModel {
     add?: product_location_item[];
   };
   orderUnits?: {
-    add?: Product_OrderUnit_item[];
+    add?: Product_Unit_item[];
   };
   recipeUnits?: {
-    add?: Product_RecipeUnit_item[];
+    add?: Product_Unit_item[];
   };
   countUnits?: {
-    add?: Product_CountUnit_item[];
+    add?: Product_Unit_item[];
   };
 }
 
@@ -180,7 +202,7 @@ export class ProductUpdateDto implements ProductUpdateModel {
   name?: string;
   local_name?: string;
   product_status_type?: enum_product_status_type;
-  product_item_group_id!: string;
+  product_item_group_id?: string;
   description?: string | null;
   is_active?: boolean | null;
   primary_unit_id?: string;
@@ -192,19 +214,23 @@ export class ProductUpdateDto implements ProductUpdateModel {
   info?: Product_info;
   locations?: {
     add?: product_location_item[];
-    remove?: product_location_item[];
+    update?: product_location_update_item[];
+    remove?: product_location_remove_item[];
   };
   orderUnits?: {
-    add?: Product_OrderUnit_item[];
-    remove?: Product_OrderUnit_item[];
+    add?: Product_Unit_item[];
+    update?: Product_Unit_update_item[];
+    remove?: Product_Unit_remove_item[];
   };
-  recipeUnit?: {
-    add?: Product_RecipeUnit_item[];
-    remove?: Product_RecipeUnit_item[];
+  recipeUnits?: {
+    add?: Product_Unit_item[];
+    update?: Product_Unit_update_item[];
+    remove?: Product_Unit_remove_item[];
   };
   countUnits?: {
-    add?: Product_CountUnit_item[];
-    remove?: Product_CountUnit_item[];
+    add?: Product_Unit_item[];
+    update?: Product_Unit_update_item[];
+    remove?: Product_Unit_remove_item[];
   };
 }
 
