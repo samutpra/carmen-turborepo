@@ -452,6 +452,37 @@ export class ProductsService {
       });
     }
 
+    if (createDto.primary_unit_id) {
+      const findUnit = await this.db_tenant.tb_unit.findFirst({
+        where: { id: createDto.primary_unit_id },
+      });
+
+      if (!findUnit) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: "Primary Unit not found",
+          data: createDto.primary_unit_id,
+        });
+      }
+    }
+
+    if (createDto.product_item_group_id) {
+      const findProductItemGroup =
+        await this.db_tenant.tb_product_item_group.findFirst({
+          where: {
+            id: createDto.product_item_group_id,
+          },
+        });
+
+      if (!findProductItemGroup) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: "Product Item Group not found",
+          data: createDto.product_item_group_id,
+        });
+      }
+    }
+
     if (createDto.locations.add) {
       const findLocation = await this.db_tenant.tb_location.findMany({
         where: {
@@ -678,6 +709,35 @@ export class ProductsService {
           statusCode: HttpStatus.CONFLICT,
           message: "Product already exists",
           data: found.id,
+        });
+      }
+    }
+
+    if (updateDto.primary_unit_id) {
+      const findUnit = await this.db_tenant.tb_unit.findFirst({
+        where: { id: updateDto.primary_unit_id },
+      });
+
+      if (!findUnit) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: "Primary Unit not found",
+          data: updateDto.primary_unit_id,
+        });
+      }
+    }
+
+    if (updateDto.product_item_group_id) {
+      const findProductItemGroup =
+        await this.db_tenant.tb_product_item_group.findFirst({
+          where: { id: updateDto.product_item_group_id },
+        });
+
+      if (!findProductItemGroup) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: "Product Item Group not found",
+          data: updateDto.product_item_group_id,
         });
       }
     }
