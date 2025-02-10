@@ -514,6 +514,7 @@ erDiagram
   String name UK
   enum_workflow_type workflow_type
   String description "nullable"
+  Json data "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -1238,6 +1239,7 @@ erDiagram
   - `name`: 
   - `workflow_type`: 
   - `description`: 
+  - `data`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 

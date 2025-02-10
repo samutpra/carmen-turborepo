@@ -714,6 +714,7 @@ model tb_workflow {
   name                String                @unique @db.VarChar
   workflow_type       enum_workflow_type
   description         String?
+  data                Json?                 @db.Json
   is_active           Boolean?              @default(true)
   created_at          DateTime?             @default(now()) @db.Timestamptz(6)
   created_by_id       String?               @db.Uuid

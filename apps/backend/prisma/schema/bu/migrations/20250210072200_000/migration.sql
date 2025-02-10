@@ -706,6 +706,7 @@ CREATE TABLE "tb_workflow" (
     "name" VARCHAR NOT NULL,
     "workflow_type" "enum_workflow_type" NOT NULL,
     "description" TEXT,
+    "data" JSON,
     "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,

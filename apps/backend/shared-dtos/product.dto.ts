@@ -393,17 +393,19 @@ export class ProductUpdateDto implements ProductUpdateModel {
 // }
 
 export type Product_info = {
-  brand?: string;
-  uom?: string;
-  packSize?: number;
-  minStock?: number;
-  maxStock?: number;
-  reorderPoint?: number;
-  currentStock?: number;
-  value?: number;
-  supplier?: string;
-  expiryDate?: Date;
-  lastCountDate?: Date;
+  label?: string;
+  value?: string;
+  // brand?: string;
+  // uom?: string;
+  // packSize?: number;
+  // minStock?: number;
+  // maxStock?: number;
+  // reorderPoint?: number;
+  // currentStock?: number;
+  // value?: number;
+  // supplier?: string;
+  // expiryDate?: Date;
+  // lastCountDate?: Date;
 };
 
 export const ProductInfoCreateSchema = z.object({
@@ -412,17 +414,20 @@ export const ProductInfoCreateSchema = z.object({
   price: z.number().nullable().optional(),
   info: z
     .object({
-      brand: z.string().nullable().optional(),
-      uom: z.string().nullable().optional(),
-      packSize: z.number().nullable().optional(),
-      minStock: z.number().nullable().optional(),
-      maxStock: z.number().nullable().optional(),
-      reorderPoint: z.number().nullable().optional(),
-      currentStock: z.number().nullable().optional(),
-      value: z.number().nullable().optional(),
-      supplier: z.string().nullable().optional(),
-      expiryDate: z.date().nullable().optional(),
-      lastCountDate: z.date().nullable().optional(),
+      label: z.string().nullable().optional(),
+      value: z.string().nullable().optional(),
+      // brand: z.string().nullable().optional(),
+      // uom: z.string().nullable().optional(),
+      // packSize: z.number().nullable().optional(),
+      // minStock: z.number().nullable().optional(),
+      // maxStock: z.number().nullable().optional(),
+
+      // reorderPoint: z.number().nullable().optional(),
+      // currentStock: z.number().nullable().optional(),
+      // value: z.number().nullable().optional(),
+      // supplier: z.string().nullable().optional(),
+      // expiryDate: z.date().nullable().optional(),
+      // lastCountDate: z.date().nullable().optional(),
     })
     .optional(),
 });
