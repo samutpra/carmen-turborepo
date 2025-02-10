@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export enum enum_location_type {
-	inventory = 'Inventory',
-	direct = 'Direct',
-	consignment = 'Consignment',
+	inventory = 'inventory',
+	direct = 'direct',
+	consignment = 'consignment',
 }
 
 export type location_info = {
