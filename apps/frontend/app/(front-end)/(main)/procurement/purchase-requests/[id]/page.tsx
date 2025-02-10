@@ -1,17 +1,11 @@
-"use client";
+'use client';
+import React from 'react'
+import { useParams } from 'next/navigation'
+import PrDetail from './components/PrDetail';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
-import { FormAction } from '@/lib/types';
-import PurchaseRequestComponent from '../components/PurchaseRequestComponent';
-
-const PurchaseRequestByIDPage = () => {
-    const params = useParams();
-    const id = params.id as string;
-    const mode = id === FormAction.CREATE ? FormAction.CREATE : FormAction.VIEW;
-    return (
-        <PurchaseRequestComponent id={id} prMode={mode} />
-    )
+const PurchaseRequestIdPage = () => {
+    const { id } = useParams() as { id: string };
+    return <PrDetail id={id} data-id='pr-detail-component' />
 }
 
-export default PurchaseRequestByIDPage
+export default PurchaseRequestIdPage

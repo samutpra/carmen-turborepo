@@ -1,6 +1,7 @@
 // File: types/inventory.ts
 
-import { z } from "zod";
+import { z } from 'zod';
+
 import * as m from '@/paraglide/messages.js';
 
 // Common Types and Enums
@@ -402,6 +403,7 @@ export interface PurchaseRequestItem {
     lastPrice: number;
     lastOrderDate: Date;
     lastVendor: string;
+    inventoryUnit: string;
   };
   accountCode: string;
   jobCode: string;
@@ -1298,8 +1300,16 @@ export type IProductList = z.infer<typeof ProductListSchema>;
 export type PaginationType = {
   page?: number | 0;
   pages?: number | 0;
-  perPage?: number | 10;
+  perpage?: number | 10;
   total?: number | 0;
+}
+
+export interface SignInResponse {
+  id: string;
+  username: string;
+  refresh_token: string;
+  access_token: string;
+  message?: string;
 }
 
 export const SignInSchema = z.object({
@@ -1310,6 +1320,8 @@ export const SignInSchema = z.object({
     message: `${m.password_zod_error()}`,
   }),
 });
+
+export type SignInType = z.infer<typeof SignInSchema>;
 
 export interface User {
   id: string;

@@ -1,0 +1,23 @@
+meta {
+  name: all_products_list
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3500/api/product-management/products
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~page: 2
+}
+
+headers {
+  tenantId: DUMMY
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNkZThkODFjLTIxY2ItNDY3Yi1hMzQ4LThkYzAyMmQzMTVkNCIsInVzZXJuYW1lIjoiZGFld0BjYXJtZW5zb2Z0d2FyZS5jb20iLCJlbWFpbCI6ImRhZXdAY2FybWVuc29mdHdhcmUuY29tIiwiaXNfYWN0aXZlIjpmYWxzZSwiaXNfY29uc2VudCI6ZmFsc2UsImlhdCI6MTczNzQ1NDI0NSwiZXhwIjoxNzM3NTQwNjQ1fQ.7lNSD8Sy-1C2gfC_8vlP1xbW9k4Ku4sf9jKpAkR-wnc
+}

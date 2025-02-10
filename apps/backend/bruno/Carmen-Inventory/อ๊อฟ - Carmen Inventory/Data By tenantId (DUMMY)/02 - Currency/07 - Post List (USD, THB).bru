@@ -1,0 +1,34 @@
+meta {
+  name: 07 - Post List (USD, THB)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/v1/currencies/batch
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "list": [
+      {
+        "code": "USD",
+        "name": "United State USD",
+        "description": "USD Description",
+        "symbol": "$",
+        "is_active": true,
+        "exchange_rate": 35.72
+      },
+      {
+        "code": "THB",
+        "name": "United State USD",
+        "description": "USD Description",
+        "symbol": "$",
+        "is_active": true,
+        "exchange_rate": 35.72
+      }
+    ]
+  }
+}

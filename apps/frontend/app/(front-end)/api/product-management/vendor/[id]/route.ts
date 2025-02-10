@@ -1,5 +1,5 @@
+import { VendorUpdateSchema } from '@/dtos/vendor.dto';
 import { API_URL } from '@/lib/util/api';
-import { vendor_schema } from '@carmensoftware/shared-types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (
@@ -57,7 +57,7 @@ export const PATCH = async (
 			);
 		}
 		const body = await request.json();
-		const result = vendor_schema.safeParse(body);
+		const result = VendorUpdateSchema.safeParse(body);
 		if (!result.success) {
 			return NextResponse.json(
 				{

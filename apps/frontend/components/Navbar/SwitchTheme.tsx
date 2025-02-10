@@ -21,7 +21,12 @@ export function SwitchTheme() {
 	if (!mounted) return null;
 
 	return (
-		<Button variant={'ghost'} onClick={handleClick} className="w-full">
+		<Button
+			variant={'ghost'}
+			onClick={handleClick}
+			className="w-full"
+			data-id="switch-theme-button"
+		>
 			{theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
 		</Button>
 	);

@@ -1,6 +1,6 @@
-import { AccountCodeMapping } from '../components/account-code-mapping';
 import React from 'react';
+import AccountCodeMappingList from './components/AccountCodeMappingList';
 
 export default function AccountCodeMappingPage() {
-	return <AccountCodeMapping />;
+	return <AccountCodeMappingList data-id="account-code-mapping" />;
 }

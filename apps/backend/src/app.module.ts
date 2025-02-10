@@ -8,9 +8,11 @@ import { DeliveryPointModule } from './_application/delivery-point/delivery-poin
 import { DepartmentsModule } from './_application/departments/departments.module';
 import { ExchangerateModule } from './_application/exchangerate/exchangerate.module';
 import { GoodReceiveNoteModule } from './_application/good-receive-note/good-receive-note.module';
+import { LocationProductModule } from './_application/location-product/location-product.module';
 import { LocationsModule } from './_application/locations/locations.module';
 import { ProductCategoryModule } from './_application/product-category/product-category.module';
 import { ProductItemGroupModule } from './_application/product-item-group/product-item-group.module';
+import { ProductLocationModule } from './_application/product-location/product-location.module';
 import { ProductSubCategoryModule } from './_application/product-sub-category/product-sub-category.module';
 import { ProductsModule } from './_application/products/products.module';
 import { PurchaseOrderModule } from './_application/purchase-order/purchase-order.module';
@@ -30,6 +32,7 @@ import { SystemClusterModule } from './_system/system-cluster/system-cluster.mod
 import { SystemUserBusinessUnitModule } from './_system/system-user-business-unit/system-user-business-unit.module';
 import { SystemUserProfileModule } from './_system/system-user-profile/system-user-profile.module';
 import { SystemUserModule } from './_system/system-users/system-users.module';
+import { SystemCurrencyIsoModule } from './_system/system_currency_iso/system_currency_iso.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -73,6 +76,9 @@ import { AppService } from './app.service';
     UserBusinessUnitModule,
     UserPermissionModule,
     DeliveryPointModule,
+    SystemCurrencyIsoModule,
+    ProductLocationModule,
+    LocationProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

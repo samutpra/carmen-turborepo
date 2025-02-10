@@ -3,8 +3,8 @@ import PhysicalCountManagementComponent from './components/PhysicalCountManageme
 
 const PhysicalCountManagementPage = () => {
     return (
-        <PhysicalCountManagementComponent />
-    )
+			<PhysicalCountManagementComponent data-id="physical-count-management-component" />
+		);
 }
 
 export default PhysicalCountManagementPage

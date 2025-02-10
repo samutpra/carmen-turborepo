@@ -181,6 +181,12 @@ erDiagram
   String user_id FK
   DateTime expired_on
 }
+"tb_currency_iso" {
+  String id PK
+  String iso_code UK
+  String name
+  String symbol
+}
 "tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_updated_by_idTotb_user
@@ -440,3 +446,11 @@ erDiagram
   - `token_type`: 
   - `user_id`: 
   - `expired_on`: 
+
+### `tb_currency_iso`
+
+**Properties**
+  - `id`: 
+  - `iso_code`: 
+  - `name`: 
+  - `symbol`: 

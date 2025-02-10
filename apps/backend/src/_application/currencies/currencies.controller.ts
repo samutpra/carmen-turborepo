@@ -1,11 +1,12 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-
 import {
   CurrencyCreateDto,
+  CurrencyCreateDtoList,
   CurrencyUpdateDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   Body,
   Controller,
@@ -51,6 +52,10 @@ export class CurrenciesController {
     type: 'uuid',
   })
   async findOne(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: CurrenciesController.name,
+      function: this.findOne.name,
+    });
     this.logger.debug({ id: id });
     return this.currenciesService.findOne(req, id);
   }
@@ -69,6 +74,10 @@ export class CurrenciesController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
+    this.logger.debug({
+      file: CurrenciesController.name,
+      function: this.findAll.name,
+    });
     const defaultSearchFields: string[] = [
       'name',
       'code',
@@ -109,8 +118,28 @@ export class CurrenciesController {
     description: 'CurrencyCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
+    this.logger.debug({
+      file: CurrenciesController.name,
+      function: this.create.name,
+    });
     this.logger.debug({ createDto: createDto });
     return this.currenciesService.create(req, createDto);
+  }
+  //#endregion CREATE
+
+  //#region CREATE
+  @Post('/batch')
+  @ApiBody({
+    type: CurrencyCreateDtoList,
+    description: 'CurrencyCreateDto',
+  })
+  async createBatch(@Body() createDtoList: any, @Req() req: Request) {
+    this.logger.debug({
+      file: CurrenciesController.name,
+      function: this.create.name,
+    });
+    this.logger.debug({ createDto: createDtoList });
+    return this.currenciesService.createBatch(req, createDtoList);
   }
   //#endregion CREATE
 
@@ -147,6 +176,10 @@ export class CurrenciesController {
     type: 'uuid',
   })
   async delete(@Param('id') id: string, @Req() req: Request) {
+    this.logger.debug({
+      file: CurrenciesController.name,
+      function: this.delete.name,
+    });
     this.logger.debug({ id: id });
     return this.currenciesService.delete(req, id);
   }

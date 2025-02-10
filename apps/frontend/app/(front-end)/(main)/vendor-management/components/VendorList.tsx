@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/app/context/AuthContext';
-import { vendor_type } from '@carmensoftware/shared-types';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus, Printer } from 'lucide-react';
@@ -13,39 +12,57 @@ import { useURL } from '@/hooks/useURL';
 import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import VendorDisplay from './VendorDisplay';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { VendorCreateModel } from '@/dtos/vendor.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
-enum VendorFields {
+const enum VendorFields {
 	Name = 'name',
 	Description = 'description',
-	isActive = 'is_active',
+	IsActive = 'is_active',
 }
 
-const sortFields: FieldConfig<vendor_type>[] = [
-	{ key: VendorFields.Name, label: m.department_name_label() },
-	{ key: VendorFields.isActive, label: m.status_text(), type: 'badge' },
+const sortFields: FieldConfig<VendorCreateModel>[] = [
+	{
+		key: VendorFields.Name,
+		label: m.vendor_name_label(),
+	},
+	{
+		key: VendorFields.Description,
+		label: m.description(),
+	},
+	{
+		key: VendorFields.IsActive,
+		label: m.status_text(),
+	},
 ];
+
+type SortDirection = 'asc' | 'desc';
+type SortQuery = `${VendorFields}:${SortDirection}` | '';
 
 const VendorList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [vendors, setVendors] = useState<vendor_type[]>([]);
+	const [vendors, setVendors] = useState<VendorCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchAllVendors(token, tenantId, { search, status });
+			const data = await fetchAllVendors(token, tenantId, { search, status, page, sort });
 			setVendors(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -55,11 +72,17 @@ const VendorList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	if (error) {
 		return <ErrorCard message={error} />;
 	}
+
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
 
 	const title = `${m.vendors_title()}`;
 
@@ -97,22 +120,27 @@ const VendorList = () => {
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
 				/>
-				<SortDropDown
+				<SortComponent
 					fieldConfigs={sortFields}
-					items={vendors}
-					onSort={setVendors}
-				/>
+					sort={sort}
+					setSort={setSort} />
 			</div>
 		</div>
 	);
 
-	if (isLoading) return <SkeltonLoad />
-
 	const content = (
 		<VendorDisplay
 			vendors={vendors}
+			page={Number(page)}
+			totalPage={Number(pages)}
+			handlePageChange={handlePageChange}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 		/>
-	)
+	);
 
 	return (
 		<DataDisplayTemplate

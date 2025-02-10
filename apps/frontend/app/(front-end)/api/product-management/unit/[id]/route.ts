@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/lib/util/api';
-import { UnitSchema } from '@carmensoftware/shared-types';
+import { UnitUpdateSchema } from '@/dtos/unit.dto';
 
 export const DELETE = async (
 	request: NextRequest,
@@ -57,7 +57,7 @@ export const PATCH = async (
 			);
 		}
 		const body = await request.json();
-		const result = UnitSchema.safeParse(body);
+		const result = UnitUpdateSchema.safeParse(body);
 		if (!result.success) {
 			return NextResponse.json(
 				{

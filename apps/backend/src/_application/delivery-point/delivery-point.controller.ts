@@ -1,11 +1,8 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from 'shared-dtos';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import {
-  DeliveryPointCreateDto,
-  DeliveryPointUpdateDto,
-} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,
@@ -65,7 +62,7 @@ export class DeliveryPointController {
     @Query('sort') sort?: string,
     @Query('advance') advance?: QueryAdvance,
   ) {
-    const defaultSearchFields: string[] = ["name"];
+    const defaultSearchFields: string[] = ['name'];
 
     this.logger.debug({
       page: page,

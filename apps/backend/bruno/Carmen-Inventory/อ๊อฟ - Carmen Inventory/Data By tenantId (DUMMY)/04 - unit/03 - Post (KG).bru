@@ -17,3 +17,7 @@ body:json {
     "is_active": true
   }
 }
+
+script:post-response {
+  bru.setEnvVar('unit_id',res.body.id)
+}

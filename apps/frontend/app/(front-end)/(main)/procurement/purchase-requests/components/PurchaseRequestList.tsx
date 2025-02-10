@@ -1,160 +1,125 @@
-"use client"
+"use client";
+import { toastError } from '@/components/ui-custom/Toast';
+import { Button } from '@/components/ui/button';
+import { useURL } from '@/hooks/useURL';
+import { PrType } from '@/lib/types';
+import { FileDown, Plus, Printer } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { useRouter } from '@/lib/i18n';
-import { FormAction, PrType } from '@/lib/types';
-import { sampleData } from '../data/sampleData';
-import { CustomButton } from '@/components/ui-custom/CustomButton';
-import { PlusCircle, Printer, Search, Sheet } from 'lucide-react';
-import SearchInput from '@/components/ui-custom/SearchInput';
-import SkeletonTableLoading from '@/components/ui-custom/Loading/SkeltonTableLoading';
-import DialogDelete from '@/components/ui-custom/DialogDelete';
-import DataTable from '@/components/templates/DataTable';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
-import DataCard from '@/components/templates/DataCard';
+import * as m from '@/paraglide/messages.js';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import { statusOptions } from '@/lib/statusOptions';
+import { FieldConfig } from '@/lib/util/uiConfig';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import PurchaseDisplay from './PurchaseDisplay';
+import { Link } from '@/lib/i18n';
 
+enum PrField {
+  Id = 'id',
+  Type = 'type',
+  Description = 'description',
+  Requestor = 'requestor',
+  Department = 'department',
+  Date = 'date',
+  Status = 'status',
+  Amount = 'amount',
+  CurrentStage = 'currentStage'
+}
+
+export const sortFields: FieldConfig<PrType>[] = [
+  { key: PrField.Type, label: 'Type' },
+  { key: PrField.Requestor, label: 'Requestor' },
+  { key: PrField.Department, label: 'Department' },
+  { key: PrField.Date, label: 'Date', type: 'date' },
+  { key: PrField.Status, label: 'Status', type: 'badge' },
+  { key: PrField.Amount, label: 'Amount', type: 'amount' },
+  { key: PrField.CurrentStage, label: 'Current Stage' },
+]
 
 const PurchaseRequestList = () => {
-  const [prData, setPrData] = useState<PrType[]>([])
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [idToDelete, setIdToDelete] = useState<string | null | undefined>(null);
-  const [dialogDelete, setDialogDelete] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    const fetchPr = async () => {
-      setIsLoading(true);
-      try {
-        const data = sampleData.map((item: PrType) => item);
-        setPrData(data);
-      } catch (error) {
-        console.error('Error fetching units:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPr();
-  }, [])
-
-  const handleAdd = () => {
-    router.push(`/procurement/purchase-requests/${FormAction.CREATE}`);
-
-  }
-
-  const handleView = (item: PrType) => {
-    console.log('Viewing unit:', item);
-    router.push(`/procurement/purchase-requests/${item.id}`);
-  };
-
-  const handleEdit = (item: PrType) => {
-    console.log(item);
-    router.push(`/procurement/purchase-requests/${item.id}/${FormAction.EDIT}`);
-  };
-
-  const handleDelete = (item: PrType) => {
-    setIdToDelete(item.id);
-    setDialogDelete(true);
-  };
-
-  const confirmDelete = async () => {
+  const [prList, setPrList] = useState<PrType[]>([]);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useURL('search');
+  const [status, setStatus] = useURL('status');
+  const [error, setError] = useState<string | null>(null);
+  const fetchPrList = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      setPrData((prev) => prev.filter((item) => item.id !== idToDelete));
-      setDialogDelete(false);
-    } catch (error) {
-      console.error('Error deleting:', error);
+      // Simulate an async operation
+      const response = await fetch('/api/procurement/purchase-requests');
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to fetch credit notes');
+      }
+      setPrList(result.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      toastError({ message: 'Failed to fetch purchase requests' });
     } finally {
       setIsLoading(false);
-      setIdToDelete(null);
     }
   };
 
-  const title = 'Purchase Request';
+  console.log('prList', prList);
 
+  useEffect(() => {
+    fetchPrList();
+  }, [search, status]);
 
-  const columns: { key: keyof PrType; label: string }[] = [
-    { key: 'type', label: 'Type' },
-    { key: 'requestor', label: 'Requestor' },
-    { key: 'department', label: 'Department' },
-    { key: 'description', label: 'Description' },
-    { key: 'date', label: 'Date' },
-    { key: 'status', label: 'Status' },
-    { key: 'amount', label: 'Amount' },
-    { key: 'currentStage', label: 'Current Stage' },
-  ];
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const title = 'Purchase Requests';
 
   const actionButtons = (
-    <div className="flex flex-col gap-4 md:flex-row">
-      <CustomButton
-        className='w-full md:w-20'
-        prefixIcon={<PlusCircle />}
-        onClick={handleAdd}
-      >
-        Add
-      </CustomButton>
-      <div className='flex flex-row md:flex-row gap-4'>
-        <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Sheet />}>Export</CustomButton>
-        <CustomButton className='w-full md:w-20' variant="outline" prefixIcon={<Printer />}>Print</CustomButton>
-      </div>
-
+    <div className="action-btn-container">
+      <Button variant={'outline'} size={'sm'} asChild>
+        <Link href={'/procurement/purchase-requests/new'}>
+          <Plus />
+          New Purchase Request
+        </Link>
+      </Button>
+      <Button variant="outline" className="group" size={'sm'}>
+        <FileDown className="h-4 w-4" />
+        {m.export_text()}
+      </Button>
+      <Button variant="outline" size={'sm'}>
+        <Printer className="h-4 w-4" />
+        {m.print_text()}
+      </Button>
     </div>
   );
 
   const filter = (
-    <div className="flex flex-col justify-start sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-      <div className="w-full sm:w-auto flex-grow">
-        <SearchInput
-          placeholder="Search Units..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          Icon={Search}
+    <div className="filter-container">
+      <SearchForm
+        defaultValue={search}
+        onSearch={setSearch}
+        placeholder={`${m.Search()}..`}
+      />
+      <div className="all-center gap-2">
+        <StatusSearchDropdown
+          options={statusOptions}
+          value={status}
+          onChange={setStatus}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+        />
+        <SortDropDown
+          fieldConfigs={sortFields}
+          items={prList}
+          onSort={setPrList}
         />
       </div>
     </div>
   );
 
   const content = (
-    <>
-      <div className="block lg:hidden">
-        {isLoading ? (
-          <SkeltonCardLoading />) : (
-          <DataCard
-            data={prData}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onView={handleView}
-          />
-        )}
-      </div>
-
-      <div className="hidden lg:block">
-
-
-        {isLoading ? (
-          <SkeletonTableLoading />
-        ) : (
-          <DataTable
-            data={prData}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onView={handleView}
-          />
-        )}
-      </div>
-
-      <DialogDelete
-        open={dialogDelete}
-        onOpenChange={setDialogDelete}
-        onConfirm={confirmDelete}
-        idDelete={idToDelete}
-      />
-    </>
-  );
-
+    <PurchaseDisplay prData={prList} fields={sortFields} />
+  )
 
 
   return (
@@ -163,6 +128,7 @@ const PurchaseRequestList = () => {
       actionButtons={actionButtons}
       filters={filter}
       content={content}
+      isLoading={isLoading}
     />
   )
 }

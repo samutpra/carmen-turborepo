@@ -42,7 +42,8 @@ interface DataCardProps<T extends Record<string, FieldValue>> {
 	fields: FieldConfig<T>[];
 	idField: keyof T;
 	onSuccess?: SuccessCallback<T>;
-	onDelete?: (id: string) => void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	onDelete?: (id: any) => void;
 	isLoading?: boolean;
 	loadingCount?: number;
 	editComponent?: (props: {

@@ -22,7 +22,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 	nameSelect
 }) => {
 	return (
-		<Card className='min-h-44'>
+		<Card className="min-h-40">
 			<CardHeader className="flex flex-row items-center justify-between pb-0">
 				<CardTitle className="text-sm font-medium">{title}</CardTitle>
 				<Button
@@ -36,14 +36,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 					<Plus className="h-4 w-4" />
 				</Button>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="py-0">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center space-x-2">
 						{icon}
-						<span className="text-2xl font-bold">{count}</span>
+						<span className="text-xl font-bold">{count}</span>
 					</div>
 				</div>
-				<span className="text-2xl font-bold">{nameSelect}</span>
+				<span className="text-xl font-bold">{nameSelect}</span>
 			</CardContent>
 		</Card>
 	);

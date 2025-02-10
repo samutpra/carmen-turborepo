@@ -1,21 +1,13 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils/exceptions';
 import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
-
-import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+
 import {
   HttpStatus,
   Injectable,
@@ -27,9 +19,7 @@ import {
   tb_user_tb_business_unit,
 } from '@prisma-carmen-client-system';
 
-import {
-  SystemUserBusinessUnitController,
-} from './system-user-business-unit.controller';
+import { SystemUserBusinessUnitController } from './system-user-business-unit.controller';
 
 @Injectable()
 export class SystemUserBusinessUnitService {
@@ -133,7 +123,7 @@ export class SystemUserBusinessUnitService {
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perpage,
+        perpage: q.perpage,
         pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };

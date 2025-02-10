@@ -1,12 +1,18 @@
 import React from 'react'
 
+interface Transaction {
+    qtyRequired: number;
+    qtyApproved: number;
+    qtyIssued?: number;
+    total: number;
+}
+
 interface Props {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transactions: any;
+    transactions: Transaction[];
 }
 
 const TransactionSummary: React.FC<Props> = ({ transactions }) => {
-    const totalQuantity = transactions.reduce((sum, item) => sum + item.qtyRequired, 0);
+    const totalQuantity = transactions.reduce((sum, item: Transaction) => sum + item.qtyRequired, 0);
     const totalApproved = transactions.reduce((sum, item) => sum + item.qtyApproved, 0);
     const totalIssued = transactions.reduce((sum, item) => sum + (item.qtyIssued || 0), 0);
     const totalAmount = transactions.reduce((sum, item) => sum + item.total, 0);

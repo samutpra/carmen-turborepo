@@ -49,7 +49,7 @@ erDiagram
   String symbol "nullable"
   String description "nullable"
   Boolean is_active "nullable"
-  Float rate "nullable"
+  Decimal exchange_rate "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -78,7 +78,7 @@ erDiagram
   String id PK
   DateTime at_date "nullable"
   String currency_id FK "nullable"
-  Float rate "nullable"
+  Decimal exchange_rate "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -88,6 +88,7 @@ erDiagram
   String id PK
   String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -97,8 +98,26 @@ erDiagram
 "tb_good_receive_note_detail" {
   String id PK
   String good_receive_note_id FK
-  String name "nullable"
-  Decimal qty "nullable"
+  String purchase_order_detail_id FK
+  String location_id FK
+  Decimal received_qty "nullable"
+  String received_unit_id FK
+  String received_unit_name "nullable"
+  Boolean is_foc "nullable"
+  Decimal price "nullable"
+  Decimal tax_amount "nullable"
+  Decimal total_amount "nullable"
+  String delivery_point_id FK "nullable"
+  Decimal base_price "nullable"
+  Decimal base_qty "nullable"
+  Decimal extra_cost "nullable"
+  Decimal total_cost "nullable"
+  Boolean is_discount "nullable"
+  Decimal discount_amount "nullable"
+  Boolean is_tax_adjustment "nullable"
+  String lot_number "nullable"
+  DateTime expired_date "nullable"
+  String comment "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -131,7 +150,9 @@ erDiagram
   String from_lot_name "nullable"
   String current_lot_name "nullable"
   Decimal qty "nullable"
-  Decimal cost "nullable"
+  Decimal unit_cost "nullable"
+  Decimal total_cost "nullable"
+  Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -142,6 +163,7 @@ erDiagram
   String name UK
   enum_location_type location_type
   String description "nullable"
+  Json info "nullable"
   Boolean is_active "nullable"
   String delivery_point_id FK "nullable"
   DateTime created_at "nullable"
@@ -167,9 +189,10 @@ erDiagram
   String id PK
   String code UK
   String name UK
+  String local_name "nullable"
   String description "nullable"
-  String primary_unit FK
-  Boolean is_active "nullable"
+  String primary_unit_id FK
+  enum_product_status_type product_status_type
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -189,7 +212,12 @@ erDiagram
 "tb_product_info" {
   String id PK
   String product_id FK
-  Float price "nullable"
+  String product_item_group_id FK "nullable"
+  Boolean is_ingredients "nullable"
+  Decimal price "nullable"
+  enum_tax_type tax_type "nullable"
+  Decimal tax_rate "nullable"
+  Decimal price_deviation_limit "nullable"
   Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -238,6 +266,20 @@ erDiagram
   enum_purchase_order_doc_status purchase_order_status "nullable"
   String description "nullable"
   DateTime order_date "nullable"
+  DateTime delivery_date "nullable"
+  String vendor_id FK "nullable"
+  String vendor_name "nullable"
+  String currency_id FK "nullable"
+  String currency_name "nullable"
+  String base_currency_id FK "nullable"
+  String base_currency_name "nullable"
+  Decimal exchange_rate "nullable"
+  String notes "nullable"
+  DateTime approval_date "nullable"
+  String email "nullable"
+  String buyer_name "nullable"
+  String credit_term "nullable"
+  String remarks "nullable"
   Json history "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
@@ -252,6 +294,26 @@ erDiagram
   Boolean is_active "nullable"
   String purchase_order_id FK "nullable"
   String purchase_request_detail_id FK "nullable"
+  Decimal exchange_rate "nullable"
+  Decimal order_qty "nullable"
+  String order_unit_id FK "nullable"
+  String order_unit_name "nullable"
+  Decimal base_qty "nullable"
+  String base_unit_id FK "nullable"
+  String base_unit_name "nullable"
+  Decimal unit_price "nullable"
+  Decimal sub_total_price "nullable"
+  Decimal base_sub_total_price "nullable"
+  Boolean is_foc "nullable"
+  Boolean is_tax_included "nullable"
+  Decimal tax_rate "nullable"
+  Decimal tax_amount "nullable"
+  Decimal discount_rate "nullable"
+  Decimal discount_amount "nullable"
+  Decimal net_amount "nullable"
+  Decimal base_net_amount "nullable"
+  Decimal total_price "nullable"
+  Decimal base_total_price "nullable"
   Json history "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -265,9 +327,13 @@ erDiagram
   String workflow_id FK "nullable"
   Json workflow_obj "nullable"
   Json workflow_history "nullable"
+  String current_workflow_status "nullable"
   enum_purchase_request_doc_status purchase_request_status "nullable"
   String requestor_id "nullable"
   String department_id "nullable"
+  String job_code "nullable"
+  String budget_code "nullable"
+  Decimal allocated_budget_amount "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -277,17 +343,29 @@ erDiagram
 "tb_purchase_request_detail" {
   String id PK
   String purchase_request_id FK "nullable"
-  String location_id "nullable"
-  String product_id "nullable"
-  String unit_id "nullable"
+  String location_id FK "nullable"
+  String product_id FK "nullable"
+  String unit_id FK "nullable"
+  String vendor_id FK "nullable"
+  String vendor_name "nullable"
+  String price_list_id FK "nullable"
   String description "nullable"
-  Float requested_qty "nullable"
-  Float approved_qty "nullable"
-  String currency_id "nullable"
-  Float currency_rate "nullable"
+  Decimal requested_qty "nullable"
+  Decimal approved_qty "nullable"
+  String currency_id FK "nullable"
+  Decimal exchange_rate "nullable"
+  DateTime exchange_rate_date "nullable"
   Decimal price "nullable"
   Decimal total_price "nullable"
-  Json workflow_history "nullable"
+  Decimal foc "nullable"
+  Boolean is_tax_included "nullable"
+  Boolean is_tax_adjustment "nullable"
+  Boolean is_discount "nullable"
+  Decimal discount_rate "nullable"
+  Decimal discount_amount "nullable"
+  Decimal tax_rate "nullable"
+  Decimal tax_amount "nullable"
+  Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -388,9 +466,9 @@ erDiagram
   String product_id FK "nullable"
   enum_unit_type unit_type
   String from_unit_id FK "nullable"
-  Float from_unit_qty "nullable"
+  Decimal from_unit_qty "nullable"
   String to_unit_id FK "nullable"
-  Float to_unit_qty "nullable"
+  Decimal to_unit_qty "nullable"
   String description "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
@@ -442,24 +520,113 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id "nullable"
 }
+"tb_count_stock" {
+  String id PK
+  DateTime start_date
+  DateTime end_date "nullable"
+  String location_id
+  String notes "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_count_stock_detail" {
+  String id PK
+  String count_stock_id FK
+  String product_id FK
+  Decimal qty
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_jv_detail" {
+  String id PK
+  String jv_header_id FK
+  String account_department_id
+  String account_name
+  String currency_id FK
+  Decimal exchange_rate
+  Decimal debit
+  Decimal credit
+  String base_currency_id FK
+  Decimal base_debit
+  Decimal base_credit
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_jv_header" {
+  String id PK
+  String currency_id FK
+  Decimal exchange_rate
+  String base_currency_id FK
+  String jv_type
+  String jv_number
+  DateTime jv_date
+  String jv_description "nullable"
+  enum_jv_status jv_status
+  Json workflow "nullable"
+  Json info "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_price_list" {
+  String id PK
+  String vendor_id FK "nullable"
+  DateTime from_date
+  DateTime to_date
+  String product_id FK "nullable"
+  Decimal price
+  String unit_id FK "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_product_location" {
+  String id PK
+  String product_id FK
+  String location_id FK
+}
 "tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
 "tb_exchange_rate" }o--o| "tb_currency" : tb_currency
 "tb_good_receive_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_good_receive_note_detail" }o--o| "tb_delivery_point" : tb_delivery_point
 "tb_good_receive_note_detail" }o--|| "tb_good_receive_note" : tb_good_receive_note
+"tb_good_receive_note_detail" }o--|| "tb_location" : tb_location
+"tb_good_receive_note_detail" }o--|| "tb_purchase_order_detail" : tb_purchase_order_detail
+"tb_good_receive_note_detail" }o--|| "tb_unit" : tb_unit
 "tb_inventory_transaction_closing_balance" }o--|| "tb_inventory_transaction_detail" : tb_inventory_transaction_detail
 "tb_inventory_transaction_detail" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_location" }o--o| "tb_delivery_point" : tb_delivery_point
 "tb_product" }o--|| "tb_unit" : tb_unit
 "tb_product_info" |o--|| "tb_product" : tb_product
+"tb_product_info" }o--o| "tb_product_item_group" : tb_product_item_group
 "tb_product_item_group" }o--|| "tb_product_sub_category" : tb_product_sub_category
 "tb_product_sub_category" }o--|| "tb_product_category" : tb_product_category
 "tb_product_tb_vendor" }o--o| "tb_product" : tb_product
 "tb_product_tb_vendor" }o--o| "tb_vendor" : tb_vendor
+"tb_purchase_order" }o--o| "tb_currency" : tb_currency_tb_purchase_order_base_currency_idTotb_currency
+"tb_purchase_order" }o--o| "tb_currency" : tb_currency_tb_purchase_order_currency_idTotb_currency
+"tb_purchase_order" }o--o| "tb_vendor" : tb_vendor
+"tb_purchase_order_detail" }o--o| "tb_unit" : tb_unit_tb_purchase_order_detail_base_unit_idTotb_unit
+"tb_purchase_order_detail" }o--o| "tb_unit" : tb_unit_tb_purchase_order_detail_order_unit_idTotb_unit
 "tb_purchase_order_detail" }o--o| "tb_purchase_order" : tb_purchase_order
 "tb_purchase_order_detail" }o--o| "tb_purchase_request_detail" : tb_purchase_request_detail
 "tb_purchase_request" }o--o| "tb_workflow" : tb_workflow
+"tb_purchase_request_detail" }o--o| "tb_currency" : tb_currency
+"tb_purchase_request_detail" }o--o| "tb_location" : tb_location
+"tb_purchase_request_detail" }o--o| "tb_price_list" : tb_price_list
+"tb_purchase_request_detail" }o--o| "tb_product" : tb_product
 "tb_purchase_request_detail" }o--o| "tb_purchase_request" : tb_purchase_request
+"tb_purchase_request_detail" }o--o| "tb_unit" : tb_unit
+"tb_purchase_request_detail" }o--o| "tb_vendor" : tb_vendor
 "tb_stock_in" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_stock_in_detail" }o--|| "tb_stock_in" : tb_stock_in
 "tb_stock_out" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
@@ -473,6 +640,18 @@ erDiagram
 "tb_unit_conversion" }o--o| "tb_unit" : tb_unit_tb_unit_conversion_to_unit_idTotb_unit
 "tb_vendor_address" }o--o| "tb_vendor" : tb_vendor
 "tb_vendor_contact" }o--o| "tb_vendor" : tb_vendor
+"tb_count_stock_detail" }o--|| "tb_count_stock" : tb_count_stock
+"tb_count_stock_detail" }o--|| "tb_product" : tb_product
+"tb_jv_detail" }o--|| "tb_currency" : tb_currency_tb_jv_detail_base_currency_idTotb_currency
+"tb_jv_detail" }o--|| "tb_currency" : tb_currency_tb_jv_detail_currency_idTotb_currency
+"tb_jv_detail" }o--|| "tb_jv_header" : tb_jv_header
+"tb_jv_header" }o--|| "tb_currency" : tb_currency_tb_jv_header_base_currency_idTotb_currency
+"tb_jv_header" }o--|| "tb_currency" : tb_currency_tb_jv_header_currency_idTotb_currency
+"tb_price_list" }o--o| "tb_product" : tb_product
+"tb_price_list" }o--o| "tb_unit" : tb_unit
+"tb_price_list" }o--o| "tb_vendor" : tb_vendor
+"tb_product_location" }o--|| "tb_location" : tb_location
+"tb_product_location" }o--|| "tb_product" : tb_product
 ```
 
 ### `tb_activity`
@@ -526,7 +705,7 @@ erDiagram
   - `symbol`: 
   - `description`: 
   - `is_active`: 
-  - `rate`: 
+  - `exchange_rate`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -561,7 +740,7 @@ erDiagram
   - `id`: 
   - `at_date`: 
   - `currency_id`: 
-  - `rate`: 
+  - `exchange_rate`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -573,6 +752,7 @@ erDiagram
   - `id`: 
   - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -584,8 +764,26 @@ erDiagram
 **Properties**
   - `id`: 
   - `good_receive_note_id`: 
-  - `name`: 
-  - `qty`: 
+  - `purchase_order_detail_id`: 
+  - `location_id`: 
+  - `received_qty`: 
+  - `received_unit_id`: 
+  - `received_unit_name`: 
+  - `is_foc`: 
+  - `price`: 
+  - `tax_amount`: 
+  - `total_amount`: 
+  - `delivery_point_id`: 
+  - `base_price`: 
+  - `base_qty`: 
+  - `extra_cost`: 
+  - `total_cost`: 
+  - `is_discount`: 
+  - `discount_amount`: 
+  - `is_tax_adjustment`: 
+  - `lot_number`: 
+  - `expired_date`: 
+  - `comment`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -624,7 +822,9 @@ erDiagram
   - `from_lot_name`: 
   - `current_lot_name`: 
   - `qty`: 
-  - `cost`: 
+  - `unit_cost`: 
+  - `total_cost`: 
+  - `info`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -637,6 +837,7 @@ erDiagram
   - `name`: 
   - `location_type`: 
   - `description`: 
+  - `info`: 
   - `is_active`: 
   - `delivery_point_id`: 
   - `created_at`: 
@@ -666,9 +867,10 @@ erDiagram
   - `id`: 
   - `code`: 
   - `name`: 
+  - `local_name`: 
   - `description`: 
-  - `primary_unit`: 
-  - `is_active`: 
+  - `primary_unit_id`: 
+  - `product_status_type`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -692,7 +894,12 @@ erDiagram
 **Properties**
   - `id`: 
   - `product_id`: 
+  - `product_item_group_id`: 
+  - `is_ingredients`: 
   - `price`: 
+  - `tax_type`: 
+  - `tax_rate`: 
+  - `price_deviation_limit`: 
   - `info`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -749,6 +956,20 @@ erDiagram
   - `purchase_order_status`: 
   - `description`: 
   - `order_date`: 
+  - `delivery_date`: 
+  - `vendor_id`: 
+  - `vendor_name`: 
+  - `currency_id`: 
+  - `currency_name`: 
+  - `base_currency_id`: 
+  - `base_currency_name`: 
+  - `exchange_rate`: 
+  - `notes`: 
+  - `approval_date`: 
+  - `email`: 
+  - `buyer_name`: 
+  - `credit_term`: 
+  - `remarks`: 
   - `history`: 
   - `is_active`: 
   - `created_at`: 
@@ -765,6 +986,26 @@ erDiagram
   - `is_active`: 
   - `purchase_order_id`: 
   - `purchase_request_detail_id`: 
+  - `exchange_rate`: 
+  - `order_qty`: 
+  - `order_unit_id`: 
+  - `order_unit_name`: 
+  - `base_qty`: 
+  - `base_unit_id`: 
+  - `base_unit_name`: 
+  - `unit_price`: 
+  - `sub_total_price`: 
+  - `base_sub_total_price`: 
+  - `is_foc`: 
+  - `is_tax_included`: 
+  - `tax_rate`: 
+  - `tax_amount`: 
+  - `discount_rate`: 
+  - `discount_amount`: 
+  - `net_amount`: 
+  - `base_net_amount`: 
+  - `total_price`: 
+  - `base_total_price`: 
   - `history`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -780,9 +1021,13 @@ erDiagram
   - `workflow_id`: 
   - `workflow_obj`: 
   - `workflow_history`: 
+  - `current_workflow_status`: 
   - `purchase_request_status`: 
   - `requestor_id`: 
   - `department_id`: 
+  - `job_code`: 
+  - `budget_code`: 
+  - `allocated_budget_amount`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -797,14 +1042,26 @@ erDiagram
   - `location_id`: 
   - `product_id`: 
   - `unit_id`: 
+  - `vendor_id`: 
+  - `vendor_name`: 
+  - `price_list_id`: 
   - `description`: 
   - `requested_qty`: 
   - `approved_qty`: 
   - `currency_id`: 
-  - `currency_rate`: 
+  - `exchange_rate`: 
+  - `exchange_rate_date`: 
   - `price`: 
   - `total_price`: 
-  - `workflow_history`: 
+  - `foc`: 
+  - `is_tax_included`: 
+  - `is_tax_adjustment`: 
+  - `is_discount`: 
+  - `discount_rate`: 
+  - `discount_amount`: 
+  - `tax_rate`: 
+  - `tax_amount`: 
+  - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -986,3 +1243,88 @@ erDiagram
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
+
+### `tb_count_stock`
+
+**Properties**
+  - `id`: 
+  - `start_date`: 
+  - `end_date`: 
+  - `location_id`: 
+  - `notes`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_count_stock_detail`
+
+**Properties**
+  - `id`: 
+  - `count_stock_id`: 
+  - `product_id`: 
+  - `qty`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_jv_detail`
+
+**Properties**
+  - `id`: 
+  - `jv_header_id`: 
+  - `account_department_id`: 
+  - `account_name`: 
+  - `currency_id`: 
+  - `exchange_rate`: 
+  - `debit`: 
+  - `credit`: 
+  - `base_currency_id`: 
+  - `base_debit`: 
+  - `base_credit`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_jv_header`
+
+**Properties**
+  - `id`: 
+  - `currency_id`: 
+  - `exchange_rate`: 
+  - `base_currency_id`: 
+  - `jv_type`: 
+  - `jv_number`: 
+  - `jv_date`: 
+  - `jv_description`: 
+  - `jv_status`: 
+  - `workflow`: 
+  - `info`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_price_list`
+
+**Properties**
+  - `id`: 
+  - `vendor_id`: 
+  - `from_date`: 
+  - `to_date`: 
+  - `product_id`: 
+  - `price`: 
+  - `unit_id`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_product_location`
+
+**Properties**
+  - `id`: 
+  - `product_id`: 
+  - `location_id`: 

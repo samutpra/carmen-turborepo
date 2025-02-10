@@ -1,10 +1,11 @@
+import { UnitCreateSchema } from '@/dtos/unit.dto';
 import { API_URL } from '@/lib/util/api';
-import { UnitSchema } from '@carmensoftware/shared-types';
+import { extractToken } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+		const token = extractToken(request);
 		if (!token) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
@@ -14,6 +15,7 @@ export const GET = async (request: NextRequest) => {
 
 		const searchParams = request.nextUrl.searchParams;
 		const queryString = searchParams.toString();
+
 		const apiUrl = queryString
 			? `${API_URL}/v1/units?${queryString}`
 			: `${API_URL}/v1/units`;
@@ -61,7 +63,7 @@ export const POST = async (request: NextRequest) => {
 			);
 		}
 		const body = await request.json();
-		const result = UnitSchema.safeParse(body);
+		const result = UnitCreateSchema.safeParse(body);
 
 		if (!result.success) {
 			return NextResponse.json(

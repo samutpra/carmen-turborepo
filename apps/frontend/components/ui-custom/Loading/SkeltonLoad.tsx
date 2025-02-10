@@ -14,18 +14,12 @@ const SkeltonLoad = () => {
 
 			<div className="hidden md:block divide-y divide-gray-200">
 				<div className="border border-gray-200 rounded-md p-5">
-					<Skeleton className="h-[250px] w-full mb-8" />
+					<Skeleton className="h-[50px] w-full mb-4" />
 					<div className="divide-y divide-gray-200 space-y-4">
-						{Array.from({ length: 8 }).map((_, rowIndex) => (
-							<div
-								key={rowIndex}
-								className="grid grid-cols-4 gap-4"
-							>
+						{Array.from({ length: 10 }).map((_, rowIndex) => (
+							<div key={rowIndex} className="grid grid-cols-4 gap-4">
 								{Array.from({ length: 4 }).map((_, colIndex) => (
-									<Skeleton
-										key={colIndex}
-										className="h-4 w-full mt-4"
-									/>
+									<Skeleton key={colIndex} className="h-4 w-full mt-4" />
 								))}
 							</div>
 						))}

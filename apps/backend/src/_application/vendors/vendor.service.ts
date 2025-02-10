@@ -1,21 +1,10 @@
-import {
-  ResponseId,
-  ResponseList,
-  ResponseSingle,
-} from 'lib/helper/iResponse';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils';
-import {
-  ExtractReqService,
-} from 'src/_lib/auth/extract-req/extract-req.service';
-import {
-  PrismaClientManagerService,
-} from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { VendorCreateDto, VendorUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import {
-  VendorCreateDto,
-  VendorUpdateDto,
-} from '@carmensoftware/shared-dtos';
 import {
   HttpStatus,
   Injectable,
@@ -77,7 +66,7 @@ export class VendorService {
       pagination: {
         total: max,
         page: q.page,
-        perPage: q.perpage,
+        perpage: q.perpage,
         pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
       },
     };

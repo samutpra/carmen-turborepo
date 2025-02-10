@@ -1,11 +1,8 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
+import { ExchangeRateCreateDto, ExchangeRateUpdateDto } from 'shared-dtos';
 import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
-import {
-  ExchangeRateCreateDto,
-  ExchangeRateUpdateDto,
-} from '@carmensoftware/shared-dtos';
 import {
   Body,
   Controller,

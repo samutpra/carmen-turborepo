@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Post (wine) consignment
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/v1/exchangerate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "wine bar (2)",
+    "is_active": false
+  }
+}

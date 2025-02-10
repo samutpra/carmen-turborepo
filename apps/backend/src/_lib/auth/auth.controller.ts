@@ -4,7 +4,8 @@ import {
   EmailDto,
   UserForgotPassDto,
   UserRegisterDto,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+
 import {
   Body,
   Controller,

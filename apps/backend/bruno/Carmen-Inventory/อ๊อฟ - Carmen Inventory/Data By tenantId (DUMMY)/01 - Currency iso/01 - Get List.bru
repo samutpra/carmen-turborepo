@@ -1,0 +1,29 @@
+meta {
+  name: 01 - Get List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/system-api/v1/system-currency-iso?perpage=10&page=1&filter[iso_code]=vnd&search=mese&sort=iso_code:desc
+  body: none
+  auth: bearer
+}
+
+params:query {
+  perpage: 10
+  page: 1
+  filter[iso_code]: vnd
+  search: mese
+  sort: iso_code:desc
+  : 
+  ~advance: {'where':{'code':'usd'}}
+}
+
+headers {
+  x-tenant-id: {{tenantId}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

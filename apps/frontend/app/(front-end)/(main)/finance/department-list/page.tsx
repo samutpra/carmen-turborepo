@@ -3,7 +3,7 @@ import React from 'react';
 export default function DepartmentListPage() {
 	return (
 		<div>
-			<DepartmentList />
+			<DepartmentList data-id="department-list" />
 		</div>
 	);
 }

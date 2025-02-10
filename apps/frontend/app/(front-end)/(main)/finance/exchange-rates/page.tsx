@@ -1,5 +1,5 @@
-import { ExchangeRateViewer } from '../components/exchange-rate-viewer';
 import React from 'react';
+import ExchangeRateList from './components/ExchangeRateList';
 export default function ExchangeRatesPage() {
-	return <ExchangeRateViewer />;
+	return <ExchangeRateList data-id="exchange-rate-list" />;
 }

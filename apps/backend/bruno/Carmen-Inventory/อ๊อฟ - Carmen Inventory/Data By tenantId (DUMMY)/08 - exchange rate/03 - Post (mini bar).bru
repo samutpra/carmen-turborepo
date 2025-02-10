@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Post (mini bar)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/v1/exchangerate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "mini bar - delivery point",
+    "is_active": true
+  }
+}

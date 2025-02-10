@@ -1,0 +1,17 @@
+meta {
+  name: 01 Get Product by location id
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/v1/location-product/9c2fba28-460e-4a31-a9da-4f484f45b07d
+  body: none
+  auth: none
+}
+
+params:query {
+  ~page: 1
+  ~perpage: 20
+  ~search: 
+}

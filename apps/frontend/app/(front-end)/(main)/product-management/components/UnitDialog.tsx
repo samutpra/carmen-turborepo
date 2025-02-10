@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/app/context/AuthContext';
-import { UnitSchema } from '@carmensoftware/shared-types';
-import { UnitType } from '@carmensoftware/shared-types';
 import {
 	Form,
 	FormControl,
@@ -32,10 +30,11 @@ import { submitUnit } from '../actions/unit';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
+import { UnitCreateModel, UnitCreateSchema } from '@/dtos/unit.dto';
 interface UnitDialogProps {
-	mode: formType
-	defaultValues?: UnitType;
-	onSuccess: (values: UnitType) => void;
+	mode: formType;
+	defaultValues?: UnitCreateModel;
+	onSuccess: (values: UnitCreateModel) => void;
 }
 
 const UnitDialog: React.FC<UnitDialogProps> = ({
@@ -49,17 +48,18 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultUnitValues: UnitType = {
+	const defaultUnitValues: UnitCreateModel = {
 		name: '',
 		description: '',
 		is_active: true,
 	};
 
-	const form = useForm<UnitType>({
-		resolver: zodResolver(UnitSchema),
-		defaultValues: mode === formType.EDIT && defaultValues
-			? { ...defaultValues }
-			: defaultUnitValues,
+	const form = useForm<UnitCreateModel>({
+		resolver: zodResolver(UnitCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultUnitValues,
 	});
 
 	useEffect(() => {
@@ -70,13 +70,23 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 		}
 	}, [mode, defaultValues, form]);
 
-	const onSubmit = async (values: UnitType) => {
+	const onSubmit = async (values: UnitCreateModel) => {
 		setIsLoading(true);
 		try {
 			const url = defaultValues?.id || '';
-			const result = await submitUnit(values, mode, token, tenantId, url);
+			const result = await submitUnit(
+				{
+					...values,
+					description: values.description || '',
+					is_active: values.is_active ?? true,
+				},
+				mode,
+				token,
+				tenantId,
+				url
+			);
 
-			const data: UnitType = {
+			const data: UnitCreateModel = {
 				id: result.id,
 				...values,
 			};
@@ -90,55 +100,70 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 				toastError({ message: `${m.fail_to_text()} ${mode} ${m.unit()}` });
 			}
 		} catch (error) {
-			toastError({ message: error instanceof Error ? error.message : String(error) });
+			toastError({
+				message: error instanceof Error ? error.message : String(error),
+			});
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	};
 	const handleClose = () => {
 		setOpen(false);
 		form.reset();
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={setOpen} data-id="unit-dialog">
 			<DialogTrigger asChild>
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
+					data-id="unit-dialog-trigger"
 				>
 					{mode === formType.ADD ? (
 						<>
-							<PlusIcon className="h-4 w-4" />
+							<PlusIcon
+								className="h-4 w-4"
+								data-id="unit-dialog-trigger-icon"
+							/>
 							{m.add_unit()}
 						</>
 					) : (
-						<PencilIcon className="w-4 h-4" />
+						<PencilIcon
+							className="w-4 h-4"
+							data-id="unit-dialog-trigger-icon"
+						/>
 					)}
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>
-						{mode === formType.ADD
-							? `${m.create_txt()}`
-							: `${m.edit_txt()}`}
+			<DialogContent data-id="unit-dialog-content">
+				<DialogHeader data-id="unit-dialog-header">
+					<DialogTitle data-id="unit-dialog-title">
+						{mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`}
 						{m.unit()}
 					</DialogTitle>
 				</DialogHeader>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+				<Form {...form} data-id="unit-dialog-form">
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-4"
+						data-id="unit-dialog-form-submit"
+					>
 						<FormField
 							control={form.control}
 							name="name"
+							data-id="unit-dialog-form-name"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{m.unit_name_label()}</FormLabel>
+								<FormItem data-id="unit-dialog-form-name-item">
+									<FormLabel data-id="unit-dialog-form-name-label">
+										{m.unit_name_label()}
+									</FormLabel>
 									<FormControl>
 										<InputCustom
 											placeholder={m.placeholder_unit_name()}
 											error={!!form.formState.errors.name}
 											{...field}
+											data-id="unit-dialog-form-name-input"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -149,13 +174,20 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 						<FormField
 							control={form.control}
 							name="description"
+							data-id="unit-dialog-form-description"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{m.unit_des_label()}</FormLabel>
+								<FormItem data-id="unit-dialog-form-description-item">
+									<FormLabel data-id="unit-dialog-form-description-label">
+										{m.unit_des_label()}
+									</FormLabel>
 									<FormControl>
-										<Textarea placeholder={m.placeholder_unit_des()} {...field} />
+										<Textarea
+											placeholder={m.placeholder_unit_des()}
+											{...field}
+											data-id="unit-dialog-form-description-textarea"
+										/>
 									</FormControl>
-									<FormMessage />
+									<FormMessage data-id="unit-dialog-form-description-message" />
 								</FormItem>
 							)}
 							required
@@ -163,25 +195,39 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 						<FormField
 							control={form.control}
 							name="is_active"
+							data-id="unit-dialog-form-is-active"
 							render={({ field }) => (
-								<FormItem className="flex-between rounded-lg border p-4">
-									<FormLabel className="text-base">{m.status_active_text()}</FormLabel>
+								<FormItem
+									className="flex-between rounded-lg border p-4"
+									data-id="unit-dialog-form-is-active-item"
+								>
+									<FormLabel
+										className="text-base"
+										data-id="unit-dialog-form-is-active-label"
+									>
+										{m.status_active_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											data-id="unit-dialog-form-is-active-switch"
 										/>
 									</FormControl>
 								</FormItem>
 							)}
 						/>
-						<DialogFooter>
-							<div className="flex-end gap-2">
+						<DialogFooter data-id="unit-dialog-footer">
+							<div
+								className="flex-end gap-2"
+								data-id="unit-dialog-footer-button-container"
+							>
 								<Button
 									type="button"
 									variant={'outline'}
 									onClick={handleClose}
 									size={'sm'}
+									data-id="unit-dialog-footer-cancel-button"
 								>
 									{m.cancel_text()}
 								</Button>
@@ -190,6 +236,7 @@ const UnitDialog: React.FC<UnitDialogProps> = ({
 									disabled={isLoading}
 									isLoading={isLoading}
 									size={'sm'}
+									data-id="unit-dialog-footer-submit-button"
 								>
 									{isLoading
 										? `${m.saving()}...`

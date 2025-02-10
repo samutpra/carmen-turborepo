@@ -1,11 +1,21 @@
-import React from 'react'
-import ComingSoon from '@/components/ComingSoon'
+'use client';
 
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
 
 const StoreOperationPage = () => {
-    return (
-        <ComingSoon title="Store Operation" />
-    )
-}
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'store-operations';
 
-export default StoreOperationPage
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="store-operations-page-sub-menu-list"
+		/>
+	);
+};
+
+export default StoreOperationPage;

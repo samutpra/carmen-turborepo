@@ -1,0 +1,17 @@
+meta {
+  name: 01 - Get List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/v1/products
+  body: none
+  auth: none
+}
+
+params:query {
+  ~search: 
+  ~page: 1
+  ~perpage: 10
+}

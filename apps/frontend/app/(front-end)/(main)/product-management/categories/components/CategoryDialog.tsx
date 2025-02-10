@@ -8,10 +8,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { categorySchema, CategoryType } from '@carmensoftware/shared-types/dist/productCategorySchema';
 import { formType } from '@/types/form_type';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,12 +22,18 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import {
+	ProductCategoryCreateModel,
+	ProductCategoryCreateSchema,
+} from '@/dtos/product-category.dto';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
+import * as m from '@/paraglide/messages.js';
 
 interface Props {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (data: CategoryType) => Promise<void>;
-	initialData?: CategoryType;
+	onSubmit: (data: ProductCategoryCreateModel) => Promise<void>;
+	initialData?: ProductCategoryCreateModel;
 	mode: formType;
 }
 
@@ -42,15 +46,17 @@ const CategoryDialog: React.FC<Props> = ({
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
-	const defaultValues: CategoryType = {
+	const defaultValues: ProductCategoryCreateModel = {
+		code: '',
 		name: '',
 		description: '',
 		is_active: true,
 	};
 
-	const form = useForm<CategoryType>({
-		resolver: zodResolver(categorySchema),
-		defaultValues: mode === formType.EDIT && initialData ? initialData : defaultValues,
+	const form = useForm<ProductCategoryCreateModel>({
+		resolver: zodResolver(ProductCategoryCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && initialData ? initialData : defaultValues,
 	});
 
 	useEffect(() => {
@@ -61,7 +67,7 @@ const CategoryDialog: React.FC<Props> = ({
 		}
 	}, [initialData, mode, form]);
 
-	const handleSubmit = async (data: CategoryType) => {
+	const handleSubmit = async (data: ProductCategoryCreateModel) => {
 		setIsLoading(true);
 		try {
 			await onSubmit(data);
@@ -73,24 +79,45 @@ const CategoryDialog: React.FC<Props> = ({
 		}
 	};
 
+	const handleClose = () => {
+		onOpenChange(false);
+		form.reset();
+	};
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === formType.ADD ? 'Add New Category' : 'Edit Category'}
+						{mode === formType.ADD ? m.add_new_cat() : m.edit_cat()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+					<form
+						onSubmit={form.handleSubmit(handleSubmit)}
+						className="space-y-4 py-4"
+					>
+						<FormField
+							control={form.control}
+							name="code"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>{m.code_label()}</FormLabel>
+									<FormControl>
+										<InputCustom placeholder={m.code_label()} {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 						<FormField
 							control={form.control}
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.categories()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Category name" {...field} />
+										<InputCustom placeholder={m.categories()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -101,9 +128,13 @@ const CategoryDialog: React.FC<Props> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Category description" {...field} />
+										<Textarea
+											placeholder={m.description()}
+											{...field}
+											className="placeholder:text-xs"
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -113,24 +144,41 @@ const CategoryDialog: React.FC<Props> = ({
 							control={form.control}
 							name="is_active"
 							render={({ field }) => (
-								<FormItem className="flex items-center space-x-2">
+								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+									<div className="space-y-0.5">
+										<FormLabel className="text-base">
+											{m.status_active_text()}
+										</FormLabel>
+									</div>
 									<FormControl>
-										<Switch checked={field.value} onCheckedChange={field.onChange} />
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
 									</FormControl>
-									<FormLabel>Active</FormLabel>
 								</FormItem>
 							)}
 						/>
 						<div className="flex justify-end space-x-2">
-							<Button variant="outline" onClick={() => onOpenChange(false)}>
-								Cancel
+							<Button
+								type="button"
+								variant={'outline'}
+								onClick={handleClose}
+								size={'sm'}
+							>
+								{m.cancel_text()}
 							</Button>
-							<LoaderButton type="submit" disabled={isLoading}>
+							<LoaderButton
+								type="submit"
+								disabled={isLoading}
+								isLoading={isLoading}
+								size={'sm'}
+							>
 								{isLoading
-									? 'Processing...'
-									: mode === formType.ADD
-										? 'Add Category'
-										: 'Save Changes'}
+									? `${m.saving()}...`
+									: mode === formType.EDIT
+										? `${m.save_change_text()}`
+										: `${m.add_text()}`}
 							</LoaderButton>
 						</div>
 					</form>

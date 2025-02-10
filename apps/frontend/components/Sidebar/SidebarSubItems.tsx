@@ -25,72 +25,108 @@ const SidebarSubItems: React.FC<Props> = ({
     const paddingLeft = `${(level + 1) * 1}rem`;
     const { isDesktop } = useResponsive();
     return (
-        <div className="mt-2">
-            {subItems.map((subItem) => {
-                const hasNestedItems = subItem.subItems && subItem.subItems.length > 0;
-                const isExpanded = expandedItems.includes(subItem.path);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const IconComponent = subItem.icon ? (LucideIcons as any)[subItem.icon] : null;
+			<div className="mt-2" data-id="sidebar-sub-items-container">
+				{subItems.map((subItem) => {
+					const hasNestedItems =
+						subItem.subItems && subItem.subItems.length > 0;
+					const isExpanded = expandedItems.includes(subItem.path);
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					const IconComponent = subItem.icon
+						? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+							(LucideIcons as any)[subItem.icon]
+						: null;
 
-                return (
-                    <div key={subItem.path} className='px-3'>
-                        <Button
-                            variant="ghost"
-                            asChild={!hasNestedItems}
-                            className={cn(
-                                "w-full justify-start text-xs text-foreground tracking-wide h-8",
-                                pathname === subItem.path ? "bg-primary text-white" : "",
-                                hasNestedItems ? "flex justify-between" : ""
-                            )}
-                            onClick={() => {
-                                if (hasNestedItems) {
-                                    onToggleExpand(subItem.path);
-                                } else if (!isDesktop) {
-                                    onClose();
-                                }
-                            }}
-                            style={{ paddingLeft }}
-                        >
-                            {hasNestedItems ? (
-                                <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-2">
-                                        {IconComponent && <IconComponent className="h-4 w-4" />}
-                                        <span className="text-xs">
-                                            {subItem.name}
-                                        </span>
-                                    </div>
-                                    {isExpanded ? (
-                                        <LucideIcons.ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                        <LucideIcons.ChevronRight className="h-4 w-4" />
-                                    )}
-                                </div>
-                            ) : (
-                                <Link
-                                    href={subItem.path}
-                                    className="no-underline text-xs flex items-center gap-2"
-                                >
-                                    {IconComponent && <IconComponent className="h-4 w-4" />}
-                                    {subItem.name}
-                                </Link>
-                            )}
-                        </Button>
+					return (
+						<div
+							key={subItem.path}
+							className="px-3"
+							data-id="sidebar-sub-item-container"
+						>
+							<Button
+								variant="ghost"
+								asChild={!hasNestedItems}
+								className={cn(
+									'w-full justify-start text-xs text-foreground tracking-wide h-8',
+									pathname === subItem.path ? 'bg-primary text-white' : '',
+									hasNestedItems ? 'flex justify-between' : ''
+								)}
+								onClick={() => {
+									if (hasNestedItems) {
+										onToggleExpand(subItem.path);
+									} else if (!isDesktop) {
+										onClose();
+									}
+								}}
+								style={{ paddingLeft }}
+								data-id="sidebar-sub-item-button"
+							>
+								{hasNestedItems ? (
+									<div
+										className="flex items-center justify-between w-full"
+										data-id="sidebar-sub-item-button-nested-items"
+									>
+										<div
+											className="flex items-center gap-2"
+											data-id="sidebar-sub-item-button-nested-items-icon"
+										>
+											{IconComponent && (
+												<IconComponent
+													className="h-4 w-4"
+													data-id="sidebar-sub-item-button-nested-items-icon-component"
+												/>
+											)}
+											<span
+												className="text-xs"
+												data-id="sidebar-sub-item-button-nested-items-name"
+											>
+												{subItem.name}
+											</span>
+										</div>
+										{isExpanded ? (
+											<LucideIcons.ChevronDown
+												className="h-4 w-4"
+												data-id="sidebar-sub-item-button-nested-items-chevron-down"
+											/>
+										) : (
+											<LucideIcons.ChevronRight
+												className="h-4 w-4"
+												data-id="sidebar-sub-item-button-nested-items-chevron-right"
+											/>
+										)}
+									</div>
+								) : (
+									<Link
+										href={subItem.path}
+										className="no-underline text-xs flex items-center gap-2"
+										data-id="sidebar-sub-item-button-nested-items-link"
+									>
+										{IconComponent && (
+											<IconComponent
+												className="h-4 w-4"
+												data-id="sidebar-sub-item-button-nested-items-link-icon"
+											/>
+										)}
+										{subItem.name}
+									</Link>
+								)}
+							</Button>
 
-                        {subItem.subItems && hasNestedItems && isExpanded && (
-                            <SidebarSubItems
-                                subItems={subItem.subItems}
-                                pathname={pathname}
-                                onClose={onClose}
-                                level={level + 1}
-                                expandedItems={expandedItems}
-                                onToggleExpand={onToggleExpand}
-                            />
-                        )}
-                    </div>
-                );
-            })}
-        </div>
-    )
+							{subItem.subItems && hasNestedItems && isExpanded && (
+								<SidebarSubItems
+									subItems={subItem.subItems}
+									pathname={pathname}
+									onClose={onClose}
+									level={level + 1}
+									expandedItems={expandedItems}
+									onToggleExpand={onToggleExpand}
+									data-id="sidebar-sub-item-sub-items"
+								/>
+							)}
+						</div>
+					);
+				})}
+			</div>
+		);
 }
 
 export default SidebarSubItems
