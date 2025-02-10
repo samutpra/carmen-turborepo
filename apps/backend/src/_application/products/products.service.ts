@@ -10,12 +10,13 @@ import {
 import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
 import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 import { ProductUpdateSchema } from "shared-dtos";
+import { NotFoundException } from "lib/utils/exceptions";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
-  NotFoundException,
+  // NotFoundException,
 } from "@nestjs/common";
 import {
   PrismaClient as dbTenant,
@@ -69,7 +70,6 @@ export class ProductsService {
     return res;
   }
 
-  // ปัญหาเรื่องการค้นหาไม่ได้
   async getOrderUnitByProductId(req: Request, id: string, q: QueryParams) {
     this.logger.debug({
       file: ProductsService.name,
@@ -83,12 +83,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.order_unit,
         is_active: true,
-        // tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //   name: { contains: q.search, mode: "insensitive" },
-        // },
-        // tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //   name: { contains: q.search, mode: "insensitive" },
-        // },
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
     });
 
@@ -97,13 +103,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.order_unit,
         is_active: true,
-        // tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //   name: { contains: q.search, mode: "insensitive" },
-        // },
-
-        // tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //   name: { contains: q.search, mode: "insensitive" },
-        // },
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -155,7 +166,6 @@ export class ProductsService {
     return res;
   }
 
-  // ปัญหาเรื่องการค้นหาไม่ได้
   async getCountUnitByProductId(req: Request, id: string, q: QueryParams) {
     this.logger.debug({
       file: ProductsService.name,
@@ -169,22 +179,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.count_unit,
         is_active: true,
-        // OR: [
-        //   {
-        //     tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        //   {
-        //     tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        // ],
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
     });
 
@@ -193,22 +199,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.count_unit,
         is_active: true,
-        // OR: [
-        //   {
-        //     tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        //   {
-        //     tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        // ],
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -260,7 +262,6 @@ export class ProductsService {
     return res;
   }
 
-  // ปัญหาเรื่องการค้นหาไม่ได้
   async getRecipeUnitByProductId(req: Request, id: string, q: QueryParams) {
     this.logger.debug({
       file: ProductsService.name,
@@ -275,22 +276,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.recipe_unit,
         is_active: true,
-        // OR: [
-        //   {
-        //     tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        //   {
-        //     tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        // ],
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
     });
 
@@ -299,22 +296,18 @@ export class ProductsService {
         product_id: id,
         unit_type: enum_unit_type.recipe_unit,
         is_active: true,
-        // OR: [
-        //   {
-        //     tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        //   {
-        //     tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-        //       name: q.search
-        //         ? { contains: q.search, mode: "insensitive" }
-        //         : undefined,
-        //     },
-        //   },
-        // ],
+        OR: [
+          {
+            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+          {
+            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+              name: { contains: q.search, mode: "insensitive" },
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -455,7 +448,7 @@ export class ProductsService {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
         message: "Product already exists",
-        id: found.id,
+        data: found.id,
       });
     }
 
@@ -477,7 +470,7 @@ export class ProductsService {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
           message: "Location not found",
-          id: notFoundLocationIds,
+          data: notFoundLocationIds,
         });
       }
     }
@@ -492,7 +485,12 @@ export class ProductsService {
       if (units) {
         const findUnits = await this.db_tenant.tb_unit.findMany({
           where: {
-            id: { in: units.map((unit) => unit.unit_id) },
+            id: {
+              in: [
+                ...units.map((unit) => unit.unit_id),
+                ...units.map((unit) => unit.to_unit_id),
+              ],
+            },
           },
         });
 
@@ -505,7 +503,7 @@ export class ProductsService {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
             message: `${type} unit not found`,
-            id: notFoundUnitIds,
+            data: notFoundUnitIds,
           });
         }
       }
@@ -581,9 +579,9 @@ export class ProductsService {
             product_id: createObj.id,
             unit_type: enum_unit_type.order_unit,
             from_unit_id: unit.unit_id,
-            from_unit_qty: unit.quantity,
+            from_unit_qty: unit.unit_quantity,
             to_unit_id: unit.to_unit_id,
-            to_unit_qty: unit.to_quantity,
+            to_unit_qty: unit.to_unit_quantity,
             description: unit.description ?? null,
             created_by_id: user_id,
             created_at: new Date(),
@@ -605,9 +603,9 @@ export class ProductsService {
             product_id: createObj.id,
             unit_type: enum_unit_type.recipe_unit,
             from_unit_id: unit.unit_id,
-            from_unit_qty: unit.quantity,
+            from_unit_qty: unit.unit_quantity,
             to_unit_id: unit.to_unit_id,
-            to_unit_qty: unit.to_quantity,
+            to_unit_qty: unit.to_unit_quantity,
             description: unit.description ?? null,
             created_by_id: user_id,
             created_at: new Date(),
@@ -629,9 +627,9 @@ export class ProductsService {
             product_id: createObj.id,
             unit_type: enum_unit_type.count_unit,
             from_unit_id: unit.unit_id,
-            from_unit_qty: unit.quantity,
+            from_unit_qty: unit.unit_quantity,
             to_unit_id: unit.to_unit_id,
-            to_unit_qty: unit.to_quantity,
+            to_unit_qty: unit.to_unit_quantity,
             description: unit.description ?? null,
             created_by_id: user_id,
             created_at: new Date(),
@@ -668,129 +666,812 @@ export class ProductsService {
       throw new NotFoundException("Product not found");
     }
 
+    if (updateDto.name || updateDto.code) {
+      const found = await this.db_tenant.tb_product.findFirst({
+        where: {
+          OR: [{ name: updateDto.name }, { code: updateDto.code }],
+        },
+      });
+
+      if (found) {
+        throw new DuplicateException({
+          statusCode: HttpStatus.CONFLICT,
+          message: "Product already exists",
+          data: found.id,
+        });
+      }
+    }
+
     if (updateDto.locations) {
       if (updateDto.locations.add) {
-        const findLocationAdd = await this.db_tenant.tb_location.findMany({
-          where: {
-            id: {
-              in: updateDto.locations.add.map(
-                (location) => location.location_id,
-              ),
-            },
-          },
-        });
+        let locationNotFound = [];
+        await Promise.all(
+          updateDto.locations.add.map(async (location) => {
+            const findLocation = await this.db_tenant.tb_location.findFirst({
+              where: {
+                id: location.location_id,
+              },
+            });
 
-        const foundLocationIds = findLocationAdd.map((location) => location.id);
-        const notFoundLocationIds = updateDto.locations.add
-          .map((location) => location.location_id)
-          .filter((id) => !foundLocationIds.includes(id));
+            if (!findLocation) {
+              locationNotFound.push(location.location_id);
+            }
+          }),
+        );
 
-        if (notFoundLocationIds.length > 0) {
+        if (locationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Location not found",
-            id: notFoundLocationIds,
+            message: "Add Location not found",
+            data: locationNotFound,
+          });
+        }
+      }
+
+      if (updateDto.locations.update) {
+        let productLocationNotFound = [];
+        let locationNotFound = [];
+        await Promise.all(
+          updateDto.locations.update.map(async (location) => {
+            const findProductLocation =
+              await this.db_tenant.tb_product_location.findFirst({
+                where: { id: location.product_location_id },
+              });
+
+            if (!findProductLocation) {
+              productLocationNotFound.push(location.product_location_id);
+            }
+
+            const findLocation = await this.db_tenant.tb_location.findFirst({
+              where: { id: location.location_id },
+            });
+
+            if (!findLocation) {
+              locationNotFound.push(location.location_id);
+            }
+          }),
+        );
+
+        if (productLocationNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Product Location not found",
+            data: productLocationNotFound,
+          });
+        }
+
+        if (locationNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Location not found",
+            data: locationNotFound,
           });
         }
       }
 
       if (updateDto.locations.remove) {
-        const findLocationRemove = await this.db_tenant.tb_location.findMany({
-          where: {
-            id: {
-              in: updateDto.locations.remove.map(
-                (location) => location.location_id,
-              ),
-            },
-          },
-        });
+        let productLocationNotFound = [];
+        await Promise.all(
+          updateDto.locations.remove.map(async (location) => {
+            const findLocation =
+              await this.db_tenant.tb_product_location.findFirst({
+                where: { id: location.product_location_id },
+              });
 
-        const foundLocationIds = findLocationRemove.map(
-          (location) => location.id,
+            if (!findLocation) {
+              productLocationNotFound.push(location.product_location_id);
+            }
+          }),
         );
-        const notFoundLocationIds = updateDto.locations.remove
-          .map((location) => location.location_id)
-          .filter((id) => !foundLocationIds.includes(id));
 
-        if (notFoundLocationIds.length > 0) {
+        if (productLocationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Location not found",
-            id: notFoundLocationIds,
+            message: "Remove Location not found",
+            data: productLocationNotFound,
+          });
+        }
+      }
+    }
+
+    if (updateDto.orderUnits) {
+      if (updateDto.orderUnits.add) {
+        let orderUnitNotFound = [];
+        let orderToUnitNotFound = [];
+
+        await Promise.all(
+          updateDto.orderUnits.add.map(async (unit) => {
+            const findUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.unit_id },
+            });
+
+            if (!findUnit) {
+              orderUnitNotFound.push(unit.unit_id);
+            }
+
+            const findToUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.to_unit_id },
+            });
+
+            if (!findToUnit) {
+              orderToUnitNotFound.push(unit.to_unit_id);
+            }
+          }),
+        );
+
+        if (orderUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Add Order Unit not found",
+            data: orderUnitNotFound,
+          });
+        }
+
+        if (orderToUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Add Order To Unit not found",
+            data: orderToUnitNotFound,
+          });
+        }
+      }
+
+      if (updateDto.orderUnits.update) {
+        let productOrderUnitNotFound = [];
+        let orderUnitNotFound = [];
+        let orderToUnitNotFound = [];
+
+        await Promise.all(
+          updateDto.orderUnits.update.map(async (unit) => {
+            const findProductOrderUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductOrderUnit) {
+              productOrderUnitNotFound.push(unit.product_order_unit_id);
+            }
+
+            const findOrderUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.unit_id },
+            });
+
+            if (!findOrderUnit) {
+              orderUnitNotFound.push(unit.unit_id);
+            }
+
+            const findToUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.to_unit_id },
+            });
+
+            if (!findToUnit) {
+              orderToUnitNotFound.push(unit.to_unit_id);
+            }
+          }),
+        );
+
+        if (productOrderUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Product Order Unit not found",
+            data: productOrderUnitNotFound,
+          });
+        }
+
+        if (orderUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Order Unit not found",
+            data: orderUnitNotFound,
+          });
+        }
+
+        if (orderToUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Order To Unit not found",
+            data: orderToUnitNotFound,
+          });
+        }
+      }
+
+      if (updateDto.orderUnits.remove) {
+        let productOrderUnitNotFound = [];
+        await Promise.all(
+          updateDto.orderUnits.remove.map(async (unit) => {
+            const findProductOrderUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductOrderUnit) {
+              productOrderUnitNotFound.push(unit.product_order_unit_id);
+            }
+          }),
+        );
+
+        if (productOrderUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Remove Product Order Unit not found",
+            data: productOrderUnitNotFound,
+          });
+        }
+      }
+    }
+
+    if (updateDto.recipeUnits) {
+      if (updateDto.recipeUnits.add) {
+        let recipeUnitNotFound = [];
+        let recipeToUnitNotFound = [];
+
+        await Promise.all(
+          updateDto.recipeUnits.add.map(async (unit) => {
+            const findUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.unit_id },
+            });
+
+            if (!findUnit) {
+              recipeUnitNotFound.push(unit.unit_id);
+            }
+
+            const findToUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.to_unit_id },
+            });
+
+            if (!findToUnit) {
+              recipeToUnitNotFound.push(unit.to_unit_id);
+            }
+          }),
+        );
+
+        if (recipeUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Add Recipe Unit not found",
+            data: recipeUnitNotFound,
+          });
+        }
+
+        if (recipeToUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Add Recipe To Unit not found",
+            data: recipeToUnitNotFound,
+          });
+        }
+      }
+
+      if (updateDto.recipeUnits.update) {
+        let productRecipeUnitNotFound = [];
+        let recipeUnitNotFound = [];
+        let recipeToUnitNotFound = [];
+
+        await Promise.all(
+          updateDto.recipeUnits.update.map(async (unit) => {
+            const findProductRecipeUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductRecipeUnit) {
+              productRecipeUnitNotFound.push(unit.product_order_unit_id);
+            }
+
+            const findRecipeUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.unit_id },
+            });
+
+            if (!findRecipeUnit) {
+              recipeUnitNotFound.push(unit.unit_id);
+            }
+
+            const findRecipeToUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.to_unit_id },
+            });
+
+            if (!findRecipeToUnit) {
+              recipeToUnitNotFound.push(unit.to_unit_id);
+            }
+          }),
+        );
+
+        if (productRecipeUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Product Recipe Unit not found",
+            data: productRecipeUnitNotFound,
+          });
+        }
+
+        if (recipeUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Recipe Unit not found",
+            data: recipeUnitNotFound,
+          });
+        }
+
+        if (recipeToUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Recipe To Unit not found",
+            data: recipeToUnitNotFound,
+          });
+        }
+      }
+
+      if (updateDto.recipeUnits.remove) {
+        let productRecipeUnitNotFound = [];
+        await Promise.all(
+          updateDto.recipeUnits.remove.map(async (unit) => {
+            const findProductRecipeUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductRecipeUnit) {
+              productRecipeUnitNotFound.push(unit.product_order_unit_id);
+            }
+          }),
+        );
+
+        if (productRecipeUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Remove Product Recipe Unit not found",
+            data: productRecipeUnitNotFound,
+          });
+        }
+      }
+    }
+
+    if (updateDto.countUnits) {
+      if (updateDto.countUnits) {
+        if (updateDto.countUnits.add) {
+          let countUnitNotFound = [];
+          let countToUnitNotFound = [];
+
+          await Promise.all(
+            updateDto.countUnits.add.map(async (unit) => {
+              const findUnit = await this.db_tenant.tb_unit.findFirst({
+                where: { id: unit.unit_id },
+              });
+
+              if (!findUnit) {
+                countUnitNotFound.push(unit.unit_id);
+              }
+
+              const findToUnit = await this.db_tenant.tb_unit.findFirst({
+                where: { id: unit.to_unit_id },
+              });
+
+              if (!findToUnit) {
+                countToUnitNotFound.push(unit.to_unit_id);
+              }
+            }),
+          );
+
+          if (countUnitNotFound.length > 0) {
+            throw new NotFoundException({
+              statusCode: HttpStatus.NOT_FOUND,
+              message: "Add Count Unit not found",
+              data: countUnitNotFound,
+            });
+          }
+
+          if (countToUnitNotFound.length > 0) {
+            throw new NotFoundException({
+              statusCode: HttpStatus.NOT_FOUND,
+              message: "Add Count To Unit not found",
+              data: countToUnitNotFound,
+            });
+          }
+        }
+      }
+
+      if (updateDto.countUnits.update) {
+        let productCountUnitNotFound = [];
+        let countUnitNotFound = [];
+        let countToUnitNotFound = [];
+
+        await Promise.all(
+          updateDto.countUnits.update.map(async (unit) => {
+            const findProductCountUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductCountUnit) {
+              productCountUnitNotFound.push(unit.product_order_unit_id);
+            }
+
+            const findCountUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.unit_id },
+            });
+
+            if (!findCountUnit) {
+              countUnitNotFound.push(unit.unit_id);
+            }
+
+            const findCountToUnit = await this.db_tenant.tb_unit.findFirst({
+              where: { id: unit.to_unit_id },
+            });
+
+            if (!findCountToUnit) {
+              countToUnitNotFound.push(unit.to_unit_id);
+            }
+          }),
+        );
+
+        if (productCountUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Product Count Unit not found",
+            data: productCountUnitNotFound,
+          });
+        }
+
+        if (countUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Count Unit not found",
+            data: countUnitNotFound,
+          });
+        }
+
+        if (countToUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Update Count To Unit not found",
+            data: countToUnitNotFound,
+          });
+        }
+      }
+
+      if (updateDto.countUnits.remove) {
+        let productCountUnitNotFound = [];
+        await Promise.all(
+          updateDto.countUnits.remove.map(async (unit) => {
+            const findProductCountUnit =
+              await this.db_tenant.tb_unit_conversion.findFirst({
+                where: { id: unit.product_order_unit_id },
+              });
+
+            if (!findProductCountUnit) {
+              productCountUnitNotFound.push(unit.product_order_unit_id);
+            }
+          }),
+        );
+
+        if (productCountUnitNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Remove Product Count Unit not found",
+            data: productCountUnitNotFound,
           });
         }
       }
     }
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {
-      const old = await this._getById(this.db_tenant, id);
-      this.logger.debug(old);
+      const product_old = await this._getById(this.db_tenant, id);
 
-      const updateProductDataObj = ProductUpdateSchema.safeParse({
-        ...old,
-        ...updateDto,
-        product_item_group_id:
-          updateDto.product_item_group_id ??
-          old.tb_product_info.product_item_group_id,
-      }).data;
+      this.logger.debug(product_old);
 
-      this.logger.warn(updateProductDataObj);
+      const productUpdateObj = {
+        code: updateDto.code ?? product_old.code,
+        name: updateDto.name ?? product_old.name,
+        local_name: updateDto.local_name ?? product_old.local_name,
+        description: updateDto.description ?? product_old.description,
+        primary_unit_id:
+          updateDto.primary_unit_id ?? product_old.primary_unit_id,
+        product_status_type:
+          updateDto.product_status_type ?? product_old.product_status_type,
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      };
 
-      const updateObj = await this.db_tenant.tb_product.update({
+      this.logger.warn(productUpdateObj);
+
+      await this.db_tenant.tb_product.update({
         where: {
-          id,
+          id: id,
         },
         data: {
-          // ...updateProductDataObj,
-          //   code: updateProductDataObj.code,
-          //   name: updateProductDataObj.name,
-          //   local_name: updateProductDataObj.local_name,
-          //   description: updateProductDataObj.description,
-          //   primary_unit_id: updateProductDataObj.primary_unit_id,
-          product_status_type:
-            updateProductDataObj.product_status_type as enum_product_status_type,
+          ...productUpdateObj,
           updated_by_id: user_id,
           updated_at: new Date(),
         },
       });
 
+      const productInfoUpdateObj = {
+        product_item_group_id:
+          updateDto.product_item_group_id ?? product_old.product_item_group_id,
+        price: updateDto.price ?? product_old.price,
+        tax_type: updateDto.tax_type ?? product_old.tax_type,
+        tax_rate: updateDto.tax_rate ?? product_old.tax_rate,
+        is_ingredients: updateDto.is_ingredients ?? product_old.is_ingredients,
+        price_deviation_limit:
+          updateDto.price_deviation_limit ?? product_old.price_deviation_limit,
+        info: updateDto.info ?? product_old.info,
+      };
+
+      this.logger.warn(productInfoUpdateObj);
+
+      await this.db_tenant.tb_product_info.update({
+        where: {
+          product_id: id,
+        },
+        data: {
+          ...productInfoUpdateObj,
+        },
+      });
+
       if (updateDto.locations) {
         if (updateDto.locations.add) {
-          const product_location_add_obj = updateDto.locations?.add?.map(
+          const productLocationAddObj = updateDto.locations?.add?.map(
             (location) => ({
-              location_id: location.location_id,
               product_id: id,
+              location_id: location.location_id,
             }),
           );
 
+          this.logger.warn(productLocationAddObj);
+
           await transactionClient.tb_product_location.createMany({
-            data: product_location_add_obj,
+            data: productLocationAddObj,
           });
         }
 
-        if (updateDto.locations.remove) {
-          const product_location_remove_obj = updateDto.locations?.remove?.map(
+        if (updateDto.locations.update) {
+          const productLocationUpdateObj = updateDto.locations?.update?.map(
             (location) => ({
+              id: location.product_location_id,
               location_id: location.location_id,
-              product_id: id,
             }),
           );
 
+          this.logger.warn(productLocationUpdateObj);
+
+          await Promise.all(
+            productLocationUpdateObj.map(async (location) => {
+              await transactionClient.tb_product_location.update({
+                where: { id: location.id, product_id: id },
+                data: {
+                  location_id: location.location_id,
+                },
+              });
+            }),
+          );
+        }
+
+        if (updateDto.locations.remove) {
+          const productLocationRemoveObj = updateDto.locations?.remove?.map(
+            (location) => ({
+              id: location.product_location_id,
+            }),
+          );
+
+          this.logger.warn(productLocationRemoveObj);
+
           await transactionClient.tb_product_location.deleteMany({
             where: {
-              product_id: id,
-              location_id: {
-                in: product_location_remove_obj.map(
-                  (location) => location.location_id,
-                ),
+              id: {
+                in: productLocationRemoveObj.map((location) => location.id),
               },
             },
           });
         }
       }
 
+      if (updateDto.orderUnits) {
+        if (updateDto.orderUnits.add) {
+          const productOrderUnitAddObj: any = updateDto.orderUnits?.add?.map(
+            (unit) => ({
+              product_id: id,
+              unit_type: enum_unit_type.order_unit,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              created_by_id: user_id,
+              created_at: new Date(),
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }),
+          );
+
+          this.logger.warn(productOrderUnitAddObj);
+
+          await transactionClient.tb_unit_conversion.createMany({
+            data: productOrderUnitAddObj,
+          });
+        }
+
+        if (updateDto.orderUnits.update) {
+          const productOrderUnitUpdateObj: any =
+            updateDto.orderUnits?.update?.map((unit) => ({
+              id: unit.product_order_unit_id,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }));
+
+          this.logger.warn(productOrderUnitUpdateObj);
+
+          await Promise.all(
+            productOrderUnitUpdateObj.map(async (unit) => {
+              await transactionClient.tb_unit_conversion.update({
+                where: { id: unit.id },
+                data: unit,
+              });
+            }),
+          );
+        }
+
+        if (updateDto.orderUnits.remove) {
+          const productOrderUnitRemoveObj = updateDto.orderUnits?.remove?.map(
+            (unit) => ({
+              id: unit.product_order_unit_id,
+            }),
+          );
+
+          this.logger.warn(productOrderUnitRemoveObj);
+
+          await transactionClient.tb_unit_conversion.deleteMany({
+            where: {
+              id: {
+                in: productOrderUnitRemoveObj.map((unit) => unit.id),
+              },
+            },
+          });
+        }
+      }
+
+      if (updateDto.recipeUnits) {
+        if (updateDto.recipeUnits.add) {
+          const productRecipeUnitAddObj: any = updateDto.recipeUnits?.add?.map(
+            (unit) => ({
+              product_id: id,
+              unit_type: enum_unit_type.recipe_unit,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              created_by_id: user_id,
+              created_at: new Date(),
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }),
+          );
+
+          this.logger.warn(productRecipeUnitAddObj);
+
+          await transactionClient.tb_unit_conversion.createMany({
+            data: productRecipeUnitAddObj,
+          });
+        }
+
+        if (updateDto.recipeUnits.update) {
+          const productRecipeUnitUpdateObj: any =
+            updateDto.recipeUnits?.update?.map((unit) => ({
+              id: unit.product_order_unit_id,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }));
+
+          this.logger.warn(productRecipeUnitUpdateObj);
+
+          await Promise.all(
+            productRecipeUnitUpdateObj.map(async (unit) => {
+              await transactionClient.tb_unit_conversion.update({
+                where: { id: unit.id },
+                data: unit,
+              });
+            }),
+          );
+        }
+
+        if (updateDto.recipeUnits.remove) {
+          const productRecipeUnitRemoveObj = updateDto.recipeUnits?.remove?.map(
+            (unit) => ({
+              id: unit.product_order_unit_id,
+            }),
+          );
+
+          this.logger.warn(productRecipeUnitRemoveObj);
+
+          await transactionClient.tb_unit_conversion.deleteMany({
+            where: {
+              id: {
+                in: productRecipeUnitRemoveObj.map((unit) => unit.id),
+              },
+            },
+          });
+        }
+      }
+
+      if (updateDto.countUnits) {
+        if (updateDto.countUnits.add) {
+          const productCountUnitAddObj: any = updateDto.countUnits?.add?.map(
+            (unit) => ({
+              product_id: id,
+              unit_type: enum_unit_type.count_unit,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              created_by_id: user_id,
+              created_at: new Date(),
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }),
+          );
+
+          this.logger.warn(productCountUnitAddObj);
+
+          await transactionClient.tb_unit_conversion.createMany({
+            data: productCountUnitAddObj,
+          });
+        }
+
+        if (updateDto.countUnits.update) {
+          const productCountUnitUpdateObj: any =
+            updateDto.countUnits?.update?.map((unit) => ({
+              id: unit.product_order_unit_id,
+              from_unit_id: unit.unit_id,
+              from_unit_qty: unit.unit_quantity,
+              to_unit_id: unit.to_unit_id,
+              to_unit_qty: unit.to_unit_quantity,
+              description: unit.description,
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            }));
+
+          this.logger.warn(productCountUnitUpdateObj);
+
+          await Promise.all(
+            productCountUnitUpdateObj.map(async (unit) => {
+              await transactionClient.tb_unit_conversion.update({
+                where: { id: unit.id },
+                data: unit,
+              });
+            }),
+          );
+        }
+
+        if (updateDto.countUnits.remove) {
+          const productCountUnitRemoveObj = updateDto.countUnits?.remove?.map(
+            (unit) => ({
+              id: unit.product_order_unit_id,
+            }),
+          );
+
+          this.logger.warn(productCountUnitRemoveObj);
+
+          await transactionClient.tb_unit_conversion.deleteMany({
+            where: {
+              id: { in: productCountUnitRemoveObj.map((unit) => unit.id) },
+            },
+          });
+        }
+      }
+
       const res: ResponseId<string> = {
-        id: updateObj.id,
+        id: id,
       };
 
       return res;
@@ -836,5 +1517,6 @@ export class ProductsService {
         },
       });
     });
+    return tx;
   }
 }
