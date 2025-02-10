@@ -54,9 +54,6 @@ const NewSidebar = () => {
         fetchFavoriteMenu();
     }, []);
 
-    console.log('faveriteMenu', favoriteMenu);
-
-
     const activeMenuItem = useMemo(() => {
         return menuItems.find(item =>
             pathname.startsWith(item.path) ||
