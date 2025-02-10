@@ -5,15 +5,25 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/products/5e87eda2-3f9c-4827-86ce-855ebd182e76
+  url: {{host}}/api/v1/products/ad4e3cdd-99d4-47bb-ae48-53cc0019c71b
   body: json
   auth: none
 }
 
 body:json {
   {
-    "product_status_type": "discontinued",
-    "price": 999.123
+    "info": [
+      {
+        "label": "size",
+        "value": "XXL"
+      },
+      {
+        "label": "color",
+        "value": "Red"
+      }
+    ]
+  //   "product_status_type": "discontinued",
+  //   "price": 999.123
     //   "locations": {
     //     "add": [
     //       {

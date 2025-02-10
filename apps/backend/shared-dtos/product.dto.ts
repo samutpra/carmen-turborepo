@@ -136,8 +136,8 @@ export const ProductCreateSchema = z.object({
 export type ProductCreateModel = z.infer<typeof ProductCreateSchema>;
 
 export enum enum_tax_type {
-  none = "NONE",
-  vat = "VAT",
+  none = "none",
+  vat = "vat",
 }
 
 export class ProductCreateDto implements ProductCreateModel {
