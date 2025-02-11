@@ -36,15 +36,6 @@ export const sortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Amount, label: 'Amount', type: 'amount' },
 	{ key: PrField.CurrentStage, label: 'Current Stage' },
 ];
-const sortFields: FieldConfig<PrType>[] = [
-	{ key: PrField.Type, label: 'Type' },
-	{ key: PrField.Requestor, label: 'Requestor' },
-	{ key: PrField.Department, label: 'Department' },
-	{ key: PrField.Date, label: 'Date' },
-	{ key: PrField.Status, label: 'Status', type: 'badge' },
-	{ key: PrField.Amount, label: 'Amount' },
-	{ key: PrField.CurrentStage, label: 'Current Stage' },
-];
 
 const PurchaseRequestList = () => {
 	const [prList, setPrList] = useState<PrType[]>([]);
@@ -57,8 +48,12 @@ const PurchaseRequestList = () => {
 		setIsLoading(true);
 		try {
 			// Simulate an async operation
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			setPrList(sampleData);
+			const response = await fetch('/api/procurement/purchase-requests');
+			const result = await response.json();
+			if (!response.ok) {
+				throw new Error(result.error || 'Failed to fetch credit notes');
+			}
+			setPrList(result.data);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 			toastError({ message: 'Failed to fetch purchase requests' });
@@ -120,11 +115,7 @@ const PurchaseRequestList = () => {
 		</div>
 	);
 
-	const content = <PurchaseDisplay prData={prList} />;
-
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
+	const content = <PurchaseDisplay prData={prList} fields={sortFields} />;
 
 	return (
 		<DataDisplayTemplate
@@ -132,6 +123,7 @@ const PurchaseRequestList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
 		/>
 	);
 };
