@@ -5,14 +5,16 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/locations?sort=name
+  url: {{host}}/api/v1/locations
   body: none
   auth: none
 }
 
 params:query {
-  sort: name
+  ~sort: name
   ~filter[DeliveryPoint.name]: samp
+  ~page: 1
+  ~perpage: 10
 }
 
 headers {

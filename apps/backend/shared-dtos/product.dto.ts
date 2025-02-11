@@ -1,12 +1,3 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-} from "class-validator";
 import { z } from "zod";
 
 export enum enum_product_status_type {
@@ -51,10 +42,6 @@ export class product_location_remove_item
 {
   product_location_id!: string;
 }
-
-// export class product_location_list {
-// 	locations : product_location_item[] = [];
-// }
 
 export const Product_Unit_item_schema = z.object({
   unit_id: z.string().uuid(),
@@ -105,10 +92,6 @@ export type ProductUnitRemoveModel = z.infer<
 export class Product_Unit_remove_item implements ProductUnitRemoveModel {
   product_order_unit_id!: string;
 }
-
-// export class Product_OrderUnit_list {
-// 	units : Product_OrderUnit_item[] = [];
-// }
 
 export const ProductCreateSchema = z.object({
   id: z.string().uuid().optional(),
@@ -234,178 +217,9 @@ export class ProductUpdateDto implements ProductUpdateModel {
   };
 }
 
-// export class ProductUpdateDto2 {
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The code of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   code: string;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The name of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   name: string;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The local name of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   local_name: string;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The product status type",
-//   })
-//   @IsOptional()
-//   @IsEnum(enum_product_status_type)
-//   product_status_type?: enum_product_status_type;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The product item group id",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   product_item_group_id: string;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The description of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   description: string;
-
-//   @ApiPropertyOptional({
-//     type: Boolean,
-//     description: "The active status of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   is_active: boolean;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The primary unit id of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   primary_unit_id: string;
-
-//   @ApiPropertyOptional({
-//     type: Number,
-//     description: "The price of the product",
-//   })
-//   @IsOptional()
-//   @IsNumber()
-//   price: number;
-
-//   @ApiPropertyOptional({
-//     type: String,
-//     description: "The tax type of the product",
-//   })
-//   @IsOptional()
-//   @IsString()
-//   tax_type: string;
-
-//   @ApiPropertyOptional({
-//     type: Number,
-//     description: "The tax rate of the product",
-//   })
-//   @IsOptional()
-//   @IsNumber()
-//   tax_rate: number;
-
-//   @ApiPropertyOptional({
-//     type: Boolean,
-//     description: "The ingredients status of the product",
-//   })
-//   @IsOptional()
-//   @IsBoolean()
-//   is_ingredients: boolean;
-
-//   @ApiPropertyOptional({
-//     type: Number,
-//     description: "The price deviation limit of the product",
-//   })
-//   @IsOptional()
-//   @IsNumber()
-//   price_deviation_limit: number;
-
-//   @ApiPropertyOptional({
-//     type: Object,
-//     description: "The info of the product",
-//   })
-//   @IsOptional()
-//   @IsObject()
-//   info: Product_info;
-
-//   @ApiPropertyOptional({
-//     type: Object,
-//     description: "The info of the product",
-//   })
-//   @IsOptional()
-//   @IsObject()
-//   locations: {
-//     add?: product_location_item[];
-//     remove?: product_location_item[];
-//   };
-
-//   @ApiPropertyOptional({
-//     type: Object,
-//     description: "The info of the product",
-//   })
-//   @IsOptional()
-//   @IsObject()
-//   orderUnits: {
-//     add?: Product_OrderUnit_item[];
-//     remove?: Product_OrderUnit_item[];
-//   };
-
-//   @ApiPropertyOptional({
-//     type: Object,
-//     description: "The info of the product",
-//   })
-//   @IsOptional()
-//   @IsObject()
-//   recipeUnit: {
-//     add?: Product_RecipeUnit_item[];
-//     remove?: Product_RecipeUnit_item[];
-//   };
-
-//   @ApiPropertyOptional({
-//     type: Object,
-//     description: "The info of the product",
-//   })
-//   @IsOptional()
-//   @IsObject()
-//   countUnits: {
-//     add?: Product_CountUnit_item[];
-//     remove?: Product_CountUnit_item[];
-//   };
-// }
-
 export type Product_info = {
   label?: string;
   value?: string;
-  // brand?: string;
-  // uom?: string;
-  // packSize?: number;
-  // minStock?: number;
-  // maxStock?: number;
-  // reorderPoint?: number;
-  // currentStock?: number;
-  // value?: number;
-  // supplier?: string;
-  // expiryDate?: Date;
-  // lastCountDate?: Date;
 };
 
 export const ProductInfoCreateSchema = z.object({
@@ -416,18 +230,6 @@ export const ProductInfoCreateSchema = z.object({
     .object({
       label: z.string().nullable().optional(),
       value: z.string().nullable().optional(),
-      // brand: z.string().nullable().optional(),
-      // uom: z.string().nullable().optional(),
-      // packSize: z.number().nullable().optional(),
-      // minStock: z.number().nullable().optional(),
-      // maxStock: z.number().nullable().optional(),
-
-      // reorderPoint: z.number().nullable().optional(),
-      // currentStock: z.number().nullable().optional(),
-      // value: z.number().nullable().optional(),
-      // supplier: z.string().nullable().optional(),
-      // expiryDate: z.date().nullable().optional(),
-      // lastCountDate: z.date().nullable().optional(),
     })
     .optional(),
 });

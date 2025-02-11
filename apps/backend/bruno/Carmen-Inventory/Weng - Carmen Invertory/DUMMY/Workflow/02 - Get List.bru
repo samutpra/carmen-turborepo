@@ -1,0 +1,17 @@
+meta {
+  name: 02 - Get List
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/workflows/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~page: 
+  ~perpage: 
+  ~filter[workflow_type:enum]: purchase_request
+}
