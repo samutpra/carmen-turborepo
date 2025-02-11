@@ -1,14 +1,14 @@
 import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 import QueryParams, { QueryAdvance } from 'lib/types';
 import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
-
 import {
   BusinessUnitCreateDto,
   BusinessUnitCreateSchema,
   BusinessUnitUpdateDto,
   BusinessUnitUpdateSchema,
-} from '@carmensoftware/shared-dtos';
+} from 'shared-dtos';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+
 import {
   BadRequestException,
   Body,

@@ -1,5 +1,5 @@
+import { VendorCreateSchema } from '@/dtos/vendor.dto';
 import { API_URL } from '@/lib/util/api';
-import { vendor_schema } from '@carmensoftware/shared-types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
@@ -61,7 +61,7 @@ export const POST = async (request: NextRequest) => {
 			);
 		}
 		const body = await request.json();
-		const result = vendor_schema.safeParse(body);
+		const result = VendorCreateSchema.safeParse(body);
 
 		if (!result.success) {
 			return NextResponse.json(

@@ -1,11 +1,15 @@
-import React from "react";
+'use client';
 
-export default function ProductManagementPage() {
-  return (
-    <>
-      <div className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Product Dashboard</h1>
-      </div>
-    </>
-  );
-}
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
+
+const ProductManagementPage = () => {
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'product-management';
+	return <SubMenuList pathName={path} />;
+};
+
+export default ProductManagementPage;

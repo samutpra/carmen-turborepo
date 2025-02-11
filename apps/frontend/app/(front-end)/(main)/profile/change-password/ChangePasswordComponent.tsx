@@ -13,17 +13,21 @@ import {
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-	changePasswordSchema,
-	ChangePasswordType,
-} from '@carmensoftware/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/app/context/AuthContext';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { toastError } from '@/components/ui-custom/Toast';
 import { useRouter } from '@/lib/i18n';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import * as m from '@/paraglide/messages.js';
+import { authChangePassword, AuthChangePasswordModel } from '@/dtos/auth.dto';
+
 const ChangePasswordComponent = () => {
 	const router = useRouter();
 	const { accessToken } = useAuth();
@@ -31,16 +35,16 @@ const ChangePasswordComponent = () => {
 	const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const form = useForm<ChangePasswordType>({
-		resolver: zodResolver(changePasswordSchema),
+	const form = useForm<AuthChangePasswordModel>({
+		resolver: zodResolver(authChangePassword),
 		defaultValues: {
-			old_password: '',
-			password: '',
-			confirmPassword: '',
+			old_pass: '',
+			new_pass: '',
+			confirm_pass: '',
 		},
 	});
 
-	const onSubmit = async (data: ChangePasswordType) => {
+	const onSubmit = async (data: AuthChangePasswordModel) => {
 		setIsLoading(true);
 		try {
 			const response = await fetch('/api/auth/change-password', {
@@ -53,7 +57,9 @@ const ChangePasswordComponent = () => {
 			});
 			const result = await response.json();
 			if (result.error) {
-				toastError({ message: result.error.message || 'Failed to change password' });
+				toastError({
+					message: result.error.message || 'Failed to change password',
+				});
 			} else {
 				setIsSuccessDialogOpen(true);
 				form.reset();
@@ -71,7 +77,7 @@ const ChangePasswordComponent = () => {
 		localStorage.removeItem('tenant-id');
 		localStorage.removeItem('user_data');
 		router.push('/sign-in');
-	}
+	};
 
 	return (
 		<>
@@ -84,10 +90,13 @@ const ChangePasswordComponent = () => {
 					</CardHeader>
 					<CardContent>
 						<Form {...form}>
-							<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+							<form
+								onSubmit={form.handleSubmit(onSubmit)}
+								className="space-y-6"
+							>
 								<FormField
 									control={form.control}
-									name="old_password"
+									name="old_pass"
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel className="text-sm font-medium">
@@ -96,11 +105,10 @@ const ChangePasswordComponent = () => {
 											<FormControl>
 												<PasswordInput
 													placeholder={m.placeholder_current_password()}
-													error={!!form.formState.errors.old_password}
+													error={!!form.formState.errors.old_pass}
 													{...field}
 													className="h-9"
 													disabled={isLoading}
-
 												/>
 											</FormControl>
 											<FormMessage />
@@ -109,7 +117,7 @@ const ChangePasswordComponent = () => {
 								/>
 								<FormField
 									control={form.control}
-									name="password"
+									name="new_pass"
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel className="text-sm font-medium">
@@ -118,7 +126,7 @@ const ChangePasswordComponent = () => {
 											<FormControl>
 												<PasswordInput
 													placeholder={m.placeholder_enter_new_password()}
-													error={!!form.formState.errors.password}
+													error={!!form.formState.errors.new_pass}
 													{...field}
 													className="h-9"
 													disabled={isLoading}
@@ -130,7 +138,7 @@ const ChangePasswordComponent = () => {
 								/>
 								<FormField
 									control={form.control}
-									name="confirmPassword"
+									name="confirm_pass"
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel className="text-sm font-medium">
@@ -139,7 +147,7 @@ const ChangePasswordComponent = () => {
 											<FormControl>
 												<PasswordInput
 													placeholder={m.placeholder_enter_confirm_new_password()}
-													error={!!form.formState.errors.confirmPassword}
+													error={!!form.formState.errors.confirm_pass}
 													{...field}
 													className="h-9"
 													disabled={isLoading}
@@ -160,9 +168,7 @@ const ChangePasswordComponent = () => {
 											{m.change_password()}...
 										</>
 									) : (
-										<>
-											{m.change_password()}
-										</>
+										<>{m.change_password()}</>
 									)}
 								</Button>
 							</form>
@@ -179,14 +185,10 @@ const ChangePasswordComponent = () => {
 						{m.change_password_detail_success()}
 					</p>
 					<DialogFooter>
-						<Button
-							onClick={backToSignIn}>
-							{m.back_to_sign_in()}
-						</Button>
+						<Button onClick={backToSignIn}>{m.back_to_sign_in()}</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-
 		</>
 	);
 };

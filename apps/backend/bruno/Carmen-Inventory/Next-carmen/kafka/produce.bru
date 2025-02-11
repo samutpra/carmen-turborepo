@@ -1,0 +1,17 @@
+meta {
+  name: produce
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3500/api/produce
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "message": "Hello from Postman!"
+  }
+}

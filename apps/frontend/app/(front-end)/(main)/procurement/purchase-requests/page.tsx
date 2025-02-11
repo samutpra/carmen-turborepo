@@ -3,7 +3,7 @@ import PurchaseRequestList from './components/PurchaseRequestList'
 
 const PurchaseRequestPage = () => {
     return (
-        <PurchaseRequestList />
+        <PurchaseRequestList data-id="purchase-request-list" />
     )
 }
 

@@ -3,8 +3,8 @@ import EnvironmentDashboard from './components/EnvironmentDashboard'
 
 const DashboardPage = () => {
 	return (
-		<EnvironmentDashboard />
-	)
+		<EnvironmentDashboard data-id="dashboard-page-environment-dashboard" />
+	);
 }
 
 export default DashboardPage

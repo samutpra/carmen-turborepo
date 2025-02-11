@@ -1,10 +1,11 @@
+import { LucideIconName } from '@/components/Sidebar/NewSidebar';
 import * as m from '@/paraglide/messages.js';
 
 export const menuItems = [
 	{
 		title: `${m.dashboard()}`,
 		path: '/dashboard',
-		icon: 'LayoutDashboard',
+		icon: 'LayoutDashboard' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [],
@@ -12,7 +13,7 @@ export const menuItems = [
 	{
 		title: `${m.Procurement()}`,
 		path: '/procurement',
-		icon: 'ShoppingCart',
+		icon: 'ShoppingCart' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -57,7 +58,7 @@ export const menuItems = [
 	{
 		title: `${m.product_management()}`,
 		path: '/product-management',
-		icon: 'Package',
+		icon: 'Package' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -90,7 +91,7 @@ export const menuItems = [
 	{
 		title: `${m.vendor_management()}`,
 		path: '/vendor-management',
-		icon: 'Users',
+		icon: 'Users' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -118,7 +119,7 @@ export const menuItems = [
 	{
 		title: `${m.store_operations()}`,
 		path: '/store-operations',
-		icon: 'Store',
+		icon: 'Store' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -145,7 +146,7 @@ export const menuItems = [
 	{
 		title: `${m.inventory_management()}`,
 		path: '/inventory-management',
-		icon: 'Package',
+		icon: 'Package' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -186,7 +187,7 @@ export const menuItems = [
 	{
 		title: `${m.operational_planning()}`,
 		path: '/operational-planning',
-		icon: 'CalendarClock',
+		icon: 'CalendarClock' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -194,10 +195,18 @@ export const menuItems = [
 				name: `${m.recipes_management()}`,
 				path: '/operational-planning/recipes-management',
 				subItems: [
-					{ name: `${m.recipe_library()}`, path: "/operational-planning/recipe-management/recipes" },
-					{ name: `${m.categories()}`, path: "/operational-planning/recipe-management/categories" },
-					{ name: `${m.costing()}`, path: "/operational-planning/recipe-management/costing" },
-					{ name: `${m.media_gallery()}`, path: "/operational-planning/recipe-management/media" },
+					{
+						name: `${m.recipe_library()}`,
+						path: '/operational-planning/recipe-management/recipes',
+					},
+					{
+						name: `${m.categories()}`,
+						path: '/operational-planning/recipe-management/categories',
+					},
+					{
+						name: `${m.recipe_cuisine_types()}`,
+						path: '/operational-planning/recipe-management/cuisine-types',
+					},
 				],
 				visible: true,
 				enabled: true,
@@ -225,7 +234,7 @@ export const menuItems = [
 	{
 		title: `${m.production()}`,
 		path: '/production',
-		icon: 'Factory',
+		icon: 'Factory' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -258,7 +267,7 @@ export const menuItems = [
 	{
 		title: `${m.reporting_and_analytics()}`,
 		path: '/reporting-analytics',
-		icon: 'BarChart2',
+		icon: 'BarChart2' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -303,7 +312,7 @@ export const menuItems = [
 	{
 		title: `${m.finance()}`,
 		path: '/finance',
-		icon: 'DollarSign',
+		icon: 'DollarSign' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -314,20 +323,8 @@ export const menuItems = [
 				enabled: true,
 			},
 			{
-				name: `${m.currency_management()}`,
-				path: '/finance/currency-management',
-				visible: true,
-				enabled: true,
-			},
-			{
 				name: `${m.exchange_rates()}`,
 				path: '/finance/exchange-rates',
-				visible: true,
-				enabled: true,
-			},
-			{
-				name: `${m.department_and_cost_center()}`,
-				path: '/finance/department-list',
 				visible: true,
 				enabled: true,
 			},
@@ -342,7 +339,7 @@ export const menuItems = [
 	{
 		title: `${m.configuration()}`,
 		path: '/configuration',
-		icon: 'MonitorCog',
+		icon: 'MonitorCog' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -375,7 +372,7 @@ export const menuItems = [
 	{
 		title: `${m.system_administration()}`,
 		path: '/system-administration',
-		icon: 'Settings',
+		icon: 'Settings' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [
@@ -438,7 +435,7 @@ export const menuItems = [
 	{
 		title: `${m.help_and_support()}`,
 		path: '/help-support',
-		icon: 'HelpCircle',
+		icon: 'HelpCircle' as LucideIconName,
 		visible: true,
 		enabled: true,
 		subItems: [

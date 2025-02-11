@@ -1,405 +1,216 @@
-"use client";
-import React, { useState } from 'react'
-import { FILTER_FIELDS, FILTER_OPERATORS, mockRecipes, Recipe } from '../mockData';
+'use client';
+
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { toastError } from '@/components/ui-custom/Toast';
 import { Button } from '@/components/ui/button';
-import { FileDown, LayoutGrid, List, Plus, Printer, SlidersHorizontal, X } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import RecipeCard from './RecipeCard';
-import RecipeTable from './RecipeTable';
+import { RecipeCreateModel } from '@/dtos/recipe.dto';
+import { useURL } from '@/hooks/useURL';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import { FileDown, Printer, Plus, LayoutGrid, LayoutList } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import * as m from '@/paraglide/messages.js';
-import SearchForm from '@/components/ui-custom/SearchForm';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Link } from '@/lib/i18n';
-import { Input } from '@/components/ui/input';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import { statusOptions } from '@/lib/statusOptions';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import SortDropDown from '@/components/ui-custom/SortDropDown';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import RecipeCard from './RecipeCard';
+import RecipeDisplay from './RecipeDisplay';
 
-interface FilterOptions {
-    category: string
-    cuisine: string
-    costRange: [number, number]
-    status: string
-    preparationTime: string
-    difficulty: string
-    hasMedia: boolean
+enum RecipeField {
+	Name = 'name',
+	Category = 'category',
+	CostPerPortion = 'costPerPortion',
+	SellingPrice = 'sellingPrice',
+	Margin = 'grossMargin',
+	Status = 'status',
 }
 
-const initialFilters: FilterOptions = {
-    category: "all",
-    cuisine: "all",
-    costRange: [0, 100],
-    status: "all",
-    preparationTime: "all",
-    difficulty: "all",
-    hasMedia: false,
+enum ViewType {
+	Table = 'table',
+	Grid = 'grid',
 }
 
-interface FilterCondition {
-    id: string
-    field: string
-    operator: string
-    value: string
-}
+const recipeFields: FieldConfig<RecipeCreateModel>[] = [
+	{
+		key: RecipeField.Name,
+		label: 'Name',
+		className: 'w-40',
+	},
+	{
+		key: RecipeField.Category,
+		label: 'Category',
+		className: 'w-40',
+	},
+	{
+		key: RecipeField.CostPerPortion,
+		label: 'Cost Per Portion',
+		className: 'w-40',
+	},
+	{
+		key: RecipeField.SellingPrice,
+		label: 'Selling Price',
+		className: 'w-40',
+	},
+	{
+		key: RecipeField.Margin,
+		label: 'Margin',
+		className: 'w-40',
+	},
+	{
+		key: RecipeField.Status,
+		label: 'Status',
+		className: 'w-40',
+	},
+];
 
 const RecipeList = () => {
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-    const [filters, setFilters] = useState<FilterOptions>(initialFilters);
-    const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("")
-    const [quickFilters, setQuickFilters] = useState<string[]>([])
-    const [filterConditions, setFilterConditions] = useState<FilterCondition[]>([])
-    const [selectedRecipes, setSelectedRecipes] = useState<string[]>([])
-    const [searchTerm, setSearchTerm] = useState("")
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFilterChange = (key: keyof FilterOptions, value: any) => {
-        setFilters(prev => ({ ...prev, [key]: value }))
-    }
+	const [recipeData, setRecipeData] = useState<RecipeCreateModel[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [viewType, setViewType] = useState<ViewType>(ViewType.Table);
 
-    const handleQuickFilter = (filter: string) => {
-        setQuickFilters(prev => {
-            const newFilters = prev.includes(filter)
-                ? prev.filter(f => f !== filter)
-                : [...prev, filter]
-            return newFilters
-        })
-    }
+	useEffect(() => {
+		const fetchRecipes = async () => {
+			try {
+				const response = await fetch(
+					'/api/operational-planning/recipe-management/recipe'
+				);
+				if (!response.ok) {
+					throw new Error('Failed to fetch recipes');
+				}
+				const data = await response.json();
+				setRecipeData(data.data);
+				setPages('1'); // mock data
+			} catch (err) {
+				setError(err instanceof Error ? err.message : 'An error occurred');
+				toastError({ message: 'Failed to fetch recipes' });
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-    const addFilterCondition = () => {
-        const newCondition: FilterCondition = {
-            id: Math.random().toString(36).substr(2, 9),
-            field: FILTER_FIELDS[0].value,
-            operator: FILTER_OPERATORS[0].value,
-            value: "",
-        }
-        setFilterConditions([...filterConditions, newCondition])
-    }
+		fetchRecipes();
+	}, []);
 
+	if (error) {
+		return <ErrorCard message={error} data-id="recipe-error-card" />;
+	}
 
-    const getActiveFilterCount = () => {
-        return Object.entries(filters).filter(([key, value]) => {
-            if (Array.isArray(value) && key === 'costRange') {
-                return value[0] > 0 || value[1] < 100
-            }
-            return value !== 'all' && value !== false
-        }).length
-    }
+	const title = 'Recipes';
 
-    const removeFilterCondition = (id: string) => {
-        setFilterConditions(filterConditions.filter((condition) => condition.id !== id))
-    }
+	const actionButtons = (
+		<div className="action-btn-container" data-id="recipe-action-btn-container">
+			<Button size={'sm'} data-id="recipe-add-button" asChild>
+				<Link href="/operational-planning/recipe-management/recipes/new">
+					<Plus className="h-4 w-4" />
+					{m.add_text()}
+				</Link>
+			</Button>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="recipe-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="recipe-export-icon" />
+				{m.export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'} data-id="recipe-print-button">
+				<Printer className="h-4 w-4" />
+				{m.print_text()}
+			</Button>
+		</div>
+	);
 
-    const clearFilters = () => {
-        setFilterConditions([])
-        setQuickFilters([])
-    }
+	const filter = (
+		<div className="filter-container" data-id="recipe-filter-container">
+			<SearchForm
+				defaultValue={search}
+				onSearch={setSearch}
+				placeholder={`${m.Search()}...`}
+				data-id="recipe-search-form"
+			/>
+			<div
+				className="all-center gap-2"
+				data-id="recipe-filter-container-center"
+			>
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+					data-id="recipe-status-search-dropdown"
+				/>
+				<SortDropDown
+					fieldConfigs={recipeFields}
+					items={recipeData}
+					onSort={setRecipeData}
+					data-id="recipe-sort-dropdown"
+				/>
+				<Button
+					variant="outline"
+					size={'sm'}
+					data-id="recipe-view-type-button"
+					onClick={() =>
+						setViewType(
+							viewType === ViewType.Table ? ViewType.Grid : ViewType.Table
+						)
+					}
+				>
+					{viewType === ViewType.Table ? (
+						<LayoutList className="h-4 w-4" />
+					) : (
+						<LayoutGrid className="h-4 w-4" />
+					)}
+				</Button>
+			</div>
+		</div>
+	);
 
-    const updateFilterCondition = (
-        id: string,
-        field: keyof FilterCondition,
-        value: string
-    ) => {
-        setFilterConditions(
-            filterConditions.map((condition) =>
-                condition.id === id ? { ...condition, [field]: value } : condition
-            )
-        )
-    }
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
 
-    const handleSelectAll = (checked: boolean) => {
-        if (checked) {
-            setSelectedRecipes(filteredRecipes.map(recipe => recipe.id))
-        } else {
-            setSelectedRecipes([])
-        }
-    }
+	const content = (
+		<>
+			{viewType === ViewType.Table ? (
+				<RecipeDisplay
+					recipes={recipeData}
+					fields={recipeFields}
+					page={+page}
+					totalPage={+pages}
+					handlePageChange={handlePageChange}
+				/>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+					{recipeData.map((recipe) => (
+						<RecipeCard key={recipe.id} recipe={recipe} />
+					))}
+				</div>
+			)}
+		</>
+	);
 
-    const handleSelect = (recipeId: string, checked: boolean) => {
-        if (checked) {
-            setSelectedRecipes([...selectedRecipes, recipeId])
-        } else {
-            setSelectedRecipes(selectedRecipes.filter(id => id !== recipeId))
-        }
-    }
+	return (
+		<DataDisplayTemplate
+			title={title}
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+			isLoading={isLoading}
+			data-id="recipe-data-display-template"
+		/>
+	);
+};
 
-
-    const filteredRecipes = mockRecipes.filter(recipe => {
-        // Search filter
-        if (searchTerm && !recipe.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return false
-        }
-
-        // Quick filters
-        if (quickFilters.includes('noMedia') && recipe.hasMedia) return false
-        if (quickFilters.includes('hasMedia') && !recipe.hasMedia) return false
-        if (quickFilters.includes('active') && recipe.status !== 'active') return false
-        if (quickFilters.includes('draft') && recipe.status !== 'draft') return false
-
-        // Advanced filters
-        for (const condition of filterConditions) {
-            const value = recipe[condition.field as keyof Recipe]
-            if (value === undefined) continue
-
-            switch (condition.operator) {
-                case 'contains':
-                    if (!String(value).toLowerCase().includes(condition.value.toLowerCase())) return false
-                    break
-                case 'equals':
-                    if (String(value) !== condition.value) return false
-                    break
-                case 'notEquals':
-                    if (String(value) === condition.value) return false
-                    break
-                case 'greaterThan':
-                    if (typeof value === 'number' && value <= Number(condition.value)) return false
-                    break
-                case 'lessThan':
-                    if (typeof value === 'number' && value >= Number(condition.value)) return false
-                    break
-                case 'isEmpty':
-                    if (value !== '') return false
-                    break
-                case 'isNotEmpty':
-                    if (value === '') return false
-                    break
-            }
-        }
-
-        return true
-    })
-
-    const title = "Recipe Library";
-
-    const actionButtons = (
-        <div className="action-btn-container">
-            <Button asChild variant={'outline'} size={'sm'}>
-                <Link href="/vendor-management/vendors/new">
-                    <Plus className="h-4 w-4" />
-                    New Recipe
-                </Link>
-            </Button>
-            <Button variant="outline" className="group" size={'sm'}>
-                <FileDown className="h-4 w-4" />
-                {m.export_text()}
-            </Button>
-            <Button variant="outline" size={'sm'}>
-                <Printer className="h-4 w-4" />
-                {m.print_text()}
-            </Button>
-        </div>
-    );
-
-    const filter = (
-        <div className='filter-container'>
-            <SearchForm
-                onSearch={setSearchQuery}
-                defaultValue={searchQuery}
-                placeholder={`${m.Search()}...`}
-            />
-            <div className="all-center gap-2">
-                <Button
-                    variant={quickFilters.includes('noMedia') ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleQuickFilter('noMedia')}
-                >
-                    No Media
-                </Button>
-                <Button
-                    variant={quickFilters.includes('hasMedia') ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleQuickFilter('hasMedia')}
-                >
-                    Has Media
-                </Button>
-                <Button
-                    variant={quickFilters.includes('active') ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleQuickFilter('active')}
-                >
-                    Active
-                </Button>
-                <Button
-                    variant={quickFilters.includes('draft') ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleQuickFilter('draft')}
-                >
-                    Draft
-                </Button>
-                {/* <Select
-                    value={filters.category}
-                    onValueChange={(value) => handleFilterChange('category', value)}
-                >
-                    <SelectTrigger className="w-[180px] h-8">
-                        <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent >
-                        {filterOptions.categories.map((category) => (
-                            <SelectItem key={category.value} value={category.value} className='text-xs'>
-                                {category.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select> */}
-                <Popover open={isAdvancedFilterOpen} onOpenChange={setIsAdvancedFilterOpen}>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            <SlidersHorizontal className="h-4 w-4 mr-2" />
-                            Advanced Filters
-                            {getActiveFilterCount() > 0 && (
-                                <Badge variant="secondary" className="ml-2">
-                                    {getActiveFilterCount()}
-                                </Badge>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-4" align="end">
-                        <div className="space-y-4">
-                            <div className="font-medium flex items-center justify-between border-b pb-2">
-                                <div className="flex items-center gap-2">
-                                    <SlidersHorizontal className="h-4 w-4" />
-                                    Advanced Filters
-                                </div>
-                                {filterConditions.length > 0 && (
-                                    <Badge variant="secondary" className="ml-2">
-                                        {filterConditions.length}
-                                    </Badge>
-                                )}
-                            </div>
-                            {filterConditions.map((condition) => (
-                                <div key={condition.id} className="flex items-center gap-2">
-                                    <Select
-                                        value={condition.field}
-                                        onValueChange={(value) =>
-                                            updateFilterCondition(condition.id, "field", value)
-                                        }
-                                    >
-                                        <SelectTrigger className="w-[120px]">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {FILTER_FIELDS.map((field) => (
-                                                <SelectItem key={field.value} value={field.value}>
-                                                    {field.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select
-                                        value={condition.operator}
-                                        onValueChange={(value) =>
-                                            updateFilterCondition(condition.id, "operator", value)
-                                        }
-                                    >
-                                        <SelectTrigger className="w-[120px]">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {FILTER_OPERATORS.map((operator) => (
-                                                <SelectItem key={operator.value} value={operator.value}>
-                                                    {operator.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {!["isEmpty", "isNotEmpty"].includes(condition.operator) && (
-                                        <Input
-                                            value={condition.value}
-                                            onChange={(e) =>
-                                                updateFilterCondition(
-                                                    condition.id,
-                                                    "value",
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="flex-1"
-                                            placeholder="Value"
-                                        />
-                                    )}
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => removeFilterCondition(condition.id)}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                            <Button
-                                variant="outline"
-                                className="w-full"
-                                onClick={addFilterCondition}
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Filter Condition
-                            </Button>
-                            <div className="flex justify-between pt-2 border-t">
-                                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                                    Reset
-                                </Button>
-                                <Button size="sm" onClick={() => setIsAdvancedFilterOpen(false)}>
-                                    Apply Filters
-                                </Button>
-                            </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
-                {getActiveFilterCount() > 0 && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearFilters}
-                        className="text-muted-foreground"
-                    >
-                        <X className="h-4 w-4 mr-1" />
-                        Clear All
-                    </Button>
-                )}
-
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-
-                >
-                    {viewMode === "grid" ? (
-                        <List className="h-4 w-4" />
-                    ) : (
-                        <LayoutGrid className="h-4 w-4" />
-                    )}
-                </Button>
-
-            </div>
-        </div>
-    )
-
-    const content = (
-        <>
-            <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-4"}>
-                {filteredRecipes.length === 0 ? (
-                    <div className="col-span-full text-center py-8 text-muted-foreground">
-                        No recipes found matching your filters
-                    </div>
-                ) : viewMode === "grid" ? (
-                    filteredRecipes.map((recipe) => (
-                        <RecipeCard key={recipe.id} recipe={recipe} />
-                    ))
-                ) : (
-                    <RecipeTable recipes={filteredRecipes} />
-                )}
-            </div>
-            <div className="text-sm text-muted-foreground">
-                Showing {filteredRecipes.length} of {mockRecipes.length} recipes
-            </div>
-        </>
-    )
-
-    return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filter}
-            content={content}
-        />
-    )
-}
-
-export default RecipeList
+export default RecipeList;

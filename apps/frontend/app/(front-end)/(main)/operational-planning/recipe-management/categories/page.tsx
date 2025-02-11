@@ -1,9 +1,8 @@
-import React from 'react'
+import React from 'react';
+import RecipeCategoryList from './components/RecipeCategoryList';
 
 const Category_OP_Page = () => {
-    return (
-        <div>Category_OP_Page</div>
-    )
-}
+	return <RecipeCategoryList />;
+};
 
-export default Category_OP_Page
+export default Category_OP_Page;

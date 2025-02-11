@@ -5,16 +5,18 @@ meta {
 }
 
 get {
-  url: {{host}}/system-api/v1/system-currency-iso?perpage=10
+  url: {{host}}/system-api/v1/system-currency-iso?perpage=10&page=1&filter[iso_code]=vnd&search=mese&sort=iso_code:desc
   body: none
   auth: bearer
 }
 
 params:query {
   perpage: 10
-  ~page: 1
-  ~filter[isActive: bool]: 1
-  ~search: baht
+  page: 1
+  filter[iso_code]: vnd
+  search: mese
+  sort: iso_code:desc
+  : 
   ~advance: {'where':{'code':'usd'}}
 }
 

@@ -1,32 +1,60 @@
-// context/AuthContext.tsx
-"use client";
+'use client';
 
+import React, {
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+	useMemo,
+} from 'react';
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { usePathname } from 'next/navigation';
 import { useRouter } from '@/lib/i18n';
-import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type AuthState = {
+// Define User type
+interface User {
+	id: string;
+	email?: string;
+	name?: string;
+	username: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	user: any | null;
+	[key: string]: any; // for additional user properties
+}
+
+interface AuthState {
+	user: User | null;
 	refresh_token: string;
 	access_token?: string;
-};
+}
 
-type AuthContextType = {
+interface AuthContextType {
 	authState: AuthState;
 	accessToken: string | null;
 	isAuthenticated: boolean;
-	handleLogin: (data: AuthState, token: string) => void;
-	handleLogout: () => void;
+	isLoading: boolean;
+	handleLogin: (data: AuthState, token: string) => Promise<void>;
+	handleLogout: () => Promise<void>;
 	updateAccessToken: (token: string) => void;
+}
+
+const COOKIE_OPTIONS = {
+	maxAge: 30 * 24 * 60 * 60, // 30 days
+	secure: process.env.NODE_ENV === 'production',
+	sameSite: true,
+} as const;
+
+const defaultAuthState: AuthState = {
+	user: null,
+	refresh_token: '',
 };
 
-// สร้าง default value เพื่อป้องกัน undefined
 const defaultAuthContext: AuthContextType = {
-	authState: { user: null, refresh_token: '' },
+	authState: defaultAuthState,
 	accessToken: null,
 	isAuthenticated: false,
-	handleLogin: () => {},
-	handleLogout: () => {},
+	isLoading: true,
+	handleLogin: async () => {},
+	handleLogout: async () => {},
 	updateAccessToken: () => {},
 };
 
@@ -36,65 +64,147 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const router = useRouter();
-	const [authState, setAuthState] = useState<AuthState>({
-		user: null,
-		refresh_token: '',
-	});
-	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const pathname = usePathname();
 
-	useEffect(() => {
+	const [isLoading, setIsLoading] = useState(true);
+	// Initialize authState from localStorage
+	const [authState, setAuthState] = useState<AuthState>(() => {
 		if (typeof window !== 'undefined') {
-			const storedUser = localStorage.getItem('user_data');
-			const storedToken = localStorage.getItem('access_token');
-			if (storedUser) setAuthState(JSON.parse(storedUser));
-			if (storedToken) setAccessToken(storedToken);
+			const savedAuthState = localStorage.getItem('auth_state');
+			return savedAuthState ? JSON.parse(savedAuthState) : defaultAuthState;
 		}
-	}, []);
+		return defaultAuthState;
+	});
 
-	useEffect(() => {
-		if (accessToken) {
-			localStorage.setItem('access_token', accessToken);
-		} else {
-			localStorage.removeItem('access_token');
-			router.push('/sign-in');
+	const [accessToken, setAccessToken] = useState<string | null>(() => {
+		if (typeof window !== 'undefined') {
+			return (getCookie('access_token') as string) || null;
 		}
-	}, [accessToken, router]);
+		return null;
+	});
 
+	// Update localStorage whenever authState changes
 	useEffect(() => {
-		if (authState.user) {
-			localStorage.setItem('user_data', JSON.stringify(authState));
-		} else {
-			localStorage.removeItem('user_data');
+		if (authState !== defaultAuthState) {
+			localStorage.setItem('auth_state', JSON.stringify(authState));
 		}
 	}, [authState]);
 
-	const handleLogin = (data: AuthState, token: string) => {
-		setAuthState(data);
-		setAccessToken(token);
-	};
-
-	const handleLogout = () => {
-		setAuthState({ user: null, refresh_token: '' });
+	const clearAuth = () => {
+		setAuthState(defaultAuthState);
 		setAccessToken(null);
+		deleteCookie('access_token');
+		localStorage.removeItem('access_token');
+		localStorage.removeItem('auth_state');
 	};
 
-	const updateAccessToken = (token: string) => {
-		setAccessToken(token);
+	const initializeAuth = async () => {
+		try {
+			const token = getCookie('access_token') as string | undefined;
+			const savedAuthState = localStorage.getItem('auth_state');
+
+			if (token) {
+				setAccessToken(token);
+				localStorage.setItem('access_token', token);
+
+				// Restore saved auth state if available
+				if (savedAuthState) {
+					const parsedAuthState = JSON.parse(savedAuthState);
+					setAuthState(parsedAuthState);
+				}
+
+				if (pathname === '/sign-in' || pathname === '/') {
+					await router.push('/dashboard');
+				}
+			} else {
+				clearAuth();
+			}
+		} catch (error) {
+			console.error('Auth initialization error:', error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const value = {
-		authState,
-		accessToken,
-		isAuthenticated: !!authState.user,
-		handleLogin,
-		handleLogout,
-		updateAccessToken,
-	};
+	// Initialize on mount
+	useEffect(() => {
+		initializeAuth();
+	}, []);
+
+	// Handle sign-in page
+	useEffect(() => {
+		if (!isLoading && pathname === '/sign-in') {
+			clearAuth();
+		}
+	}, [pathname, isLoading]);
+
+	// Memoize the authentication status
+	const isAuthenticated = useMemo(() => {
+		return !!accessToken;
+	}, [accessToken]);
+
+	// Memoize handlers to prevent unnecessary re-creations
+	const handlers = useMemo(
+		() => ({
+			handleLogin: async (data: AuthState, token: string): Promise<void> => {
+				try {
+					setAuthState(data);
+					setAccessToken(token);
+					setCookie('access_token', token, COOKIE_OPTIONS);
+					localStorage.setItem('access_token', token);
+					localStorage.setItem('auth_state', JSON.stringify(data));
+					router.push('/dashboard');
+				} catch (error) {
+					console.error('Login error:', error);
+					throw error;
+				}
+			},
+			handleLogout: async (): Promise<void> => {
+				try {
+					await router.push('/sign-in');
+				} catch (error) {
+					console.error('Logout error:', error);
+					throw error;
+				}
+			},
+			updateAccessToken: (token: string): void => {
+				try {
+					setAccessToken(token);
+					setCookie('access_token', token, COOKIE_OPTIONS);
+					localStorage.setItem('access_token', token);
+					setAuthState((prev) => ({
+						...prev,
+						access_token: token,
+					}));
+				} catch (error) {
+					console.error('Token update error:', error);
+					clearAuth();
+				}
+			},
+		}),
+		[router]
+	);
+
+	// Memoize the context value
+	const value = useMemo<AuthContextType>(
+		() => ({
+			authState,
+			accessToken,
+			isAuthenticated,
+			isLoading,
+			...handlers,
+		}),
+		[authState, accessToken, isAuthenticated, isLoading, handlers]
+	);
+
+	// Don't render children until initial auth check is complete
+	if (isLoading) {
+		return null;
+	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// แยก hook ไปอยู่ในฟังก์ชันใหม่
 export function useAuth(): AuthContextType {
 	const context = useContext(AuthContext);
 	if (!context) {

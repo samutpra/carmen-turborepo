@@ -68,7 +68,9 @@ const RefreshToken = () => {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="outline">Refresh Token</Button>
+				<Button variant="outline" data-id="refresh-token-button">
+					Refresh Token
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[600px]">
 				<DialogHeader>
@@ -88,10 +90,15 @@ const RefreshToken = () => {
 							variant="outline"
 							onClick={() => setOpen(false)}
 							disabled={isLoading}
+							data-id="cancel-button"
 						>
 							Cancel
 						</Button>
-						<Button onClick={handleRefreshToken} disabled={isLoading}>
+						<Button
+							onClick={handleRefreshToken}
+							disabled={isLoading}
+							data-id="refresh-button"
+						>
 							{isLoading ? 'Refreshing...' : 'Refresh Token'}
 						</Button>
 					</div>

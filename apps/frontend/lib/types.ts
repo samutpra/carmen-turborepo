@@ -361,6 +361,7 @@ export interface IBaseSummary {
 }
 
 export interface PurchaseRequestItem {
+<<<<<<< HEAD
 	id?: string;
 	location: string;
 	name: string;
@@ -413,6 +414,61 @@ export interface PurchaseRequestItem {
 	taxAmount: number;
 	baseTotalAmount: number;
 	totalAmount: number;
+=======
+  id?: string;
+  location: string;
+  name: string;
+  description: string;
+  unit: string;
+  quantityRequested: number;
+  quantityApproved: number;
+  deliveryDate: Date;
+  deliveryPoint: string;
+  currency: string;
+  currencyRate: number;
+  price: number;
+  foc: number;
+  taxIncluded: boolean;// adjustment: boolean;
+  adjustments: {
+    discount?: boolean;
+    tax: boolean;
+  };
+  discountRate: number;
+  taxRate: number;
+  vendor: string;
+  pricelistNumber: string;
+  comment: string;
+  createdBy?: string;
+  createdDate?: Date;
+  updatedBy?: string;
+  updatedDate?: Date;
+  itemCategory: string;
+  itemSubcategory: string;
+  status: PurchaseRequestItemStatus;
+  inventoryInfo: {
+    onHand: number;
+    onOrdered: number;
+    reorderLevel: number;
+    restockLevel: number;
+    averageMonthlyUsage: number;
+    lastPrice: number;
+    lastOrderDate: Date;
+    lastVendor: string;
+    inventoryUnit: string;
+  };
+  accountCode: string;
+  jobCode: string;
+  baseSubTotalPrice: number;
+  subTotalPrice: number;
+  baseNetAmount: number;
+  netAmount: number;
+  baseDiscAmount: number;
+  discountAmount: number;
+  baseTaxAmount: number;
+  taxAmount: number;
+  baseTotalAmount: number;
+  totalAmount: number;
+>>>>>>> main
 }
 
 export type PurchaseRequestItemStatus =

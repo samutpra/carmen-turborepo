@@ -11,6 +11,7 @@ get {
 }
 
 params:query {
+  ~sort: name:desc
   ~filter[DeliveryPoint.name]: samp
 }
 

@@ -2,12 +2,13 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LocationType } from '@carmensoftware/shared-types';
 import React, { useEffect, useState, useCallback } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StoreLocationDialog from './StoreLocationDialog';
-import EmptyState from '@/components/ui-custom/EmptyState';
-import { deleteStoreLocation, fetchStoreLocations } from '../actions/store_location';
+import {
+	deleteStoreLocation,
+	fetchStoreLocations,
+} from '../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
@@ -15,12 +16,12 @@ import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { LocationCreateModel } from '@/dtos/location.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum StoreLocationField {
 	Name = 'name',
@@ -29,26 +30,91 @@ enum StoreLocationField {
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<LocationType>[] = [
-	{ key: StoreLocationField.Name, label: m.store_location_name_label() },
-	{ key: StoreLocationField.LocationType, label: m.location_type_label() },
-	{ key: StoreLocationField.isActive, label: m.status_text(), type: 'badge' }
+const sortFields: FieldConfig<LocationCreateModel>[] = [
+	{
+		key: StoreLocationField.Name,
+		label: m.store_location_name_label(),
+		className: 'w-24',
+	},
+	{
+		key: StoreLocationField.LocationType,
+		label: m.location_type_label(),
+		className: 'w-24'
+	},
 ];
-const storeLocationFields: FieldConfig<LocationType>[] = [
+const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
 	...sortFields,
-	{ key: StoreLocationField.Description, label: m.description() }
+	{
+		key: StoreLocationField.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-24',
+	},
+	{
+		key: StoreLocationField.Description,
+		label: m.description(),
+		className: 'w-40',
+	},
 ];
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [storeLocations, setStoreLocations] = useState<LocationType[]>([]);
+	const [storeLocations, setStoreLocations] = useState<LocationCreateModel[]>(
+		[]
+	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
+
+	const handleSuccess = useCallback(
+		(values: LocationCreateModel) => {
+			setStoreLocations((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		},
+		[setStoreLocations]
+	);
+
+	const handleDelete = useCallback(
+		async (id: string) => {
+			try {
+				const res = await deleteStoreLocation(id, token, tenantId);
+				if (res) {
+					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
+					toastSuccess({
+						message: `${m.store_location()} deleted successfully`,
+					});
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					if (error.message === 'Unauthorized') {
+						toastError({
+							message: 'Your session has expired. Please login again.',
+						});
+					} else {
+						toastError({
+							message: `${m.fail_del_store()}: ${error.message}`,
+						});
+					}
+				} else {
+					toastError({
+						message:
+							'An unknown error occurred while deleting the store location.',
+					});
+				}
+			}
+		},
+		[token, tenantId]
+	);
 
 	const fetchData = async () => {
 		try {
@@ -56,8 +122,12 @@ const StoreLocationList = () => {
 			const data = await fetchStoreLocations(token, tenantId, {
 				search,
 				status,
+				page,
+				sort
 			});
 			setStoreLocations(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -67,82 +137,69 @@ const StoreLocationList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
-
-	if (error) return <ErrorCard message={error} />;
-
-	const handleSuccess = useCallback((values: LocationType) => {
-		setStoreLocations((prev) => {
-			const mapValues = new Map(prev.map((u) => [u.id, u]));
-			mapValues.set(values.id, values);
-			return Array.from(mapValues.values());
-		});
-	}, [setStoreLocations]);
-
-	const handleDelete = useCallback(
-		async (id: string) => {
-			try {
-				const res = await deleteStoreLocation(id, token, tenantId);
-				if (res) {
-					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: 'Store location deleted successfully' });
-				}
-			} catch (error) {
-				if (error instanceof Error) {
-					if (error.message === 'Unauthorized') {
-						toastError({ message: 'Your session has expired. Please login again.' });
-					} else {
-						toastError({ message: `Failed to delete store location: ${error.message}` });
-					}
-				} else {
-					toastError({ message: 'An unknown error occurred while deleting the store location.' });
-				}
-			}
-		}, [token, tenantId, deleteStoreLocation]
-	)
+	}, [token, tenantId, search, status, page, sort]);
 
 	const title = `${m.store_location()}`;
 
 	const actionButtons = (
 		<div className="action-btn-container">
-			<StoreLocationDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
+			<StoreLocationDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="store-location-dialog-add-button"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="store-location-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="store-location-export-icon" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
-				<Printer className="h-4 w-4" />
+			<Button
+				variant="outline"
+				size={'sm'}
+				data-id="store-location-print-button"
+			>
+				<Printer className="h-4 w-4" data-id="store-location-print-icon" />
 				{m.print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="store-location-filter-container">
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ${m.store_location()}...`}
+				data-id="store-location-search-form"
 			/>
-			<div className="all-center gap-2">
+			<div
+				className="all-center gap-2"
+				data-id="store-location-filter-container"
+			>
 				<StatusSearchDropdown
 					options={statusOptions}
 					value={status}
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="store-location-status-search-dropdown"
 				/>
-				<SortDropDown
+				<SortComponent
 					fieldConfigs={sortFields}
-					items={storeLocations}
-					onSort={setStoreLocations}
+					sort={sort}
+					setSort={setSort}
+					data-id="store-location-sort-component"
 				/>
 			</div>
 		</div>
 	);
 
 	const content = (
-		<DisplayComponent<LocationType>
+		<DisplayComponent<LocationCreateModel>
 			items={storeLocations}
 			fields={storeLocationFields}
 			idField="id"
@@ -155,22 +212,20 @@ const StoreLocationList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
+			data-id="store-location-display-component"
 		/>
 	);
 
-	if (isLoading) {
-		return <SkeltonLoad />
-	}
-
-	if (storeLocations.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.not_found_store_location()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
+	if (error) {
+		return <ErrorCard message={error} data-id="store-location-error-card" />;
 	}
 
 	return (
@@ -179,6 +234,7 @@ const StoreLocationList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			data-id="store-location-data-display-template"
 		/>
 	);
 };

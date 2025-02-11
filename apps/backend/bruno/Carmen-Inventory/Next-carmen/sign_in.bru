@@ -1,0 +1,18 @@
+meta {
+  name: sign_in
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3500/api/auth/signin
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "daew@carmensoftware.com",
+    "password": "Daew2222"
+  }
+}

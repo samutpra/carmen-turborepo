@@ -1,0 +1,17 @@
+meta {
+  name: 03 Get recipe unit by product id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/v1/products/recipe-unit/e7661b82-cb6e-4588-8ae6-6dbf076d2069
+  body: none
+  auth: none
+}
+
+params:query {
+  ~page: 1
+  ~perpage: 10
+  ~search: 
+}

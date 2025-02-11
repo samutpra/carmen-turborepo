@@ -73,11 +73,11 @@ const CertificateForm: React.FC<Props> = ({
             <DialogTrigger asChild>
                 <Button
                     variant={mode === 'add' ? 'default' : 'ghost'}
-                    size={mode === 'add' ? 'default' : 'sm'}
+                    size={'sm'}
                 >
                     {mode === 'add' ? (
                         <>
-                            <PlusIcon className="mr-2 h-4 w-4" />
+                            <PlusIcon className="h-4 w-4" />
                             Add Certificate
                         </>
                     ) : (
@@ -155,10 +155,10 @@ const CertificateForm: React.FC<Props> = ({
                                             onValueChange={(value) => field.onChange(value)}
                                             value={field.value}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full text-xs">
                                                 <SelectValue placeholder="Select Status" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className='text-xs'>
                                                 <SelectItem value="active">Active</SelectItem>
                                                 <SelectItem value="expired">Billing</SelectItem>
                                                 <SelectItem value="pending">Pending</SelectItem>
@@ -171,12 +171,12 @@ const CertificateForm: React.FC<Props> = ({
                         />
                         <DialogFooter>
                             <div className="flex-end gap-2">
-                                <Button type="button" variant="outline" onClick={handleClose}>
+                                <Button type="button" variant="outline" onClick={handleClose} size={'sm'}>
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-
+                                    size={'sm'}
                                 >
                                     {mode === 'add' ? 'Add' : 'Save'}
                                 </Button>

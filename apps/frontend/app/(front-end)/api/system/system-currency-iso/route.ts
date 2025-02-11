@@ -31,8 +31,6 @@ export async function GET(request: NextRequest) {
     apiUrl.searchParams.set('perpage', perpage);
     apiUrl.searchParams.set('sort', sort);
 
-    console.log('apiUrl >>>>', apiUrl);
-
     // Define fetch options
     const options = {
         method: 'GET',

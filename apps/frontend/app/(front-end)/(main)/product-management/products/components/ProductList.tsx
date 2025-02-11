@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Link } from '@/lib/i18n';
 import React, { useEffect, useState } from 'react';
@@ -10,47 +10,59 @@ import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
 import { fetchProducts } from '../../actions/product';
 import { toastError } from '@/components/ui-custom/Toast';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
-import { FieldConfig } from '@/lib/util/uiConfig';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ProductDisplay from './ProductDisplay';
+import { ProductCreateModel } from '@/dtos/product.dto';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
-enum ProductField {
+export enum ProductField {
 	NAME = 'name',
 	CODE = 'code',
-	DESCRIPYION = 'description',
+	DESCRIPTION = 'description',
 	CATEGORY = 'category_name',
 	SUBCATEGORY = 'sub_category_name',
 	ITEM_GROUP = 'item_group_name',
 	STATUS = 'product_status_type',
 }
 
+const sortFields: FieldConfig<ProductCreateModel>[] = [
+	{ key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
+	{ key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+];
+
 const fields: FieldConfig<ProductCreateModel>[] = [
-  { key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
-  { key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
-  { key: ProductField.DESCRIPYION as keyof ProductCreateModel, label: 'Description' },
-  { key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
-  { key: ProductField.SUBCATEGORY as keyof ProductCreateModel, label: 'Subcategory' },
-  { key: ProductField.ITEM_GROUP as keyof ProductCreateModel, label: 'Item Group' },
-  { key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
+	...sortFields,
+	{
+		key: ProductField.DESCRIPTION as keyof ProductCreateModel,
+		label: 'Description',
+	},
+	{ key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
+	{
+		key: ProductField.SUBCATEGORY as keyof ProductCreateModel,
+		label: 'Subcategory',
+	},
+	{
+		key: ProductField.ITEM_GROUP as keyof ProductCreateModel,
+		label: 'Item Group',
+	},
+	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
 ];
 
 const ProductList = () => {
-  const { accessToken } = useAuth();
-  const token = accessToken || '';
-  const tenantId = 'DUMMY';
-  const [products, setProducts] = useState<ProductCreateModel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [search, setSearch] = useURL('search');
-  const [status, setStatus] = useURL('status');
-  const [page, setPage] = useURL('page');
-  const [pages, setPages] = useURL('pages');
-
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [products, setProducts] = useState<ProductCreateModel[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -58,6 +70,7 @@ const ProductList = () => {
 				search,
 				status,
 				page,
+				sort
 			});
 			setProducts(data.data);
 			setPage(data.pagination.page);
@@ -72,7 +85,7 @@ const ProductList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handlePageChange = (newPage: number) => {
 		const numericTotalPages = Number(pages);
@@ -82,29 +95,46 @@ const ProductList = () => {
 
 	const actionButtons = (
 		<div className="flex items-center gap-2">
-			<Button asChild variant="outline" size="sm">
-				<Link href="/vendor-management/vendors/new">
-					<Plus className="h-4 w-4 mr-2" />
+			<Button
+				asChild
+				variant="outline"
+				size="sm"
+				data-id="product-list-new-product-button"
+			>
+				<Link
+					href="/product-management/products/new"
+					data-id="product-list-new-product-button"
+				>
+					<Plus className="h-4 w-4" />
 					New product
 				</Link>
 			</Button>
-			<Button variant="outline" className="group" size="sm">
-				<FileDown className="h-4 w-4 mr-2" />
+			<Button
+				variant="outline"
+				className="group"
+				size="sm"
+				data-id="product-list-export-button"
+			>
+				<FileDown className="h-4 w-4" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size="sm">
-				<Printer className="h-4 w-4 mr-2" />
+			<Button variant="outline" size="sm" data-id="product-list-print-button">
+				<Printer className="h-4 w-4" data-id="product-list-print-button-icon" />
 				{m.print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div
+			className="filter-container my-4"
+			data-id="product-list-filter-container"
+		>
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
 				placeholder={`${m.Search()} ...`}
+				data-id="product-list-search-form"
 			/>
 			<div className="all-center gap-2">
 				<StatusSearchDropdown
@@ -113,17 +143,17 @@ const ProductList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="product-list-status-search-dropdown"
 				/>
-				<SortDropDown
-					fieldConfigs={fields}
-					items={products}
-					onSort={setProducts}
+				<SortComponent
+					fieldConfigs={sortFields}
+					sort={sort}
+					setSort={setSort}
+					data-id="product-list-sort-dropdown"
 				/>
 			</div>
 		</div>
 	);
-
-	if (isLoading) return <SkeltonLoad />;
 
 	const content = (
 		<ProductDisplay
@@ -132,18 +162,24 @@ const ProductList = () => {
 			page={+page}
 			totalPage={+pages}
 			handlePageChange={handlePageChange}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
+			data-id="product-list-product-display"
 		/>
 	);
 
-
-  return (
-    <DataDisplayTemplate
-      title='Products List'
-      actionButtons={actionButtons}
-      filters={filter}
-      content={content}
-    />
-  );
+	return (
+		<DataDisplayTemplate
+			title="Products List"
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+			data-id="product-list-data-display-template"
+		/>
+	);
 };
 
 export default ProductList;

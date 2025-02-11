@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { HttpExceptionFilter } from 'lib/filters/http-exception.filter';
 
 import { NestFactory } from '@nestjs/core';
 import {
@@ -13,6 +14,8 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // app.useGlobalPipes(
   //   new ValidationPipe({
@@ -34,7 +37,7 @@ async function bootstrap() {
       'Dev Cloud Environment',
     )
     .addServer(
-      'https://carmen-inventory-api.vercel.app/',
+      'https://carmen-api.semapru.com/',
       'Production Cloud Environment',
     )
     // .addSecurity('token', {

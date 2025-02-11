@@ -1,9 +1,6 @@
 'use client';
 
-import {
-	CategoryFormData,
-	CategoryType,
-} from '@carmensoftware/shared-types/dist/productCategorySchema';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import React, { useState, MouseEvent } from 'react';
@@ -22,15 +19,16 @@ import { Button } from '@/components/ui/button';
 import CategoryDialog from './CategoryDialog';
 import { formType } from '@/types/form_type';
 import { toastError } from '@/components/ui-custom/Toast';
+import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
 
 interface Props {
-	products: CategoryType[];
-	selectedProduct: CategoryType | null;
-	onSelectCategory: (product: CategoryType) => void;
+	products: ProductCategoryCreateModel[];
+	selectedProduct: ProductCategoryCreateModel | null;
+	onSelectCategory: (product: ProductCategoryCreateModel) => void;
 	onDeleteCategory: (productId: string) => Promise<void>;
 	onEditCategory: (
 		productId: string,
-		formData: CategoryFormData
+		formData: ProductCategoryCreateModel
 	) => Promise<void>;
 }
 
@@ -41,16 +39,24 @@ const CategoryItemList: React.FC<Props> = ({
 	onDeleteCategory,
 	onEditCategory,
 }) => {
-	const [productToDelete, setProductToDelete] = useState<CategoryType>();
+	const [productToDelete, setProductToDelete] =
+		useState<ProductCategoryCreateModel>();
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
-	const [productToEdit, setProductToEdit] = useState<CategoryType | null>(null);
+	const [productToEdit, setProductToEdit] =
+		useState<ProductCategoryCreateModel | null>(null);
 
-	const handleDeleteClick = (e: MouseEvent, product: CategoryType) => {
+	const handleDeleteClick = (
+		e: MouseEvent,
+		product: ProductCategoryCreateModel
+	) => {
 		e.stopPropagation();
 		setProductToDelete(product);
 	};
 
-	const handleEditClick = (e: MouseEvent, product: CategoryType) => {
+	const handleEditClick = (
+		e: MouseEvent,
+		product: ProductCategoryCreateModel
+	) => {
 		e.stopPropagation();
 		setProductToEdit(product);
 		setEditDialogOpen(true);
@@ -67,20 +73,17 @@ const CategoryItemList: React.FC<Props> = ({
 		}
 	};
 
-	const handleEdit = async (formData: CategoryType) => {
+	const handleEdit = async (formData: ProductCategoryCreateModel) => {
 		if (!productToEdit?.id) return;
 		await onEditCategory(productToEdit.id, formData);
 		setEditDialogOpen(false);
 	};
 
 	const categoryListItems = products.map((category) => (
-		<div
-			key={category.id}
-			className="flex items-center p-2 justify-between gap-2"
-		>
+		<div key={category.id} className="flex items-center p-1 justify-between">
 			<div
 				className={cn(
-					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					'cursor-pointer hover:bg-accent rounded-lg p-1 w-full',
 					selectedProduct?.id === category.id && 'bg-accent'
 				)}
 				onClick={() => onSelectCategory(category)}
@@ -94,7 +97,7 @@ const CategoryItemList: React.FC<Props> = ({
 				aria-label={`Select ${category.name} category`}
 				aria-selected={selectedProduct?.id === category.id}
 			>
-				<span>{category.name}</span>
+				<span className="text-xs">{category.name}</span>
 			</div>
 			<div className="flex">
 				<Button
@@ -102,9 +105,8 @@ const CategoryItemList: React.FC<Props> = ({
 					size={'sm'}
 					onClick={(e) => handleEditClick(e, category)}
 					aria-label={`Edit ${category.name}`}
-
 				>
-					<Pencil className="h-4 w-4" />
+					<Pencil />
 				</Button>
 				<Button
 					variant="ghost"
@@ -120,8 +122,8 @@ const CategoryItemList: React.FC<Props> = ({
 
 	return (
 		<>
-			<Card>
-				<CardContent>{categoryListItems}</CardContent>
+			<Card className="">
+				<CardContent className="p-2">{categoryListItems}</CardContent>
 			</Card>
 			<AlertDialog
 				open={!!productToDelete}
@@ -155,10 +157,11 @@ const CategoryItemList: React.FC<Props> = ({
 				initialData={
 					productToEdit
 						? {
-							name: productToEdit.name,
-							description: productToEdit.description || '',
-							is_active: productToEdit.is_active ?? true,
-						}
+								code: productToEdit.code,
+								name: productToEdit.name,
+								description: productToEdit.description || '',
+								is_active: productToEdit.is_active ?? true,
+							}
 						: undefined
 				}
 				mode={formType.EDIT}

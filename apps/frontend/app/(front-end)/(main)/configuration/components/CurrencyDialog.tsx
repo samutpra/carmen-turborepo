@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
-import { CurrencySchema, CurrencyType, SystemCurrencyType } from '@carmensoftware/shared-types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -14,9 +13,15 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui-custom/dialog/dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui-custom/dialog/dialog';
 import PaginationComponent from '@/components/PaginationComponent';
 import * as m from '@/paraglide/messages.js';
 import { formType } from '@/types/form_type';
@@ -28,16 +33,17 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
 import { fetchSystemCurrencies } from '../actions/currency';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import { CurrencyCreateModel, SystemCurrencyCreateModel, SystemCurrencyCreateSchema } from '@/dtos/currency.dto';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
 	mode: formType;
-	defaultValues?: CurrencyType;
-	onSuccess: (currency: CurrencyType) => void;
+	defaultValues?: CurrencyCreateModel;
+	onSuccess: (currency: CurrencyCreateModel) => void;
 }
 
 const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
@@ -51,13 +57,15 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyType[]>([]);
+	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyCreateModel[]>(
+		[]
+	);
 	const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
 	const [pagination, setPagination] = useState({
 		page: 1,
 		pages: 1,
 		perpage: 10,
-		total: 0
+		total: 0,
 	});
 	const [search, setSearch] = useState('');
 	const [sort, setSort] = useState(SORT_OPTIONS.NAME);
@@ -86,7 +94,15 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		if (open) {
 			fetchListCurrencies();
 		}
-	}, [token, tenantId, pagination.page, pagination.perpage, open, search, sort]);
+	}, [
+		token,
+		tenantId,
+		pagination.page,
+		pagination.perpage,
+		open,
+		search,
+		sort,
+	]);
 
 	const handleSwitchChange = (currencyId: string, checked: boolean) => {
 		setSelectedCurrencies((prev) => {
@@ -98,17 +114,20 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		});
 	};
 
-	const defaultCurrencyValues: CurrencyType = {
-		code: '',
+	const defaultCurrencyValues: SystemCurrencyCreateModel = {
+		iso_code: '',
 		name: '',
 		symbol: '',
-		rate: '',
+		exchange_rate: 0,
 		is_active: true,
 	};
 
-	const form = useForm<CurrencyType>({
-		resolver: zodResolver(CurrencySchema),
-		defaultValues: mode === formType.EDIT && defaultValues ? { ...defaultValues } : defaultCurrencyValues,
+	const form = useForm<SystemCurrencyCreateModel>({
+		resolver: zodResolver(SystemCurrencyCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && defaultValues
+				? { ...defaultValues }
+				: defaultCurrencyValues,
 	});
 
 	useEffect(() => {
@@ -130,11 +149,11 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		form.reset();
 		setSelectedCurrencies([]);
 		setSort(SORT_OPTIONS.NAME);
-		setPagination(prev => ({ ...prev, page: 1 }));
+		setPagination((prev) => ({ ...prev, page: 1 }));
 	};
 
 	const handlePageChange = (newPage: number) => {
-		setPagination(prev => ({ ...prev, page: newPage }));
+		setPagination((prev) => ({ ...prev, page: newPage }));
 	};
 
 	const handleSortChange = (field: SORT_OPTIONS) => {
@@ -142,9 +161,14 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	};
 
 	if (isLoading) {
-		<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
-			<Loader2 className="h-8 w-8 animate-spin text-primary" />
-		</div>
+		return (
+			<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
+				<Loader2
+					className="h-8 w-8 animate-spin text-primary"
+					data-id="currency-loading-icon"
+				/>
+			</div>
+		);
 	}
 
 	return (
@@ -155,12 +179,15 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 				if (!isOpen) {
 					handleClose();
 				}
-			}} >
-			<DialogTrigger asChild>
+			}}
+			data-id="currency-dialog"
+		>
+			<DialogTrigger asChild data-id="currency-trigger">
 				<Button
-					variant={mode === formType.ADD ? 'outline' : 'ghost'}
+					variant={mode === formType.ADD ? 'default' : 'ghost'}
 					size={'sm'}
 					disabled={isLoading}
+					data-id="currency-button"
 				>
 					{mode === formType.ADD ? (
 						<>
@@ -172,70 +199,103 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 					)}
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>
-						{mode === formType.ADD ? `${m.create_new_currency()}` : `${m.edit_currency()}`}
+			<DialogContent data-id="currency-content">
+				<DialogHeader data-id="currency-header">
+					<DialogTitle data-id="currency-title">
+						{mode === formType.ADD
+							? `${m.create_new_currency()}`
+							: `${m.edit_currency()}`}
 					</DialogTitle>
 				</DialogHeader>
 				{mode === formType.EDIT && defaultValues ? (
-					<h1>Edit Currency</h1>
+					<h1 data-id="currency-edit-title">{m.edit_currency()}</h1>
 				) : (
 					<>
-						<div className='flex my-4'>
+						<div className="flex my-4" data-id="currency-search-container">
 							<SearchForm
 								defaultValue={search}
 								onSearch={setSearch}
 								placeholder={`${m.Search()} ${m.currency()}..`}
+								data-id="search-input"
 							/>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="outline" size="sm" aria-label="Sort options">
-										{sortFields.find((f) => sort.startsWith(f.key))?.label ?? "Sort"}{" "}
-										{sort.endsWith(":desc") ? "↓" : sort ? "↑" : ""}
+							<DropdownMenu data-id="currency-sort-container">
+								<DropdownMenuTrigger asChild data-id="currency-sort-trigger">
+									<Button
+										variant="outline"
+										size="sm"
+										aria-label="Sort options"
+										data-id="sort-button"
+									>
+										{sortFields.find((f) => sort.startsWith(f.key))?.label ??
+											'Sort'}{' '}
+										{sort.endsWith(':desc') ? '↓' : sort ? '↑' : ''}
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="w-56">
-									<DropdownMenuLabel>Sort By</DropdownMenuLabel>
-									<DropdownMenuSeparator />
+								<DropdownMenuContent
+									data-id="currency-sort-content"
+									className="w-56"
+								>
+									<DropdownMenuLabel data-id="currency-sort-label">
+										{m.sort_by()}
+									</DropdownMenuLabel>
+									<DropdownMenuSeparator data-id="currency-sort-separator" />
 									{sortFields.map(({ key, label }) => (
 										<DropdownMenuItem
 											key={key}
-											className={`flex justify-between items-center ${sort.startsWith(key) ? "font-bold text-blue-500" : ""
-												}`}
+											data-id={`sort-item-${key}`}
+											className={`flex justify-between items-center ${
+												sort.startsWith(key) ? 'font-bold text-blue-500' : ''
+											}`}
 											onClick={() => handleSortChange(key)}
 											aria-selected={sort.startsWith(key)}
 										>
 											{label}
 											{sort.startsWith(key) && (
-												<span>{sort.endsWith(":desc") ? "↓" : "↑"}</span>
+												<span>{sort.endsWith(':desc') ? '↓' : '↑'}</span>
 											)}
 										</DropdownMenuItem>
 									))}
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</div>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead className='w-40'>Code</TableHead>
-									<TableHead>Name</TableHead>
-									<TableHead>Symbol</TableHead>
-									<TableHead>Status</TableHead>
+						<Table data-id="currency-table">
+							<TableHeader data-id="currency-table-header">
+								<TableRow data-id="currency-table-row">
+									<TableHead data-id="currency-table-code" className="w-40">
+										{m.code_label()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-name">
+										{m.currency_name()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-symbol">
+										{m.symbol_label()}
+									</TableHead>
+									<TableHead data-id="currency-table-head-status">
+										{m.status_text()}
+									</TableHead>
 								</TableRow>
 							</TableHeader>
-							<TableBody>
+							<TableBody data-id="currency-table-body">
 								{listCurrencies.map((currency) => (
-									<TableRow key={currency.id}>
-										<TableCell>{currency.iso_code}</TableCell>
-										<TableCell>{currency.name}</TableCell>
-										<TableCell>{currency.symbol}</TableCell>
-										<TableCell>
+									<TableRow key={currency.id} data-id="currency-table-row">
+										<TableCell data-id="currency-table-cell-code">
+											{currency.iso_code}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-name">
+											{currency.name}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-symbol">
+											{currency.symbol}
+										</TableCell>
+										<TableCell data-id="currency-table-cell-status">
 											<Switch
 												checked={selectedCurrencies.includes(currency.iso_code)}
-												onCheckedChange={(checked) => handleSwitchChange(currency.iso_code, checked)}
+												onCheckedChange={(checked) =>
+													handleSwitchChange(currency.iso_code, checked)
+												}
 												aria-label={`Select ${currency.name}`}
 												disabled={isLoading}
+												data-id={`switch-${currency.iso_code}`}
 											/>
 										</TableCell>
 									</TableRow>
@@ -246,13 +306,15 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 							currentPage={pagination.page}
 							totalPages={pagination.pages}
 							onPageChange={handlePageChange}
+							data-id="currency-pagination"
 						/>
-						<div className='text-right pt-2'>
+						<div className="text-right pt-2">
 							<LoaderButton
 								onClick={handleSubmit}
 								disabled={isLoading}
 								isLoading={isLoading}
 								size={'sm'}
+								data-id="currency-submit-button"
 							>
 								{isLoading
 									? `${m.loading()}...`

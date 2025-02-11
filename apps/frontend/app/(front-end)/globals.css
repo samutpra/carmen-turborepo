@@ -35,6 +35,14 @@ body {
 		--chart-3: 197 37% 24%;
 		--chart-4: 43 74% 66%;
 		--chart-5: 27 87% 67%;
+		--sidebar-background: 0 0% 98%;
+		--sidebar-foreground: 240 5.3% 26.1%;
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 240 4.8% 95.9%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 
 	.dark {
@@ -62,6 +70,14 @@ body {
 		--chart-3: 30 80% 55%;
 		--chart-4: 280 65% 60%;
 		--chart-5: 340 75% 55%;
+		--sidebar-background: 240 5.9% 10%;
+		--sidebar-foreground: 240 4.8% 95.9%;
+		--sidebar-primary: 224.3 76.3% 48%;
+		--sidebar-primary-foreground: 0 0% 100%;
+		--sidebar-accent: 240 3.7% 15.9%;
+		--sidebar-accent-foreground: 240 4.8% 95.9%;
+		--sidebar-border: 240 3.7% 15.9%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 }
 
@@ -94,7 +110,7 @@ body {
 		@apply flex flex-col md:flex-row gap-2 md:items-start justify-between mb-4;
 	}
 	.btn-combobox {
-		@apply w-full md:w-[140px] justify-between;
+		@apply w-full md:w-[140px] justify-between hover:bg-muted;
 	}
 	.pop-content {
 		@apply p-0 w-full md:w-[200px];
@@ -107,5 +123,8 @@ body {
 	}
 	.auth-container {
 		@apply my-auto mb-auto mt-8 flex flex-col md:mt-[70px] w-[350px] max-w-[450px] mx-auto md:max-w-[450px] lg:mt-[130px] lg:max-w-[450px];
+	}
+	.logo-container {
+		@apply p-3 w-full flex items-center justify-between overflow-hidden whitespace-nowrap;
 	}
 }

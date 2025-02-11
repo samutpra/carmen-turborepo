@@ -5,13 +5,120 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/products/d1cedc0d-a5f6-4165-b710-fdbd6fbcbfbc
+  url: {{host}}/api/v1/products/ad4e3cdd-99d4-47bb-ae48-53cc0019c71b
   body: json
   auth: none
 }
 
 body:json {
   {
-    "product_status_type" : "discontinued"
+    "info": [
+      {
+        "label": "size",
+        "value": "XXL"
+      },
+      {
+        "label": "color",
+        "value": "Red"
+      }
+    ]
+  //   "product_status_type": "discontinued",
+  //   "price": 999.123
+    //   "locations": {
+    //     "add": [
+    //       {
+    //         "location_id": "192ba5d3-33c0-4893-9dec-fbf818cd3832"
+    //       }
+    //     ],
+    //     "update": [
+    //       {
+    //         "product_location_id": "92a84357-8e63-443a-a95b-c55689061c1a",
+    //         "location_id": "f2a3598e-7455-43a1-94c5-fb515e97da85"
+    //       }
+    //     ],
+    //     "remove": [
+    //       {
+    //         "product_location_id": "3a0a7006-b1e4-48a4-b532-d29f31e2fe0f"
+    //       }
+    //     ]
+    //   }
+    //   "orderUnits": {
+    //     "add": [
+    //       {
+    //         "unit_id": "56703be2-d885-48c2-9003-eab2c5aa6026",
+    //         "unit_quantity": 1,
+    //         "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+    //         "to_unit_quantity": 12,
+    //         "description": "1 Set = 12 Each"
+    //       }
+    //     ]
+    //     "update": [
+    //       {
+    //         "product_order_unit_id": "e3789e42-4b4e-4a4d-a929-87900364438d",
+    //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
+    //         "unit_quantity": 1,
+    //         "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+    //         "to_unit_quantity": 12,
+    //         "description": "1 KG = 12 Each"
+    //       }
+    //     ]
+    //     "remove": [
+    //       {
+    //         "product_order_unit_id": "e3789e42-4b4e-4a4d-a929-87900364438d"
+    //       }
+    //     ]
+    //   }
+    //   "recipeUnits": {
+    //     "add": [
+    //       {
+    //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
+    //         "unit_quantity": 10,
+    //         "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
+    //         "to_unit_quantity": 1,
+    //         "description": "10 KG = 1 Box"
+    //       }
+    //     ],
+    //     "update": [
+    //       {
+    //         "product_order_unit_id": "19540aa1-9ed4-4488-8cfe-829aaf533897",
+    //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
+    //         "unit_quantity": 1,
+    //         "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+    //         "to_unit_quantity": 13,
+    //         "description": "1 KG = 13 Each"
+    //       }
+    //     ],
+    //     "remove": [
+    //       {
+    //         "product_order_unit_id": "6be43390-f492-4164-9850-37b649f20990"
+    //       }
+    //     ]
+    //   }
+    //   "countUnits": {
+    //     "add": [
+    //       {
+    //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
+    //         "unit_quantity": 10,
+    //         "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
+    //         "to_unit_quantity": 1,
+    //         "description": "10 KG = 1 Box"
+    //       }
+    //     ]
+    //     "update": [
+    //       {
+    //         "product_order_unit_id": "19540aa1-9ed4-4488-8cfe-829aaf533897",
+    //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
+    //         "unit_quantity": 1,
+    //         "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+    //         "to_unit_quantity": 13,
+    //         "description": "1 KG = 13 Each"
+    //       }
+    //     ],
+    //     "remove": [
+    //       {
+    //         "product_order_unit_id": "05dbce83-4bbb-4801-9b86-992969eadb2d"
+    //       }
+    //     ]
+    //   }
   }
 }

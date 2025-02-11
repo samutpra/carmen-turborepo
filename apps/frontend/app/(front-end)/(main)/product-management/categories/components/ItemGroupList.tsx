@@ -1,6 +1,5 @@
 'use client';
 
-import { ProductItemGroupType } from '@carmensoftware/shared-types';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,13 +21,14 @@ import { cn } from '@/lib/utils';
 import { formType } from '@/types/form_type';
 import { deleteItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
 
 interface Props {
-	data: ProductItemGroupType[];
-	setData: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
+	data: ProductItemGroupCreateModel[];
+	setData: React.Dispatch<React.SetStateAction<ProductItemGroupCreateModel[]>>;
 	subCategoryId: string;
 	subCategoryName: string;
-	onSelectItemGroup: (itemGroup: ProductItemGroupType) => void;
+	onSelectItemGroup: (itemGroup: ProductItemGroupCreateModel) => void;
 }
 
 const ItemGroupList: React.FC<Props> = ({
@@ -41,9 +41,12 @@ const ItemGroupList: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-	const [itemGroup, setItemGroup] = useState<ProductItemGroupType | null>(null);
+	const [itemGroup, setItemGroup] =
+		useState<ProductItemGroupCreateModel | null>(null);
 	const [idToDelete, setIdToDelete] = useState<string | null>(null);
-	const [selectedItemGroupId, setSelectedItemGroupId] = useState<string | null>(null);
+	const [selectedItemGroupId, setSelectedItemGroupId] = useState<string | null>(
+		null
+	);
 
 	useEffect(() => {
 		setSelectedItemGroupId(null);
@@ -58,7 +61,7 @@ const ItemGroupList: React.FC<Props> = ({
 		});
 	}, [subCategoryId, onSelectItemGroup]);
 
-	const handleEditClick = (itemGroup: ProductItemGroupType) => {
+	const handleEditClick = (itemGroup: ProductItemGroupCreateModel) => {
 		setItemGroup(itemGroup);
 		setIsEditDialogOpen(true);
 	};
@@ -83,10 +86,10 @@ const ItemGroupList: React.FC<Props> = ({
 	};
 
 	const itemGroupListItems = data.map((itemGroup) => (
-		<div key={itemGroup.id} className="flex items-center p-2 justify-between gap-2">
+		<div key={itemGroup.id} className="flex items-center p-1 justify-between">
 			<div
 				className={cn(
-					'cursor-pointer hover:bg-accent rounded-lg p-2 w-full',
+					'cursor-pointer hover:bg-accent rounded-lg p-1 w-full',
 					selectedItemGroupId === itemGroup.id && 'bg-accent'
 				)}
 				onClick={() => {
@@ -106,7 +109,7 @@ const ItemGroupList: React.FC<Props> = ({
 				aria-label={`Select ${itemGroup.name} item group`}
 				aria-selected={selectedItemGroupId === itemGroup.id}
 			>
-				{itemGroup.name}
+				<span className="text-xs">{itemGroup.name}</span>
 			</div>
 			<div className="flex">
 				<Button
@@ -115,7 +118,7 @@ const ItemGroupList: React.FC<Props> = ({
 					aria-label="Edit item group"
 					onClick={() => handleEditClick(itemGroup)}
 				>
-					<Pencil className="h-4 w-4" />
+					<Pencil />
 				</Button>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
@@ -125,15 +128,16 @@ const ItemGroupList: React.FC<Props> = ({
 							aria-label="Delete item group"
 							onClick={() => setIdToDelete(itemGroup.id || '')}
 						>
-							<Trash className="h-4 w-4" />
+							<Trash />
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
 						<AlertDialogHeader>
 							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 							<AlertDialogDescription>
-								This action cannot be undone. This will permanently delete the item group
-								&quot;{data.find((sc) => sc.id === idToDelete)?.name}&quot;.
+								This action cannot be undone. This will permanently delete the
+								item group &quot;{data.find((sc) => sc.id === idToDelete)?.name}
+								&quot;.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
@@ -154,7 +158,7 @@ const ItemGroupList: React.FC<Props> = ({
 	return (
 		<>
 			<Card>
-				<CardContent className="space-y-2">{itemGroupListItems}</CardContent>
+				<CardContent className="p-2">{itemGroupListItems}</CardContent>
 			</Card>
 			<ItemGroupDialog
 				open={isEditDialogOpen}

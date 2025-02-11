@@ -1,12 +1,9 @@
 'use client';
 import { useAuth } from '@/app/context/AuthContext';
-import { DeliveryPointType } from '@carmensoftware/shared-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DeliveryPointDialog } from './DeliveryPointDialog';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import {
 	deleteDeliveryPoint,
 	fetchDeliveryPoints,
@@ -19,18 +16,31 @@ import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SortDropDown from '@/components/ui-custom/SortDropDown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
+import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import SortComponent from '@/components/ui-custom/SortComponent';
 
 enum DeliveryPointField {
 	Name = 'name',
 	isActive = 'is_active',
 }
 
-const deliveryPointsFields: FieldConfig<DeliveryPointType>[] = [
-	{ key: DeliveryPointField.Name, label: `${m.delivery_point_label()}` },
+const sortFields: FieldConfig<DeliveryPointCreateModel>[] = [
+	{
+		key: DeliveryPointField.Name,
+		label: `${m.delivery_point_label()}`,
+		className: 'w-40',
+	},
+];
+
+const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
+	{
+		key: DeliveryPointField.Name,
+		label: `${m.delivery_point_label()}`,
+		className: 'w-40',
+	},
 	{
 		key: DeliveryPointField.isActive,
 		label: `${m.status_text()}`,
@@ -42,20 +52,30 @@ const DeliveryPointList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointType[]>([]);
+	const [deliveryPoints, setDeliveryPoints] = useState<
+		DeliveryPointCreateModel[]
+	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
+
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
 			const data = await fetchDeliveryPoints(token, tenantId, {
 				search,
 				status,
+				page,
+				sort,
 			});
 			setDeliveryPoints(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -65,10 +85,10 @@ const DeliveryPointList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handleSuccess = useCallback(
-		(values: DeliveryPointType) => {
+		(values: DeliveryPointCreateModel) => {
 			setDeliveryPoints((prev) => {
 				const mapValues = new Map(prev.map((u) => [u.id, u]));
 				mapValues.set(values.id, values);
@@ -106,27 +126,35 @@ const DeliveryPointList = () => {
 	);
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} />;
 	}
 
 	const title = `${m.delivery_point()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<DeliveryPointDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
+		<div
+			className="action-btn-container"
+			data-id="delivery-point-action-btn-container"
+		>
+			<DeliveryPointDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="delivery-point-add-dialog"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="delivery-point-export-button"
+			>
+				<FileDown className="h-4 w-4" data-id="delivery-point-export-icon" />
 				{m.export_text()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
+			<Button
+				variant="outline"
+				size={'sm'}
+				data-id="delivery-point-print-button"
+			>
 				<Printer className="h-4 w-4" />
 				{m.print_text()}
 			</Button>
@@ -134,31 +162,37 @@ const DeliveryPointList = () => {
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="delivery-point-filter-container">
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
 				placeholder={`${m.Search()} ${m.delivery_point()}...`}
+				data-id="delivery-point-search-form"
 			/>
-			<div className="all-center gap-2">
+			<div
+				className="all-center gap-2"
+				data-id="delivery-point-filter-container-center"
+			>
 				<StatusSearchDropdown
 					options={statusOptions}
 					value={status}
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="delivery-point-status-search-dropdown"
 				/>
-				<SortDropDown
-					fieldConfigs={deliveryPointsFields}
-					items={deliveryPoints}
-					onSort={setDeliveryPoints}
+				<SortComponent
+					fieldConfigs={sortFields}
+					sort={sort}
+					setSort={setSort}
+					data-id="delivery-point-sort-dropdown"
 				/>
 			</div>
 		</div>
 	);
 
 	const content = (
-		<DisplayComponent<DeliveryPointType>
+		<DisplayComponent<DeliveryPointCreateModel>
 			items={deliveryPoints}
 			fields={deliveryPointsFields}
 			idField="id"
@@ -171,23 +205,17 @@ const DeliveryPointList = () => {
 					onSuccess={onSuccess}
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
+			data-id="delivery-point-display-component"
 		/>
 	);
-
-	if (isLoading) {
-		return <SkeltonLoad />;
-	}
-
-	if (deliveryPoints.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.no_delivery_point_found()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
-	}
 
 	return (
 		<DataDisplayTemplate
@@ -195,6 +223,7 @@ const DeliveryPointList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			data-id="delivery-point-data-display-template"
 		/>
 	);
 };

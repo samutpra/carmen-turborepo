@@ -1,5 +1,5 @@
-import { formType } from "@/types/form_type";
-import { ProductItemGroupType } from "@carmensoftware/shared-types";
+import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
+import { formType } from '@/types/form_type';
 
 export const fetchItemGroup = async (
 	token: string,
@@ -58,14 +58,15 @@ export const deleteItemGroup = async (token: string, id: string) => {
 
 export const submitItemGroup = async (
 	token: string,
-	values: ProductItemGroupType,
+	payload: ProductItemGroupCreateModel,
 	mode: formType,
-	id: string
+	id?: string
 ) => {
 	try {
-		const url = mode === formType.ADD
-			? '/api/product-management/category/product-item-group'
-			: `/api/product-management/category/product-item-group/${id}`;
+		const url =
+			mode === formType.ADD
+				? '/api/product-management/category/product-item-group'
+				: `/api/product-management/category/product-item-group/${id || ''}`;
 
 		const method = mode === formType.ADD ? 'POST' : 'PATCH';
 
@@ -75,7 +76,7 @@ export const submitItemGroup = async (
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(values),
+			body: JSON.stringify(payload),
 		};
 
 		const response = await fetch(url, options);
@@ -90,8 +91,8 @@ export const submitItemGroup = async (
 		}
 
 		const res = await response.json();
-		const returnData = mode === formType.ADD ? res.result : { id: id };
-		return returnData
+		const returnData = mode === formType.ADD ? res.result : { id: id || '' };
+		return returnData;
 	} catch (error) {
 		console.error('Error submitting form:', error);
 		throw error;

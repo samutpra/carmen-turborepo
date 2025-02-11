@@ -1,8 +1,4 @@
 import { useAuth } from '@/app/context/AuthContext';
-import {
-	ProductItemGroupType,
-	productItemGroupSchema,
-} from '@carmensoftware/shared-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,7 +7,6 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
 } from '@/components/ui/dialog';
 import {
 	Form,
@@ -29,6 +24,13 @@ import { formType } from '@/types/form_type';
 import { submitItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
+import {
+	ProductItemGroupCreateModel,
+	ProductItemGroupCreateSchema,
+} from '@/dtos/product-item-group.dto';
+import * as m from '@/paraglide/messages.js';
+import { Label } from '@/components/ui/label';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
 
 interface Props {
 	open: boolean;
@@ -36,8 +38,10 @@ interface Props {
 	mode: formType;
 	subcategory_id: string;
 	subcategory_name?: string;
-	setItemGroup: React.Dispatch<React.SetStateAction<ProductItemGroupType[]>>;
-	itemGroup?: ProductItemGroupType | null;
+	setItemGroup: React.Dispatch<
+		React.SetStateAction<ProductItemGroupCreateModel[]>
+	>;
+	itemGroup?: ProductItemGroupCreateModel | null;
 }
 const ItemGroupDialog: React.FC<Props> = ({
 	open,
@@ -51,7 +55,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const [isLoading, setIsLoading] = useState(false);
-	const defaultValues: ProductItemGroupType = {
+	const defaultValues: ProductItemGroupCreateModel = {
 		id: '',
 		code: '',
 		name: '',
@@ -60,9 +64,10 @@ const ItemGroupDialog: React.FC<Props> = ({
 		product_subcategory_id: subcategory_id,
 	};
 
-	const form = useForm<ProductItemGroupType>({
-		resolver: zodResolver(productItemGroupSchema),
-		defaultValues: mode === formType.EDIT && itemGroup ? { ...itemGroup } : defaultValues,
+	const form = useForm<ProductItemGroupCreateModel>({
+		resolver: zodResolver(ProductItemGroupCreateSchema),
+		defaultValues:
+			mode === formType.EDIT && itemGroup ? { ...itemGroup } : defaultValues,
 	});
 
 	useEffect(() => {
@@ -73,7 +78,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 		}
 	}, [itemGroup, mode, form]);
 
-	const handleSubmit = async (values: ProductItemGroupType) => {
+	const handleSubmit = async (values: ProductItemGroupCreateModel) => {
 		setIsLoading(true);
 		const payload = {
 			...values,
@@ -81,7 +86,12 @@ const ItemGroupDialog: React.FC<Props> = ({
 		};
 
 		try {
-			const response = await submitItemGroup(token, payload, mode, values.id);
+			const response = await submitItemGroup(
+				token,
+				payload,
+				mode,
+				values.id || ''
+			);
 			if (!response) {
 				toastError({ message: `Failed to ${mode} item group` });
 			}
@@ -91,7 +101,10 @@ const ItemGroupDialog: React.FC<Props> = ({
 					...payload,
 					id: response.id,
 				};
-				setItemGroup((prev: ProductItemGroupType[]) => [...prev, newItemGroup]);
+				setItemGroup((prev: ProductItemGroupCreateModel[]) => [
+					...prev,
+					newItemGroup,
+				]);
 				toastSuccess({ message: 'Item group added successfully' });
 			} else {
 				setItemGroup((prev) =>
@@ -122,7 +135,7 @@ const ItemGroupDialog: React.FC<Props> = ({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === 'add' ? 'Add New Item Group' : 'Edit Item Group'}
+						{mode === formType.ADD ? m.add_itg() : m.edit_itg()}
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -130,19 +143,21 @@ const ItemGroupDialog: React.FC<Props> = ({
 						onSubmit={form.handleSubmit(handleSubmit)}
 						className="space-y-4"
 					>
+						<Label>{m.sub_cattegory()}</Label>
 						<Input
-							placeholder="Enter name"
+							placeholder={m.sub_cattegory()}
 							defaultValue={subcategory_name}
 							disabled
+							className="text-xs"
 						/>
 						<FormField
 							control={form.control}
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>{m.item_group()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter name" {...field} />
+										<InputCustom placeholder={m.item_group()} {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -153,10 +168,11 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="code"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Code</FormLabel>
+									<FormLabel>{m.code_label()}</FormLabel>
 									<FormControl>
-										<Input placeholder="Enter code" {...field} />
+										<InputCustom placeholder={m.code_label()} {...field} />
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -165,10 +181,15 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{m.description()}</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Enter description" {...field} />
+										<Textarea
+											placeholder={m.description()}
+											{...field}
+											className="placeholder:text-xs"
+										/>
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -177,9 +198,9 @@ const ItemGroupDialog: React.FC<Props> = ({
 							name="is_active"
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-									<div className="space-y-0.5">
-										<FormLabel>Active Status</FormLabel>
-									</div>
+									<FormLabel className="text-base">
+										{m.status_active_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
@@ -189,23 +210,28 @@ const ItemGroupDialog: React.FC<Props> = ({
 								</FormItem>
 							)}
 						/>
-						<DialogFooter>
+						<div className="flex justify-end space-x-2">
 							<Button
 								type="button"
-								variant="outline"
+								variant={'outline'}
 								onClick={handleClose}
-								className="mr-2"
+								size={'sm'}
 							>
-								Cancel
+								{m.cancel_text()}
 							</Button>
-							<LoaderButton type="submit" disabled={isLoading}>
+							<LoaderButton
+								type="submit"
+								disabled={isLoading}
+								isLoading={isLoading}
+								size={'sm'}
+							>
 								{isLoading
-									? 'Processing...'
-									: mode === formType.ADD
-										? 'Add Category'
-										: 'Save Changes'}
+									? `${m.saving()}...`
+									: mode === formType.EDIT
+										? `${m.save_change_text()}`
+										: `${m.add_text()}`}
 							</LoaderButton>
-						</DialogFooter>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>

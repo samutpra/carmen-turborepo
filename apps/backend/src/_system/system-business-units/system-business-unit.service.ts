@@ -1,13 +1,10 @@
 import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import { DuplicateException } from 'lib/utils';
+import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from 'shared-dtos';
 import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import {
-  BusinessUnitCreateDto,
-  BusinessUnitUpdateDto,
-} from '@carmensoftware/shared-dtos';
 import {
   HttpStatus,
   Injectable,

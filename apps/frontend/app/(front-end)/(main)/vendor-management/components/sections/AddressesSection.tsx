@@ -61,7 +61,7 @@ const AddressesSection: React.FC<Props> = ({ isEdit }) => {
             </div>
             <Table>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className='text-xs'>
                         <TableHead>Type</TableHead>
                         <TableHead>Address</TableHead>
                         <TableHead>Primary</TableHead>
@@ -70,13 +70,13 @@ const AddressesSection: React.FC<Props> = ({ isEdit }) => {
                 </TableHeader>
                 <TableBody>
                     {address.map(address => (
-                        <TableRow key={address.id}>
+                        <TableRow key={address.id} className='text-xs'>
                             <TableCell>{address.addressType}</TableCell>
                             <TableCell>{address.addressLine}</TableCell>
                             <TableCell>{address.isPrimary ? 'Yes' : 'No'}</TableCell>
                             <TableCell>
                                 {isEdit && (
-                                    <div className="flex gap-2">
+                                    <div className="flex">
                                         <AddressForm
                                             mode="edit"
                                             defaultValues={address}

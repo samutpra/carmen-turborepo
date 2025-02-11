@@ -4,58 +4,65 @@ import { useAuth } from '@/app/context/AuthContext';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CurrencyType } from '@carmensoftware/shared-types';
-import { APIError } from '@carmensoftware/shared-types/src/pagination';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
-import EmptyState from '@/components/ui-custom/EmptyState';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteCurrency, fetchCurrencies } from '../actions/currency';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
-import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import SkeltonLoad from '@/components/ui-custom/Loading/SkeltonLoad';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import { CurrencyCreateModel } from '@/dtos/currency.dto';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { code_label, currency, currency_delete_success, currency_name, error_del_text, export_text, fail_del_currency, fail_to_text, print_text, rate_label, refresh_exchange_rate, Search, session_expire, status_text, symbol_label } from '@/paraglide/messages.js';
 
 enum CurrencyField {
 	Code = 'code',
 	Name = 'name',
 	Symbol = 'symbol',
 	Description = 'description',
-	Rate = 'rate',
+	Rate = 'exchange_rate',
 	isActive = 'is_active',
 }
 
-const sortFields: FieldConfig<CurrencyType>[] = [
-	{ key: CurrencyField.Code, label: `${m.code_label()}` },
-	{ key: CurrencyField.Name, label: `${m.currency_name()}` },
-	{ key: CurrencyField.Rate, label: `${m.rate_label()}` },
-	{ key: CurrencyField.isActive, label: `${m.status_text()}`, type: 'badge' }
-]
+const sortFields: FieldConfig<CurrencyCreateModel>[] = [
+	{ key: CurrencyField.Code, label: `${code_label()}`, className: 'w-20' },
+	{ key: CurrencyField.Name, label: `${currency_name()}`, className: 'w-40' },
+	{ key: CurrencyField.Rate, label: `${rate_label()}`, className: 'w-20' },
+	{
+		key: CurrencyField.isActive,
+		label: `${status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
+];
 
-const currenciesFiltered: FieldConfig<CurrencyType>[] = [
+const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 	...sortFields,
-	{ key: CurrencyField.Symbol, label: `${m.symbol_label()}` },
-]
+	{
+		key: CurrencyField.Symbol,
+		label: `${symbol_label()}`,
+		className: 'w-20',
+	},
+];
 
 const CurrencyList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [currencies, setCurrencies] = useState<CurrencyType[]>([]);
+	const [currencies, setCurrencies] = useState<CurrencyCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
-	const [page, setPage] = useURL('sort');
-	const [perpage, setPerpage] = useURL('perpage');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
 	const [showRefreshToken, setShowRefreshToken] = useState(false);
 
 	const fetchData = async () => {
@@ -65,18 +72,21 @@ const CurrencyList = () => {
 				search,
 				status,
 				page,
-				perpage
 			});
-			setCurrencies(data);
+			setCurrencies(data.data);
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 			setShowRefreshToken(false);
 		} catch (err) {
-			if (err instanceof APIError && err.status === 401) {
-				toastError({ message: 'Your session has expired. Please login again.' });
+			if (err instanceof Error && err.message === 'Unauthorized') {
+				toastError({
+					message: 'Your session has expired. Please login again.',
+				});
 				setShowRefreshToken(true);
 				setCurrencies([]);
 			} else {
 				setError(err instanceof Error ? err.message : 'An error occurred');
-				toastError({ message: 'Failed to fetch currencies' });
+				toastError({ message: `${fail_to_text()} ${currency()}` });
 			}
 		} finally {
 			setIsLoading(false);
@@ -87,13 +97,16 @@ const CurrencyList = () => {
 		fetchData();
 	}, [token, tenantId, search, status]);
 
-	const handleSuccess = useCallback((values: CurrencyType) => {
-		setCurrencies((prev) => {
-			const mapValues = new Map(prev.map((u) => [u.id, u]));
-			mapValues.set(values.id, values);
-			return Array.from(mapValues.values());
-		});
-	}, [setCurrencies]);
+	const handleSuccess = useCallback(
+		(values: CurrencyCreateModel) => {
+			setCurrencies((prev) => {
+				const mapValues = new Map(prev.map((u) => [u.id, u]));
+				mapValues.set(values.id, values);
+				return Array.from(mapValues.values());
+			});
+		},
+		[setCurrencies]
+	);
 
 	const handleDelete = useCallback(
 		async (id: string) => {
@@ -101,29 +114,37 @@ const CurrencyList = () => {
 				const res = await deleteCurrency(id, token, tenantId);
 				if (res) {
 					setCurrencies((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: `${m.currency_delete_success()}` });
+					toastSuccess({ message: `${currency_delete_success()}` });
 				}
 			} catch (error) {
 				if (error instanceof Error) {
 					if (error.message === 'Unauthorized') {
-						toastError({ message: `${m.session_expire()}` });
+						toastError({ message: `${session_expire()}` });
 					} else {
-						toastError({ message: `${m.fail_del_currency()}: ${error.message}` });
+						toastError({
+							message: `${fail_del_currency()}: ${error.message}`,
+						});
 					}
 				} else {
-					toastError({ message: `${m.error_del_text()} ${m.currency()}.` });
+					toastError({ message: `${error_del_text()} ${currency()}.` });
 				}
 			}
-		}, [token, tenantId, deleteCurrency]
-	)
-
+		},
+		[token, tenantId, deleteCurrency]
+	);
 
 	if (showRefreshToken) {
 		return (
-			<Card className="border-destructive w-full md:w-1/2">
-				<CardContent className="pt-6">
-					<div className="flex flex-col items-center gap-4">
-						<p className="text-destructive">Your session has expired.</p>
+			<Card
+				className="border-destructive w-full md:w-1/2"
+				data-id="currency-refresh-token-card"
+			>
+				<CardContent className="pt-6" data-id="currency-refresh-token-content">
+					<div
+						className="flex flex-col items-center gap-4"
+						data-id="currency-refresh-token-container"
+					>
+						<p className="text-destructive">{session_expire()}</p>
 						<RefreshToken />
 					</div>
 				</CardContent>
@@ -132,40 +153,51 @@ const CurrencyList = () => {
 	}
 
 	if (error) {
-		return (
-			<Card className="border-destructive">
-				<CardContent className="pt-6">
-					<p className="text-destructive">
-						Error loading delivery points: {error}
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <ErrorCard message={error} data-id="currency-error-card" />;
 	}
 
-	const title = `${m.currency()}`;
+	const title = `${currency()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<Button variant={'outline'} size={'sm'}>Refresh Exchange Rate</Button>
-			<CurrencyDialog mode={formType.ADD} onSuccess={handleSuccess} />
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
-				{m.export_text()}
+		<div
+			className="action-btn-container"
+			data-id="currency-action-btn-container"
+		>
+			<Button
+				variant={'outline'}
+				size={'sm'}
+				data-id="currency-refresh-exchange-rate-button"
+			>
+				{refresh_exchange_rate()}
 			</Button>
-			<Button variant="outline" size={'sm'}>
+			<CurrencyDialog
+				mode={formType.ADD}
+				onSuccess={handleSuccess}
+				data-id="currency-add-dialog"
+			/>
+			<Button
+				variant="outline"
+				className="group"
+				size={'sm'}
+				data-id="currency-export-button"
+			>
+				<FileDown className="h-4 w-4" />
+				{export_text()}
+			</Button>
+			<Button variant="outline" size={'sm'} data-id="currency-print-button">
 				<Printer className="h-4 w-4" />
-				{m.print_text()}
+				{print_text()}
 			</Button>
 		</div>
 	);
 
 	const filter = (
-		<div className="filter-container">
+		<div className="filter-container" data-id="currency-filter-container">
 			<SearchForm
 				defaultValue={search}
 				onSearch={setSearch}
-				placeholder={`${m.Search()} ${m.currency()}..`}
+				placeholder={`${Search()} ${currency()}..`}
+				data-id="currency-search-form"
 			/>
 			<div className="all-center gap-2">
 				<StatusSearchDropdown
@@ -174,6 +206,7 @@ const CurrencyList = () => {
 					onChange={setStatus}
 					open={statusOpen}
 					onOpenChange={setStatusOpen}
+					data-id="currency-status-search-dropdown"
 				/>
 				<SortDropDown
 					fieldConfigs={sortFields}
@@ -185,7 +218,7 @@ const CurrencyList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<CurrencyType>
+		<DisplayComponent<CurrencyCreateModel>
 			items={currencies}
 			fields={currenciesFiltered}
 			idField="id"
@@ -196,25 +229,15 @@ const CurrencyList = () => {
 					mode={formType.EDIT}
 					defaultValues={item}
 					onSuccess={onSuccess}
+					data-id="currency-edit-dialog"
 				/>
 			)}
+			page={+page}
+			totalPage={+pages}
+			setPage={setPage}
+			data-id="currency-display-component"
 		/>
 	);
-
-	if (isLoading) {
-		return <SkeltonLoad />
-	}
-
-	if (currencies.length === 0) {
-		return (
-			<EmptyState
-				title={title}
-				description={m.no_currency_found_text()}
-				actionButtons={actionButtons}
-				filters={filter}
-			/>
-		);
-	}
 
 	return (
 		<DataDisplayTemplate
@@ -222,6 +245,8 @@ const CurrencyList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
+			isLoading={isLoading}
+			data-id="currency-data-display-template"
 		/>
 	);
 };

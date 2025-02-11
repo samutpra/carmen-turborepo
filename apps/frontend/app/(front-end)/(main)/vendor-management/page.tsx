@@ -1,11 +1,21 @@
-import ComingSoon from '@/components/ComingSoon'
-import React from 'react'
+'use client';
 
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { menuItems } from '@/lib/util/menuItems';
+import SubMenuList from '@/components/SubMenuList';
 
 const VendorManagementPage = () => {
-    return (
-        <ComingSoon title="Vendor  Management" />
-    )
-}
+	const pathname = usePathname();
+	const menuItem = menuItems.find((item) => item.path === pathname);
+	const path = menuItem?.title || 'vendor-management';
 
-export default VendorManagementPage
+	return (
+		<SubMenuList
+			pathName={path}
+			data-id="vendor-management-page-sub-menu-list"
+		/>
+	);
+};
+
+export default VendorManagementPage;

@@ -50,7 +50,7 @@ const ContactsSection: React.FC<Props> = ({ isEdit }) => {
             </div>
             <Table>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className='text-xs'>
                         <TableHead>Name</TableHead>
                         <TableHead>Position</TableHead>
                         <TableHead>Phone</TableHead>
@@ -62,7 +62,7 @@ const ContactsSection: React.FC<Props> = ({ isEdit }) => {
                 </TableHeader>
                 <TableBody>
                     {contacts.map((contact: ContactProps) => (
-                        <TableRow key={contact.id}>
+                        <TableRow key={contact.id} className='text-xs'>
                             <TableCell>{contact.name}</TableCell>
                             <TableCell>{contact.position}</TableCell>
                             <TableCell>{contact.phone}</TableCell>
@@ -71,7 +71,7 @@ const ContactsSection: React.FC<Props> = ({ isEdit }) => {
                             <TableCell>{contact.isPrimary ? 'Yes' : 'No'}</TableCell>
                             <TableCell>
                                 {isEdit && (
-                                    <div className="flex gap-2">
+                                    <div className="flex">
                                         <ContactForm mode="edit"
                                             defaultValues={contact}
                                             onSuccess={handleSuccess}

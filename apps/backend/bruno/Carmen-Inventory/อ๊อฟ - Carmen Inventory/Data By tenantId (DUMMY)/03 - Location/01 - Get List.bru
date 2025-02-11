@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/locations
+  url: {{host}}/api/v1/locations?sort=name
   body: none
   auth: none
 }
 
 params:query {
+  sort: name
   ~filter[DeliveryPoint.name]: samp
 }
 

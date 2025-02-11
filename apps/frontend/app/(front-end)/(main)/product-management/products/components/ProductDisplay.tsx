@@ -1,107 +1,73 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Eye } from 'lucide-react';
-import Link from 'next/link';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import * as m from '@/paraglide/messages.js';
-import { ProductCreateModel } from '@carmensoftware/shared-dtos/src/product.dto';
-import { FieldConfig } from '@/lib/util/uiConfig';
-import PaginationComponent from '@/components/PaginationComponent';
+import React, { useEffect, useState } from 'react';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
+import { ProductCreateModel } from '@/dtos/product.dto';
+import ProductMobile from './ProductMobile';
+import ProductDesktop from './ProductDesktop';
 
-interface Props {
-    products: ProductCreateModel[];
-    fields?: FieldConfig<ProductCreateModel>[];
-    page: number;
-    totalPage: number;
-    handlePageChange: (newPage: number) => void;
+export type SortDirection = 'asc' | 'desc';
+
+interface ProductDisplayProps {
+	products: ProductCreateModel[];
+	fields: FieldConfig<ProductCreateModel>[];
+	page: number;
+	totalPage: number;
+	handlePageChange: (newPage: number) => void;
+	sort?: string;
+	onSortChange?: (sort: SortQuery) => void;
+	isLoading?: boolean;
 }
 
-const ProductDisplay: React.FC<Props> = ({
-    products,
-    fields = [],
-    page,
-    totalPage,
-    handlePageChange,
+const ProductDisplay: React.FC<ProductDisplayProps> = ({
+	products,
+	fields = [],
+	page,
+	totalPage,
+	handlePageChange,
+	sort,
+	onSortChange,
+	isLoading = false,
 }) => {
+	const [sortField, setSortField] = useState<string | null>(null);
+	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+	useEffect(() => {
+		if (!sort) return;
+
+		const [field, direction] = sort.split(':');
+		setSortField(field);
+		setSortDirection((direction as SortDirection) || 'asc');
+	}, [sort]);
+
+	const handleSort = (field: string) => {
+		const newDirection: SortDirection =
+			sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+
+		setSortField(field);
+		setSortDirection(newDirection);
+		onSortChange?.(`${field}:${newDirection}` as SortQuery);
+	};
+
 	return (
 		<>
-			{/* Mobile View */}
-			<div className="block md:hidden">
-				<div className="grid grid-cols-1 gap-4">
-					{products.map((product) => (
-						<Card key={product.id} className="hover:shadow-md transition-all">
-							<CardContent className="p-4">
-								<div className="space-y-3">
-									{fields.map((field) => (
-										<div className="grid grid-cols-10 gap-4" key={field.key}>
-											<span className="text-sm text-muted-foreground col-span-3">
-												{field.label}
-											</span>
-											<span className="text-sm font-medium col-span-7">
-												{String(product[field.key as keyof ProductCreateModel])}
-											</span>
-										</div>
-									))}
-								</div>
-							</CardContent>
-							<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
-								<Button asChild variant="ghost" size="sm">
-									<Link href={`/vendor-management/vendors/${product.id}`}>
-										<Eye className="h-4 w-4" />
-									</Link>
-								</Button>
-							</CardFooter>
-						</Card>
-					))}
-				</div>
-			</div>
-
-			{/* Desktop View */}
-			<div className="hidden md:block">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="w-[100px]">#</TableHead>
-							{fields.map((field) => (
-								<TableHead key={field.key}>{field.label}</TableHead>
-							))}
-							<TableHead className="text-right">{m.action_text()}</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{products.map((product, index) => (
-							<TableRow key={product.id}>
-								<TableCell className="font-medium">{index + 1}</TableCell>
-								{fields.map((field) => (
-									<TableCell key={field.key}>
-										{String(product[field.key as keyof ProductCreateModel])}
-									</TableCell>
-								))}
-								<TableCell className="text-right">
-									<Button asChild variant="ghost" size="sm">
-										<Link href={`/vendor-management/vendors/${product.id}`}>
-											<Eye className="h-4 w-4" />
-										</Link>
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-				<PaginationComponent
-					currentPage={page}
-					totalPages={totalPage}
-					onPageChange={handlePageChange}
-				/>
-			</div>
+			<ProductMobile
+				products={products}
+				fields={fields}
+				sortField={sortField}
+				sortDirection={sortDirection}
+				handleSort={handleSort}
+				isLoading={isLoading}
+			/>
+			<ProductDesktop
+				products={products}
+				fields={fields}
+				page={page}
+				totalPage={totalPage}
+				handlePageChange={handlePageChange}
+				sortField={sortField}
+				sortDirection={sortDirection}
+				handleSort={handleSort}
+				isLoading={isLoading}
+			/>
 		</>
 	);
 };

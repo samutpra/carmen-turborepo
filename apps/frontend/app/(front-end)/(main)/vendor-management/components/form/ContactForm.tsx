@@ -76,12 +76,12 @@ const ContactForm: React.FC<Props> = ({
             <DialogTrigger asChild>
                 <Button
                     variant={mode === 'add' ? 'default' : 'ghost'}
-                    size={mode === 'add' ? 'default' : 'sm'}
+                    size={'sm'}
                 >
                     {mode === 'add' ? (
                         <>
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            Add Address
+                            <PlusIcon className="h-4 w-4" />
+                            Add Contact
                         </>
                     ) : (
                         <PencilIcon className="w-4 h-4" />
@@ -91,7 +91,7 @@ const ContactForm: React.FC<Props> = ({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === 'add' ? 'Add' : 'Edit'} Address
+                        {mode === 'add' ? 'Add' : 'Edit'} Conta
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
@@ -206,12 +206,12 @@ const ContactForm: React.FC<Props> = ({
                         </div>
                         <DialogFooter>
                             <div className="flex-end gap-2">
-                                <Button type="button" variant="outline" onClick={handleClose}>
+                                <Button type="button" variant="outline" onClick={handleClose} size={'sm'}>
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-
+                                    size={'sm'}
                                 >
                                     {mode === 'add' ? 'Add' : 'Save'}
                                 </Button>
