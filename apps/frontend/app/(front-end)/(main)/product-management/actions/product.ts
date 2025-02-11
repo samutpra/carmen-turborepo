@@ -16,7 +16,7 @@ export const fetchProducts = async (
 		}
 
 		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
+			query.append('status', params.status);
 		}
 
 		if (params.page) {

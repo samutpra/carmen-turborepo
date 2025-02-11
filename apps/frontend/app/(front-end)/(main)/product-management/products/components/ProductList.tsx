@@ -7,7 +7,6 @@ import { useURL } from '@/hooks/useURL';
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus, Printer } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
-import { statusOptions } from '@/lib/statusOptions';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { fetchProducts } from '../../actions/product';
@@ -17,6 +16,7 @@ import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ProductDisplay from './ProductDisplay';
 import { ProductCreateModel } from '@/dtos/product.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
+import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
 
 export enum ProductField {
 	NAME = 'name',
@@ -51,6 +51,26 @@ const fields: FieldConfig<ProductCreateModel>[] = [
 	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
 ];
 
+const statusOptions = [
+	{ label: `${m.all_status()}`, value: PRODUCT_STATUS_FILTER.ALL_STATUS },
+	{ label: `${m.status_active()}`, value: PRODUCT_STATUS_FILTER.ACTIVE },
+	{ label: `${m.status_inactive()}`, value: PRODUCT_STATUS_FILTER.IN_ACTIVE },
+	{ label: `${m.status_discontinued()}`, value: PRODUCT_STATUS_FILTER.DISCONTINUED }
+];
+
+export const PRODUCT_STATUS_COLORS: Record<string, string> = {
+	active: "border-transparent bg-[#eaf1e9] text-[#276D20] shadow hover:bg-[#eaf1e9]/80 font-bold",
+	inactive: "border-transparent bg-[#ece0e0] text-[#9D1C1D] shadow hover:bg-[#ece0e0]/80 font-bold",
+	discontinued: "border-transparent bg-orange-100 text-orange-600 hover:bg-orange-50 font-bold",
+	"": "bg-gray-400 text-white",
+};
+
+export const productStatusBadge = (status: string) => (
+	<span className={`px-2 py-1 rounded-full text-xs ${PRODUCT_STATUS_COLORS[status] || "bg-gray-400 text-white"}`}>
+		{status || "All Status"}
+	</span>
+);
+
 const ProductList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
@@ -63,6 +83,8 @@ const ProductList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
+
+
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
