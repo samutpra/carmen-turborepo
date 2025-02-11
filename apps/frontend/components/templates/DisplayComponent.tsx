@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Badge } from '../ui-custom/is-active-badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,9 +15,8 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Trash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
-import { FieldConfig } from '@/lib/util/uiConfig';
 import {
 	Table,
 	TableBody,
@@ -27,25 +26,34 @@ import {
 	TableRow,
 } from '../ui/table';
 import PaginationComponent from '../PaginationComponent';
+import { CardsContainerSkeleton } from '../ui-custom/Loading/CardsContainerSkeleton';
+import { FieldConfig } from '@/lib/util/uiConfig';
+import { TableBodySkeleton } from '../ui-custom/Loading/TableBodySkeleton';
 
-type FieldValue =
+// Type Definitions
+export type SortDirection = 'asc' | 'desc';
+
+export type FieldValue =
 	| string
 	| number
 	| boolean
 	| null
 	| undefined
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	| Record<string, any>;
+	| Record<string, string | number | boolean | null | undefined>;
 
-type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
+export type SortQuery = `${string}:${SortDirection}`;
 
-interface DeleteProps {
+export type SuccessCallback<T> = (updatedItem: T, oldItem: T) => void | Promise<void>;
+
+export interface DeleteProps {
 	title?: string;
 	description?: string;
 	confirmLabel?: string;
 }
 
-interface DisplayComponentProps<T extends Record<string, FieldValue>> {
+
+
+export interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 	items: T[];
 	fields: FieldConfig<T>[];
 	idField: keyof T;
@@ -61,7 +69,50 @@ interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 	totalPage: number;
 	setPage: (newPage: string) => void;
 	pages?: string;
+	sort?: string;
+	onSortChange?: (sort: SortQuery) => void;
+	isLoading?: boolean;
+	'data-id'?: string;
 }
+
+interface SortButtonProps {
+	field: string;
+	label: string;
+	currentSortField: string | null;
+	currentSortDirection: SortDirection;
+	onSort: (field: string) => void;
+}
+
+const SortButton: React.FC<SortButtonProps> = ({
+	field,
+	label,
+	currentSortField,
+	currentSortDirection,
+	onSort,
+}) => (
+	<div className="flex items-center gap-1">
+		<span>{label}</span>
+		<Button
+			variant="ghost"
+			size="sm"
+			className="h-6 w-6 p-0"
+			onClick={() => onSort(field)}
+		>
+			{currentSortField === field ? (
+				currentSortDirection === 'asc' ? (
+					<ChevronUp className="h-4 w-4" />
+				) : (
+					<ChevronDown className="h-4 w-4" />
+				)
+			) : (
+				<div className="flex flex-col -space-y-2">
+					<ChevronUp className="h-3 w-3 opacity-50" />
+					<ChevronDown className="h-3 w-3 opacity-50" />
+				</div>
+			)}
+		</Button>
+	</div>
+);
 
 const DisplayComponent = <T extends Record<string, FieldValue>>({
 	items,
@@ -79,8 +130,23 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	page,
 	totalPage,
 	setPage,
-	pages
+	pages,
+	sort,
+	onSortChange,
+	isLoading = false,
+	'data-id': dataId,
 }: DisplayComponentProps<T>): React.ReactElement => {
+	const [sortField, setSortField] = useState<string | null>(null);
+	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+	useEffect(() => {
+		if (sort) {
+			const [field, direction] = sort.split(':');
+			setSortField(field);
+			setSortDirection((direction as SortDirection) || 'asc');
+		}
+	}, [sort]);
+
 	const renderField = (field: FieldConfig<T>, item: T): React.ReactNode => {
 		const value = item[field.key];
 
@@ -144,10 +210,14 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 		</div>
 	);
 
-	// const handlePageChange = (newPage: number) => {
-	// 	if (newPage < 1 || newPage > totalPage) return;
-	// 	setPage(newPage.toString());
-	// };
+	const handleSort = (field: string) => {
+		const newDirection: SortDirection =
+			sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+
+		setSortField(field);
+		setSortDirection(newDirection);
+		onSortChange?.(`${field}:${newDirection}` as SortQuery);
+	};
 
 	const handlePageChange = (newPage: number) => {
 		const numericTotalPages = Number(pages);
@@ -156,35 +226,61 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	};
 
 	return (
-		<>
+		<div data-id={dataId}>
 			{/* Mobile */}
 			<div className="block md:hidden">
-				<div className="grid grid-cols-1 gap-4">
-					{items.map((item) => (
-						<Card
-							key={String(item[idField])}
-							className="hover:shadow-md transition-all"
+				<div className="flex items-center gap-2 mb-4 overflow-x-auto">
+					{fields.map((field) => (
+						<Button
+							key={String(field.key)}
+							variant="outline"
+							size="sm"
+							onClick={() => handleSort(String(field.key))}
 						>
-							<CardContent className="p-4 space-y-2">
-								{fields.map((field) => (
-									<div
-										key={String(field.key)}
-										className="grid grid-cols-10 gap-4"
-									>
-										<span className="text-sm text-muted-foreground col-span-3">
-											{field.label}
-										</span>
-										<span className={`col-span-7 ${field.className || ''}`}>
-											{renderField(field, item)}
-										</span>
-									</div>
-								))}
-							</CardContent>
-							<CardFooter className="flex justify-start gap-2 pt-0 pb-2 px-2">
-								{renderActions(item)}
-							</CardFooter>
-						</Card>
+							{field.label}
+							{sortField === field.key && (
+								sortDirection === 'asc' ? (
+									<ChevronUp className="ml-1 h-4 w-4" />
+								) : (
+									<ChevronDown className="ml-1 h-4 w-4" />
+								)
+							)}
+						</Button>
 					))}
+				</div>
+				<div className="grid grid-cols-1 gap-4">
+					{isLoading ? (
+						<CardsContainerSkeleton
+							fields={fields.length}
+							cards={5}
+							withAction
+						/>
+					) : (
+						<div className="grid grid-cols-1 gap-4">
+							{items.map((item) => (
+								<Card
+									key={String(item[idField])}
+									className="hover:shadow-md transition-all"
+								>
+									<CardContent className="p-4">
+										<div className="space-y-4">
+											{fields.map((field) => (
+												<div key={String(field.key)} className="flex items-center">
+													<span className="w-[30%] text-xs font-medium">{field.label}:</span>
+													<div className="w-[70%]">
+														{renderField(field, item)}
+													</div>
+												</div>
+											))}
+										</div>
+									</CardContent>
+									<CardFooter className="flex justify-start gap-2 pt-0 pb-2 px-2">
+										{renderActions(item)}
+									</CardFooter>
+								</Card>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -200,30 +296,46 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									style={{ width: field.width }}
 									className="text-xs"
 								>
-									{field.label}
+									<SortButton
+										field={String(field.key)}
+										label={field.label}
+										currentSortField={sortField}
+										currentSortDirection={sortDirection}
+										onSort={handleSort}
+									/>
 								</TableHead>
 							))}
 							<TableHead className="text-center">{m.action_text()}</TableHead>
 						</TableRow>
 					</TableHeader>
-					<TableBody>
-						{items.map((item, index) => (
-							<TableRow key={String(item[idField])}>
-								{showIndex && <TableCell>{index + 1}</TableCell>}
-								{fields.map((field) => (
-									<TableCell
-										key={String(field.key)}
-										className={`text-${field.align || 'left'} ${field.className || ''}`}
-									>
-										{renderField(field, item)}
+					{isLoading ? (
+						<TableBodySkeleton
+							columns={fields.length}
+							rows={10}
+							withAction
+						/>
+					) : (
+						<TableBody>
+							{items.map((item, index) => (
+								<TableRow key={String(item[idField])}>
+									{showIndex && <TableCell>{index + 1}</TableCell>}
+									{fields.map((field) => (
+										<TableCell
+											key={String(field.key)}
+											className={`text-${field.align || 'left'} ${field.className || ''
+												}`}
+										>
+											{renderField(field, item)}
+										</TableCell>
+									))}
+									<TableCell className="text-center w-1">
+										{renderActions(item)}
 									</TableCell>
-								))}
-								<TableCell className="text-center w-1">
-									{renderActions(item)}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
+								</TableRow>
+							))}
+						</TableBody>
+					)}
+
 				</Table>
 			</div>
 			<PaginationComponent
@@ -231,7 +343,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 				totalPages={totalPage}
 				onPageChange={handlePageChange}
 			/>
-		</>
+		</div>
 	);
 };
 

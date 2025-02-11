@@ -16,7 +16,7 @@ import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import { DepartmentCreateModel } from '@/dtos/department.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 
@@ -57,7 +57,7 @@ const DepartmentList = () => {
 	const [status, setStatus] = useURL('status');
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
-
+	const [sort, setSort] = useURL('sort');
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -65,6 +65,7 @@ const DepartmentList = () => {
 				search,
 				status,
 				page,
+				sort
 			});
 			setDepartments(data.data);
 			setPage(data.pagination.page);
@@ -80,7 +81,7 @@ const DepartmentList = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, [token, tenantId, search, status, page]);
+	}, [token, tenantId, search, status, page, sort]);
 
 	const handleSuccess = useCallback((values: DepartmentCreateModel) => {
 		setDepartments((prev) => {
@@ -187,6 +188,11 @@ const DepartmentList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 			data-id="department-display-component"
 		/>
 	);
@@ -201,7 +207,6 @@ const DepartmentList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="department-data-display-template"
 		/>
 	);

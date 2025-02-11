@@ -213,7 +213,8 @@ const RecipeCuisineList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<RecipeCuisineCreateModel>
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		<DisplayComponent<any>
 			items={cuisineData}
 			fields={recipeCuisineFields}
 			idField="id"

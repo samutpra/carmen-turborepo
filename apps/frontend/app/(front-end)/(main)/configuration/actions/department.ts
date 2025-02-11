@@ -4,7 +4,7 @@ import { formType } from '@/types/form_type';
 export const fetchDepartments = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string, page?: string } = {}
+	params: { search?: string; status?: string, page?: string; sort?: string } = {}
 ) => {
 	try {
 		if (!token) {
@@ -23,6 +23,10 @@ export const fetchDepartments = async (
 
 		if (params.status) {
 			query.append('filter[is_active:bool]', params.status);
+		}
+
+		if (params.sort) {
+			query.append('sort', params.sort);
 		}
 
 		const url = `/api/configuration/department?${query}`;

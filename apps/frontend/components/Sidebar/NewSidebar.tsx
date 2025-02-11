@@ -54,9 +54,6 @@ const NewSidebar = () => {
         fetchFavoriteMenu();
     }, []);
 
-    console.log('faveriteMenu', favoriteMenu);
-
-
     const activeMenuItem = useMemo(() => {
         return menuItems.find(item =>
             pathname.startsWith(item.path) ||
@@ -162,8 +159,6 @@ const NewSidebar = () => {
                     togglePin={togglePin}
                     data-id="sidebar-logo"
                 />
-
-                <Separator className='mt-1' />
 
                 <div className="p-2 mt-2">
                     <div

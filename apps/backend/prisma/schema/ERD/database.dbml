@@ -714,6 +714,7 @@ TABLE TENANT_DUMMY.tb_workflow {
   workflow_type TENANT_DUMMY.enum_workflow_type [not null]
 
   description text
+  data json
   is_active bool [default: true]
 
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]

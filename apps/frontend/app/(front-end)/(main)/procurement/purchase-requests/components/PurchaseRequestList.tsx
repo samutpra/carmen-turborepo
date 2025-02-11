@@ -62,8 +62,6 @@ const PurchaseRequestList = () => {
     }
   };
 
-  console.log('prList', prList);
-
   useEffect(() => {
     fetchPrList();
   }, [search, status]);

@@ -5,13 +5,16 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/products
+  url: {{host}}/api/v1/products?page=1&perpage=10&filter[created_at:datetime]=2025-02-10T08:32:49.839736Z
   body: none
   auth: none
 }
 
 params:query {
-  ~search: 
-  ~page: 1
-  ~perpage: 10
+  page: 1
+  perpage: 10
+  filter[created_at:datetime]: 2025-02-10T08:32:49.839736Z
+  ~search: active
+  ~filter[product_status_type:enum]: active
+  ~filter[code]: SHEET
 }

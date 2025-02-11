@@ -17,7 +17,7 @@ import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import SortComponent from '@/components/ui-custom/SortComponent';
@@ -55,6 +55,7 @@ const DeliveryPointList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
+
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -199,6 +200,11 @@ const DeliveryPointList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 			data-id="delivery-point-display-component"
 		/>
 	);
@@ -209,7 +215,6 @@ const DeliveryPointList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="delivery-point-data-display-template"
 		/>
 	);

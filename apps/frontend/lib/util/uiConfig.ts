@@ -7,4 +7,11 @@ export interface FieldConfig<T> {
 	width?: string;
 	align?: 'left' | 'center' | 'right';
 	className?: string;
+
 }
+
+export type SortDirection = 'asc' | 'desc';
+
+export type SortQuery = `${string}:${SortDirection}` | '';
+
+

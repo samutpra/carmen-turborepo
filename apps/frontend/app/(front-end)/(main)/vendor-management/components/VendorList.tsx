@@ -13,7 +13,7 @@ import * as m from '@/paraglide/messages.js';
 import { statusOptions } from '@/lib/statusOptions';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import VendorDisplay from './VendorDisplay';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortDirection } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
@@ -39,7 +39,6 @@ const sortFields: FieldConfig<VendorCreateModel>[] = [
 	},
 ];
 
-type SortDirection = 'asc' | 'desc';
 type SortQuery = `${VendorFields}:${SortDirection}` | '';
 
 const VendorList = () => {

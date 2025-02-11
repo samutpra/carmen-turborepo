@@ -544,6 +544,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_workflow" (
   "name" varchar UNIQUE NOT NULL,
   "workflow_type" "TENANT_DUMMY".enum_workflow_type NOT NULL,
   "description" text,
+  "data" json,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,

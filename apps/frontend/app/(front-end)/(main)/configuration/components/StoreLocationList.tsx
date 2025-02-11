@@ -18,7 +18,7 @@ import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
-import { FieldConfig } from '@/lib/util/uiConfig';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { LocationCreateModel } from '@/dtos/location.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
@@ -215,6 +215,11 @@ const StoreLocationList = () => {
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}
+			sort={sort}
+			onSortChange={(newSort: SortQuery) => {
+				setSort(newSort);
+			}}
+			isLoading={isLoading}
 			data-id="store-location-display-component"
 		/>
 	);
@@ -229,7 +234,6 @@ const StoreLocationList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="store-location-data-display-template"
 		/>
 	);

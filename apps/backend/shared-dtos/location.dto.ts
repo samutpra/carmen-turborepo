@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export enum enum_location_type {
-  inventory = 'Inventory',
-  direct = 'Direct',
-  consignment = 'Consignment',
+  inventory = "inventory",
+  direct = "direct",
+  consignment = "consignment",
 }
 
 export type location_info = {
@@ -17,7 +17,7 @@ export type location_info = {
 
 export const LocationCreateSchema = z.object({
   id: z.string().uuid().optional(),
-  name: z.string().min(1, 'name must be at least 1 character'),
+  name: z.string().min(1, "name must be at least 1 character"),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
   location_type: z.enum(
@@ -50,7 +50,7 @@ export class LocationCreateDto implements LocationCreateModel {
 
 export const LocationUpdateSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, 'name must be at least 1 character').optional(),
+  name: z.string().min(1, "name must be at least 1 character").optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
   location_type: z
@@ -83,67 +83,67 @@ export class LocationUpdateDto implements LocationUpdateModel {
 
 export const mockLocations: LocationCreateDto[] = [
   {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    name: 'คลังสินค้าหลัก',
-    description: 'คลังสินค้าหลักสำหรับจัดเก็บสินค้าทั่วไป',
+    id: "550e8400-e29b-41d4-a716-446655440001",
+    name: "คลังสินค้าหลัก",
+    description: "คลังสินค้าหลักสำหรับจัดเก็บสินค้าทั่วไป",
     is_active: true,
     location_type: enum_location_type.inventory,
-    deliveryPointId: '550e8400-e29b-41d4-a716-446655440010',
+    deliveryPointId: "550e8400-e29b-41d4-a716-446655440010",
     info: {
       floor: 1,
-      building: 'Building A',
+      building: "Building A",
       capacity: 1000,
-      responsibleDepartment: 'Inventory Department',
+      responsibleDepartment: "Inventory Department",
       itemCount: 500,
-      lastCount: '2023-01-01',
+      lastCount: "2023-01-01",
     },
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    name: 'คลังสินค้าฝากขาย',
-    description: 'คลังสินค้าสำหรับสินค้าฝากขาย',
+    id: "550e8400-e29b-41d4-a716-446655440002",
+    name: "คลังสินค้าฝากขาย",
+    description: "คลังสินค้าสำหรับสินค้าฝากขาย",
     is_active: true,
     location_type: enum_location_type.consignment,
-    deliveryPointId: '550e8400-e29b-41d4-a716-446655440011',
+    deliveryPointId: "550e8400-e29b-41d4-a716-446655440011",
     info: {
       floor: 2,
-      building: 'Building B',
+      building: "Building B",
       capacity: 500,
-      responsibleDepartment: 'Consignment Department',
+      responsibleDepartment: "Consignment Department",
       itemCount: 200,
-      lastCount: '2023-01-02',
+      lastCount: "2023-01-02",
     },
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    name: 'คลังสินค้าส่งตรง',
-    description: 'คลังสินค้าสำหรับการส่งตรงถึงลูกค้า',
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    name: "คลังสินค้าส่งตรง",
+    description: "คลังสินค้าสำหรับการส่งตรงถึงลูกค้า",
     is_active: true,
     location_type: enum_location_type.direct,
-    deliveryPointId: '550e8400-e29b-41d4-a716-446655440012',
+    deliveryPointId: "550e8400-e29b-41d4-a716-446655440012",
     info: {
       floor: 3,
-      building: 'Building C',
+      building: "Building C",
       capacity: 200,
-      responsibleDepartment: 'Direct Department',
+      responsibleDepartment: "Direct Department",
       itemCount: 100,
-      lastCount: '2023-01-03',
+      lastCount: "2023-01-03",
     },
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440004',
-    name: 'คลังสินค้าสำรอง',
-    description: 'คลังสินค้าสำรองสำหรับสินค้าคงคลัง',
+    id: "550e8400-e29b-41d4-a716-446655440004",
+    name: "คลังสินค้าสำรอง",
+    description: "คลังสินค้าสำรองสำหรับสินค้าคงคลัง",
     is_active: false,
     location_type: enum_location_type.inventory,
-    deliveryPointId: '550e8400-e29b-41d4-a716-446655440013',
+    deliveryPointId: "550e8400-e29b-41d4-a716-446655440013",
     info: {
       floor: 4,
-      building: 'Building D',
+      building: "Building D",
       capacity: 300,
-      responsibleDepartment: 'Inventory Department',
+      responsibleDepartment: "Inventory Department",
       itemCount: 150,
-      lastCount: '2023-01-04',
+      lastCount: "2023-01-04",
     },
   },
 ];

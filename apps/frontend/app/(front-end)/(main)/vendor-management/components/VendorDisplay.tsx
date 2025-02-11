@@ -17,9 +17,9 @@ import { VendorCreateModel } from '@/dtos/vendor.dto';
 import PaginationComponent from '@/components/PaginationComponent';
 import { CardsContainerSkeleton } from '@/components/ui-custom/Loading/CardsContainerSkeleton';
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
+import { SortDirection } from '@/lib/util/uiConfig';
 
 type SortableFields = 'name' | 'description' | 'is_active';
-type SortDirection = 'asc' | 'desc';
 type SortQuery = `${SortableFields}:${SortDirection}` | '';
 
 interface ColumnConfig {
@@ -97,7 +97,9 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => handleSort(field)}
+                onClick={() => {
+                    handleSort(field);
+                }}
             >
                 {sortField === field ? (
                     sortDirection === 'asc' ? (
@@ -223,7 +225,6 @@ const VendorDisplay: React.FC<VendorDisplayProps> = ({
                             )))}
                         </TableBody>
                     )}
-
                 </Table>
                 <PaginationComponent
                     currentPage={page}
