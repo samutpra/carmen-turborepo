@@ -1,15 +1,14 @@
 import { FavMenuItem } from "@/dtos/favorite-menu.dto";
-import { my_approvals, purchase_requests } from "@/paraglide/messages";
 import { NextResponse } from "next/server";
 const favoriteMenu: FavMenuItem[] = [
     {
-        title: `${my_approvals()}`,
+        title: 'My Approval',
         path: "/procurement/my-approvals",
         visible: true,
         enabled: true,
     },
     {
-        title: `${purchase_requests()}`,
+        title: 'Purchase Requests',
         path: "/procurement/purchase-requests",
         visible: true,
         enabled: true,

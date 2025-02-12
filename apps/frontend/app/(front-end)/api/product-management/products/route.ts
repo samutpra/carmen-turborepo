@@ -6,6 +6,7 @@ import {
 import { fetchProductItemGroup } from '@/app/(front-end)/services/products';
 import { API_URL } from '@/lib/util/api';
 import { extractToken } from '@/lib/util/auth';
+import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
 import { NextRequest, NextResponse } from 'next/server';
 
 export interface ProductInfo {
@@ -44,6 +45,8 @@ export interface Product {
 	category_name: string;
 }
 
+
+
 export const GET = async (request: NextRequest) => {
 	try {
 		const token = extractToken(request);
@@ -55,41 +58,22 @@ export const GET = async (request: NextRequest) => {
 		}
 
 		const tenantId = 'DUMMY';
-
 		const { searchParams } = new URL(request.url);
+
 		const search = searchParams.get('search') || '';
 		const page = searchParams.get('page') || '1';
 		const sort = searchParams.get('sort') || '';
+		const status = searchParams.get('status') as PRODUCT_STATUS_FILTER || PRODUCT_STATUS_FILTER.ALL_STATUS;
 
-		const productUrl = `${API_URL}/v1/products?search=${search}&page=${page}&sort=${sort}`;
+		let productUrl = `${API_URL}/v1/products?search=${search}&page=${page}&sort=${sort}`;
+
+		if (status !== PRODUCT_STATUS_FILTER.ALL_STATUS) {
+			productUrl += `&filter[product_status_type:enum]=${status}`;
+		}
+
 		const productResponse = await fetchData(productUrl, token, tenantId);
 
-		const data = await Promise.all(
-			productResponse.data.map(async (product: Product) => {
-				const groupData = await fetchProductItemGroup(
-					product.tb_product_info.product_item_group_id,
-					token,
-					tenantId
-				);
-				const subCategoryData = await fetchProductSubcategory(
-					groupData.data.product_subcategory_id,
-					token,
-					tenantId
-				);
-				const categoryData = await fetchProductCategory(
-					subCategoryData.data.product_category_id,
-					token,
-					tenantId
-				);
-
-				return {
-					...product,
-					item_group_name: groupData.data.name,
-					sub_category_name: subCategoryData.data.name,
-					category_name: categoryData.data.name,
-				};
-			})
-		);
+		const data = await getProducts(productResponse.data, token, tenantId);
 
 		return NextResponse.json({ data, pagination: productResponse.pagination });
 	} catch (error) {
@@ -99,4 +83,38 @@ export const GET = async (request: NextRequest) => {
 			{ status: 500 }
 		);
 	}
+};
+
+const fetchCategoryHierarchy = async (productId: string, token: string, tenantId: string) => {
+	try {
+		const groupData = await fetchProductItemGroup(productId, token, tenantId);
+		const subCategoryData = await fetchProductSubcategory(groupData.data.product_subcategory_id, token, tenantId);
+		const categoryData = await fetchProductCategory(subCategoryData.data.product_category_id, token, tenantId);
+
+		return {
+			item_group_name: groupData.data.name,
+			sub_category_name: subCategoryData.data.name,
+			category_name: categoryData.data.name,
+		};
+	} catch (error) {
+		console.error(`Error fetching category data for product ${productId}:`, error);
+		return {
+			item_group_name: 'Unknown',
+			sub_category_name: 'Unknown',
+			category_name: 'Unknown',
+		};
+	}
+};
+
+const getProducts = async (products: Product[], token: string, tenantId: string) => {
+	const results = await Promise.allSettled(
+		products.map(async (product) => {
+			const categoryData = await fetchCategoryHierarchy(product.tb_product_info.product_item_group_id, token, tenantId);
+			return { ...product, ...categoryData };
+		})
+	);
+
+	return results.map((result) =>
+		result.status === 'fulfilled' ? result.value : { error: 'Failed to fetch product data' }
+	);
 };

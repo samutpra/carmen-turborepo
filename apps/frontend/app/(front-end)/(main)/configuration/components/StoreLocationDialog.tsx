@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -37,7 +37,11 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitStoreLocation } from '../actions/store_location';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
-import { LocationCreateModel, LocationCreateSchema } from '@/dtos/location.dto';
+import { enum_location_type, LocationCreateModel, LocationCreateSchema } from '@/dtos/location.dto';
+import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
+import { fetchListDP } from '../actions/delivery_point';
+import DeliveryPointSelect from './DeliveryPointSelect ';
+import { StoreLocationField } from './StoreLocationList';
 
 interface StoreLocationDialogProps {
 	mode: formType;
@@ -45,23 +49,55 @@ interface StoreLocationDialogProps {
 	onSuccess: (values: LocationCreateModel) => void;
 }
 
+const locationField = [
+	{ label: 'Inventory', value: enum_location_type.inventory },
+	{ label: 'Direct', value: enum_location_type.direct },
+	{ label: 'Consignment', value: enum_location_type.consignment },
+]
+
 const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	mode,
 	defaultValues,
 	onSuccess,
 }) => {
+
 	const [open, setOpen] = useState(false);
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
+	const [deliveryPoints, setDeliveryPoints] = useState<
+		DeliveryPointCreateModel[]
+	>([]);
+	const fetchData = useCallback(async () => {
+		if (!token) return;
+
+		try {
+			setIsLoading(true);
+			const data = await fetchListDP(token, tenantId);
+			setDeliveryPoints(data.data);
+		} catch (err) {
+			console.error(err instanceof Error ? err.message : 'An error occurred');
+		} finally {
+			setIsLoading(false);
+		}
+	}, [token, tenantId]);
+
+
+	useEffect(() => {
+		if (open) {
+			fetchData();
+		} else {
+			setDeliveryPoints([]);
+		}
+	}, [open, fetchData]);
 
 	const defaultLocationValues: LocationCreateModel = {
 		name: '',
-		location_type: 'inventory',
+		location_type: enum_location_type.inventory,
 		description: '',
 		is_active: true,
-		delivery_point_id: '',
+		delivery_point_id: null,
 	};
 
 	const form = useForm<LocationCreateModel>({
@@ -94,9 +130,8 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 				setOpen(false);
 				form.reset();
 				toastSuccess({
-					message: `${m.store_location()} ${
-						mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
-					} ${m.successfully()}`,
+					message: `${m.store_location()} ${mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+						} ${m.successfully()}`,
 				});
 			} else {
 				toastError({
@@ -157,7 +192,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 					>
 						<FormField
 							control={form.control}
-							name="name"
+							name={StoreLocationField.Name}
 							data-id="store-location-dialog-form-name-field"
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-name-item">
@@ -177,9 +212,10 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							)}
 							required
 						/>
+
 						<FormField
 							control={form.control}
-							name="location_type"
+							name={StoreLocationField.LocationType}
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-location-type-item">
 									<FormLabel data-id="store-location-dialog-form-location-type-label">
@@ -187,7 +223,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 									</FormLabel>
 									<Select
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										defaultValue={field.value ?? undefined}
 										data-id="store-location-dialog-form-location-type-select"
 									>
 										<SelectTrigger
@@ -197,18 +233,17 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 											<SelectValue placeholder="Select type" />
 										</SelectTrigger>
 										<SelectContent data-id="store-location-dialog-form-location-type-select-content">
-											<SelectItem
-												value="inventory"
-												data-id="store-location-dialog-form-location-type-select-item-inventory"
-											>
-												Inventory
-											</SelectItem>
-											<SelectItem
-												value="direct"
-												data-id="store-location-dialog-form-location-type-select-item-direct"
-											>
-												Direct
-											</SelectItem>
+											{locationField.map(({ label, value }) => (
+												<SelectItem
+													key={value}
+													value={value}
+													data-id={`store-location-dialog-form-location-type-select-item-${value}`}
+													className='cursor-pointer hover:bg-muted text-xs'
+
+												>
+													{label}
+												</SelectItem>
+											))}
 										</SelectContent>
 									</Select>
 									<FormMessage data-id="store-location-dialog-form-location-type-message" />
@@ -216,9 +251,58 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 							)}
 							required
 						/>
+
 						<FormField
 							control={form.control}
-							name="description"
+							name={StoreLocationField.DeliveryPointID}
+							data-id="store-location-dialog-form-delivery_point_id-field"
+							render={({ field }) => (
+								<FormItem data-id="store-location-dialog-form-delivery_point_id-item">
+									<FormLabel data-id="store-location-dialog-form-delivery_point_id-label">
+										{m.delivery_point()}
+									</FormLabel>
+									<FormControl>
+										<DeliveryPointSelect
+											value={field.value || ''}
+											onValueChange={field.onChange}
+											items={deliveryPoints}
+										/>
+										{/* 
+										<DeliveryPointCombobox
+											value={field.value || ''}
+											onValueChange={field.onChange}
+											items={deliveryPoints}
+											error={form.formState.errors.delivery_point_id?.message}
+											disabled={isLoading}
+											isLoading={isLoading}
+											page={page}
+											pages={pages}
+											onPopoverOpenChange={(open) => {
+												if (open) {
+													setSearch('');
+													setPage('1');
+													fetchData();
+												}
+											}}
+											onPageChange={(newPage) => {
+												setPage(newPage);
+												fetchData();
+											}}
+											onSearchChange={(newSearch) => {
+												setSearch(newSearch);
+												setPage("1");
+												fetchData();
+											}}
+										/> */}
+									</FormControl>
+									<FormMessage data-id="store-location-dialog-form-delivery_point_id-message" />
+								</FormItem>
+							)}
+							required
+						/>
+						<FormField
+							control={form.control}
+							name={StoreLocationField.Description}
 							data-id="store-location-dialog-form-description-field"
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-description-item">
@@ -239,7 +323,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 						/>
 						<FormField
 							control={form.control}
-							name="is_active"
+							name={StoreLocationField.isActive}
 							data-id="store-location-dialog-form-active-field"
 							render={({ field }) => (
 								<FormItem

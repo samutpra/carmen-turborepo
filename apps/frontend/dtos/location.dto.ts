@@ -23,7 +23,7 @@ export const LocationCreateSchema = z.object({
 	location_type: z.enum(
 		Object.values(enum_location_type) as [string, ...string[]]
 	),
-	delivery_point_id: z.string().uuid().optional(),
+	delivery_point_id: z.string().uuid().optional().nullable(),
 	info: z
 		.object({
 			floor: z.number().optional(),
