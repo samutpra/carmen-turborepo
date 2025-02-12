@@ -1,0 +1,24 @@
+meta {
+  name: 04 - Update Workflow
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/workflows/94f04d7e-9b35-4144-9a28-3c4aef7a935e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Workflow 1 update",
+    "workflow_type": "purchase_order",
+    "description": "Workflow 1 update",
+    "data": {
+      "test1": "test update",
+      "test2": "test update"
+    },
+    "is_active": true
+  }
+}

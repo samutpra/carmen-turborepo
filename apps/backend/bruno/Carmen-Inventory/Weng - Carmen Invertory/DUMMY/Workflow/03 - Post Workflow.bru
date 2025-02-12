@@ -1,0 +1,24 @@
+meta {
+  name: 03 - Post Workflow
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/workflows/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Workflow 1",
+    "workflow_type": "purchase_order",
+    "description": "Workflow 1",
+    "data": {
+      "test1": "test",
+      "test2": "test"
+    },
+    "is_active": true
+  }
+}

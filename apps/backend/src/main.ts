@@ -1,14 +1,14 @@
-import * as dotenv from 'dotenv';
-import { HttpExceptionFilter } from 'lib/filters/http-exception.filter';
+import * as dotenv from "dotenv";
+import { HttpExceptionFilter } from "lib/filters/http-exception.filter";
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory } from "@nestjs/core";
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
   SwaggerModule,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { AppModule } from './app.module';
+import { AppModule } from "./app.module";
 
 dotenv.config();
 
@@ -25,20 +25,20 @@ async function bootstrap() {
   // );
 
   const config = new DocumentBuilder()
-    .setTitle('CARMEN INVENTORY API')
-    .setDescription('API for managing inventory')
-    .setVersion('1.0')
+    .setTitle("CARMEN INVENTORY API")
+    .setDescription("API for managing inventory")
+    .setVersion("1.0")
     .addServer(
       `http://localhost:${process.env.PORT || 4000}`,
-      'local environment',
+      "local environment",
     )
     .addServer(
-      'https://carmen-inventory-backend.vercel.app/',
-      'Dev Cloud Environment',
+      "https://carmen-inventory-backend.vercel.app/",
+      "Dev Cloud Environment",
     )
     .addServer(
-      'https://carmen-api.semapru.com/',
-      'Production Cloud Environment',
+      "https://carmen-api.semapru.com/",
+      "Production Cloud Environment",
     )
     // .addSecurity('token', {
     //   type: 'apiKey',
@@ -47,9 +47,9 @@ async function bootstrap() {
     //   name: 'auth-token',
     // })
     .addBearerAuth({
-      type: 'http',
-      scheme: 'bearer',
-      in: 'header',
+      type: "http",
+      scheme: "bearer",
+      in: "header",
     })
     .build();
 
@@ -58,8 +58,8 @@ async function bootstrap() {
   };
 
   const document = SwaggerModule.createDocument(app, config, options);
-  SwaggerModule.setup('swagger', app, document, {
-    jsonDocumentUrl: 'swagger/json',
+  SwaggerModule.setup("swagger", app, document, {
+    jsonDocumentUrl: "swagger/json",
   });
 
   // app.enableCors({
