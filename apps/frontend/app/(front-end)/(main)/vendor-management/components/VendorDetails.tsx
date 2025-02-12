@@ -119,7 +119,7 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 	);
 
 	const actionsButton = (
-		<div className="flex justify-center space-x-2">
+		<div className="flex justify-center">
 			{mode === formType.EDIT ? (
 				isEditing ? (
 					<>
@@ -177,8 +177,8 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 	);
 
 	return (
-		<div className="container p-6 space-y-4">
-			<Card className="flex flex-col md:flex-row justify-center md:justify-between gap-4 p-4">
+		<div className="container p-6 space-y-6">
+			<Card className="flex flex-col md:flex-row justify-center md:justify-between p-4">
 				{title}
 				{actionsButton}
 			</Card>

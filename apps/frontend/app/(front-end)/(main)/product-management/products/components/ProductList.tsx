@@ -67,7 +67,7 @@ export const PRODUCT_STATUS_COLORS: Record<string, string> = {
 
 export const productStatusBadge = (status: string) => (
 	<span className={`px-2 py-1 rounded-full text-xs ${PRODUCT_STATUS_COLORS[status] || "bg-gray-400 text-white"}`}>
-		{status || "All Status"}
+		{status.charAt(0).toUpperCase() + status.slice(1)}
 	</span>
 );
 
