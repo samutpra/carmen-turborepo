@@ -18,7 +18,7 @@ import EnvironmentImpact from './components/tab/EnvironmentImpact';
 import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
 import { ProductInfoClient, ProductInfoDto } from '@/dtos/product.dto';
-import SkeltonCardLoading from '@/components/ui-custom/Loading/SkeltonCardLoading';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const router = useRouter();
@@ -57,7 +57,21 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	};
 
 	if (loading) {
-		return <SkeltonCardLoading />;
+		return (
+			<div className='m-4 space-y-4'>
+				<Card>
+					<Skeleton className="h-[125px] w-full rounded-xl" />
+				</Card>
+				<div className='flex w-full gap-4'>
+					<Card className='w-1/2'>
+						<Skeleton className="h-[500px] rounded-xl" />
+					</Card>
+					<Card className='w-1/2'>
+						<Skeleton className="h-[500px] rounded-xl" />
+					</Card>
+				</div>
+			</div>
+		)
 	}
 
 	const priceDetail: ProductInfoDto = {
@@ -66,9 +80,13 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		tax_rate: product?.data.tb_product_info?.tax_rate || '',
 		price_deviation_limit: product?.data.tb_product_info?.price_deviation_limit || '',
 		info: product?.data.tb_product_info?.info?.map(item => ({
-			label: item?.label || '',
-			value: item?.value || '',
-		})) || [],
+			...item,  // คัดลอก properties ทั้งหมดจาก item
+			label: item?.label || 'No Label',  // กำหนดค่าเริ่มต้นให้ label
+			value: item?.value || 'No Value',  // กำหนดค่าเริ่มต้นให้ value
+		})) || [{
+			label: 'No Label',
+			value: 'No Value',
+		}]
 	}
 
 	const content = (

@@ -49,7 +49,7 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 							</div>
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
-									Standard Cost
+									Standard Cost (mock)
 								</label>
 								<p className="text-xs">28.4 THB</p>
 							</div>
@@ -80,7 +80,7 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 							</div>
 							<div>
 								<label className="text-xs font-medium text-muted-foreground">
-									Last Cost
+									Last Cost  (mock)
 								</label>
 								<p className="text-xs">29.75 THB</p>
 							</div>
