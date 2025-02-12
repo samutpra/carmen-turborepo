@@ -6,6 +6,8 @@ interface Props {
 }
 
 const BasicInfo: React.FC<Props> = ({ info }) => {
+	console.log('info', info);
+
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 			<div className="space-y-4">
@@ -14,49 +16,23 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 						<CardTitle>Product Attributes</CardTitle>
 					</CardHeader>
 					<CardContent className="grid gap-2 py-2">
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Size
-								</label>
-								<p className="text-xs">XXL</p>
+						{info?.info?.length ?? 0 > 0 ? (
+							<div className="grid grid-cols-2 gap-4">
+								{info?.info?.map((item, index) => (
+									<div key={index}>
+										<label className="text-xs font-medium text-muted-foreground">
+											{item.label}
+										</label>
+										<p className="text-xs">{item.value}</p>
+									</div>
+								))}
 							</div>
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Color
-								</label>
-								<p className="text-xs">White</p>
-							</div>
-						</div>
-						<div className="grid grid-cols-2 gap-4">
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Weight
-								</label>
-								<p className="text-xs">55 KG</p>
-							</div>
-							<div>
-								<label className="text-xs font-medium text-muted-foreground">
-									Shelf Life
-								</label>
-								<p className="text-xs">356 days</p>
-							</div>
-						</div>
-						<div>
-							<label className="text-xs font-medium text-muted-foreground">
-								Dimensions (L × W × H)
-							</label>
-							<p className="text-xs">10 × 15 × 20 cm</p>
-						</div>
-						<div>
-							<label className="text-xs font-medium text-muted-foreground">
-								Storage Instructions
-							</label>
-							<p className="text-xs">
-								Store in a cool, dry place away from direct sunlight
-							</p>
-						</div>
+						) : (
+							<p className="text-xs text-muted-foreground">Empty</p>
+						)}
 					</CardContent>
+
+
 				</Card>
 
 				<Card className="py-2">

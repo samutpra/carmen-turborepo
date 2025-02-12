@@ -65,11 +65,11 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		tax_type: product?.data.tb_product_info?.tax_type || '',
 		tax_rate: product?.data.tb_product_info?.tax_rate || '',
 		price_deviation_limit: product?.data.tb_product_info?.price_deviation_limit || '',
-		info: {
-			brand: product?.data.tb_product_info?.info.brand || '',
-		},
+		info: product?.data.tb_product_info?.info?.map(item => ({
+			label: item?.label || '',
+			value: item?.value || '',
+		})) || [],
 	}
-
 
 	const content = (
 		<>
@@ -175,14 +175,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 									<div>
 										<p className="text-muted-foreground">Item Group</p>
 										<p>{product?.item_group_name}</p>
-									</div>
-									<div>
-										<p className="text-muted-foreground">Brand</p>
-										<p>{product?.data.tb_product_info?.info.brand}</p>
-									</div>
-									<div>
-										<p className="text-muted-foreground">Brand</p>
-										<p>{product?.data.tb_product_info?.info.brand}</p>
 									</div>
 								</div>
 							</div>
