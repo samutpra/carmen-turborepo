@@ -55,7 +55,7 @@ export const sampleWorkflows: Workflow[] = [
 		description:
 			'Workflow for general purchase requests in a hotel environment',
 		documentReferencePattern: 'GP-{YYYY}-{00000}',
-		status: 'Active',
+		is_active: true,
 		stages: [
 			{
 				id: 1,
@@ -208,7 +208,7 @@ export const sampleWorkflows: Workflow[] = [
 		type: 'Purchase Request',
 		description: 'Workflow for market list requests in a hotel environment',
 		documentReferencePattern: 'ML-{YYYY}-{00000}',
-		status: 'Active',
+		is_active: true,
 		stages: [
 			{
 				id: 1,

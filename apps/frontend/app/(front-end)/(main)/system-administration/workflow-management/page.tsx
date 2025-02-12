@@ -20,14 +20,6 @@ function WorkflowConfigurationContent() {
 	const searchParams = useSearchParams();
 	const defaultTab = searchParams.get('tab') || 'workflow';
 
-	const workflows = sampleWorkflows.map((workflow) => ({
-		id: workflow.id,
-		name: workflow.name,
-		type: workflow.type,
-		status: workflow.status || 'Active',
-		lastModified: new Date().toISOString(),
-	}));
-
 	// Get notification templates from the first workflow as initial templates
 	const initialTemplates = sampleWorkflows[0]?.notificationTemplates || [];
 
@@ -40,7 +32,7 @@ function WorkflowConfigurationContent() {
 					<TabsTrigger value="templates">Notification Templates</TabsTrigger>
 				</TabsList>
 				<TabsContent value="workflow">
-					<WorkflowList workflows={workflows} />
+					<WorkflowList />
 				</TabsContent>
 				<TabsContent value="templates">
 					<WorkflowTemplates
