@@ -71,8 +71,10 @@ const isRateLimited = (identifier: string): boolean => {
 
 // Function to send logs to Kafka
 const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
+
 	try {
 		const pathname = request.nextUrl.pathname;
+
 		const identifier = `${request.method}-${pathname}`;
 
 		// Skip if rate limited
@@ -104,8 +106,6 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 			clientIp: request.headers.get('x-forwarded-for') || request.ip,
 		};
 
-		console.log('Sending log to Kafka:', enhancedLogMessage);
-
 
 		const response = await fetch(`${baseUrl}/api/produce`, {
 			method: 'POST',
@@ -125,6 +125,7 @@ const sendLogToKafka = async (logMessage: string, request: NextRequest) => {
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
+	const user_id = request.cookies.get("user_id")?.value;
 
 	// Format timestamp
 	const now = new Date().toLocaleString('en-US', {
@@ -136,6 +137,7 @@ export async function middleware(request: NextRequest) {
 		month: '2-digit',
 		year: 'numeric',
 	});
+
 
 	// Skip middleware for static files and API routes
 	if (pathname.match(/(\..*|_next|api|trpc)/)) {
@@ -177,6 +179,7 @@ export async function middleware(request: NextRequest) {
 		);
 
 		const logData = {
+			user_id: user_id,
 			timestamp: now,
 			method: request.method,
 			path: `${pathname}${request.nextUrl.search}`,

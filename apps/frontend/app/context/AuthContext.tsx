@@ -53,9 +53,9 @@ const defaultAuthContext: AuthContextType = {
 	accessToken: null,
 	isAuthenticated: false,
 	isLoading: true,
-	handleLogin: async () => {},
-	handleLogout: async () => {},
-	updateAccessToken: () => {},
+	handleLogin: async () => { },
+	handleLogout: async () => { },
+	updateAccessToken: () => { },
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -151,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 					setAuthState(data);
 					setAccessToken(token);
 					setCookie('access_token', token, COOKIE_OPTIONS);
+					setCookie('user_id', data?.user?.id)
 					localStorage.setItem('access_token', token);
 					localStorage.setItem('auth_state', JSON.stringify(data));
 					router.push('/dashboard');
