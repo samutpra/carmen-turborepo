@@ -23,9 +23,10 @@ import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { LocationCreateModel } from '@/dtos/location.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
 
-enum StoreLocationField {
+export enum StoreLocationField {
 	Name = 'name',
 	LocationType = 'location_type',
+	DeliveryPointID = 'delivery_point_id',
 	Description = 'description',
 	isActive = 'is_active',
 }
@@ -37,25 +38,23 @@ const sortFields: FieldConfig<LocationCreateModel>[] = [
 		className: 'w-24',
 	},
 	{
-		key: StoreLocationField.LocationType,
-		label: m.location_type_label(),
-		className: 'w-24'
-	},
-];
-const storeLocationFields: FieldConfig<LocationCreateModel>[] = [
-	...sortFields,
-	{
-		key: StoreLocationField.isActive,
-		label: m.status_text(),
-		type: 'badge',
-		className: 'w-24',
-	},
-	{
 		key: StoreLocationField.Description,
 		label: m.description(),
 		className: 'w-40',
 	},
+	{
+		key: StoreLocationField.LocationType,
+		label: m.location_type_label(),
+		className: 'w-10'
+	},
+	{
+		key: StoreLocationField.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-10',
+	},
 ];
+
 
 const StoreLocationList = () => {
 	const { accessToken } = useAuth();
@@ -64,6 +63,7 @@ const StoreLocationList = () => {
 	const [storeLocations, setStoreLocations] = useState<LocationCreateModel[]>(
 		[]
 	);
+
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -201,7 +201,7 @@ const StoreLocationList = () => {
 	const content = (
 		<DisplayComponent<LocationCreateModel>
 			items={storeLocations}
-			fields={storeLocationFields}
+			fields={sortFields}
 			idField="id"
 			onSuccess={handleSuccess}
 			onDelete={handleDelete}
