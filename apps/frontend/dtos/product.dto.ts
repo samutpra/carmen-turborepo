@@ -200,48 +200,92 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
   info?: Product_info;
 }
 
-export type ProductDto = {
-  id: string;
-  product_code: string;
-  product_name: string;
-  local_name?: string;
-  description?: string;
-  is_active: boolean;
-  primary_unit_id?: string;
-  product_status_type: enum_product_status_type;
-  product_item_group_id: string;
-  price?: number;
-  tax_type?: string;
-  tax_rate?: number;
-  is_ingredients?: boolean;
-  price_deviation_limit?: number;
-  created_at: Date;
-  updated_at: Date;
-};
+export interface ProductData {
+	id: string;
+	code: string;
+	name: string;
+	local_name: string;
+	description: string;
+	primary_unit_id: string;
+	product_status_type: string;
+	created_at: string;
+	created_by_id: string;
+	updated_at: string;
+	updated_by_id: string;
+	tb_product_info: ProductInfo;
+}
 
+export interface CategoryData {
+	item_group_name: string;
+	sub_category_name: string;
+	category_name: string;
+}
+
+export interface ProductInfo {
+	id: string;
+	product_id: string;
+	product_item_group_id: string;
+	is_ingredients: boolean;
+	price: string;
+	tax_type: string;
+	tax_rate: string;
+	price_deviation_limit: string;
+	info: {
+		attribute: {
+			label: string;
+			value: string;
+		}[];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		something: any[];
+	};
+	created_at: string;
+	created_by_id: string;
+	updated_at: string;
+	updated_by_id: string;
+}
 
 export type ProductInfoDto = {
-  price: string;
-  tax_type: string;
-  tax_rate: string;
-  price_deviation_limit: string;
-  info?: {
-    attribute: {
-      label?: string;
-      value?: string;
-    }[],
-  }
-}
+	price: string;
+	tax_type: string;
+	tax_rate: string;
+	price_deviation_limit: string;
+	info?: AttributesDTO;
+};
+export type PriceDTO = {
+	price: string;
+	tax_type: string;
+	tax_rate: string;
+	price_deviation_limit: string;
+};
+
+export type AttributesDTO = {
+	info: {
+		attribute: {
+			label?: string;
+			value?: string;
+		}[];
+	};
+};
+
 export interface ProductInfoClient {
-  data: {
-    id: string;
-    code: string;
-    name: string;
-    description: string;
-    tb_product_info?: ProductInfoDto;
-    product_status_type: string;
-  };
-  item_group_name: string;
-  sub_category_name: string;
-  category_name: string;
+	data: {
+		id: string;
+		code: string;
+		name: string;
+		description: string;
+		tb_product_info?: ProductInfoDto;
+		product_status_type: string;
+	};
+	name: string;
+	item_group_name: string;
+	sub_category_name: string;
+	category_name: string;
+	description: string;
+}
+
+export interface ProductModel {
+	data: ProductData;
+	item_group_name: string;
+	sub_category_name: string;
+	category_name: string;
 }

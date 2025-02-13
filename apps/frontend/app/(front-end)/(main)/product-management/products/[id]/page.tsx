@@ -9,7 +9,6 @@ import { toastError } from '@/components/ui-custom/Toast';
 import { useRouter } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Save, Pencil, Trash } from 'lucide-react';
-import BasicInfo from './components/tab/BasicInfo';
 import Inventory from './components/tab/Inventory';
 import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
@@ -17,28 +16,50 @@ import StockCountUnit from './components/tab/StockCountUnit';
 import EnvironmentImpact from './components/tab/EnvironmentImpact';
 import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
-import { ProductInfoClient, ProductInfoDto } from '@/dtos/product.dto';
+import {
+	AttributesDTO,
+	PriceDTO,
+	ProductModel,
+} from '@/dtos/product.dto';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import ProductAttributes from './components/tab/ProductAttributes';
+import PricingInformation from './components/tab/PricingInformation';
 type LocationData = {
 	id: string;
 	location_id: string;
 	location_name: string;
 	location_type: string;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateNestedObject = (obj: any, path: string, value: any): any => {
+	const keys = path.split('.');
+	let current = obj;
+
+	for (let i = 0; i < keys.length - 1; i++) {
+		const key = keys[i];
+		if (!current[key]) current[key] = {};
+		current = current[key];
+	}
+
+	current[keys[keys.length - 1]] = value;
+	return obj;
+};
+
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const router = useRouter();
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [product, setProduct] = useState<ProductInfoClient | null>(null);
+	const [product, setProduct] = useState<ProductModel | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
-	const API_URL = `/api/product-management/products/${params.id}`;
-
 	const [locations, setLocations] = useState<LocationData[]>([]);
 
-
 	useEffect(() => {
+		const API_URL = `/api/product-management/products/${params.id}`;
 		const loadProduct = async () => {
 			setLoading(true);
 			try {
@@ -64,54 +85,146 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		setIsEditing(false);
 	};
 
+	const handleChange = (path: string, value: string | number) => {
+		if (!product) return;
+
+		const updatedProduct = { ...product };
+
+		// Special handling for product attributes
+		if (path.includes('attribute')) {
+			const match = path.match(/attribute\[(\d+)\]\.(\w+)/);
+			if (match) {
+				const [, index, field] = match;
+				const attributes = [
+					...(updatedProduct.data.tb_product_info?.info?.attribute || []),
+				];
+
+				if (!updatedProduct.data.tb_product_info) {
+					updatedProduct.data.tb_product_info = {
+						id: '',
+						product_id: '',
+						product_item_group_id: '',
+						is_ingredients: false,
+						price: '',
+						tax_type: '',
+						tax_rate: '',
+						price_deviation_limit: '',
+						created_at: new Date().toISOString(),
+						created_by_id: '',
+						updated_at: new Date().toISOString(),
+						updated_by_id: '',
+						info: {
+							attribute: [],
+							something: [],
+						},
+					};
+				}
+
+				attributes[Number(index)] = {
+					...attributes[Number(index)],
+					[field]: value,
+				};
+
+				updatedProduct.data.tb_product_info.info.attribute = attributes;
+			}
+		} else {
+			// Handle other fields using the existing updateNestedObject function
+			return updateNestedObject({ ...product }, path, value);
+		}
+
+		setProduct(updatedProduct);
+		console.log('Updated path:', path, 'New value:', value);
+	};
+
+	const handleSave = () => {
+		console.log('Saving product data:', product);
+		setIsEditing(false);
+	};
+
 	if (loading) {
 		return (
-			<div className='m-4 space-y-4'>
+			<div className="m-4 space-y-4">
 				<Card>
 					<Skeleton className="h-[125px] w-full rounded-xl" />
 				</Card>
-				<div className='flex w-full gap-4'>
-					<Card className='w-1/2'>
+				<div className="flex w-full gap-4">
+					<Card className="w-1/2">
 						<Skeleton className="h-[500px] rounded-xl" />
 					</Card>
-					<Card className='w-1/2'>
+					<Card className="w-1/2">
 						<Skeleton className="h-[500px] rounded-xl" />
 					</Card>
 				</div>
 			</div>
-		)
+		);
 	}
 
-	const priceDetail: ProductInfoDto = {
+	const priceDetail: PriceDTO = {
 		price: product?.data.tb_product_info?.price || '',
 		tax_type: product?.data.tb_product_info?.tax_type || '',
 		tax_rate: product?.data.tb_product_info?.tax_rate || '',
-		price_deviation_limit: product?.data.tb_product_info?.price_deviation_limit || '',
+		price_deviation_limit:
+			product?.data.tb_product_info?.price_deviation_limit || '',
+	};
+
+	const dataAttributes: AttributesDTO = {
 		info: {
-			attribute: product?.data.tb_product_info?.info?.attribute?.map(item => ({
-				label: item?.label || 'No Label',
-				value: item?.value || 'No Value',
-			})) || [{
-				label: 'No Label',
-				value: 'No Value',
-			}]
-		}
-	}
+			attribute: product?.data.tb_product_info?.info?.attribute?.map(
+				(item) => ({
+					label: item?.label || 'No Label',
+					value: item?.value || 'No Value',
+				})
+			) || [
+					{
+						label: 'No Label',
+						value: 'No Value',
+					},
+				],
+		},
+	};
 
 	const content = (
 		<>
 			<Tabs defaultValue="basic">
 				<TabsList>
-					<TabsTrigger className='text-xs' value="basic">Basic Info</TabsTrigger>
-					<TabsTrigger className='text-xs' value="location">Location</TabsTrigger>
-					<TabsTrigger className='text-xs' value="inventory">Inventory</TabsTrigger>
-					<TabsTrigger className='text-xs' value="orderUnit">Order Unit</TabsTrigger>
-					<TabsTrigger className='text-xs' value="ingredientUnit">Ingredient Unit</TabsTrigger>
-					<TabsTrigger className='text-xs' value="stockCount">Stock Count</TabsTrigger>
-					<TabsTrigger className='text-xs' value="environment">Environmental Impact</TabsTrigger>
+					<TabsTrigger className="text-xs" value="basic">
+						Basic Info
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="location">
+						Location
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="orderUnit">
+						Order Unit
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="inventory">
+						Inventory
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="ingredientUnit">
+						Ingredient Unit
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="stockCount">
+						Stock Count
+					</TabsTrigger>
+					<TabsTrigger className="text-xs" value="environment">
+						Environmental Impact
+					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="basic">
-					<BasicInfo info={priceDetail} />
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+						<div className="space-y-4">
+							<ProductAttributes
+								info={dataAttributes}
+								isEditing={isEditing}
+								handleChange={handleChange}
+							/>
+							<PricingInformation
+								data={priceDetail}
+								isEditing={isEditing}
+								handleChange={handleChange}
+							/>
+						</div>
+					</div>
+
 				</TabsContent>
 				<TabsContent value="location">
 					<Location
@@ -122,11 +235,11 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 						setLocations={setLocations}
 					/>
 				</TabsContent>
-				<TabsContent value="inventory">
-					<Inventory />
-				</TabsContent>
 				<TabsContent value="orderUnit">
 					<OrderUnit />
+				</TabsContent>
+				<TabsContent value="inventory">
+					<Inventory />
 				</TabsContent>
 				<TabsContent value="ingredientUnit">
 					<IngredientUnit />
@@ -141,8 +254,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		</>
 	);
 
-
-
 	return (
 		<div className="container mx-auto py-4">
 			<div className="flex flex-col">
@@ -151,42 +262,48 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 						<CardContent className="py-4">
 							<div className="flex flex-col gap-4">
 								<div className="flex items-center justify-between">
-									<div className="flex flex-col">
+									<div className="flex flex-col gap-2">
 										<div className="flex items-center gap-2">
-											<div className="text-xl font-bold">
-												{product?.data.name}
-											</div>
+											{isEditing ? (
+												<Input
+													className="text-xl font-bold w-64"
+													value={product?.data.name || ''}
+													onChange={(e) =>
+														handleChange('data.name', e.target.value)
+													}
+												/>
+											) : (
+												<div className="text-xl font-bold">
+													{product?.data.name}
+												</div>
+											)}
 											<Badge>{product?.data.product_status_type}</Badge>
 										</div>
 										<p className="text-muted-foreground text-xs">
 											{product?.data.code}
 										</p>
 									</div>
-									<div className="flex items-center">
+									<div className="flex items-center gap-2">
 										{isEditing ? (
 											<>
-												<Button size={'sm'} variant={'ghost'}>
-													<Save />
+												<Button onClick={handleSave} size="sm" variant="ghost">
+													<Save className="h-4 w-4" />
 												</Button>
 												<Button
 													onClick={handleCancel}
 													variant="outline"
-													size={'sm'}
+													size="sm"
 												>
 													Cancel
 												</Button>
 											</>
 										) : (
 											<>
-												<Button
-													onClick={handleEdit}
-													size={'sm'}
-													variant={'ghost'}
-												>
-													<Pencil />
+												<Button onClick={handleEdit} size="sm" variant="ghost">
+													<Pencil className="h-4 w-4" />
 												</Button>
-												<Button size={'sm'} variant={'ghost'}>
-													<Trash />
+												<Button size="sm" variant="ghost">
+													<Trash className="h-4 w-4" />
 												</Button>
 											</>
 										)}
@@ -195,19 +312,59 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 								<div className="border-t grid grid-cols-3 gap-4 py-4 text-xs">
 									<div>
 										<p className="text-muted-foreground">Description</p>
-										<p>{product?.data.description}</p>
+										{isEditing ? (
+											<Textarea
+												className="min-h-[60px] text-xs"
+												value={product?.data.description || ''}
+												onChange={(e) =>
+													handleChange('data.description', e.target.value)
+												}
+											/>
+										) : (
+											<p>{product?.data.description}</p>
+										)}
 									</div>
 									<div>
 										<p className="text-muted-foreground">Category</p>
-										<p>{product?.category_name}</p>
+										{isEditing ? (
+											<Input
+												className="text-xs"
+												value={product?.category_name || ''}
+												onChange={(e) =>
+													handleChange('category_name', e.target.value)
+												}
+											/>
+										) : (
+											<p>{product?.category_name}</p>
+										)}
 									</div>
 									<div>
 										<p className="text-muted-foreground">Subcategory</p>
-										<p>{product?.sub_category_name}</p>
+										{isEditing ? (
+											<Input
+												className="text-xs"
+												value={product?.sub_category_name || ''}
+												onChange={(e) =>
+													handleChange('sub_category_name', e.target.value)
+												}
+											/>
+										) : (
+											<p>{product?.sub_category_name}</p>
+										)}
 									</div>
 									<div>
 										<p className="text-muted-foreground">Item Group</p>
-										<p>{product?.item_group_name}</p>
+										{isEditing ? (
+											<Input
+												className="text-xs"
+												value={product?.item_group_name || ''}
+												onChange={(e) =>
+													handleChange('item_group_name', e.target.value)
+												}
+											/>
+										) : (
+											<p>{product?.item_group_name}</p>
+										)}
 									</div>
 								</div>
 							</div>
