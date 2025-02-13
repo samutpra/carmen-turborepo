@@ -6,8 +6,6 @@ interface Props {
 }
 
 const BasicInfo: React.FC<Props> = ({ info }) => {
-	console.log('info', info);
-
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 			<div className="space-y-4">

@@ -19,7 +19,12 @@ import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
 import { ProductInfoClient, ProductInfoDto } from '@/dtos/product.dto';
 import { Skeleton } from '@/components/ui/skeleton';
-
+type LocationData = {
+	id: string;
+	location_id: string;
+	location_name: string;
+	location_type: string;
+};
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const router = useRouter();
 	const { accessToken } = useAuth();
@@ -29,6 +34,9 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const [loading, setLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 	const API_URL = `/api/product-management/products/${params.id}`;
+
+	const [locations, setLocations] = useState<LocationData[]>([]);
+
 
 	useEffect(() => {
 		const loadProduct = async () => {
@@ -106,7 +114,13 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 					<BasicInfo info={priceDetail} />
 				</TabsContent>
 				<TabsContent value="location">
-					<Location />
+					<Location
+						id={params.id}
+						token={token}
+						tenantId={tenantId}
+						locations={locations}
+						setLocations={setLocations}
+					/>
 				</TabsContent>
 				<TabsContent value="inventory">
 					<Inventory />
