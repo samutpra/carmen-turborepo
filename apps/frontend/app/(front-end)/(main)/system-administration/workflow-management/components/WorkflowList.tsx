@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	Table,
@@ -9,240 +9,340 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import Link from 'next/link';
-import {
-	PlusCircle,
-	Search,
-	ChevronLeft,
-	ChevronRight,
-	ChevronsLeft,
-	ChevronsRight,
-} from 'lucide-react';
 
-interface Workflow {
+import Link from 'next/link';
+import { Eye, PlusCircle } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
+import { useURL } from '@/hooks/useURL';
+import { fetchWorkflows } from '../../actions/workflow';
+import { toastError } from '@/components/ui-custom/Toast';
+import { statusOptions } from '@/lib/statusOptions';
+import {
+	Search,
+	status_text,
+	workflow,
+	session_expire,
+	fail_to_text,
+} from '@/paraglide/messages.js';
+import { Card, CardContent } from '@/components/ui/card';
+import RefreshToken from '@/components/RefreshToken';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import SearchForm from '@/components/ui-custom/SearchForm';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import { FieldConfig, SortDirection } from '@/lib/util/uiConfig';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import SortComponent from '@/components/ui-custom/SortComponent';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import * as m from '@/paraglide/messages.js';
+import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
+import { Badge } from '@/components/ui-custom/is-active-badge';
+
+interface WorkflowListProps {
 	id: string;
 	name: string;
 	type: string;
-	status: string;
+	is_active: string;
 	lastModified: string;
 }
 
-interface WorkflowListProps {
-	workflows: Workflow[];
+enum WorkflowField {
+	name = 'name',
+	type = 'type',
+	isActive = 'is_active',
+	lastModified = 'lastModified',
 }
 
-const WorkflowList: React.FC<WorkflowListProps> = ({
-	workflows,
-}: WorkflowListProps) => {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [typeFilter, setTypeFilter] = useState('all');
-	const [statusFilter, setStatusFilter] = useState('all');
-	const [currentPage, setCurrentPage] = useState(1);
-	const [mounted, setMounted] = useState(false);
-	const itemsPerPage = 10;
+const sortFields: FieldConfig<WorkflowListProps>[] = [
+	{ key: WorkflowField.name, label: `Name`, className: 'w-40' },
+	{ key: WorkflowField.type, label: `Type`, className: 'w-40' },
+	{
+		key: WorkflowField.isActive,
+		label: `${status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
+	{
+		key: WorkflowField.lastModified,
+		label: `Last Modified`,
+		className: 'w-40',
+	},
+];
 
-	// Set mounted state after component mounts
+const fields: FieldConfig<WorkflowListProps>[] = [...sortFields];
+
+interface SortButtonProps {
+	field: string;
+	label: string;
+	isActive: boolean;
+	direction: SortDirection;
+	onSort: (field: string) => void;
+}
+
+const SortButton: React.FC<SortButtonProps> = ({
+	field,
+	label,
+	isActive,
+	direction,
+	onSort,
+}) => (
+	<div className="flex items-center gap-1">
+		<span>{label}</span>
+		<Button
+			variant="ghost"
+			size="sm"
+			className="h-6 w-6 p-0"
+			onClick={() => onSort(field)}
+			aria-label={`Sort by ${label} ${isActive ? (direction === 'asc' ? 'descending' : 'ascending') : ''}`}
+		>
+			{isActive ? (
+				direction === 'asc' ? (
+					<ChevronUp className="h-4 w-4" />
+				) : (
+					<ChevronDown className="h-4 w-4" />
+				)
+			) : (
+				<div className="flex flex-col -space-y-2">
+					<ChevronUp className="h-3 w-3 opacity-50" />
+					<ChevronDown className="h-3 w-3 opacity-50" />
+				</div>
+			)}
+		</Button>
+	</div>
+);
+
+const renderFieldValue = (
+	field: FieldConfig<WorkflowListProps>,
+	wf: WorkflowListProps
+) => {
+	if (field.render) {
+		return field.render(wf[field.key], wf);
+	}
+
+	const value = wf[field.key];
+	switch (field.type) {
+		case 'badge':
+			if (typeof value === 'boolean') {
+				return (
+					<Badge variant={value ? 'default' : 'destructive'}>
+						{value ? `${m.status_active()}` : `${m.status_inactive()}`}
+					</Badge>
+				);
+			}
+			return <Badge>{String(value)}</Badge>;
+
+		default:
+			return (
+				<span className={`text-xs ${field.className || ''}`}>
+					{String(value)}
+				</span>
+			);
+	}
+};
+
+const WorkflowList = () => {
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+	const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
+	const [showRefreshToken, setShowRefreshToken] = useState(false);
+	const [sortField, setSortField] = useState<string | null>(null);
+	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+	const fetchList = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchWorkflows(token, tenantId, {
+				search,
+				status,
+				page,
+			});
+
+			setWorkflows(data.data);
+			setPage(data.pagination.page.toString());
+			setPages(data.pagination.pages.toString());
+			setShowRefreshToken(false);
+		} catch (err) {
+			if (err instanceof Error && err.message === 'Unauthorized') {
+				toastError({
+					message: 'Your session has expired. Please login again.',
+				});
+				setShowRefreshToken(true);
+				setWorkflows([]);
+			} else {
+				setError(err instanceof Error ? err.message : 'An error occurred');
+				toastError({ message: `${fail_to_text()}` });
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	useEffect(() => {
-		setMounted(true);
-	}, []);
+		fetchList();
+	}, [token, tenantId, search, status]);
 
-	const filteredWorkflows = useMemo(() => {
-		return workflows.filter((workflow) => {
-			const matchesSearch = workflow.name
-				.toLowerCase()
-				.includes(searchTerm.toLowerCase());
-			const matchesType = typeFilter === 'all' || workflow.type === typeFilter;
-			const matchesStatus =
-				statusFilter === 'all' || workflow.status === statusFilter;
-			return matchesSearch && matchesType && matchesStatus;
-		});
-	}, [workflows, searchTerm, typeFilter, statusFilter]);
+	useEffect(() => {
+		if (!sort) return;
 
-	const totalPages = Math.ceil(filteredWorkflows.length / itemsPerPage);
-	const paginatedWorkflows = filteredWorkflows.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
+		const [field, direction] = sort.split(':');
+		setSortField(field);
+		setSortDirection((direction as SortDirection) || 'asc');
+	}, [sort]);
+
+	const handleSort = (field: string) => {
+		const newDirection: SortDirection =
+			sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+
+		setSortField(field);
+		setSortDirection(newDirection);
+		setSort(`${field}:${newDirection}`);
+	};
+
+	if (showRefreshToken) {
+		return (
+			<Card
+				className="border-destructive w-full md:w-1/2"
+				data-id="currency-refresh-token-card"
+			>
+				<CardContent className="pt-6" data-id="currency-refresh-token-content">
+					<div
+						className="flex flex-col items-center gap-4"
+						data-id="currency-refresh-token-container"
+					>
+						<p className="text-destructive">{session_expire()}</p>
+						<RefreshToken />
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	if (error) {
+		return <ErrorCard message={error} data-id="workflow-error-card" />;
+	}
+
+	const actionButtons = (
+		<div className="flex items-center gap-2">
+			<Button asChild size="sm" data-id="workflow-list-new-workflow-button">
+				<Link
+					href="/system-administration/workflow-management/new"
+					data-id="workflow-list-new-workflow-button"
+				>
+					<PlusCircle className="h-4 w-4" />
+					New Workflow
+				</Link>
+			</Button>
+		</div>
 	);
 
-	const handlePageChange = (newPage: number) => {
-		setCurrentPage(newPage);
-	};
-
-	const formatDate = (dateString: string) => {
-		if (!mounted) return ''; // Return empty string if not mounted
-		return new Date(dateString).toLocaleString();
-	};
-
-	return (
-		<div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-			<div className="flex flex-col md:flex-row justify-between items-center mb-6">
-				<h1 className="text-3xl font-bold mb-4 md:mb-0">Workflows</h1>
-				<Button>
-					<PlusCircle className="mr-2 h-4 w-4" /> Create Workflow
-				</Button>
+	const filter = (
+		<div className="filter-container my-4" data-id="currency-filter-container">
+			<SearchForm
+				defaultValue={search}
+				onSearch={setSearch}
+				placeholder={`${Search()} ${workflow()}..`}
+				data-id="currency-search-form"
+			/>
+			<div className="all-center gap-2">
+				<StatusSearchDropdown
+					options={statusOptions}
+					value={status}
+					onChange={setStatus}
+					open={statusOpen}
+					onOpenChange={setStatusOpen}
+					data-id="workflow-status-search-dropdown"
+				/>
+				<SortComponent
+					fieldConfigs={sortFields}
+					sort={sort}
+					setSort={setSort}
+					data-id="workflow-list-sort-dropdown"
+				/>
 			</div>
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-				<div className="col-span-1 md:col-span-2">
-					<Label htmlFor="search" className="sr-only">
-						Search workflows
-					</Label>
-					<div className="relative">
-						<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-						<Input
-							id="search"
-							placeholder="Search workflows..."
-							className="pl-8"
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-						/>
-					</div>
-				</div>
-				<div>
-					<Label htmlFor="type-filter" className="sr-only">
-						Filter by type
-					</Label>
-					<Select value={typeFilter} onValueChange={setTypeFilter}>
-						<SelectTrigger id="type-filter">
-							<SelectValue placeholder="Filter by type" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="all">All Types</SelectItem>
-							<SelectItem value="Purchase Request">Purchase Request</SelectItem>
-							<SelectItem value="Store Requisition">
-								Store Requisition
-							</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-				<div>
-					<Label htmlFor="status-filter" className="sr-only">
-						Filter by status
-					</Label>
-					<Select value={statusFilter} onValueChange={setStatusFilter}>
-						<SelectTrigger id="status-filter">
-							<SelectValue placeholder="Filter by status" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="all">All Statuses</SelectItem>
-							<SelectItem value="Active">Active</SelectItem>
-							<SelectItem value="Inactive">Inactive</SelectItem>
-							<SelectItem value="Draft">Draft</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-			</div>
+		</div>
+	);
+
+	const content = (
+		<>
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>Name</TableHead>
-						<TableHead>Type</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Last Modified</TableHead>
-						<TableHead className="text-right">Actions</TableHead>
+						<TableHead className="w-[50px]">#</TableHead>
+						{fields.map((field) => (
+							<TableHead
+								key={field.key as string}
+								className={`text-xs ${field.className || ''}`}
+								style={{ width: field.width }}
+								align={field.align}
+							>
+								<SortButton
+									field={String(field.key)}
+									label={field.label}
+									isActive={sortField === field.key}
+									direction={sortDirection}
+									onSort={handleSort}
+								/>
+							</TableHead>
+						))}
+						<TableHead className="text-right">{m.action_text()}</TableHead>
 					</TableRow>
 				</TableHeader>
-				<TableBody>
-					{paginatedWorkflows.map((workflow) => (
-						<TableRow key={workflow.id}>
-							<TableCell className="font-medium">{workflow.name}</TableCell>
-							<TableCell>{workflow.type}</TableCell>
-							<TableCell>
-								<Badge
-									variant={
-										workflow.status === 'Active' ? 'default' : 'secondary'
-									}
-								>
-									{workflow.status}
-								</Badge>
-							</TableCell>
-							<TableCell>
-								{mounted ? formatDate(workflow.lastModified) : ''}
-							</TableCell>
-							<TableCell className="text-right">
-								<Button variant="ghost" asChild>
-									<Link
-										href={`/system-administration/workflow-management/${workflow.id}`}
+				{isLoading ? (
+					<TableBodySkeleton columns={fields.length} withAction />
+				) : (
+					<TableBody>
+						{workflows.map((w, index) => (
+							<TableRow key={w.id}>
+								<TableCell className="font-medium text-xs">
+									{index + 1}
+								</TableCell>
+								{fields.map((field) => (
+									<TableCell
+										key={field.key as string}
+										className={`text-xs ${field.className || ''}`}
+										align={field.align}
 									>
-										Edit
-									</Link>
-								</Button>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-			{filteredWorkflows.length === 0 ? (
-				<div className="text-center py-4 text-muted-foreground">
-					No workflows found matching the current filters.
-				</div>
-			) : (
-				<div className="flex items-center justify-between space-x-2 py-4">
-					<div className="text-sm text-muted-foreground">
-						Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
-						{Math.min(currentPage * itemsPerPage, filteredWorkflows.length)} of{' '}
-						{filteredWorkflows.length} workflows
-					</div>
-					<div className="flex items-center space-x-1">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => handlePageChange(1)}
-							disabled={currentPage === 1}
-						>
-							<ChevronsLeft className="h-4 w-4" />
-							<span className="sr-only">First page</span>
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => handlePageChange(currentPage - 1)}
-							disabled={currentPage === 1}
-						>
-							<ChevronLeft className="h-4 w-4" />
-							<span className="sr-only">Previous page</span>
-						</Button>
-						{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-							<Button
-								key={page}
-								variant={currentPage === page ? 'default' : 'outline'}
-								size="sm"
-								onClick={() => handlePageChange(page)}
-							>
-								{page}
-							</Button>
+										{renderFieldValue(field, w)}
+									</TableCell>
+								))}
+								<TableCell className="text-right">
+									<Button
+										asChild
+										variant="ghost"
+										size="sm"
+										aria-label={`View workflow ${w.id} details`}
+									>
+										<Link
+											href={`/system-administration/workflow-management/${w.id}`}
+										>
+											<Eye className="h-4 w-4" />
+										</Link>
+									</Button>
+								</TableCell>
+							</TableRow>
 						))}
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => handlePageChange(currentPage + 1)}
-							disabled={currentPage === totalPages}
-						>
-							<ChevronRight className="h-4 w-4" />
-							<span className="sr-only">Next page</span>
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => handlePageChange(totalPages)}
-							disabled={currentPage === totalPages}
-						>
-							<ChevronsRight className="h-4 w-4" />
-							<span className="sr-only">Last page</span>
-						</Button>
-					</div>
-				</div>
-			)}
-		</div>
+					</TableBody>
+				)}
+			</Table>
+		</>
+	);
+
+	return (
+		<DataDisplayTemplate
+			title="Workflow"
+			actionButtons={actionButtons}
+			filters={filter}
+			content={content}
+			data-id="workflow-list-data-display-template"
+		/>
 	);
 };
 

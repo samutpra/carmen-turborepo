@@ -82,7 +82,7 @@ export interface Workflow {
 	type: string;
 	description: string;
 	documentReferencePattern: string;
-	status: string;
+	is_active: boolean;
 	stages: Stage[];
 	routingRules: RoutingRule[];
 	notifications: WorkflowNotification[];

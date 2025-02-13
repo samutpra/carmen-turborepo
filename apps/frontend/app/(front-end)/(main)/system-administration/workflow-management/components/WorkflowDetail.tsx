@@ -60,8 +60,8 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ workflowId }) => {
 				onEditToggle={handleEditToggle}
 				onSave={handleSave}
 			/>
-			<Tabs defaultValue="general" className="space-y-4">
-				<TabsList>
+			<Tabs defaultValue="general">
+				<TabsList className="grid w-full grid-cols-4 mt-2">
 					<TabsTrigger value="general">General</TabsTrigger>
 					<TabsTrigger value="stages">Stages</TabsTrigger>
 					<TabsTrigger value="routing">Routing</TabsTrigger>
