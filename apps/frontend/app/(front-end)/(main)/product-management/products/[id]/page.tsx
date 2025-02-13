@@ -79,14 +79,15 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		tax_type: product?.data.tb_product_info?.tax_type || '',
 		tax_rate: product?.data.tb_product_info?.tax_rate || '',
 		price_deviation_limit: product?.data.tb_product_info?.price_deviation_limit || '',
-		info: product?.data.tb_product_info?.info?.map(item => ({
-			...item,  // คัดลอก properties ทั้งหมดจาก item
-			label: item?.label || 'No Label',  // กำหนดค่าเริ่มต้นให้ label
-			value: item?.value || 'No Value',  // กำหนดค่าเริ่มต้นให้ value
-		})) || [{
-			label: 'No Label',
-			value: 'No Value',
-		}]
+		info: {
+			attribute: product?.data.tb_product_info?.info?.attribute?.map(item => ({
+				label: item?.label || 'No Label',
+				value: item?.value || 'No Value',
+			})) || [{
+				label: 'No Label',
+				value: 'No Value',
+			}]
+		}
 	}
 
 	const content = (

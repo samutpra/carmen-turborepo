@@ -226,9 +226,11 @@ export type ProductInfoDto = {
   tax_rate: string;
   price_deviation_limit: string;
   info?: {
-    label: string;
-    value: string;
-  }[];
+    attribute: {
+      label?: string;
+      value?: string;
+    }[],
+  }
 }
 export interface ProductInfoClient {
   data: {

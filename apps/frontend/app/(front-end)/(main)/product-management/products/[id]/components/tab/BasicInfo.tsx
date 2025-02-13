@@ -16,9 +16,9 @@ const BasicInfo: React.FC<Props> = ({ info }) => {
 						<CardTitle>Product Attributes</CardTitle>
 					</CardHeader>
 					<CardContent className="grid gap-2 py-2">
-						{info?.info?.length ?? 0 > 0 ? (
+						{info?.info?.attribute.length ?? 0 > 0 ? (
 							<div className="grid grid-cols-2 gap-4">
-								{info?.info?.map((item, index) => (
+								{info?.info?.attribute.map((item, index) => (
 									<div key={index}>
 										<label className="text-xs font-medium text-muted-foreground">
 											{item.label}
