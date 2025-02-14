@@ -98,18 +98,19 @@ const IngredientUnit = () => {
 							<thead>
 								<tr className="text-xs text-gray-500 uppercase">
 									<th className="px-4 py-2 text-left bg-gray-50">
-										Ingredient Unit
+										Inventory Unit
 									</th>
-									<th className="px-4 py-2 text-right bg-gray-50">Factor</th>
-									<th className="px-4 py-2 text-left bg-gray-50">
-										Description
+
+									<th className="px-4 py-2 text-right bg-gray-50">
+										Conversion Factor
 									</th>
-									<th className="px-4 py-2 text-right bg-gray-50">Precision</th>
-									<th className="px-4 py-2 text-right bg-gray-50">Min Qty</th>
 									<th className="px-4 py-2 text-center bg-gray-50">
 										Recipe Default
 									</th>
 									<th className="px-4 py-2 text-right bg-gray-50">Actions</th>
+									<th className="px-4 py-2 text-left bg-gray-50">
+										Description
+									</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-200">
@@ -117,34 +118,19 @@ const IngredientUnit = () => {
 									<tr key={unit.ingredientUnit} className="hover:bg-gray-50">
 										<td className="px-4 py-3">
 											<span className="text-xs font-medium text-gray-900">
-												{unit.ingredientUnit}
+												1 KG
 											</span>
 										</td>
+
 										<td className="px-4 py-3">
 											<div className="flex items-center justify-end space-x-1">
 												<span className="text-xs tabular-nums text-right">
-													{unit.factor.toLocaleString()}
+													to 1000
 												</span>
-												<span className="text-xs text-gray-500">
-													{unit.ingredientUnit}/{productInfo.inventoryUnit}
-												</span>
+												<span className="text-xs text-gray-500">g</span>
 											</div>
 										</td>
-										<td className="px-4 py-3">
-											<span className="text-xs text-gray-500">
-												{unit.description}
-											</span>
-										</td>
-										<td className="px-4 py-3">
-											<span className="text-xs tabular-nums text-right block">
-												{unit.precision}
-											</span>
-										</td>
-										<td className="px-4 py-3">
-											<span className="text-xs tabular-nums text-right block">
-												{unit.minQty}
-											</span>
-										</td>
+
 										<td className="px-4 py-3 text-center">
 											<input
 												type="checkbox"
@@ -178,6 +164,11 @@ const IngredientUnit = () => {
 													</>
 												)}
 											</div>
+										</td>
+										<td className="px-4 py-3">
+											<span className="text-xs text-gray-500">
+												{unit.description}
+											</span>
 										</td>
 									</tr>
 								))}

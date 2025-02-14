@@ -12,26 +12,16 @@ import { Save, Pencil, Trash } from 'lucide-react';
 import Inventory from './components/tab/Inventory';
 import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
-import StockCountUnit from './components/tab/StockCountUnit';
-import EnvironmentImpact from './components/tab/EnvironmentImpact';
 import Location from './components/tab/Location';
 import { fetchData } from '@/app/(front-end)/services/client';
-import {
-	AttributesDTO,
-	PriceDTO,
-	ProductModel,
-} from '@/dtos/product.dto';
+import { AttributesDTO, PriceDTO, ProductModel } from '@/dtos/product.dto';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import ProductAttributes from './components/tab/ProductAttributes';
 import PricingInformation from './components/tab/PricingInformation';
-type LocationData = {
-	id: string;
-	location_id: string;
-	location_name: string;
-	location_type: string;
-};
+import { LocationChanges, LocationData } from '@/dtos/location.dto';
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateNestedObject = (obj: any, path: string, value: any): any => {
@@ -56,7 +46,12 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const [product, setProduct] = useState<ProductModel | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
-	const [locations, setLocations] = useState<LocationData[]>([]);
+	const [locations, setLocations] = useState<LocationChanges>({
+		add: [],
+		edit: [],
+		delete: []
+	});
+	const [originalLocations, setOriginalLocations] = useState<LocationData[]>([]);
 
 	useEffect(() => {
 		const API_URL = `/api/product-management/products/${params.id}`;
@@ -89,8 +84,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		if (!product) return;
 
 		const updatedProduct = { ...product };
-
-		// Special handling for product attributes
 		if (path.includes('attribute')) {
 			const match = path.match(/attribute\[(\d+)\]\.(\w+)/);
 			if (match) {
@@ -126,18 +119,19 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 				};
 
 				updatedProduct.data.tb_product_info.info.attribute = attributes;
+				setProduct(updatedProduct);
 			}
 		} else {
-			// Handle other fields using the existing updateNestedObject function
-			return updateNestedObject({ ...product }, path, value);
+			const updated = updateNestedObject({ ...product }, path, value);
+			setProduct(updated);
 		}
 
-		setProduct(updatedProduct);
 		console.log('Updated path:', path, 'New value:', value);
 	};
 
 	const handleSave = () => {
 		console.log('Saving product data:', product);
+		console.log('locations', locations);
 		setIsEditing(false);
 	};
 
@@ -196,17 +190,11 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 					<TabsTrigger className="text-xs" value="orderUnit">
 						Order Unit
 					</TabsTrigger>
-					<TabsTrigger className="text-xs" value="inventory">
-						Inventory
-					</TabsTrigger>
 					<TabsTrigger className="text-xs" value="ingredientUnit">
 						Ingredient Unit
 					</TabsTrigger>
-					<TabsTrigger className="text-xs" value="stockCount">
-						Stock Count
-					</TabsTrigger>
-					<TabsTrigger className="text-xs" value="environment">
-						Environmental Impact
+					<TabsTrigger className="text-xs" value="inventory">
+						Inventory
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="basic">
@@ -224,15 +212,16 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 							/>
 						</div>
 					</div>
-
 				</TabsContent>
 				<TabsContent value="location">
 					<Location
 						id={params.id}
 						token={token}
 						tenantId={tenantId}
-						locations={locations}
 						setLocations={setLocations}
+						isEdit={isEditing}
+						originalLocations={originalLocations}
+						setOriginalLocations={setOriginalLocations}
 					/>
 				</TabsContent>
 				<TabsContent value="orderUnit">
@@ -243,12 +232,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 				</TabsContent>
 				<TabsContent value="ingredientUnit">
 					<IngredientUnit />
-				</TabsContent>
-				<TabsContent value="stockCount">
-					<StockCountUnit />
-				</TabsContent>
-				<TabsContent value="environment">
-					<EnvironmentImpact />
 				</TabsContent>
 			</Tabs>
 		</>

@@ -42,18 +42,13 @@ import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
 import { fetchListDP } from '../actions/delivery_point';
 import DeliveryPointSelect from './DeliveryPointSelect ';
 import { StoreLocationField } from './StoreLocationList';
+import { locationField } from '@/lib/util/fields';
 
 interface StoreLocationDialogProps {
 	mode: formType;
 	defaultValues?: LocationCreateModel;
 	onSuccess: (values: LocationCreateModel) => void;
 }
-
-const locationField = [
-	{ label: 'Inventory', value: enum_location_type.inventory },
-	{ label: 'Direct', value: enum_location_type.direct },
-	{ label: 'Consignment', value: enum_location_type.consignment },
-]
 
 const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	mode,

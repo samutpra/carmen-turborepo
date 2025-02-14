@@ -13,6 +13,7 @@ export const GET = async (request: NextRequest) => {
 
 		const searchParams = request.nextUrl.searchParams;
 		const queryString = searchParams.toString();
+
 		const apiUrl = queryString
 			? `${API_URL}/v1/delivery-point?${queryString}`
 			: `${API_URL}/v1/delivery-point`;

@@ -96,3 +96,16 @@ export type LocationDto = {
 	created_at: Date;
 	updated_at: Date;
 };
+
+export type LocationData = {
+	id?: string;
+	location_id: string;
+	location_name: string;
+	location_type: string;
+};
+
+export interface LocationChanges {
+	add: { location_id: string }[];
+	edit: { location_id: string }[];
+	delete: { location_id: string }[];
+}

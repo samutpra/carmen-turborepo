@@ -93,13 +93,13 @@ const OrderUnit = () => {
 							<thead>
 								<tr className="text-xs text-gray-500 uppercase">
 									<th className="px-4 py-2 text-left bg-gray-50">Order Unit</th>
-									<th className="px-4 py-2 text-right bg-gray-50">Factor</th>
 									<th className="px-4 py-2 text-left bg-gray-50">
 										Description
 									</th>
-									<th className="px-4 py-2 text-right bg-gray-50">Weight</th>
-									<th className="px-4 py-2 text-left bg-gray-50">Dimensions</th>
-									<th className="px-4 py-2 text-left bg-gray-50">Barcode</th>
+									<th className="px-4 py-2 text-right bg-gray-50">
+										Conversion Factor{' '}
+									</th>
+
 									<th className="px-4 py-2 text-center bg-gray-50">Default</th>
 									<th className="px-4 py-2 text-right bg-gray-50">Actions</th>
 								</tr>
@@ -121,11 +121,6 @@ const OrderUnit = () => {
 													{productOrderUnit.inventoryUnit}
 												</span>
 											</div>
-										</td>
-										<td className="px-4 py-3">
-											<span className="text-xs text-gray-500">
-												{unit.description}
-											</span>
 										</td>
 										<td className="px-4 py-3">
 											<span className="text-xs tabular-nums text-right block">
