@@ -10,19 +10,18 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
-import LocationSkeleton from "@/components/ui-custom/Loading/LocationSkeleton";
 import { LocationChanges, LocationCreateModel, LocationData } from "@/dtos/location.dto";
-import { fetchLocationList, getLocations } from "../../../../actions/product";
+import { fetchLocationList } from "../../../../actions/product";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
-	id: string;
 	token: string;
 	tenantId: string;
 	setLocations: Dispatch<SetStateAction<LocationChanges>>;
 	isEdit: boolean;
 	setOriginalLocations: Dispatch<SetStateAction<LocationData[]>>;
 	originalLocations: LocationData[];
+	loading: boolean;
 }
 
 type State = {
@@ -64,23 +63,19 @@ const reducer = (state: State, action: Action) => {
 }
 
 const Location: React.FC<Props> = ({
-	id,
 	token,
 	tenantId,
 	setLocations,
 	isEdit,
 	originalLocations,
-	setOriginalLocations
+	setOriginalLocations,
+	loading
 }) => {
-	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [locationsList, setLocationsList] = useState<LocationCreateModel[]>([]);
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [newLocationId, setNewLocationId] = useState<string>("");
 	const [isAddingNew, setIsAddingNew] = useState(false);
-
-	console.log('originalLocations', originalLocations);
-	console.log('locationsList', locationsList);
 
 	useEffect(() => {
 		setLocations({
@@ -90,37 +85,17 @@ const Location: React.FC<Props> = ({
 		});
 	}, [state]);
 
-	useEffect(() => {
-		const fetchLocations = async () => {
-			if (!id || !token) {
-				setError("Missing required credentials");
-				setLoading(false);
-				return;
-			}
-			try {
-				await getLocations(id, token, tenantId, (data) => {
-					setOriginalLocations(data);
-				}, setLoading);
-			} catch (err: unknown) {
-				console.error("Failed to fetch locations:", err);
-				setError("Failed to fetch locations");
-				setLoading(false);
-			}
-		};
-		fetchLocations();
-	}, []);
+	console.log('originalLocations', originalLocations);
+
 
 	const handleFetchLocationList = async () => {
 		if (locationsList.length > 0) return;
-		setLoading(true);
 		try {
 			const data = await fetchLocationList(token, tenantId);
 			setLocationsList(data);
 		} catch (err: unknown) {
 			console.error("Failed to fetch location list:", err);
 			setError("Failed to fetch location data");
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -165,7 +140,7 @@ const Location: React.FC<Props> = ({
 		return locationsList.find((loc) => loc.id === selectedId);
 	};
 
-	if (loading) return <LocationSkeleton />;
+
 	if (error) {
 		return (
 			<div className="p-4 text-red-500 bg-red-50 rounded-md" role="alert">

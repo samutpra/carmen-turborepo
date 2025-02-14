@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import ProductAttributes from './components/tab/ProductAttributes';
 import PricingInformation from './components/tab/PricingInformation';
 import { LocationChanges, LocationData } from '@/dtos/location.dto';
+import { getLocations } from '../../actions/product';
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +45,8 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [product, setProduct] = useState<ProductModel | null>(null);
-	const [loading, setLoading] = useState(true);
+	const [productLoading, setProductLoading] = useState(true);
+	const [locationsLoading, setLocationsLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 	const [locations, setLocations] = useState<LocationChanges>({
 		add: [],
@@ -53,10 +55,12 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	});
 	const [originalLocations, setOriginalLocations] = useState<LocationData[]>([]);
 
+	console.log('form location', locations);
+
 	useEffect(() => {
 		const API_URL = `/api/product-management/products/${params.id}`;
 		const loadProduct = async () => {
-			setLoading(true);
+			setProductLoading(true); // Changed to setProductLoading
 			try {
 				const data = await fetchData(API_URL, token, tenantId);
 				setProduct(data.data);
@@ -65,12 +69,37 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 				toastError({ message: 'Failed to fetch product data' });
 				router.push('/product-management/products');
 			} finally {
-				setLoading(false);
+				setProductLoading(false); // Changed to setProductLoading
 			}
 		};
 
 		loadProduct();
 	}, [params.id, token]);
+
+	useEffect(() => {
+		const fetchLocations = async () => {
+			if (!params.id || !token) {
+				setLocationsLoading(false);
+				return;
+			}
+			setLocationsLoading(true); // Added loading state management
+			try {
+				await getLocations(
+					params.id,
+					token,
+					tenantId,
+					(data) => setOriginalLocations(data),
+				);
+			} catch (err: unknown) {
+				console.error("Failed to fetch locations:", err);
+			} finally {
+				setLocationsLoading(false);
+			}
+		};
+		fetchLocations();
+	}, [params.id, token, tenantId]);
+
+
 
 	const handleEdit = () => {
 		setIsEditing(true);
@@ -135,7 +164,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		setIsEditing(false);
 	};
 
-	if (loading) {
+	if (productLoading || locationsLoading) {
 		return (
 			<div className="m-4 space-y-4">
 				<Card>
@@ -215,13 +244,13 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 				</TabsContent>
 				<TabsContent value="location">
 					<Location
-						id={params.id}
 						token={token}
 						tenantId={tenantId}
 						setLocations={setLocations}
 						isEdit={isEditing}
 						originalLocations={originalLocations}
 						setOriginalLocations={setOriginalLocations}
+						loading={locationsLoading}
 					/>
 				</TabsContent>
 				<TabsContent value="orderUnit">

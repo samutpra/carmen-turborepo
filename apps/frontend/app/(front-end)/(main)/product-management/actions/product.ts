@@ -61,9 +61,7 @@ export const getLocations = async (
 	token: string,
 	tenantId: string,
 	setLocations: (data: LocationData[]) => void,
-	setLoading: (loading: boolean) => void
 ) => {
-	setLoading(true);
 	try {
 		const response = await fetchData(
 			`/api/product-management/products/location/${id}`,
@@ -74,8 +72,6 @@ export const getLocations = async (
 	} catch (err) {
 		console.error('Error fetching location:', err);
 		toastError({ message: 'Failed to fetch location data' });
-	} finally {
-		setLoading(false);
 	}
 };
 
