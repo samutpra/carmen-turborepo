@@ -31,7 +31,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 	const [product, setProduct] = useState<ProductModel>();
-	const [productLoading, setProductLoading] = useState(true);
+	const [productLoading, setProductLoading] = useState(false);
 	const [locationsLoading, setLocationsLoading] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 	const [locations, setLocations] = useState<LocationChanges>({
@@ -59,51 +59,44 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const [orderUnitLoading, setOrderUnitLoading] = useState(true);
 
 	useEffect(() => {
-		const getOrderUnit = async () => {
-			if (!params.id || !token || !tenantId) {
-				setOrderUnitLoading(false);
-				return;
-			}
+		if (!params.id || !token) return;
+
+		const fetchData = async () => {
 			setOrderUnitLoading(true);
+			setProductLoading(true);
+			setLocationsLoading(true);
+
 			try {
-				const data = await fetchOrderUnits(token, tenantId, params.id);
-				setOrderUnitList(data.data);
-			} catch (err: unknown) {
-				console.error('Failed to fetch order units:', err);
+				const [orderUnitsResult, productResult, locationsResult] =
+					await Promise.allSettled([
+						tenantId
+							? fetchOrderUnits(token, tenantId, params.id)
+							: Promise.resolve(null),
+						fetchProduct(params.id, token, tenantId),
+						tenantId
+							? getLocations(params.id, token, tenantId)
+							: Promise.resolve(null),
+					]);
+
+				if (orderUnitsResult.status === 'fulfilled' && orderUnitsResult.value) {
+					setOrderUnitList(orderUnitsResult.value.data);
+				}
+				if (productResult.status === 'fulfilled') {
+					setProduct(productResult.value);
+				}
+				if (locationsResult.status === 'fulfilled' && locationsResult.value) {
+					setOriginalLocations(locationsResult.value);
+				}
+			} catch (err) {
+				console.error('Failed to fetch data:', err);
 			} finally {
 				setOrderUnitLoading(false);
-			}
-		};
-
-		getOrderUnit();
-	}, [token, tenantId, params.id]);
-
-	useEffect(() => {
-		fetchProduct(
-			params.id,
-			token,
-			tenantId,
-		);
-	}, [params.id, token]);
-
-	useEffect(() => {
-		const fetchLocations = async () => {
-			if (!params.id || !token) {
-				setLocationsLoading(false);
-				return;
-			}
-			setLocationsLoading(true);
-			try {
-
-				const data = await getLocations(params.id, token, tenantId)
-				setOriginalLocations(data)
-			} catch (err: unknown) {
-				console.error('Failed to fetch locations:', err);
-			} finally {
+				setProductLoading(false);
 				setLocationsLoading(false);
 			}
 		};
-		fetchLocations();
+
+		fetchData();
 	}, [params.id, token, tenantId]);
 
 	const handleFetchLocationList = async () => {

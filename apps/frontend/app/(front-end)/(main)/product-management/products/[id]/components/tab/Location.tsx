@@ -20,6 +20,17 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { PRODUCT_ACTION } from '../../page';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Props {
 	isEdit: boolean;
@@ -170,7 +181,7 @@ const Location: React.FC<Props> = ({
 								{originalLocations.map(
 									({ location_id, location_name, location_type }) => (
 										<TableRow key={location_id} className="text-xs">
-											<TableCell className="px-0">
+											<TableCell className="px-2">
 												{isEdit &&
 												locationState.addedLocations.some(
 													(loc) => loc.location_id === location_id
@@ -247,15 +258,38 @@ const Location: React.FC<Props> = ({
 											</TableCell>
 											{isEdit && (
 												<TableCell>
-													<Button
-														variant="ghost"
-														size="sm"
-														onClick={() => handleDeleteRow(location_id)}
-														aria-label={`Delete ${location_name}`}
-														tabIndex={0}
-													>
-														<Trash />
-													</Button>
+													<AlertDialog>
+														<AlertDialogTrigger asChild>
+															<Button
+																variant="ghost"
+																size="sm"
+																aria-label={`Delete ${location_name}`}
+																tabIndex={0}
+															>
+																<Trash className="h-4 w-4" />
+															</Button>
+														</AlertDialogTrigger>
+														<AlertDialogContent>
+															<AlertDialogHeader>
+																<AlertDialogTitle>
+																	Are you sure?
+																</AlertDialogTitle>
+																<AlertDialogDescription>
+																	This will remove {location_name} from this
+																	product. This action cannot be undone.
+																</AlertDialogDescription>
+															</AlertDialogHeader>
+															<AlertDialogFooter>
+																<AlertDialogCancel>Cancel</AlertDialogCancel>
+																<AlertDialogAction
+																	onClick={() => handleDeleteRow(location_id)}
+																	className="bg-red-600 hover:bg-red-700"
+																>
+																	Delete
+																</AlertDialogAction>
+															</AlertDialogFooter>
+														</AlertDialogContent>
+													</AlertDialog>
 												</TableCell>
 											)}
 										</TableRow>

@@ -1,20 +1,28 @@
-import { fetchData } from '@/app/(front-end)/services/client';
-
 export const fetchProduct = async (
 	productId: string,
 	token: string,
 	tenantId: string
 ) => {
-	const API_URL = `/api/product-management/products/${productId}`;
-
 	try {
-		const response = await fetchData(API_URL, token, tenantId);
-		return {
-			data: response.data,
-			status: 200
+		const url = `/api/product-management/products/${productId}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
 		};
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error('Failed to fetch delivery points');
+		}
+		const data = await response.json();
+		return data.data;
 	} catch (error) {
-		throw new Error(error instanceof Error ? error.message : 'Failed to fetch product data');
+		throw new Error(
+			error instanceof Error ? error.message : 'Failed to fetch product data'
+		);
 	}
 };
 
