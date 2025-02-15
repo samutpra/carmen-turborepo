@@ -9,7 +9,7 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
+import { Plus, Trash } from 'lucide-react';
 import { LocationCreateModel, LocationData } from '@/dtos/location.dto';
 import {
 	Select,
@@ -136,20 +136,21 @@ const Location: React.FC<Props> = ({
 	return (
 		<Card>
 			<CardContent className="p-6">
-				<div className="flex justify-between items-center mb-4">
-					<h2 className="text-xl font-semibold">Locations</h2>
+				<div className="flex justify-between items-center">
+					<h2 className="text-base font-semibold px-2 mb-2">Locations</h2>
 					{isEdit && (
 						<Button
 							onClick={handleAddRow}
-							size="sm"
+							size={'sm'}
 							aria-label="Add new location"
 							className="text-xs"
+							variant={'ghost'}
 						>
-							Add Location
+							<Plus />
 						</Button>
 					)}
 				</div>
-				<Table>
+				<Table className="p-4">
 					<TableHeader>
 						<TableRow>
 							<TableHead className="w-[10rem]">Location Name</TableHead>
@@ -169,7 +170,7 @@ const Location: React.FC<Props> = ({
 								{originalLocations.map(
 									({ location_id, location_name, location_type }) => (
 										<TableRow key={location_id} className="text-xs">
-											<TableCell>
+											<TableCell className="px-0">
 												{isEdit &&
 												locationState.addedLocations.some(
 													(loc) => loc.location_id === location_id
@@ -241,7 +242,9 @@ const Location: React.FC<Props> = ({
 													<span>{location_name}</span>
 												)}
 											</TableCell>
-											<TableCell>{location_type.toUpperCase()}</TableCell>
+											<TableCell className="px-0">
+												{location_type.toUpperCase()}
+											</TableCell>
 											{isEdit && (
 												<TableCell>
 													<Button
