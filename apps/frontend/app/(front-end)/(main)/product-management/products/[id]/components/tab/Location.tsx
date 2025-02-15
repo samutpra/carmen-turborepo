@@ -135,7 +135,7 @@ const Location: React.FC<Props> = ({
 
 	return (
 		<Card>
-			<CardContent className="p-6">
+			<CardContent className="p-4">
 				<div className="flex justify-between items-center">
 					<h2 className="text-base font-semibold px-2 mb-2">Locations</h2>
 					{isEdit && (
