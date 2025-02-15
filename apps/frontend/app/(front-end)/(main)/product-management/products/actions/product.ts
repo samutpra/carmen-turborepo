@@ -1,25 +1,20 @@
 import { fetchData } from '@/app/(front-end)/services/client';
-import { ProductModel } from '@/dtos/product.dto';
 
 export const fetchProduct = async (
-	params: { id: string },
+	productId: string,
 	token: string,
-	tenantId: string,
-	setProduct: (data: ProductModel) => void,
-	setProductLoading: (loading: boolean) => void,
-	toastError: (config: { message: string }) => void
+	tenantId: string
 ) => {
-	const API_URL = `/api/product-management/products/${params.id}`;
-	setProductLoading(true);
+	const API_URL = `/api/product-management/products/${productId}`;
 
 	try {
-		const data = await fetchData(API_URL, token, tenantId);
-		setProduct(data.data);
-	} catch (err: unknown) {
-		console.log('error: ', err);
-		toastError({ message: 'Failed to fetch product data' });
-	} finally {
-		setProductLoading(false);
+		const response = await fetchData(API_URL, token, tenantId);
+		return {
+			data: response.data,
+			status: 200
+		};
+	} catch (error) {
+		throw new Error(error instanceof Error ? error.message : 'Failed to fetch product data');
 	}
 };
 
@@ -45,6 +40,33 @@ export const fetchLocationList = async (token: string, tenantId: string) => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching delivery points:', error);
+		throw error;
+	}
+};
+
+export const fetchOrderUnits = async (
+	token: string,
+	tenantId: string,
+	id: string
+) => {
+	try {
+		const url = `/api/product-management/products/order-unit/${id}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error('Failed to fetch order units');
+		}
+		const data = await response.json();
+		return data.orders;
+	} catch (error) {
+		console.error('Error fetching order units:', error);
 		throw error;
 	}
 };

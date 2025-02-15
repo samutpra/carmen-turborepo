@@ -1,6 +1,5 @@
 import { fetchData } from '@/app/(front-end)/services/client';
 import { toastError } from '@/components/ui-custom/Toast';
-import { LocationData } from '@/dtos/location.dto';
 
 export const fetchProducts = async (
 	token: string,
@@ -60,7 +59,6 @@ export const getLocations = async (
 	id: string,
 	token: string,
 	tenantId: string,
-	setLocations: (data: LocationData[]) => void,
 ) => {
 	try {
 		const response = await fetchData(
@@ -68,7 +66,7 @@ export const getLocations = async (
 			token,
 			tenantId
 		);
-		setLocations(response.data.data || []);
+		return response.data.data
 	} catch (err) {
 		console.error('Error fetching location:', err);
 		toastError({ message: 'Failed to fetch location data' });

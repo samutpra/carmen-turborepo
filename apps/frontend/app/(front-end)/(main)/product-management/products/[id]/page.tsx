@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toastError } from '@/components/ui-custom/Toast';
 import Inventory from './components/tab/Inventory';
 import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
@@ -15,30 +14,17 @@ import { LocationChanges, LocationData } from '@/dtos/location.dto';
 import { getLocations } from '../../actions/product';
 import { fetchLocationList } from '../../actions/product';
 import { LocationCreateModel } from '@/dtos/location.dto';
-import { fetchProduct } from '../actions/product';
+import { fetchOrderUnits, fetchProduct } from '../actions/product';
 import ProductInfoHeader from './components/ProductInfoHeader';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
+import { OrderUnitModel } from '@/dtos/order-unit.dto';
+import { updateNestedObject } from '@/lib/util/updateNestedObject';
 
 export const enum PRODUCT_ACTION {
 	ADD,
 	EDIT,
 	DELETE,
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const updateNestedObject = (obj: any, path: string, value: any): any => {
-	const keys = path.split('.');
-	let current = obj;
-
-	for (let i = 0; i < keys.length - 1; i++) {
-		const key = keys[i];
-		if (!current[key]) current[key] = {};
-		current = current[key];
-	}
-
-	current[keys[keys.length - 1]] = value;
-	return obj;
-};
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const { accessToken } = useAuth();
@@ -69,15 +55,34 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		editedLocations: [],
 		deletedLocations: [],
 	});
+	const [orderUnitsList, setOrderUnitList] = useState<OrderUnitModel[]>([]);
+	const [orderUnitLoading, setOrderUnitLoading] = useState(true);
+
+	useEffect(() => {
+		const getOrderUnit = async () => {
+			if (!params.id || !token || !tenantId) {
+				setOrderUnitLoading(false);
+				return;
+			}
+			setOrderUnitLoading(true);
+			try {
+				const data = await fetchOrderUnits(token, tenantId, params.id);
+				setOrderUnitList(data.data);
+			} catch (err: unknown) {
+				console.error('Failed to fetch order units:', err);
+			} finally {
+				setOrderUnitLoading(false);
+			}
+		};
+
+		getOrderUnit();
+	}, [token, tenantId, params.id]);
 
 	useEffect(() => {
 		fetchProduct(
-			params,
+			params.id,
 			token,
 			tenantId,
-			setProduct,
-			setProductLoading,
-			toastError
 		);
 	}, [params.id, token]);
 
@@ -89,9 +94,9 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 			}
 			setLocationsLoading(true);
 			try {
-				await getLocations(params.id, token, tenantId, (data) =>
-					setOriginalLocations(data)
-				);
+
+				const data = await getLocations(params.id, token, tenantId)
+				setOriginalLocations(data)
 			} catch (err: unknown) {
 				console.error('Failed to fetch locations:', err);
 			} finally {
@@ -300,7 +305,15 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		{
 			label: 'Order Unit',
 			value: 'orderUnit',
-			content: <OrderUnit />,
+			content: (
+				<OrderUnit
+					isEdit={isEditing}
+					productCode={product?.data.code || ''}
+					productName={product?.data.name || ''}
+					orderUnitList={orderUnitsList}
+					loading={orderUnitLoading}
+				/>
+			),
 		},
 		{
 			label: 'Ingredient Unit',
