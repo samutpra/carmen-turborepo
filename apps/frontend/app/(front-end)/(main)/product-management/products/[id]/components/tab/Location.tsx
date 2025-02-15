@@ -1,5 +1,5 @@
-import React, { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { Dispatch, SetStateAction } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import {
 	Table,
 	TableBody,
@@ -7,101 +7,67 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
-import { LocationChanges, LocationCreateModel, LocationData } from "@/dtos/location.dto";
-import { fetchLocationList } from "../../../../actions/product";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Trash } from 'lucide-react';
+import { LocationCreateModel, LocationData } from '@/dtos/location.dto';
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import { PRODUCT_ACTION } from '../../page';
 
 interface Props {
-	token: string;
-	tenantId: string;
-	setLocations: Dispatch<SetStateAction<LocationChanges>>;
 	isEdit: boolean;
 	setOriginalLocations: Dispatch<SetStateAction<LocationData[]>>;
 	originalLocations: LocationData[];
 	loading: boolean;
-}
-
-type State = {
-	addedLocations: { location_id: string }[];
-	editedLocations: { location_id: string }[];
-	deletedLocations: { location_id: string }[];
-};
-
-type Action =
-	| { type: "ADD"; payload: { location_id: string } }
-	| { type: "EDIT"; payload: { location_id: string } }
-	| { type: "DELETE"; payload: { location_id: string } };
-
-const initialState: State = {
-	addedLocations: [],
-	editedLocations: [],
-	deletedLocations: [],
-};
-
-const reducer = (state: State, action: Action) => {
-	switch (action.type) {
-		case "ADD":
-			return { ...state, addedLocations: [...state.addedLocations, action.payload] };
-		case "EDIT":
-			if (!state.editedLocations.some(loc => loc.location_id === action.payload.location_id)) {
-				return { ...state, editedLocations: [...state.editedLocations, action.payload] };
-			}
-			return state;
-		case "DELETE":
-			return {
-				...state,
-				addedLocations: state.addedLocations.filter(loc => loc.location_id !== action.payload.location_id),
-				editedLocations: state.editedLocations.filter(loc => loc.location_id !== action.payload.location_id),
-				deletedLocations: [...state.deletedLocations, action.payload],
-			};
-		default:
-			return state;
-	}
+	locationsList: LocationCreateModel[];
+	isAddingNew: boolean;
+	setIsAddingNew: Dispatch<SetStateAction<boolean>>;
+	newLocationId: string;
+	setNewLocationId: Dispatch<SetStateAction<string>>;
+	locationError: string | null;
+	setLocationError: Dispatch<SetStateAction<string | null>>;
+	handleFetchLocationList: () => Promise<void>;
+	locationState: {
+		addedLocations: { location_id: string }[];
+		editedLocations: { location_id: string }[];
+		deletedLocations: { location_id: string }[];
+	};
+	onLocationStateChange: (action: {
+		type: PRODUCT_ACTION;
+		payload: { location_id: string };
+	}) => void;
 }
 
 const Location: React.FC<Props> = ({
-	token,
-	tenantId,
-	setLocations,
 	isEdit,
 	originalLocations,
 	setOriginalLocations,
-	loading
+	loading,
+	locationsList,
+	isAddingNew,
+	setIsAddingNew,
+	newLocationId,
+	setNewLocationId,
+	locationError: error,
+	setLocationError: setError,
+	handleFetchLocationList,
+	locationState,
+	onLocationStateChange,
 }) => {
-	const [error, setError] = useState<string | null>(null);
-	const [locationsList, setLocationsList] = useState<LocationCreateModel[]>([]);
-	const [state, dispatch] = useReducer(reducer, initialState);
-	const [newLocationId, setNewLocationId] = useState<string>("");
-	const [isAddingNew, setIsAddingNew] = useState(false);
-
-	useEffect(() => {
-		setLocations({
-			add: state.addedLocations,
-			edit: state.editedLocations,
-			delete: state.deletedLocations,
-		});
-	}, [state]);
-
-	console.log('originalLocations', originalLocations);
-
-
-	const handleFetchLocationList = async () => {
-		if (locationsList.length > 0) return;
-		try {
-			const data = await fetchLocationList(token, tenantId);
-			setLocationsList(data);
-		} catch (err: unknown) {
-			console.error("Failed to fetch location list:", err);
-			setError("Failed to fetch location data");
-		}
-	};
-
-	const handleSelectOpen = (open: boolean) => {
-		if (open && locationsList.length === 0) {
-			handleFetchLocationList();
+	const handleSelectOpen = async (open: boolean) => {
+		if (open) {
+			try {
+				await handleFetchLocationList();
+			} catch (err) {
+				console.error('Error in handleSelectOpen:', err);
+			}
 		}
 	};
 
@@ -113,38 +79,56 @@ const Location: React.FC<Props> = ({
 	const handleConfirmAdd = (selectedId: string) => {
 		const selectedLocation = findLocationById(selectedId);
 		if (!selectedLocation) {
-			setError("Selected location not found");
+			setError('Selected location not found');
 			return;
 		}
 
 		const newRow: LocationData = {
-			location_id: selectedLocation.id ?? "",
-			location_name: selectedLocation.name ?? "",
-			location_type: selectedLocation.location_type ?? "",
+			location_id: selectedLocation.id ?? '',
+			location_name: selectedLocation.name ?? '',
+			location_type: selectedLocation.location_type ?? '',
 		};
 
-		setOriginalLocations(prev => [...prev, newRow]);
-		dispatch({ type: "ADD", payload: { location_id: newRow.location_id } });
+		setOriginalLocations((prev) => [...prev, newRow]);
+		onLocationStateChange({
+			type: PRODUCT_ACTION.ADD,
+			payload: { location_id: newRow.location_id },
+		});
 		setIsAddingNew(false);
-		setNewLocationId("");
+		setNewLocationId('');
 		setError(null);
 	};
 
 	const handleDeleteRow = (locationId: string) => {
-		const updatedLocations = originalLocations.filter((loc) => loc.location_id !== locationId);
+		const updatedLocations = originalLocations.filter(
+			(loc) => loc.location_id !== locationId
+		);
 		setOriginalLocations(updatedLocations);
-		dispatch({ type: "DELETE", payload: { location_id: locationId } });
+		onLocationStateChange({
+			type: PRODUCT_ACTION.DELETE,
+			payload: { location_id: locationId },
+		});
 	};
 
 	const findLocationById = (selectedId: string) => {
 		return locationsList.find((loc) => loc.id === selectedId);
 	};
 
-
 	if (error) {
 		return (
 			<div className="p-4 text-red-500 bg-red-50 rounded-md" role="alert">
-				{error}
+				<p>{error}</p>
+				<Button
+					onClick={() => {
+						setError(null);
+						handleFetchLocationList();
+					}}
+					variant="ghost"
+					size="sm"
+					className="mt-2"
+				>
+					Retry
+				</Button>
 			</div>
 		);
 	}
@@ -182,86 +166,107 @@ const Location: React.FC<Props> = ({
 							</TableRow>
 						) : (
 							<>
-								{originalLocations.map(({ location_id, location_name, location_type }) => (
-									<TableRow key={location_id} className="text-xs">
-										<TableCell>
-											{isEdit && state.addedLocations.some((loc) => loc.location_id === location_id) ? (
-												<Select
-													defaultValue={location_id} // เพิ่ม defaultValue
-													onValueChange={(value) => {
-														const selectedLoc = locationsList.find(loc => loc.id === value);
-														if (selectedLoc) {
-															const updatedLocations = originalLocations.map((loc) =>
-																loc.location_id === location_id
-																	? {
-																		...loc,
-																		location_id: selectedLoc.id ?? "",
-																		location_name: selectedLoc.name ?? "",
-																		location_type: selectedLoc.location_type ?? ""
-																	}
-																	: loc
-															);
-															setOriginalLocations(updatedLocations);
-															dispatch({ type: "EDIT", payload: { location_id: selectedLoc.id ?? "" } });
-														}
-													}}
-													onOpenChange={handleSelectOpen}
-												>
-													<SelectTrigger className="w-full h-8">
-														<SelectValue>
-															{locationsList.find(loc => loc.id === location_id)?.name || location_name}
-														</SelectValue>
-													</SelectTrigger>
-													<SelectContent>
-														<SelectGroup>
-															{loading ? (
-																<SelectItem value="" disabled>
-																	Loading...
-																</SelectItem>
-															) : error ? (
-																<SelectItem value="" disabled>
-																	{error}
-																</SelectItem>
-															) : (
-																locationsList.map((location) => (
-																	<SelectItem
-																		key={location.id ?? ""}
-																		value={location.id ?? ""}
-																	>
-																		{location.name}
-																	</SelectItem>
-																))
-															)}
-														</SelectGroup>
-													</SelectContent>
-												</Select>
-											) : (
-												<span>{location_name}</span>
-											)}
-										</TableCell>
-										<TableCell>{location_type.toUpperCase()}</TableCell>
-										{isEdit && (
+								{originalLocations.map(
+									({ location_id, location_name, location_type }) => (
+										<TableRow key={location_id} className="text-xs">
 											<TableCell>
-												<Button
-													variant="ghost"
-													size="sm"
-													onClick={() => handleDeleteRow(location_id)}
-													aria-label={`Delete ${location_name}`}
-													tabIndex={0}
-												>
-													<Trash />
-												</Button>
+												{isEdit &&
+												locationState.addedLocations.some(
+													(loc) => loc.location_id === location_id
+												) ? (
+													<Select
+														defaultValue={location_id || undefined}
+														onValueChange={(value) => {
+															const selectedLoc = locationsList.find(
+																(loc) => loc.id === value
+															);
+															if (selectedLoc) {
+																const updatedLocations = originalLocations.map(
+																	(loc) =>
+																		loc.location_id === location_id
+																			? {
+																					...loc,
+																					location_id:
+																						selectedLoc.id || 'default',
+																					location_name:
+																						selectedLoc.name || 'Unknown',
+																					location_type:
+																						selectedLoc.location_type ||
+																						'default',
+																				}
+																			: loc
+																);
+																setOriginalLocations(updatedLocations);
+																onLocationStateChange({
+																	type: PRODUCT_ACTION.EDIT,
+																	payload: {
+																		location_id: selectedLoc.id || 'default',
+																	},
+																});
+															}
+														}}
+														onOpenChange={handleSelectOpen}
+													>
+														<SelectTrigger className="w-full h-8">
+															<SelectValue placeholder="Select location">
+																{locationsList.find(
+																	(loc) => loc.id === location_id
+																)?.name || location_name}
+															</SelectValue>
+														</SelectTrigger>
+														<SelectContent>
+															<SelectGroup>
+																{loading ? (
+																	<SelectItem value="loading" disabled>
+																		Loading locations...
+																	</SelectItem>
+																) : error ? (
+																	<SelectItem value="error" disabled>
+																		{error}
+																	</SelectItem>
+																) : (
+																	locationsList.map((location) => (
+																		<SelectItem
+																			key={location.id}
+																			value={location.id || 'default'}
+																		>
+																			{location.name || 'Unnamed Location'}
+																		</SelectItem>
+																	))
+																)}
+															</SelectGroup>
+														</SelectContent>
+													</Select>
+												) : (
+													<span>{location_name}</span>
+												)}
 											</TableCell>
-										)}
-									</TableRow>
-								))}
+											<TableCell>{location_type.toUpperCase()}</TableCell>
+											{isEdit && (
+												<TableCell>
+													<Button
+														variant="ghost"
+														size="sm"
+														onClick={() => handleDeleteRow(location_id)}
+														aria-label={`Delete ${location_name}`}
+														tabIndex={0}
+													>
+														<Trash />
+													</Button>
+												</TableCell>
+											)}
+										</TableRow>
+									)
+								)}
 								{isAddingNew && (
 									<TableRow>
 										<TableCell>
 											<Select
-												value={newLocationId}
+												value={newLocationId || undefined}
 												onValueChange={handleConfirmAdd}
-												onOpenChange={(open) => open && handleFetchLocationList()}
+												onOpenChange={(open) =>
+													open && handleFetchLocationList()
+												}
 											>
 												<SelectTrigger className="w-full h-8">
 													<SelectValue placeholder="Select location" />
@@ -269,23 +274,28 @@ const Location: React.FC<Props> = ({
 												<SelectContent>
 													<SelectGroup>
 														{loading ? (
-															<SelectItem value="" disabled>
-																Loading...
+															<SelectItem value="loading" disabled>
+																Loading locations...
 															</SelectItem>
 														) : error ? (
-															<SelectItem value="" disabled>
+															<SelectItem value="error" disabled>
 																{error}
 															</SelectItem>
 														) : (
 															locationsList
-																.filter(location =>
-																	!originalLocations.some(
-																		existingLoc => existingLoc.location_id === location.id
-																	)
+																.filter(
+																	(location) =>
+																		!originalLocations.some(
+																			(existingLoc) =>
+																				existingLoc.location_id === location.id
+																		)
 																)
 																.map((location) => (
-																	<SelectItem key={location.id ?? ""} value={location.id ?? ""}>
-																		{location.name}
+																	<SelectItem
+																		key={location.id}
+																		value={location.id || 'default'}
+																	>
+																		{location.name || 'Unnamed Location'}
 																	</SelectItem>
 																))
 														)}
