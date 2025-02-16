@@ -13,6 +13,7 @@ import OrderUnits from './OrderUnits';
 import CountUnits from './CountUnits';
 import { Save } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
+import { PD_STATUS } from '@/lib/util/status';
 
 export default function ProductForm() {
 	const { accessToken } = useAuth();
@@ -33,7 +34,7 @@ export default function ProductForm() {
 			tax_rate: 7,
 			is_ingredients: false,
 			price_deviation_limit: 20,
-			product_status_type: 'active',
+			product_status_type: PD_STATUS.ACTIVE,
 			info: [{ attribute: [] }],
 			locations: { add: [] },
 			orderUnits: { add: [] },

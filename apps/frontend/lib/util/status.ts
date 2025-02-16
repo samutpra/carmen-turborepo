@@ -1,6 +1,12 @@
+export const enum PD_STATUS {
+	ACTIVE = 'active',
+	IN_ACTIVE = 'inactive',
+	DISCONTINUED = 'discontinued',
+}
+
 export const enum PRODUCT_STATUS_FILTER {
-    ALL_STATUS = '',
-    ACTIVE = 'active',
-    IN_ACTIVE = 'inactive',
-    DISCONTINUED = 'discontinued'
+	ALL_STATUS = '',
+	ACTIVE = PD_STATUS.ACTIVE,
+	IN_ACTIVE = PD_STATUS.IN_ACTIVE,
+	DISCONTINUED = PD_STATUS.DISCONTINUED,
 }
