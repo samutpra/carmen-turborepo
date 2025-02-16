@@ -201,91 +201,173 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
 }
 
 export interface ProductData {
-	id: string;
-	code: string;
-	name: string;
-	local_name: string;
-	description: string;
-	primary_unit_id: string;
-	product_status_type: string;
-	created_at: string;
-	created_by_id: string;
-	updated_at: string;
-	updated_by_id: string;
-	tb_product_info: ProductInfo;
+  id: string;
+  code: string;
+  name: string;
+  local_name: string;
+  description: string;
+  primary_unit_id: string;
+  product_status_type: string;
+  created_at: string;
+  created_by_id: string;
+  updated_at: string;
+  updated_by_id: string;
+  tb_product_info: ProductInfo;
 }
 
 export interface CategoryData {
-	item_group_name: string;
-	sub_category_name: string;
-	category_name: string;
+  item_group_name: string;
+  sub_category_name: string;
+  category_name: string;
 }
 
 export interface ProductInfo {
-	id: string;
-	product_id: string;
-	product_item_group_id: string;
-	is_ingredients: boolean;
-	price: string;
-	tax_type: string;
-	tax_rate: string;
-	price_deviation_limit: string;
-	info: {
-		attribute: {
-			label: string;
-			value: string;
-		}[];
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		something: any[];
-	};
-	created_at: string;
-	created_by_id: string;
-	updated_at: string;
-	updated_by_id: string;
+  id: string;
+  product_id: string;
+  product_item_group_id: string;
+  is_ingredients: boolean;
+  price: string;
+  tax_type: string;
+  tax_rate: string;
+  price_deviation_limit: string;
+  info: {
+    attribute: {
+      label: string;
+      value: string;
+    }[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    something: any[];
+  };
+  created_at: string;
+  created_by_id: string;
+  updated_at: string;
+  updated_by_id: string;
 }
 
 export type ProductInfoDto = {
-	price: string;
-	tax_type: string;
-	tax_rate: string;
-	price_deviation_limit: string;
-	info?: AttributesDTO;
+  price: string;
+  tax_type: string;
+  tax_rate: string;
+  price_deviation_limit: string;
+  info?: AttributesDTO;
 };
 export type PriceDTO = {
-	price: string;
-	tax_type: string;
-	tax_rate: string;
-	price_deviation_limit: string;
+  price: string;
+  tax_type: string;
+  tax_rate: string;
+  price_deviation_limit: string;
 };
 
 export type AttributesDTO = {
-	info: {
-		attribute: {
-			label?: string;
-			value?: string;
-		}[];
-	};
+  info: {
+    attribute: {
+      label?: string;
+      value?: string;
+    }[];
+  };
 };
 
 export interface ProductInfoClient {
-	data: {
-		id: string;
-		code: string;
-		name: string;
-		description: string;
-		tb_product_info?: ProductInfoDto;
-		product_status_type: string;
-	};
-	name: string;
-	item_group_name: string;
-	sub_category_name: string;
-	category_name: string;
-	description: string;
+  data: {
+    id: string;
+    code: string;
+    name: string;
+    description: string;
+    tb_product_info?: ProductInfoDto;
+    product_status_type: string;
+  };
+  name: string;
+  item_group_name: string;
+  sub_category_name: string;
+  category_name: string;
+  description: string;
 }
 
 export interface ProductModel {
-	data: ProductData;
-	item_group_name: string;
-	sub_category_name: string;
-	category_name: string;
+  data: ProductData;
+  item_group_name: string;
+  sub_category_name: string;
+  category_name: string;
 }
+
+
+export const productFormSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  local_name: z.string(),
+  description: z.string(),
+  primary_unit_id: z.string(),
+  product_item_group_id: z.string(),
+  price: z.number(),
+  tax_type: z.enum(['vat', 'non_vat']),
+  tax_rate: z.number(),
+  is_ingredients: z.boolean(),
+  price_deviation_limit: z.number(),
+  product_status_type: z.enum(['active', 'inactive']),
+  info: z
+    .array(
+      z.object({
+        attribute: z.array(
+          z.object({
+            label: z.string(),
+            value: z.string(),
+          })
+        ),
+      })
+    )
+    .optional(),
+
+  locations: z
+    .object({
+      add: z.array(
+        z.object({
+          location_id: z.string(),
+        })
+      ),
+    })
+    .optional(),
+  orderUnits: z
+    .object({
+      add: z.array(
+        z.object({
+          unit_id: z.string(),
+          unit_quantity: z.number(),
+          to_unit_id: z.string(),
+          to_quantity: z.number().optional(),
+          to_unit_quantity: z.number().optional(),
+          description: z.string(),
+        })
+      ),
+    })
+    .optional(),
+
+  recipeUnits: z
+    .object({
+      add: z.array(
+        z.object({
+          unit_id: z.string(),
+          unit_quantity: z.number(),
+          to_unit_id: z.string(),
+          to_unit_quantity: z.number(),
+          description: z.string(),
+        })
+      ),
+    })
+    .optional(),
+
+  countUnits: z
+    .object({
+      add: z.array(
+        z.object({
+          unit_id: z.string(),
+          unit_quantity: z.number(),
+          to_unit_id: z.string(),
+          to_unit_quantity: z.number(),
+          description: z.string(),
+        })
+      ),
+    })
+    .optional(),
+});
+
+export type ProductFormType = z.infer<typeof productFormSchema>;
