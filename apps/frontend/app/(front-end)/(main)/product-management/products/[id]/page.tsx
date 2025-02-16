@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Inventory from './components/tab/Inventory';
 import OrderUnit from './components/tab/OrderUnit';
 import IngredientUnit from './components/tab/IngredientUnit';
-import Location from './components/tab/Location';
 import { AttributesDTO, PriceDTO, ProductModel } from '@/dtos/product.dto';
 import ProductAttributes from './components/tab/ProductAttributes';
 import PricingInformation from './components/tab/PricingInformation';
@@ -19,12 +18,7 @@ import ProductInfoHeader from './components/ProductInfoHeader';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
 import { OrderUnitModel } from '@/dtos/order-unit.dto';
 import { updateNestedObject } from '@/lib/util/updateNestedObject';
-
-export const enum PRODUCT_ACTION {
-	ADD,
-	EDIT,
-	DELETE,
-}
+import LocationList, { PRODUCT_ACTION } from '../components/LocationList';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const { accessToken } = useAuth();
@@ -277,7 +271,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 			label: 'Location',
 			value: 'location',
 			content: (
-				<Location
+				<LocationList
 					isEdit={isEditing}
 					originalLocations={originalLocations}
 					setOriginalLocations={setOriginalLocations}

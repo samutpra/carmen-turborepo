@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import * as Form from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { Control, useFieldArray } from 'react-hook-form';
 import { ProductFormType } from '@/dtos/product.dto';
 import { LocationCreateModel } from '@/dtos/location.dto';
@@ -23,89 +23,78 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface Props {
+interface LocationsProps {
 	control: Control<ProductFormType>;
 	token: string;
 	tenantId: string;
 }
 
-const LocationDisplay: React.FC<{
-	location: LocationCreateModel;
-}> = ({ location }) => {
-	return (
-		<div className={`flex items-center justify-between`}>
-			<h1 className="font-medium">{location.name || 'Unnamed Location'}</h1>
-		</div>
-	);
-};
-
-const LocationSelectItem: React.FC<{ location: LocationCreateModel }> = ({
-	location,
-}) => {
-	return (
-		<SelectItem
-			key={location.id}
-			value={location.id || 'default'}
-			className="flex flex-col items-start py-2 cursor-pointer"
-		>
-			<LocationDisplay location={location} />
-		</SelectItem>
-	);
-};
+// Extracted components
+const LocationDisplay: React.FC<{ location: LocationCreateModel }> = ({ location }) => (
+	<div className="flex items-center justify-between">
+		<span className="font-medium">{location.name || 'Unnamed Location'}</span>
+	</div>
+);
 
 const LocationStatus: React.FC<{ isActive: boolean }> = ({ isActive }) => (
 	<span
-		className={`px-1.5 py-0.5 rounded-sm ${
-			isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-		}`}
+		className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${isActive
+			? 'bg-green-100 text-green-700'
+			: 'bg-red-100 text-red-700'
+			}`}
+		role="status"
+		aria-label={isActive ? 'Active' : 'Inactive'}
 	>
 		{isActive ? 'Active' : 'Inactive'}
 	</span>
 );
 
 const LocationType: React.FC<{ type?: string }> = ({ type }) => (
-	<span className="bg-secondary px-1.5 py-0.5 rounded-sm">
+	<span
+		className="inline-flex items-center px-2 py-1 rounded-md text-sm font-medium bg-secondary"
+		role="text"
+	>
 		{type?.toUpperCase() || 'N/A'}
 	</span>
 );
 
-const LocationValue: React.FC<{
+const LocationSelectTrigger: React.FC<{
 	location: LocationCreateModel | undefined;
 	onEdit: () => void;
 }> = ({ location, onEdit }) => {
-	if (!location) {
-		return (
-			<div
-				className="flex items-center space-x-2 cursor-pointer hover:bg-secondary/50 p-2 rounded-md text-muted-foreground"
-				onClick={onEdit}
-				role="button"
-				tabIndex={0}
-				onKeyDown={(e) => e.key === 'Enter' && onEdit()}
-			>
-				<span>Select a location</span>
-			</div>
-		);
-	}
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter' || e.key === 'Space') {
+			e.preventDefault();
+			onEdit();
+		}
+	};
 
 	return (
 		<div
-			className="flex items-center justify-between w-full cursor-pointer hover:bg-secondary/50 p-2 rounded-md"
+			className="flex items-center space-x-2 cursor-pointer hover:bg-secondary/50 p-2 rounded-md transition-colors"
 			onClick={onEdit}
 			role="button"
 			tabIndex={0}
-			onKeyDown={(e) => e.key === 'Enter' && onEdit()}
+			onKeyDown={handleKeyDown}
+			aria-label={location ? `Edit ${location.name}` : 'Select a location'}
 		>
-			<LocationDisplay location={location} />
+			{location ? (
+				<LocationDisplay location={location} />
+			) : (
+				<span className="text-muted-foreground">Select a location</span>
+			)}
 		</div>
 	);
 };
 
-const Locations = ({ control, token, tenantId }: Props) => {
+const Locations: React.FC<LocationsProps> = ({ control, token, tenantId }) => {
 	const [locationsList, setLocationsList] = useState<LocationCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
 	const { fields, append, remove, update } = useFieldArray({
 		name: 'locations.add',
 		control,
@@ -113,15 +102,17 @@ const Locations = ({ control, token, tenantId }: Props) => {
 
 	const fetchLocations = async () => {
 		if (locationsList.length > 0) return;
+
 		setIsLoading(true);
 		setError(null);
+
 		try {
 			const response = await fetchLocationList(token, tenantId);
 			if (!response) throw new Error('No data received');
 			setLocationsList(response.data);
 		} catch (err: unknown) {
-			console.error('Failed to fetch location list:', err);
-			setError('Failed to load locations');
+			const errorMessage = err instanceof Error ? err.message : 'Failed to load locations';
+			setError(errorMessage);
 			setLocationsList([]);
 		} finally {
 			setIsLoading(false);
@@ -135,18 +126,17 @@ const Locations = ({ control, token, tenantId }: Props) => {
 
 	const handleLocationSelect = (value: string, index: number) => {
 		const selectedLocation = getLocationById(value);
-		if (selectedLocation) {
-			update(index, {
-				location_id: selectedLocation.id || '',
-				name: selectedLocation.name,
-				location_type: selectedLocation.location_type,
-				is_active: Boolean(selectedLocation.is_active),
-			});
-		}
+		if (!selectedLocation) return;
+
+		update(index, {
+			location_id: selectedLocation.id || '',
+			name: selectedLocation.name,
+			location_type: selectedLocation.location_type,
+			is_active: Boolean(selectedLocation.is_active),
+		});
 		setEditingIndex(null);
 	};
 
-	// Add a new location
 	const handleAddLocation = () => {
 		append({
 			location_id: '',
@@ -157,7 +147,6 @@ const Locations = ({ control, token, tenantId }: Props) => {
 		setEditingIndex(fields.length);
 	};
 
-	// Fetch locations when component mounts
 	useEffect(() => {
 		fetchLocations();
 	}, []);
@@ -171,12 +160,20 @@ const Locations = ({ control, token, tenantId }: Props) => {
 					variant="outline"
 					size="sm"
 					onClick={handleAddLocation}
+					className="space-x-2"
+					disabled={isLoading}
 				>
-					<Plus />
-					Add Location
+					<Plus className="h-4 w-4" />
+					<span>Add Location</span>
 				</Button>
 			</CardHeader>
 			<CardContent className="pt-0">
+				{error && (
+					<Alert variant="destructive" className="mb-4">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
+
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -211,6 +208,7 @@ const Locations = ({ control, token, tenantId }: Props) => {
 																		fetchLocations();
 																	}
 																}}
+																disabled={isLoading}
 															>
 																<SelectTrigger className="w-full">
 																	<SelectValue placeholder="Select a location" />
@@ -219,11 +217,10 @@ const Locations = ({ control, token, tenantId }: Props) => {
 																	<SelectGroup>
 																		{isLoading ? (
 																			<SelectItem value="loading" disabled>
-																				Loading locations...
-																			</SelectItem>
-																		) : error ? (
-																			<SelectItem value="error" disabled>
-																				{error}
+																				<div className="flex items-center space-x-2">
+																					<Loader2 className="h-4 w-4 animate-spin" />
+																					<span>Loading locations...</span>
+																				</div>
 																			</SelectItem>
 																		) : locationsList.length === 0 ? (
 																			<SelectItem value="empty" disabled>
@@ -231,17 +228,20 @@ const Locations = ({ control, token, tenantId }: Props) => {
 																			</SelectItem>
 																		) : (
 																			locationsList.map((loc) => (
-																				<LocationSelectItem
+																				<SelectItem
 																					key={loc.id}
-																					location={loc}
-																				/>
+																					value={loc.id || 'default'}
+																					className="flex flex-col items-start py-2 cursor-pointer"
+																				>
+																					<LocationDisplay location={loc} />
+																				</SelectItem>
 																			))
 																		)}
 																	</SelectGroup>
 																</SelectContent>
 															</Select>
 														) : (
-															<LocationValue
+															<LocationSelectTrigger
 																location={location}
 																onEdit={() => setEditingIndex(index)}
 															/>
@@ -269,10 +269,11 @@ const Locations = ({ control, token, tenantId }: Props) => {
 									<TableCell>
 										<Button
 											type="button"
-											variant={'ghost'}
-											size={'sm'}
+											variant="ghost"
+											size="sm"
 											onClick={() => remove(index)}
-											aria-label="Remove location"
+											className="text-destructive hover:text-destructive hover:bg-destructive/10"
+											aria-label={`Remove ${location?.name || 'location'}`}
 										>
 											<Trash2 className="h-4 w-4" />
 										</Button>

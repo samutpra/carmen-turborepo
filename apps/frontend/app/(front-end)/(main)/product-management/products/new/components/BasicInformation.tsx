@@ -192,22 +192,7 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 					)}
 				/>
 
-				<Form.FormField
-					control={control}
-					name="is_ingredients"
-					render={({ field }) => (
-						<Form.FormItem>
-							<Form.FormLabel>Is Ingredient</Form.FormLabel>
-							<Form.FormControl>
-								<Switch
-									checked={Boolean(field.value)}
-									onCheckedChange={field.onChange}
-								/>
-							</Form.FormControl>
-							<Form.FormMessage />
-						</Form.FormItem>
-					)}
-				/>
+
 
 				<Form.FormField
 					control={control}
@@ -267,6 +252,22 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 									{...field}
 									value={String(field.value || '')}
 									placeholder="Enter description"
+								/>
+							</Form.FormControl>
+							<Form.FormMessage />
+						</Form.FormItem>
+					)}
+				/>
+				<Form.FormField
+					control={control}
+					name="is_ingredients"
+					render={({ field }) => (
+						<Form.FormItem className='flex flex-col mt-4'>
+							<Form.FormLabel>Is Ingredient</Form.FormLabel>
+							<Form.FormControl>
+								<Switch
+									checked={Boolean(field.value)}
+									onCheckedChange={field.onChange}
 								/>
 							</Form.FormControl>
 							<Form.FormMessage />

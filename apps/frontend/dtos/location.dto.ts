@@ -109,3 +109,13 @@ export interface LocationChanges {
 	edit: { location_id: string }[];
 	delete: { location_id: string }[];
 }
+
+export type LocationState = {
+	location_id: string;
+};
+
+export type StateType = {
+	addedLocations: LocationState[];
+	editedLocations: LocationState[];
+	deletedLocations: LocationState[];
+};
