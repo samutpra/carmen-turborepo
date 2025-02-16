@@ -13,10 +13,27 @@ import {
 } from '@/components/ui/select';
 import { Control } from 'react-hook-form';
 import { ProductFormType } from '@/dtos/product.dto';
+import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
+import {
+	status_active,
+	status_discontinued,
+	status_inactive,
+} from '@/paraglide/messages';
 
 interface BasicInformationProps {
 	control: Control<ProductFormType>;
+	token: string;
+	tenantId: string;
 }
+
+const statusOptions = [
+	{ label: `${status_active()}`, value: PRODUCT_STATUS_FILTER.ACTIVE },
+	{ label: `${status_inactive()}`, value: PRODUCT_STATUS_FILTER.IN_ACTIVE },
+	{
+		label: `${status_discontinued()}`,
+		value: PRODUCT_STATUS_FILTER.DISCONTINUED,
+	},
+];
 
 const BasicInformation = ({ control }: BasicInformationProps) => {
 	return (
@@ -69,24 +86,6 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 									{...field}
 									value={String(field.value || '')}
 									placeholder="Enter local name"
-								/>
-							</Form.FormControl>
-							<Form.FormMessage />
-						</Form.FormItem>
-					)}
-				/>
-
-				<Form.FormField
-					control={control}
-					name="description"
-					render={({ field }) => (
-						<Form.FormItem>
-							<Form.FormLabel>Description</Form.FormLabel>
-							<Form.FormControl>
-								<Textarea
-									{...field}
-									value={String(field.value || '')}
-									placeholder="Enter description"
 								/>
 							</Form.FormControl>
 							<Form.FormMessage />
@@ -244,10 +243,31 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 										<SelectValue placeholder="Select status" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="active">Active</SelectItem>
-										<SelectItem value="inactive">Inactive</SelectItem>
+										{statusOptions.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												{option.label}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
+							</Form.FormControl>
+							<Form.FormMessage />
+						</Form.FormItem>
+					)}
+				/>
+
+				<Form.FormField
+					control={control}
+					name="description"
+					render={({ field }) => (
+						<Form.FormItem>
+							<Form.FormLabel>Description</Form.FormLabel>
+							<Form.FormControl>
+								<Textarea
+									{...field}
+									value={String(field.value || '')}
+									placeholder="Enter description"
+								/>
 							</Form.FormControl>
 							<Form.FormMessage />
 						</Form.FormItem>

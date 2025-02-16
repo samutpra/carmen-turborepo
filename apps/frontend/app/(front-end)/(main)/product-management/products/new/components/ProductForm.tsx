@@ -12,8 +12,13 @@ import Locations from './Locations';
 import OrderUnits from './OrderUnits';
 import CountUnits from './CountUnits';
 import { Save } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function ProductForm() {
+	const { accessToken } = useAuth();
+	const token = accessToken || '';
+	const tenantId = 'DUMMY';
+
 	const form = useForm<ProductFormType>({
 		resolver: zodResolver(productFormSchema),
 		defaultValues: {
@@ -54,13 +59,15 @@ export default function ProductForm() {
 					</Button>
 				</div>
 
-				<BasicInformation control={form.control} />
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<Attributes control={form.control} />
-					<Locations control={form.control} />
-					<OrderUnits control={form.control} />
-					<CountUnits control={form.control} />
-				</div>
+				<BasicInformation
+					control={form.control}
+					token={token}
+					tenantId={tenantId}
+				/>
+				<Attributes control={form.control} />
+				<Locations control={form.control} token={token} tenantId={tenantId} />
+				<OrderUnits control={form.control} />
+				<CountUnits control={form.control} />
 			</form>
 		</Form.Form>
 	);
