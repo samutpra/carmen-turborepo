@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post Cluster User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/cluster-user/07488386-9e02-4a1f-a6fd-1f8ce2f3e9b3
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "user_id": "70a5c1cf-a234-4499-b4ee-5ab9043c15d9",
+    "cluster_id": "206c2d68-0d60-4be3-b2e9-feb1be25b2b2",
+    "is_active": true
+  }
+}

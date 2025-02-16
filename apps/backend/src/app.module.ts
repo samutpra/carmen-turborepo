@@ -36,6 +36,12 @@ import { SystemCurrencyIsoModule } from "./_system/system_currency_iso/system_cu
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { WorkflowsModule } from "./_application/workflows/workflows.module";
+import { ClusterUserModule } from "./_system/cluster-user/cluster-user.module";
+import { DepartmentUserModule } from "./_application/department-user/department-user.module";
+import { APP_FILTER } from "@nestjs/core";
+import { HttpExceptionFilter } from "lib/filters/http-exception.filter";
+import { LocationsUserModule } from "./_system/locations-user/locations-user.module";
+import { UserLocationModule } from "./_application/user-location/user-location.module";
 
 @Module({
   imports: [
@@ -81,8 +87,18 @@ import { WorkflowsModule } from "./_application/workflows/workflows.module";
     ProductLocationModule,
     LocationProductModule,
     WorkflowsModule,
+    ClusterUserModule,
+    DepartmentUserModule,
+    LocationsUserModule,
+    UserLocationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionFilter,
+    // },
+  ],
 })
 export class AppModule {}

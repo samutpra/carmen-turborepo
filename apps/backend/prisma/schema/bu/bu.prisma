@@ -102,14 +102,15 @@ model tb_delivery_point {
 }
 
 model tb_department {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String    @unique @db.VarChar
-  description   String?
-  is_active     Boolean?  @default(true)
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  created_by_id String?   @db.Uuid
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_by_id String?   @db.Uuid
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String               @unique @db.VarChar
+  description        String?
+  is_active          Boolean?             @default(true)
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  created_by_id      String?              @db.Uuid
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_by_id      String?              @db.Uuid
+  tb_department_user tb_department_user[]
 
   @@index([name], map: "department_name_u")
 }
@@ -244,6 +245,7 @@ model tb_location {
   tb_delivery_point           tb_delivery_point?            @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_product_location         tb_product_location[]
   tb_purchase_request_detail  tb_purchase_request_detail[]
+  tb_user_location            tb_user_location[]
 
   @@index([name], map: "location_name_u")
 }
@@ -821,6 +823,56 @@ model tb_product_location {
   @@unique([product_id, location_id], map: "product_location_u")
 }
 
+model tb_department_user {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String        @db.Uuid
+  department_id String        @db.Uuid
+  hod           Boolean?      @default(false)
+  tb_department tb_department @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([department_id, user_id], map: "department_user_u")
+}
+
+model tb_attachment {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  filename String? @db.VarChar(255)
+  filetype String? @db.VarChar(255)
+  data     Bytes?
+}
+
+model tb_currency_comment {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type          enum_comment_type?
+  user_id       String?            @db.Uuid
+  message       String?            @db.VarChar(255)
+  attachments   Json[]             @db.Json
+  created_at    DateTime?          @default(now()) @db.Timestamptz(6)
+  created_by_id String?            @db.Uuid
+  updated_at    DateTime?          @default(now()) @db.Timestamptz(6)
+  updated_by_id String?            @db.Uuid
+}
+
+model tb_unit_comment {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type          enum_comment_type?
+  user_id       String?            @db.Uuid
+  message       String?            @db.VarChar(255)
+  attachments   Json[]             @db.Json
+  created_at    DateTime?          @default(now()) @db.Timestamptz(6)
+  created_by_id String?            @db.Uuid
+  updated_at    DateTime?          @default(now()) @db.Timestamptz(6)
+  updated_by_id String?            @db.Uuid
+}
+
+model tb_user_location {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String      @db.Uuid
+  location_id String      @db.Uuid
+  tb_location tb_location @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, location_id], map: "user_location_u")
+}
+
 enum enum_activity_action {
   view
   create
@@ -954,4 +1006,9 @@ enum enum_jv_status {
 enum enum_tax_type {
   none
   vat
+}
+
+enum enum_comment_type {
+  user
+  system
 }

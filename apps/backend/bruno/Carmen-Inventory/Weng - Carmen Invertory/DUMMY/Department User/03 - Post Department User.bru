@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Post Department User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/v1/department-user/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "user_id": "70a5c1cf-a234-4499-b4ee-5ab9043c15d9",
+    "department_id": "40455f60-e3cf-4549-86e7-c3367db9a8b1",
+    "hod": true
+  }
+}

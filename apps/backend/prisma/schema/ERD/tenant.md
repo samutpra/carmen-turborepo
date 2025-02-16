@@ -594,6 +594,45 @@ erDiagram
   String product_id FK
   String location_id FK
 }
+"tb_department_user" {
+  String id PK
+  String user_id
+  String department_id FK
+  Boolean hod "nullable"
+}
+"tb_attachment" {
+  String id PK
+  String filename "nullable"
+  String filetype "nullable"
+  Bytes data "nullable"
+}
+"tb_currency_comment" {
+  String id PK
+  enum_comment_type type "nullable"
+  String user_id "nullable"
+  String message "nullable"
+  Json attachments
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_unit_comment" {
+  String id PK
+  enum_comment_type type "nullable"
+  String user_id "nullable"
+  String message "nullable"
+  Json attachments
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
+}
+"tb_user_location" {
+  String id PK
+  String user_id
+  String location_id FK
+}
 "tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
 "tb_exchange_rate" }o--o| "tb_currency" : tb_currency
@@ -653,6 +692,8 @@ erDiagram
 "tb_price_list" }o--o| "tb_vendor" : tb_vendor
 "tb_product_location" }o--|| "tb_location" : tb_location
 "tb_product_location" }o--|| "tb_product" : tb_product
+"tb_department_user" }o--|| "tb_department" : tb_department
+"tb_user_location" }o--|| "tb_location" : tb_location
 ```
 
 ### `tb_activity`
@@ -1329,4 +1370,53 @@ erDiagram
 **Properties**
   - `id`: 
   - `product_id`: 
+  - `location_id`: 
+
+### `tb_department_user`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
+  - `department_id`: 
+  - `hod`: 
+
+### `tb_attachment`
+
+**Properties**
+  - `id`: 
+  - `filename`: 
+  - `filetype`: 
+  - `data`: 
+
+### `tb_currency_comment`
+
+**Properties**
+  - `id`: 
+  - `type`: 
+  - `user_id`: 
+  - `message`: 
+  - `attachments`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_unit_comment`
+
+**Properties**
+  - `id`: 
+  - `type`: 
+  - `user_id`: 
+  - `message`: 
+  - `attachments`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_user_location`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
   - `location_id`: 

@@ -257,6 +257,20 @@ CREATE TABLE "tb_currency_iso" (
     CONSTRAINT "tb_currency_iso_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tb_cluster_user" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" UUID,
+    "cluster_id" UUID NOT NULL,
+    "is_active" BOOLEAN DEFAULT true,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+
+    CONSTRAINT "tb_cluster_user_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "tb_application_role_name_key" ON "tb_application_role"("name");
 
@@ -337,6 +351,9 @@ CREATE UNIQUE INDEX "tb_user_login_session_token_key" ON "tb_user_login_session"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tb_currency_iso_iso_code_key" ON "tb_currency_iso"("iso_code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_cluster_u" ON "tb_cluster_user"("user_id", "cluster_id");
 
 -- AddForeignKey
 ALTER TABLE "tb_application_role" ADD CONSTRAINT "tb_application_role_business_unit_id_fkey" FOREIGN KEY ("business_unit_id") REFERENCES "tb_business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -484,3 +501,15 @@ ALTER TABLE "tb_user_tb_business_unit" ADD CONSTRAINT "tb_user_tb_business_unit_
 
 -- AddForeignKey
 ALTER TABLE "tb_user_login_session" ADD CONSTRAINT "tb_user_login_session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_cluster_user" ADD CONSTRAINT "tb_cluster_user_cluster_id_fkey" FOREIGN KEY ("cluster_id") REFERENCES "tb_cluster"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_cluster_user" ADD CONSTRAINT "tb_cluster_user_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_cluster_user" ADD CONSTRAINT "tb_cluster_user_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_cluster_user" ADD CONSTRAINT "tb_cluster_user_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "tb_user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

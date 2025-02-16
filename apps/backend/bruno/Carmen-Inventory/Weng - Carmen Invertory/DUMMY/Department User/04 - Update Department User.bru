@@ -1,0 +1,18 @@
+meta {
+  name: 04 - Update Department User
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/department-user/65d6e793-9857-4483-8743-26749e85e780
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "department_id": "4f5d3597-877b-47e0-8ed2-b1d78ceb4fcd",
+    "hod": true
+  }
+}
