@@ -292,7 +292,7 @@ export interface ProductModel {
 }
 
 export const productFormSchema = z.object({
-	code: z.string(),
+	code: z.string().optional(),
 	name: z.string(),
 	local_name: z.string(),
 	description: z.string(),

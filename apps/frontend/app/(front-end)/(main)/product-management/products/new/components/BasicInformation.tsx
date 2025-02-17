@@ -39,7 +39,7 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 	return (
 		<Card>
 			<CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				<Form.FormField
+				{/* <Form.FormField
 					control={control}
 					name="code"
 					render={({ field }) => (
@@ -55,7 +55,7 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormMessage />
 						</Form.FormItem>
 					)}
-				/>
+				/> */}
 
 				<Form.FormField
 					control={control}
@@ -98,7 +98,7 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 					name="primary_unit_id"
 					render={({ field }) => (
 						<Form.FormItem>
-							<Form.FormLabel>Primary Unit ID</Form.FormLabel>
+							<Form.FormLabel>Inventory Unit</Form.FormLabel>
 							<Form.FormControl>
 								<Input
 									{...field}
@@ -116,7 +116,7 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 					name="product_item_group_id"
 					render={({ field }) => (
 						<Form.FormItem>
-							<Form.FormLabel>Product Group ID</Form.FormLabel>
+							<Form.FormLabel>Product Group ID มีอีก 3 select</Form.FormLabel>
 							<Form.FormControl>
 								<Input
 									{...field}
