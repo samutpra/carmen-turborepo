@@ -462,6 +462,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_unit_conversion" (
   "from_unit_qty" numeric(20,5) DEFAULT 1,
   "to_unit_id" uuid,
   "to_unit_qty" numeric(20,5) DEFAULT 1,
+  "is_default" bool DEFAULT false,
   "description" text,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),

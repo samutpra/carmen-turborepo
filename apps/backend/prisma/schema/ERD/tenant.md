@@ -469,6 +469,7 @@ erDiagram
   Decimal from_unit_qty "nullable"
   String to_unit_id FK "nullable"
   Decimal to_unit_qty "nullable"
+  Boolean is_default "nullable"
   String description "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
@@ -1227,6 +1228,7 @@ erDiagram
   - `from_unit_qty`: 
   - `to_unit_id`: 
   - `to_unit_qty`: 
+  - `is_default`: 
   - `description`: 
   - `is_active`: 
   - `created_at`: 

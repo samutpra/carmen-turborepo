@@ -121,6 +121,7 @@ export class ProductsService {
         product_id: true,
         unit_type: true,
         description: true,
+        is_default: true,
         tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
           select: {
             id: true,
@@ -152,6 +153,7 @@ export class ProductsService {
       to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
+      is_default: item.is_default,
     }));
 
     this.logger.debug({ orderUnits: orderUnits });
@@ -219,6 +221,7 @@ export class ProductsService {
         product_id: true,
         unit_type: true,
         description: true,
+        is_default: true,
         tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
           select: {
             id: true,
@@ -249,6 +252,7 @@ export class ProductsService {
       to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
+      is_default: item.is_default,
     }));
 
     this.logger.debug({ orderUnits: countUnits });
@@ -317,6 +321,7 @@ export class ProductsService {
         product_id: true,
         unit_type: true,
         description: true,
+        is_default: true,
         tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
           select: {
             id: true,
@@ -347,6 +352,7 @@ export class ProductsService {
       to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
+      is_default: item.is_default,
     }));
 
     this.logger.debug({ recipeUnits: recipeUnits });
