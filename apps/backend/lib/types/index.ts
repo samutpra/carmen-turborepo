@@ -19,8 +19,8 @@ export class KeyValueString {
 // }
 
 export default class QueryParams {
-  public readonly page: number;
-  public readonly perpage: number;
+  public readonly page: number = 1;
+  public readonly perpage: number = 10;
   public readonly search: string;
   public searchFields: string[];
   public readonly defaultSearchFields: string[];
@@ -46,9 +46,9 @@ export default class QueryParams {
       perpage = parseInt(perpage);
     }
 
-    this.page = page;
-    this.perpage = perpage;
-    this.search = search;
+    this.page = page ?? 1;
+    this.perpage = perpage ?? 10;
+    this.search = search ?? "";
     this.searchFields = searchFields ? searchFields.split(",") : [];
 
     this.defaultSearchFields = defaultSearchFields;
@@ -59,6 +59,8 @@ export default class QueryParams {
     this.filter = filter;
     this.sort = sort.split(",");
     this.advance = advance;
+
+    console.log({ constructor: this });
   }
 
   public where(): any {

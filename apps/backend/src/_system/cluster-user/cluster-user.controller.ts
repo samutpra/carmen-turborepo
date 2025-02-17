@@ -11,7 +11,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { WorkflowsService } from "./workflows.service";
+import { ClusterUserService } from "./cluster-user.service";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,27 +20,25 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import QueryParams, { QueryAdvance } from "lib/types";
+import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import {
-  WorkflowCreateDto,
-  workflowDTO,
-  workflowUpdateDTO,
-  WorkflowUpdateDto,
-} from "shared-dtos/workflows/workflows.dto";
+  ClusterUserCreateDto,
+  ClusterUserUpdateDto,
+} from "shared-dtos/cluster-user/cluster-user.dto";
 
-@Controller("api/v1/workflows")
-@ApiTags("workflows")
+@Controller("api/v1/cluster-user")
+@ApiTags("cluster-user")
 @ApiBearerAuth()
 @ApiHeader({
   name: "x-tenant-id",
   description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
-export class WorkflowsController {
-  constructor(private readonly workflowsService: WorkflowsService) {}
+export class ClusterUserController {
+  constructor(private readonly clusterUserService: ClusterUserService) {}
 
-  private readonly logger = new Logger(WorkflowsController.name);
+  private readonly logger = new Logger(ClusterUserController.name);
 
   @Get(":id")
   @ApiParam({
@@ -51,11 +49,11 @@ export class WorkflowsController {
   })
   async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: ClusterUserController.name,
       function: this.findOne.name,
     });
     this.logger.debug({ id: id });
-    return this.workflowsService.findOne(req, id);
+    return this.clusterUserService.findOne(req, id);
   }
 
   @Get()
@@ -71,10 +69,9 @@ export class WorkflowsController {
     @Query("advance") advance?: QueryAdvance,
   ) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: ClusterUserController.name,
       function: this.findAll.name,
     });
-
     const defaultSearchFields: string[] = ["name", "description"];
 
     this.logger.debug({
@@ -97,24 +94,23 @@ export class WorkflowsController {
       sort,
       advance,
     );
-
     this.logger.debug({ q: q });
-    return this.workflowsService.findAll(req, q);
+    return this.clusterUserService.findAll(req, q);
   }
 
   @Post()
   @ApiBody({
-    type: workflowDTO,
-    description: "WorkflowCreateDto",
+    type: ClusterUserCreateDto,
+    description: "ClusterUserCreateDto",
   })
-  async create(@Req() req: Request, @Body() body: workflowDTO) {
+  async create(@Req() req: Request, @Body() body: ClusterUserCreateDto) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: ClusterUserController.name,
       function: this.create.name,
       body: body,
     });
     this.logger.debug({ body: body });
-    return this.workflowsService.create(req, body);
+    return this.clusterUserService.create(req, body);
   }
 
   @Patch(":id")
@@ -125,25 +121,21 @@ export class WorkflowsController {
     type: "uuid",
   })
   @ApiBody({
-    type: workflowUpdateDTO,
-    description: "WorkflowUpdateDto",
+    type: ClusterUserUpdateDto,
+    description: "ClusterUserUpdateDto",
   })
   async update(
     @Req() req: Request,
     @Param("id") id: string,
-    @Body() body: workflowUpdateDTO,
+    @Body() body: ClusterUserUpdateDto,
   ) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: ClusterUserController.name,
       function: this.update.name,
       body: body,
     });
     this.logger.debug({ body: body });
-
-    const { ...updateDto } = body;
-    // updateDto.id = id;
-    this.logger.debug({ id: id, updateDto: updateDto });
-    return this.workflowsService.update(req, id, body);
+    return this.clusterUserService.update(req, id, body);
   }
 
   @Delete(":id")
@@ -153,12 +145,12 @@ export class WorkflowsController {
     required: true,
     type: "uuid",
   })
-  async delete(@Req() req: Request, @Param("id") id: string) {
+  async delete(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: ClusterUserController.name,
       function: this.delete.name,
     });
     this.logger.debug({ id: id });
-    return this.workflowsService.delete(req, id);
+    return this.clusterUserService.delete(req, id);
   }
 }

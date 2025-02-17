@@ -5,20 +5,20 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/workflows/94f04d7e-9b35-4144-9a28-3c4aef7a935e
+  url: {{host}}/api/v1/workflows/764c733b-adb7-43b6-8d0e-68ad27859ca2
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "Workflow 1 update",
-    "workflow_type": "purchase_order",
-    "description": "Workflow 1 update",
-    "data": {
-      "test1": "test update",
-      "test2": "test update"
-    },
-    "is_active": true
+  //   "name": "Workflow 1 update",
+    "workflow_type": "purchase_request"
+  //   "description": "Workflow 1 update",
+  //   "data": {
+  //     "test1": "test update",
+  //     "test2": "test update"
+  //   },
+  //   "is_active": true
   }
 }

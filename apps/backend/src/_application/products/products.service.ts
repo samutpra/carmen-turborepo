@@ -135,6 +135,7 @@ export class ProductsService {
           },
         },
         to_unit_qty: true,
+        is_active: true,
       },
       skip: (q.page - 1) * q.perpage,
       take: q.perpage,
@@ -144,12 +145,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ orderUnits: orderUnits });
@@ -240,12 +242,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ orderUnits: countUnits });
@@ -337,12 +340,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ recipeUnits: recipeUnits });
@@ -383,14 +387,97 @@ export class ProductsService {
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException("Product not found");
     }
 
-    const res: ResponseSingle<tb_product> = {
-      data: oneObj,
+    let product_primary_unit;
+    if (oneObj.primary_unit_id) {
+      product_primary_unit = await this.db_tenant.tb_unit.findUnique({
+        where: {
+          id: oneObj.primary_unit_id,
+        },
+      });
+    }
+
+    let product_item_group;
+    if (oneObj.tb_product_info?.product_item_group_id) {
+      product_item_group =
+        await this.db_tenant.tb_product_item_group.findUnique({
+          where: {
+            id: oneObj.tb_product_info?.product_item_group_id ?? undefined,
+          },
+        });
+    }
+
+    let product_subcategory;
+    if (product_item_group?.product_subcategory_id) {
+      product_subcategory =
+        await this.db_tenant.tb_product_sub_category.findUnique({
+          where: {
+            id: product_item_group.product_subcategory_id ?? undefined,
+          },
+        });
+    }
+
+    let product_category;
+    if (product_subcategory?.product_category_id) {
+      product_category = await this.db_tenant.tb_product_category.findUnique({
+        where: {
+          id: product_subcategory.product_category_id ?? undefined,
+        },
+      });
+    }
+
+    const newFormatObj = {
+      id: oneObj.id,
+      code: oneObj.code,
+      name: oneObj.name,
+      local_name: oneObj.local_name,
+      description: oneObj.description,
+      product_status_type: oneObj.product_status_type,
+      product_info: oneObj.tb_product_info
+        ? {
+            id: oneObj.tb_product_info.id,
+            price: oneObj.tb_product_info.price,
+            tax_type: oneObj.tb_product_info.tax_type,
+            tax_rate: oneObj.tb_product_info.tax_rate,
+            is_ingredients: oneObj.tb_product_info.is_ingredients,
+            price_deviation_limit: oneObj.tb_product_info.price_deviation_limit,
+            info: oneObj.tb_product_info.info,
+          }
+        : {},
+      product_primary_unit: product_primary_unit
+        ? {
+            id: product_primary_unit.id,
+            name: product_primary_unit.name,
+          }
+        : {},
+      product_item_group: product_item_group
+        ? {
+            id: product_item_group.id,
+            name: product_item_group.name,
+          }
+        : {},
+      product_subcategory: product_subcategory
+        ? {
+            id: product_subcategory.id,
+            name: product_subcategory.name,
+          }
+        : {},
+      product_category: product_category
+        ? {
+            id: product_category.id,
+            name: product_category.name,
+          }
+        : {},
+    };
+
+    const res: ResponseSingle<any> = {
+      data: newFormatObj,
     };
     return res;
   }
@@ -484,24 +571,26 @@ export class ProductsService {
     }
 
     if (createDto.locations.add) {
-      const findLocation = await this.db_tenant.tb_location.findMany({
-        where: {
-          id: {
-            in: createDto.locations.add.map((location) => location.location_id),
-          },
-        },
-      });
+      let locationNotFound = [];
+      await Promise.all(
+        createDto.locations.add.map(async (location) => {
+          const findLocation = await this.db_tenant.tb_location.findFirst({
+            where: {
+              id: location.location_id,
+            },
+          });
 
-      const foundLocationIds = findLocation.map((location) => location.id);
-      const notFoundLocationIds = createDto.locations.add
-        .map((location) => location.location_id)
-        .filter((id) => !foundLocationIds.includes(id));
+          if (!findLocation) {
+            locationNotFound.push(location.location_id);
+          }
+        }),
+      );
 
-      if (notFoundLocationIds.length > 0) {
+      if (locationNotFound.length > 0) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Location not found",
-          data: notFoundLocationIds,
+          message: "Add Location not found",
+          data: locationNotFound,
         });
       }
     }

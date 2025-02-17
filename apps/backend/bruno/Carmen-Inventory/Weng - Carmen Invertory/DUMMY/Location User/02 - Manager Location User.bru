@@ -1,0 +1,35 @@
+meta {
+  name: 02 - Manager Location User
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{host}}/api/v1/locations/user/a40afb5f-0368-4d6e-9f17-b5d600d5937a
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "locations": {
+      "add": [
+        {
+          "location_id": "3494107e-cfa0-44f8-9940-d20d7f4a3ddc"
+        },
+        {
+          "location_id": "3e2fab02-e3b7-4ef4-921e-87505afb7e6b"
+        }
+      ]
+      //     ,
+  //         "remove": [
+  //           {
+  //             "user_location_id": "8e024560-82fa-4c50-bbcb-5e475f1cb2be"
+  //           },
+  //           {
+  //             "user_location_id": "900f56ef-decd-4024-b676-a35996dde947"
+  //           }
+  //         ]
+    }
+  }
+}

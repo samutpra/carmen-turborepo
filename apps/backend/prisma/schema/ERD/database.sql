@@ -148,6 +148,11 @@ CREATE TYPE "TENANT_DUMMY"."enum_jv_status" AS ENUM (
   'posted'
 );
 
+CREATE TYPE "TENANT_DUMMY"."enum_comment_type" AS ENUM (
+  'user',
+  'system'
+);
+
 CREATE TABLE "CARMEN_SYSTEM"."tb_currency_iso" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "iso_code" varchar(3) UNIQUE NOT NULL,
@@ -218,6 +223,17 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_business_unit" (
   "name" text NOT NULL,
   "description" text,
   "is_hq" bool DEFAULT true,
+  "is_active" bool DEFAULT true,
+  "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+
+CREATE TABLE "CARMEN_SYSTEM"."tb_cluster_user" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "user_id" uuid,
+  "cluster_id" uuid NOT NULL,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
@@ -463,6 +479,19 @@ CREATE TABLE "TENANT_DUMMY"."tb_department" (
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_department_user" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "user_id" uuid NOT NULL,
+  "department_id" uuid NOT NULL,
+  "hod" bool DEFAULT false
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_user_location" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "user_id" uuid NOT NULL,
+  "location_id" uuid NOT NULL
 );
 
 CREATE TABLE "TENANT_DUMMY"."tb_product" (
@@ -979,6 +1008,37 @@ CREATE TABLE "TENANT_DUMMY"."tb_jv_detail" (
   "updated_by_id" uuid
 );
 
+CREATE TABLE "TENANT_DUMMY"."tb_attachment" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "filename" varchar(255),
+  "filetype" varchar(255),
+  "data" bytea
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_currency_comment" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "type" "TENANT_DUMMY".enum_comment_type,
+  "user_id" uuid,
+  "message" varchar(255),
+  "attachments" json[],
+  "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_unit_comment" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "type" "TENANT_DUMMY".enum_comment_type,
+  "user_id" uuid,
+  "message" varchar(255),
+  "attachments" json[],
+  "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "created_by_id" uuid,
+  "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
+  "updated_by_id" uuid
+);
+
 CREATE INDEX "user_username_idx" ON "CARMEN_SYSTEM"."tb_user" ("username");
 
 CREATE INDEX "user_email_idx" ON "CARMEN_SYSTEM"."tb_user" ("email");
@@ -998,6 +1058,8 @@ CREATE INDEX "businessunit_cluster_idx" ON "CARMEN_SYSTEM"."tb_business_unit" ("
 CREATE INDEX "businessunit_code_idx" ON "CARMEN_SYSTEM"."tb_business_unit" ("code");
 
 CREATE UNIQUE INDEX "businessunit_cluster_code_u" ON "CARMEN_SYSTEM"."tb_business_unit" ("cluster_id", "code");
+
+CREATE UNIQUE INDEX "user_cluster_u" ON "CARMEN_SYSTEM"."tb_cluster_user" ("user_id", "cluster_id");
 
 CREATE UNIQUE INDEX "user_businessunit_user_business_unit_u" ON "CARMEN_SYSTEM"."tb_user_tb_business_unit" ("user_id", "business_unit_id");
 
@@ -1038,6 +1100,10 @@ CREATE INDEX "unit_name_u" ON "TENANT_DUMMY"."tb_unit" ("name");
 CREATE INDEX "unitconversion_product_unit_type_from_unit_to_unit_u" ON "TENANT_DUMMY"."tb_unit_conversion" ("product_id", "unit_type", "from_unit_id", "to_unit_id");
 
 CREATE INDEX "department_name_u" ON "TENANT_DUMMY"."tb_department" ("name");
+
+CREATE UNIQUE INDEX "department_user_u" ON "TENANT_DUMMY"."tb_department_user" ("department_id", "user_id");
+
+CREATE UNIQUE INDEX "user_location_u" ON "TENANT_DUMMY"."tb_user_location" ("user_id", "location_id");
 
 CREATE INDEX "product_code_u" ON "TENANT_DUMMY"."tb_product" ("code");
 
@@ -1104,6 +1170,14 @@ ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit" ADD FOREIGN KEY ("cluster_id") RE
 ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit" ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 
 ALTER TABLE "CARMEN_SYSTEM"."tb_business_unit" ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster_user" ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster_user" ADD FOREIGN KEY ("cluster_id") REFERENCES "CARMEN_SYSTEM"."tb_cluster" ("id");
+
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster_user" ADD FOREIGN KEY ("created_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
+
+ALTER TABLE "CARMEN_SYSTEM"."tb_cluster_user" ADD FOREIGN KEY ("updated_by_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 
 ALTER TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit" ADD FOREIGN KEY ("user_id") REFERENCES "CARMEN_SYSTEM"."tb_user" ("id");
 
@@ -1186,6 +1260,10 @@ ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion" ADD FOREIGN KEY ("product_id") R
 ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion" ADD FOREIGN KEY ("from_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
 
 ALTER TABLE "TENANT_DUMMY"."tb_unit_conversion" ADD FOREIGN KEY ("to_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
+
+ALTER TABLE "TENANT_DUMMY"."tb_department_user" ADD FOREIGN KEY ("department_id") REFERENCES "TENANT_DUMMY"."tb_department" ("id");
+
+ALTER TABLE "TENANT_DUMMY"."tb_user_location" ADD FOREIGN KEY ("location_id") REFERENCES "TENANT_DUMMY"."tb_location" ("id");
 
 ALTER TABLE "TENANT_DUMMY"."tb_product" ADD FOREIGN KEY ("primary_unit_id") REFERENCES "TENANT_DUMMY"."tb_unit" ("id");
 

@@ -11,7 +11,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { WorkflowsService } from "./workflows.service";
+import { DepartmentUserService } from "./department-user.service";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,39 +23,30 @@ import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
 import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import QueryParams, { QueryAdvance } from "lib/types";
 import {
-  WorkflowCreateDto,
-  workflowDTO,
-  workflowUpdateDTO,
-  WorkflowUpdateDto,
-} from "shared-dtos/workflows/workflows.dto";
-
-@Controller("api/v1/workflows")
-@ApiTags("workflows")
+  DepartmentUserCreateDto,
+  DepartmentUserUpdateDto,
+} from "shared-dtos/department-user/department-user.dto";
+@Controller("api/v1/department-user")
+@ApiTags("department-user")
 @ApiBearerAuth()
 @ApiHeader({
   name: "x-tenant-id",
   description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
-export class WorkflowsController {
-  constructor(private readonly workflowsService: WorkflowsService) {}
+export class DepartmentUserController {
+  constructor(private readonly departmentUserService: DepartmentUserService) {}
 
-  private readonly logger = new Logger(WorkflowsController.name);
+  private readonly logger = new Logger(DepartmentUserController.name);
 
   @Get(":id")
-  @ApiParam({
-    name: "id",
-    description: "id",
-    required: true,
-    type: "uuid",
-  })
   async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: DepartmentUserController.name,
       function: this.findOne.name,
     });
     this.logger.debug({ id: id });
-    return this.workflowsService.findOne(req, id);
+    return this.departmentUserService.findOne(req, id);
   }
 
   @Get()
@@ -71,10 +62,9 @@ export class WorkflowsController {
     @Query("advance") advance?: QueryAdvance,
   ) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: DepartmentUserController.name,
       function: this.findAll.name,
     });
-
     const defaultSearchFields: string[] = ["name", "description"];
 
     this.logger.debug({
@@ -97,24 +87,22 @@ export class WorkflowsController {
       sort,
       advance,
     );
-
     this.logger.debug({ q: q });
-    return this.workflowsService.findAll(req, q);
+    return this.departmentUserService.findAll(req, q);
   }
 
   @Post()
   @ApiBody({
-    type: workflowDTO,
-    description: "WorkflowCreateDto",
+    type: DepartmentUserCreateDto,
+    description: "DepartmentUserCreateDto",
   })
-  async create(@Req() req: Request, @Body() body: workflowDTO) {
+  async create(@Req() req: Request, @Body() body: DepartmentUserCreateDto) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: DepartmentUserController.name,
       function: this.create.name,
-      body: body,
     });
     this.logger.debug({ body: body });
-    return this.workflowsService.create(req, body);
+    return this.departmentUserService.create(req, body);
   }
 
   @Patch(":id")
@@ -125,25 +113,20 @@ export class WorkflowsController {
     type: "uuid",
   })
   @ApiBody({
-    type: workflowUpdateDTO,
-    description: "WorkflowUpdateDto",
+    type: DepartmentUserUpdateDto,
+    description: "DepartmentUserUpdateDto",
   })
   async update(
-    @Req() req: Request,
     @Param("id") id: string,
-    @Body() body: workflowUpdateDTO,
+    @Req() req: Request,
+    @Body() body: DepartmentUserUpdateDto,
   ) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: DepartmentUserController.name,
       function: this.update.name,
-      body: body,
     });
-    this.logger.debug({ body: body });
-
-    const { ...updateDto } = body;
-    // updateDto.id = id;
-    this.logger.debug({ id: id, updateDto: updateDto });
-    return this.workflowsService.update(req, id, body);
+    this.logger.debug({ id: id, body: body });
+    return this.departmentUserService.update(req, id, body);
   }
 
   @Delete(":id")
@@ -153,12 +136,12 @@ export class WorkflowsController {
     required: true,
     type: "uuid",
   })
-  async delete(@Req() req: Request, @Param("id") id: string) {
+  async delete(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({
-      file: WorkflowsController.name,
+      file: DepartmentUserController.name,
       function: this.delete.name,
     });
     this.logger.debug({ id: id });
-    return this.workflowsService.delete(req, id);
+    return this.departmentUserService.delete(req, id);
   }
 }
