@@ -648,6 +648,7 @@ CREATE TABLE "tb_unit_conversion" (
     "from_unit_qty" DECIMAL(20,5) DEFAULT 1,
     "to_unit_id" UUID,
     "to_unit_qty" DECIMAL(20,5) DEFAULT 1,
+    "is_default" BOOLEAN DEFAULT false,
     "description" TEXT,
     "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,

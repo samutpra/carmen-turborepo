@@ -12,12 +12,12 @@ post {
 
 body:json {
   {
-    "code": "code-กาแฟ",
-    "name": "name-กาแฟ",
-    "local_name": "กาแฟ test",
+    "name": "Coffee 01",
+    "code": "C001",
+    "local_name": "กาแฟ1",
     "description": "High-quality Arabica coffee beans sourced from Colombia, perfect for brewing rich and aromatic coffee.",
-    "primary_unit_id": "06ed2b91-0da5-48cb-8d8b-28ebc8269122",
-    "product_item_group_id": "2fd141f2-1298-44ad-89ad-6ad2809f8388",
+    "primary_unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
+    "product_item_group_id": "aa9c671b-3b6c-45ac-a3aa-d9a413f36c2a",
     "price": 88.44,
     "tax_type": "vat",
     "tax_rate": 7.00,
@@ -37,64 +37,70 @@ body:json {
     "locations": {
       "add": [
         {
-          "location_id": "29027a26-2caf-4e17-a916-438a8ce2e7a9"
+          "location_id": "983a82a4-3cac-49f8-8f25-6776c3ce03e7"
         },
         {
-          "location_id": "5981e438-9b35-4c45-82fb-3aa2c8bd3351"
+          "location_id": "74b412fe-101d-4365-b02f-8e9b66c4989e"
         }
       ]
     },
     "orderUnits": {
       "add": [
         {
-          "unit_id": "379a8692-a248-4515-a54a-02eee4caaee6",
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
           "unit_quantity": 1,
-          "to_unit_id": "35ede598-be16-41b0-a127-ed01c91b61b9",
+          "to_unit_id": "c924493a-35ff-475f-b4b8-b915c9d91dab",
           "to_quantity": 12,
-          "description": "1 Set = 12 Each"
+          "description": "1 Set = 12 Each",
+          "is_default": false
         },
         {
-          "unit_id": "bcd93e5e-00c2-4cb3-a61e-5838a15b4b26",
+          "unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "unit_quantity": 1,
-          "to_unit_id": "06ed2b91-0da5-48cb-8d8b-28ebc8269122",
+          "to_unit_id": "c924493a-35ff-475f-b4b8-b915c9d91dab",
           "to_quantity": 24,
-          "description": "1 Box = 24 Each"
+          "description": "1 Box = 24 Each",
+          "is_default": false
         }
       ]
     },
     "recipeUnits": {
       "add": [
         {
-          "unit_id": "2ea0b958-707e-4576-a271-b51cd27bb0ab",
+          "unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
           "unit_quantity": 10,
-          "to_unit_id": "30cb6738-3b92-4120-baac-e919a1dcf283",
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "to_unit_quantity": 1,
-          "description": "10 KG = 1 Box"
+          "description": "10 KG = 1 Box",
+          "is_default": false
         },
         {
-          "unit_id": "379a8692-a248-4515-a54a-02eee4caaee6",
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
           "unit_quantity": 30,
-          "to_unit_id": "35ede598-be16-41b0-a127-ed01c91b61b9",
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "to_unit_quantity": 1,
-          "description": "30 Set = 1 Box"
+          "description": "30 Set = 1 Box",
+          "is_default": false
         }
       ]
     },
     "countUnits": {
       "add": [
-           {
-             "unit_id": "bcd93e5e-00c2-4cb3-a61e-5838a15b4b26",
-             "unit_quantity": 10,
-             "to_unit_id": "06ed2b91-0da5-48cb-8d8b-28ebc8269122",
-             "to_unit_quantity": 1,
-             "description": "10 KG = 1 Box"
-           },
         {
-          "unit_id": "2ea0b958-707e-4576-a271-b51cd27bb0ab",
-          "unit_quantity": 30,
-          "to_unit_id": "30cb6738-3b92-4120-baac-e919a1dcf283",
+          "unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
+          "unit_quantity": 10,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "to_unit_quantity": 1,
-          "description": "30 Set = 1 Box"
+          "description": "10 KG = 1 Box",
+          "is_default": false
+        },
+        {
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
+          "unit_quantity": 30,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
+          "to_unit_quantity": 1,
+          "description": "30 Set = 1 Box",
+          "is_default": false
         }
       ]
     }

@@ -49,6 +49,7 @@ export const Product_Unit_item_schema = z.object({
   to_unit_id: z.string().uuid(),
   to_unit_quantity: z.number(),
   description: z.string().nullable().optional(),
+  is_default: z.boolean().default(false).optional(),
 });
 
 export type ProductOrderUnitModel = z.infer<typeof Product_Unit_item_schema>;
@@ -58,6 +59,7 @@ export class Product_Unit_item implements ProductOrderUnitModel {
   to_unit_id!: string;
   to_unit_quantity!: number;
   description?: string | null;
+  is_default?: boolean;
 }
 
 export const Product_Unit_update_item_schema = z.object({
@@ -67,6 +69,7 @@ export const Product_Unit_update_item_schema = z.object({
   to_unit_id: z.string().uuid(),
   to_unit_quantity: z.number(),
   description: z.string().nullable().optional(),
+  is_default: z.boolean().default(false).optional(),
 });
 
 export type ProductOrderUnitUpdateModel = z.infer<
@@ -79,6 +82,7 @@ export class Product_Unit_update_item implements ProductOrderUnitUpdateModel {
   to_unit_id!: string;
   to_unit_quantity!: number;
   description?: string | null;
+  is_default?: boolean;
 }
 
 export const Product_Unit_remove_item_schema = z.object({

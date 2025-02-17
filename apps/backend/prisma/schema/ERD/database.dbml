@@ -553,6 +553,7 @@ TABLE TENANT_DUMMY.tb_unit_conversion {
   from_unit_qty numeric(20,5) [default: 1]
   to_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
   to_unit_qty numeric(20,5) [default: 1]
+  is_default bool [default: false]
   description text
 
   is_active bool [default: true]
@@ -1498,7 +1499,6 @@ Enum TENANT_DUMMY.enum_comment_type {
   user
   system
 }
-
 
 TABLE TENANT_DUMMY.tb_attachment {
   id uuid [not null, pk, default: `gen_random_uuid()`]
