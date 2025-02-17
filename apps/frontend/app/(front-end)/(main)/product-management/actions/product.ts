@@ -101,3 +101,23 @@ export const fetchLocationList = async (
 		throw error;
 	}
 };
+
+export const getProductGroup = async (token: string, tenantId: string, id: string) => {
+	try {
+		const api_url = `/api/product-management/category/select-item-group/${id}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(api_url, options);
+		return response.json()
+	} catch (error) {
+		console.error('Error fetching getProductGroup:', error);
+		throw error;
+	}
+}
+

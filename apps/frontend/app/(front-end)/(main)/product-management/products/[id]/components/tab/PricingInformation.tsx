@@ -73,7 +73,7 @@ const PricingInformation: React.FC<Props> = ({
 					<PricingField
 						label="Price"
 						value={data.price}
-						field="data.tb_product_info.price"
+						field="data.product_info.price"
 						type="number"
 						step="0.01"
 						isEditing={isEditing}
@@ -82,7 +82,7 @@ const PricingInformation: React.FC<Props> = ({
 					<PricingField
 						label="Tax Type"
 						value={data.tax_type}
-						field="data.tb_product_info.tax_type"
+						field="data.product_info.tax_type"
 						isEditing={isEditing}
 						onChange={handleChange}
 					/>
@@ -92,7 +92,7 @@ const PricingInformation: React.FC<Props> = ({
 					<PricingField
 						label="Tax Rate"
 						value={data.tax_rate}
-						field="data.tb_product_info.tax_rate"
+						field="data.product_info.tax_rate"
 						type="number"
 						step="0.01"
 						isEditing={isEditing}
@@ -101,7 +101,7 @@ const PricingInformation: React.FC<Props> = ({
 					<PricingField
 						label="Price Deviation Limit"
 						value={data.price_deviation_limit}
-						field="data.tb_product_info.price_deviation_limit"
+						field="data.product_info.price_deviation_limit"
 						type="number"
 						step="0.01"
 						isEditing={isEditing}

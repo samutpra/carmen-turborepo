@@ -8,7 +8,7 @@ import { Plus } from 'lucide-react';
 interface Props {
 	info: AttributesDTO;
 	isEditing: boolean;
-	handleChange: (field: string, value: string) => void;
+	handleChange: (field: string, value: unknown) => void;
 }
 
 const ProductAttributes: React.FC<Props> = ({
@@ -23,17 +23,14 @@ const ProductAttributes: React.FC<Props> = ({
 		field: 'label' | 'value',
 		value: string
 	) => {
-		handleChange(
-			`data.tb_product_info.info.attribute[${index}].${field}`,
-			value
-		);
+		handleChange(`data.product_info.info.attribute[${index}].${field}`, value);
 	};
 
 	const handleAddAttribute = () => {
-		const newIndex = attributes.length;
-		// Add empty label and value
-		handleChange(`data.tb_product_info.info.attribute[${newIndex}].label`, '');
-		handleChange(`data.tb_product_info.info.attribute[${newIndex}].value`, '');
+		handleChange(`data.product_info.info.attribute`, [
+			...attributes,
+			{ label: '', value: '' },
+		]);
 	};
 
 	return (
@@ -47,6 +44,7 @@ const ProductAttributes: React.FC<Props> = ({
 							size="sm"
 							onClick={handleAddAttribute}
 							className="h-8 w-8 p-0"
+							aria-label="Add attribute"
 						>
 							<Plus className="h-4 w-4" />
 						</Button>
@@ -59,32 +57,44 @@ const ProductAttributes: React.FC<Props> = ({
 				) : (
 					<div className="grid grid-cols-2 gap-4">
 						{attributes.map((item, index) => (
-							<div key={index} className="flex items-center space-x-2">
+							<div key={index} className='space-y-1'>
 								{isEditing ? (
-									<Input
-										className="text-xs font-medium text-muted-foreground"
-										value={item.label ?? ''}
-										onChange={(e) =>
-											handleAttributeChange(index, 'label', e.target.value)
-										}
-										placeholder="Enter label"
-									/>
+									<div className='space-y-1'>
+										<p className="text-xs font-medium text-muted-foreground">
+											Label
+										</p>
+										<Input
+											className="text-xs font-medium text-muted-foreground"
+											value={item?.label ?? ''}
+											onChange={(e) =>
+												handleAttributeChange(index, 'label', e.target.value)
+											}
+											placeholder="Enter label"
+											aria-label={`Attribute label ${index}`}
+										/>
+									</div>
 								) : (
-									<label className="text-xs font-medium text-muted-foreground">
-										{item.label ?? ''}
-									</label>
+									<p className="text-xs font-medium text-muted-foreground">
+										{item?.label ?? ''}
+									</p>
 								)}
 								{isEditing ? (
-									<Input
-										className="text-xs"
-										value={item.value ?? ''}
-										onChange={(e) =>
-											handleAttributeChange(index, 'value', e.target.value)
-										}
-										placeholder="Enter value"
-									/>
+									<div className='space-y-1'>
+										<p className="text-xs">
+											Value
+										</p>
+										<Input
+											className="text-xs"
+											value={item?.value ?? ''}
+											onChange={(e) =>
+												handleAttributeChange(index, 'value', e.target.value)
+											}
+											placeholder="Enter value"
+											aria-label={`Attribute value ${index}`}
+										/>
+									</div>
 								) : (
-									<p className="text-xs">{item.value ?? ''}</p>
+									<p className="text-xs">{item?.value ?? ''}</p>
 								)}
 							</div>
 						))}

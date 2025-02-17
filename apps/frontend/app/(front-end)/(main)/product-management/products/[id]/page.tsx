@@ -17,7 +17,6 @@ import { fetchOrderUnits, fetchProduct } from '../actions/product';
 import ProductInfoHeader from './components/ProductInfoHeader';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
 import { OrderUnitModel } from '@/dtos/order-unit.dto';
-import { updateNestedObject } from '@/lib/util/updateNestedObject';
 import LocationList, { PRODUCT_ACTION } from '../components/LocationList';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
@@ -51,8 +50,6 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	});
 	const [orderUnitsList, setOrderUnitList] = useState<OrderUnitModel[]>([]);
 	const [orderUnitLoading, setOrderUnitLoading] = useState(true);
-
-	console.log('proddd', product);
 
 	useEffect(() => {
 		if (!params.id || !token) return;
@@ -123,53 +120,69 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		setIsEditing(false);
 	};
 
-	const handleChange = (path: string, value: string | number) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const handleChange = (path: string, value: any) => {
 		if (!product) return;
+		setProduct((prev) => {
+			if (!prev) return prev;
 
-		const updatedProduct = { ...product };
-		if (path.includes('attribute')) {
-			const match = path.match(/attribute\[(\d+)\]\.(\w+)/);
-			if (match) {
-				const [, index, field] = match;
-				const attributes = [
-					...(updatedProduct.data.tb_product_info?.info?.attribute || []),
-				];
+			// Clone the previous state to avoid direct mutation
+			const newProduct = { ...prev };
 
-				if (!updatedProduct.data.tb_product_info) {
-					updatedProduct.data.tb_product_info = {
-						id: '',
-						product_id: '',
-						product_item_group_id: '',
-						is_ingredients: false,
-						price: '',
-						tax_type: '',
-						tax_rate: '',
-						price_deviation_limit: '',
-						created_at: new Date().toISOString(),
-						created_by_id: '',
-						updated_at: new Date().toISOString(),
-						updated_by_id: '',
-						info: {
-							attribute: [],
-							something: [],
-						},
-					};
+			// Split the path into parts
+			const pathParts = path.split('.');
+			let current = newProduct as Record<string, unknown>;
+
+			for (let i = 0; i < pathParts.length - 1; i++) {
+				const part = pathParts[i];
+
+				// Handle array index (e.g., "attribute[0]")
+				if (/\[\d+\]/.test(part)) {
+					const [key, indexStr] = part.split('[');
+					const index = parseInt(indexStr.replace(']', ''), 10);
+
+					// Ensure the array exists
+					if (!Array.isArray(current[key])) {
+						current[key] = [];
+					}
+
+					// Ensure the index exists in the array
+					while ((current[key] as Array<unknown>).length <= index) {
+						(current[key] as Array<unknown>).push({});
+					}
+
+					current = (current[key] as Array<Record<string, unknown>>)[index];
+				} else {
+					// Handle regular object keys
+					if (!current[part]) {
+						current[part] = {};
+					}
+					current = current[part] as Record<string, unknown>;
+				}
+			}
+
+			const lastPart = pathParts[pathParts.length - 1];
+			if (/\[\d+\]/.test(lastPart)) {
+				const [key, indexStr] = lastPart.split('[');
+				const index = parseInt(indexStr.replace(']', ''), 10);
+
+				// Ensure the array exists
+				if (!Array.isArray(current[key])) {
+					current[key] = [];
 				}
 
-				attributes[Number(index)] = {
-					...attributes[Number(index)],
-					[field]: value,
-				};
+				// Ensure the index exists in the array
+				while ((current[key] as Array<unknown>).length <= index) {
+					(current[key] as Array<unknown>).push({});
+				}
 
-				updatedProduct.data.tb_product_info.info.attribute = attributes;
-				setProduct(updatedProduct);
+				(current[key] as Array<Record<string, unknown>>)[index] = value;
+			} else {
+				current[lastPart] = value;
 			}
-		} else {
-			const updated = updateNestedObject({ ...product }, path, value);
-			setProduct(updated);
-		}
 
-		console.log('Updated path:', path, 'New value:', value);
+			return newProduct;
+		});
 	};
 
 	const handleSave = () => {
@@ -231,11 +244,11 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	}
 
 	const priceDetail: PriceDTO = {
-		price: product?.data.product_info?.price || '',
-		tax_type: product?.data.product_info?.tax_type || '',
-		tax_rate: product?.data.product_info?.tax_rate || '',
+		price: product?.data?.product_info?.price ?? '',
+		tax_type: product?.data?.product_info?.tax_type ?? '',
+		tax_rate: product?.data?.product_info?.tax_rate ?? '',
 		price_deviation_limit:
-			product?.data.product_info?.price_deviation_limit || '',
+			product?.data?.product_info?.price_deviation_limit ?? '',
 	};
 
 	const dataAttributes: AttributesDTO = {
@@ -347,9 +360,10 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 							handleSave={handleSave}
 							handleCancel={handleCancel}
 							handleEdit={handleEdit}
+							token={token}
+							tenantId={tenantId}
 						/>
 					)}
-
 				</div>
 			</div>
 			<div className="p-6">{content}</div>
