@@ -135,6 +135,7 @@ export class ProductsService {
           },
         },
         to_unit_qty: true,
+        is_active: true,
       },
       skip: (q.page - 1) * q.perpage,
       take: q.perpage,
@@ -144,12 +145,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ orderUnits: orderUnits });
@@ -240,12 +242,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ orderUnits: countUnits });
@@ -337,12 +340,13 @@ export class ProductsService {
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
+      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
       from_unit_name:
         item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
       from_unit_qty: Number(item.from_unit_qty),
+      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
       to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
       to_unit_qty: Number(item.to_unit_qty),
-      description: item.description,
     }));
 
     this.logger.debug({ recipeUnits: recipeUnits });
