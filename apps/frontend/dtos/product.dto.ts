@@ -200,6 +200,38 @@ export class ProductInfoUpdateDto implements ProductInfoUpdateModel {
 	price?: number | null;
 	info?: Product_info;
 }
+type ProductStatusType = "active" | "inactive" | "discontinued";
+
+type ProductUnit = {
+	id: string;
+	name: string;
+};
+
+type ProductGroup = {
+	id: string;
+	name: string;
+};
+
+
+type ProductSubCat = {
+	id: string;
+	name: string;
+};
+
+type ProductCategory = {
+	id: string;
+	name: string;
+};
+
+export interface InfoProduct {
+	name: string;
+	local_name: string;
+	status: ProductStatusType;
+	description: string;
+	item_group: ProductGroup,
+	sub_cat: ProductSubCat,
+	category: ProductCategory,
+}
 
 export interface ProductData {
 	id: string;
@@ -209,11 +241,28 @@ export interface ProductData {
 	description: string;
 	primary_unit_id: string;
 	product_status_type: string;
-	created_at: string;
-	created_by_id: string;
-	updated_at: string;
-	updated_by_id: string;
 	tb_product_info: ProductInfo;
+	product_info: ProductInfo;
+	product_primary_unit: ProductUnit;
+	product_item_group: ProductGroup;
+	product_subcategory: ProductGroup;
+	product_category: ProductCategory;
+}
+
+export interface ProductData {
+	data: {
+		id: string;
+		code: string;
+		name: string;
+		local_name: string;
+		description: string;
+		product_status_type: ProductStatusType;
+		product_info: ProductInfo;
+		product_primary_unit: ProductUnit;
+		product_item_group: ProductGroup;
+		product_subcategory: ProductGroup;
+		product_category: ProductCategory;
+	}
 }
 
 export interface CategoryData {
@@ -252,6 +301,7 @@ export type ProductInfoDto = {
 	price_deviation_limit: string;
 	info?: AttributesDTO;
 };
+
 export type PriceDTO = {
 	price: string;
 	tax_type: string;

@@ -3,12 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ProductModel } from '@/dtos/product.dto';
+import { ProductData } from '@/dtos/product.dto';
 import { Pencil, Save, Trash } from 'lucide-react';
 import React from 'react';
 
 interface Props {
-	product?: ProductModel;
+	product?: ProductData;
 	isEditing: boolean;
 	handleChange: (path: string, value: string) => void;
 	handleSave: () => void;
@@ -24,6 +24,7 @@ const ProductInfoHeader: React.FC<Props> = ({
 	handleCancel,
 	handleEdit,
 }) => {
+
 	return (
 		<Card>
 			<CardContent className="py-4">
@@ -34,16 +35,16 @@ const ProductInfoHeader: React.FC<Props> = ({
 								{isEditing ? (
 									<Input
 										className="text-xl font-bold w-64"
-										value={product?.data.name || ''}
+										value={product?.name || ''}
 										onChange={(e) => handleChange('data.name', e.target.value)}
 									/>
 								) : (
-									<div className="text-xl font-bold">{product?.data.name}</div>
+									<div className="text-xl font-bold">{product?.name}</div>
 								)}
-								<Badge>{product?.data.product_status_type}</Badge>
+								<Badge>{product?.product_status_type}</Badge>
 							</div>
 							<p className="text-muted-foreground text-xs">
-								{product?.data.code}
+								{product?.code}
 							</p>
 						</div>
 						<div className="flex items-center gap-2">
@@ -68,21 +69,19 @@ const ProductInfoHeader: React.FC<Props> = ({
 							)}
 						</div>
 					</div>
-
-					{/* Details Section */}
 					<div className="border-t grid grid-cols-3 gap-4 py-4 text-xs">
 						<div>
 							<p className="text-muted-foreground">Description</p>
 							{isEditing ? (
 								<Textarea
 									className="min-h-[60px] text-xs"
-									value={product?.data.description || ''}
+									value={product?.description || ''}
 									onChange={(e) =>
 										handleChange('data.description', e.target.value)
 									}
 								/>
 							) : (
-								<p>{product?.data.description}</p>
+								<p>{product?.description}</p>
 							)}
 						</div>
 						<div>
@@ -90,13 +89,12 @@ const ProductInfoHeader: React.FC<Props> = ({
 							{isEditing ? (
 								<Input
 									className="text-xs"
-									value={product?.category_name || ''}
 									onChange={(e) =>
 										handleChange('category_name', e.target.value)
 									}
 								/>
 							) : (
-								<p>{product?.category_name}</p>
+								<p>{product?.product_category.name}</p>
 							)}
 						</div>
 						<div>
@@ -104,13 +102,12 @@ const ProductInfoHeader: React.FC<Props> = ({
 							{isEditing ? (
 								<Input
 									className="text-xs"
-									value={product?.sub_category_name || ''}
 									onChange={(e) =>
 										handleChange('sub_category_name', e.target.value)
 									}
 								/>
 							) : (
-								<p>{product?.sub_category_name}</p>
+								<p>{product?.product_subcategory.name}</p>
 							)}
 						</div>
 						<div>
@@ -118,13 +115,13 @@ const ProductInfoHeader: React.FC<Props> = ({
 							{isEditing ? (
 								<Input
 									className="text-xs"
-									value={product?.item_group_name || ''}
+									value={product?.product_item_group.id}
 									onChange={(e) =>
 										handleChange('item_group_name', e.target.value)
 									}
 								/>
 							) : (
-								<p>{product?.item_group_name}</p>
+								<p>{product?.product_item_group.name}</p>
 							)}
 						</div>
 					</div>

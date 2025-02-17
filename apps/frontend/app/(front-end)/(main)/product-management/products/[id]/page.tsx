@@ -52,6 +52,8 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	const [orderUnitsList, setOrderUnitList] = useState<OrderUnitModel[]>([]);
 	const [orderUnitLoading, setOrderUnitLoading] = useState(true);
 
+	console.log('proddd', product);
+
 	useEffect(() => {
 		if (!params.id || !token) return;
 
@@ -229,17 +231,17 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 	}
 
 	const priceDetail: PriceDTO = {
-		price: product?.data.tb_product_info?.price || '',
-		tax_type: product?.data.tb_product_info?.tax_type || '',
-		tax_rate: product?.data.tb_product_info?.tax_rate || '',
+		price: product?.data.product_info?.price || '',
+		tax_type: product?.data.product_info?.tax_type || '',
+		tax_rate: product?.data.product_info?.tax_rate || '',
 		price_deviation_limit:
-			product?.data.tb_product_info?.price_deviation_limit || '',
+			product?.data.product_info?.price_deviation_limit || '',
 	};
 
 	const dataAttributes: AttributesDTO = {
 		info: {
 			attribute:
-				product?.data.tb_product_info?.info?.attribute?.map((item) => ({
+				product?.data.product_info?.info?.attribute?.map((item) => ({
 					label: item?.label,
 					value: item?.value,
 				})) ?? [],
@@ -337,14 +339,17 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 		<div className="container mx-auto py-4">
 			<div className="flex flex-col">
 				<div className="px-6">
-					<ProductInfoHeader
-						product={product}
-						isEditing={isEditing}
-						handleChange={handleChange}
-						handleSave={handleSave}
-						handleCancel={handleCancel}
-						handleEdit={handleEdit}
-					/>
+					{product && (
+						<ProductInfoHeader
+							product={product.data}
+							isEditing={isEditing}
+							handleChange={handleChange}
+							handleSave={handleSave}
+							handleCancel={handleCancel}
+							handleEdit={handleEdit}
+						/>
+					)}
+
 				</div>
 			</div>
 			<div className="p-6">{content}</div>
