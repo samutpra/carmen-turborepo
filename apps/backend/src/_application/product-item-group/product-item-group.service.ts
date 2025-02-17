@@ -1,23 +1,23 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
 import {
   ProductItemGroupCreateDto,
   ProductItemGroupUpdateDto,
-} from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+} from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbTenant,
   tb_product_item_group,
-} from '@prisma-carmen-client-tenant';
+} from "@prisma-carmen-client-tenant";
 
 @Injectable()
 export class ProductItemGroupService {
@@ -51,7 +51,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('productItemGroup not found');
+      throw new NotFoundException("productItemGroup not found");
     }
     const res: ResponseSingle<tb_product_item_group> = {
       data: oneObj,
@@ -105,7 +105,7 @@ export class ProductItemGroupService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'productItemGroup already exists',
+        message: "productItemGroup already exists",
         id: found.id,
       });
     }
@@ -131,7 +131,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('productItemGroup not found');
+      throw new NotFoundException("productItemGroup not found");
     }
 
     const updateObj = await this.db_tenant.tb_product_item_group.update({
@@ -154,7 +154,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('productItemGroup not found');
+      throw new NotFoundException("productItemGroup not found");
     }
 
     await this.db_tenant.tb_product_item_group.delete({
@@ -162,5 +162,72 @@ export class ProductItemGroupService {
         id,
       },
     });
+  }
+
+  async getSubCategory(req: Request, id: string) {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+
+    const data = await this.db_tenant.tb_product_item_group.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        description: true,
+        is_active: true,
+        tb_product_sub_category: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            description: true,
+            is_active: true,
+            tb_product_category: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+                description: true,
+                is_active: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!data) {
+      throw new NotFoundException("productItemGroup not found");
+    }
+
+    const res: ResponseSingle<any> = {
+      data: {
+        id: data.id,
+        code: data.code,
+        name: data.name,
+        description: data.description,
+        is_active: data.is_active,
+        sub_category: {
+          id: data.tb_product_sub_category.id,
+          code: data.tb_product_sub_category.code,
+          name: data.tb_product_sub_category.name,
+          description: data.tb_product_sub_category.description,
+          is_active: data.tb_product_sub_category.is_active,
+        },
+        category: {
+          id: data.tb_product_sub_category.tb_product_category.id,
+          code: data.tb_product_sub_category.tb_product_category.code,
+          name: data.tb_product_sub_category.tb_product_category.name,
+          description:
+            data.tb_product_sub_category.tb_product_category.description,
+          is_active: data.tb_product_sub_category.tb_product_category.is_active,
+        },
+      },
+    };
+
+    return res;
   }
 }
