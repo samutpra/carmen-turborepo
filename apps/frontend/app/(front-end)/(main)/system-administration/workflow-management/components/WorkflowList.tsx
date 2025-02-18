@@ -36,36 +36,35 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 import { Badge } from '@/components/ui-custom/is-active-badge';
+import PaginationComponent from '@/components/PaginationComponent';
 
 interface WorkflowListProps {
 	id: string;
 	name: string;
-	type: string;
+	workflow_type: string;
 	is_active: string;
-	lastModified: string;
 }
 
 enum WorkflowField {
 	name = 'name',
-	type = 'type',
+	workflow_type = 'workflow_type',
 	isActive = 'is_active',
-	lastModified = 'lastModified',
 }
 
 const sortFields: FieldConfig<WorkflowListProps>[] = [
 	{ key: WorkflowField.name, label: `Name`, className: 'w-40' },
-	{ key: WorkflowField.type, label: `Type`, className: 'w-40' },
+	{ key: WorkflowField.workflow_type, label: `Type`, className: 'w-40' },
 	{
 		key: WorkflowField.isActive,
 		label: `${status_text()}`,
 		type: 'badge',
 		className: 'w-24',
 	},
-	{
-		key: WorkflowField.lastModified,
-		label: `Last Modified`,
-		className: 'w-40',
-	},
+	// {
+	// 	key: WorkflowField.lastModified,
+	// 	label: `Last Modified`,
+	// 	className: 'w-40',
+	// },
 ];
 
 const fields: FieldConfig<WorkflowListProps>[] = [...sortFields];
@@ -206,6 +205,12 @@ const WorkflowList = () => {
 		setSort(`${field}:${newDirection}`);
 	};
 
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
+
 	if (showRefreshToken) {
 		return (
 			<Card
@@ -332,6 +337,11 @@ const WorkflowList = () => {
 					</TableBody>
 				)}
 			</Table>
+			<PaginationComponent
+				currentPage={+page}
+				totalPages={+pages}
+				onPageChange={handlePageChange}
+			/>
 		</>
 	);
 
