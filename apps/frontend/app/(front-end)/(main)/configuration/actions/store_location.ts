@@ -112,3 +112,29 @@ export const submitStoreLocation = async (
 		throw error;
 	}
 };
+
+export const fetchLocationByID = async (id: string, token: string, tenantId: string) => {
+	try {
+		const response = await fetch(
+			`/api/configuration/locations/${id}`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"x-tenant-id": tenantId,
+				},
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch location data: ${response.status}`);
+		}
+
+		const data = await response.json();
+		return data.data;
+	} catch (err) {
+		console.error("Error fetching location data:", err);
+		return null;
+	}
+};
+

@@ -24,6 +24,7 @@ interface Props {
     onSortChange?: (sort: SortQuery) => void;
     isLoading?: boolean;
     handleDelete: (id: string) => void;
+
 }
 
 const StoreLocationDisplay: React.FC<Props> = ({

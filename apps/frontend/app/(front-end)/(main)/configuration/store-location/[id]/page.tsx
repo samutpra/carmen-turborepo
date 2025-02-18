@@ -1,6 +1,5 @@
-import React from 'react';
-import StoreLcationDetails from '../components/StoreLcationDetails';
-
+import React from "react";
+import StoreLcationDetails from "../components/StoreLcationDetails";
 interface Props {
     params: { id: string };
 }

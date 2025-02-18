@@ -64,6 +64,7 @@ const StoreLocationDialog: React.FC<StoreLocationDialogProps> = ({
 	const [deliveryPoints, setDeliveryPoints] = useState<
 		DeliveryPointCreateModel[]
 	>([]);
+
 	const fetchData = useCallback(async () => {
 		if (!token) return;
 
