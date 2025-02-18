@@ -76,16 +76,21 @@ export interface Template {
 	content: string;
 }
 
-export interface Workflow {
-	id: string;
-	name: string;
-	type: string;
-	description: string;
+export interface WorkflowData {
 	documentReferencePattern: string;
-	is_active: boolean;
+
 	stages: Stage[];
 	routingRules: RoutingRule[];
 	notifications: WorkflowNotification[];
 	notificationTemplates: Template[];
 	products: Product[];
+}
+
+export interface Workflow {
+	id: string;
+	name: string;
+	workflow_type: string;
+	data: WorkflowData;
+	description: string;
+	is_active: boolean;
 }
