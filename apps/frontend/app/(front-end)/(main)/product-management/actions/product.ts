@@ -1,3 +1,6 @@
+import { fetchData } from '@/app/(front-end)/services/client';
+import { toastError } from '@/components/ui-custom/Toast';
+
 export const fetchProducts = async (
 	token: string,
 	tenantId: string,
@@ -51,3 +54,70 @@ export const fetchProducts = async (
 		throw error;
 	}
 };
+
+export const getLocations = async (
+	id: string,
+	token: string,
+	tenantId: string,
+) => {
+	try {
+		const response = await fetchData(
+			`/api/product-management/products/location/${id}`,
+			token,
+			tenantId
+		);
+		return response.data.data
+	} catch (err) {
+		console.error('Error fetching location:', err);
+		toastError({ message: 'Failed to fetch location data' });
+	}
+};
+
+export const fetchLocationList = async (
+	token: string,
+	tenantId: string,
+) => {
+	try {
+		const perpage = 99
+		const url = `/api/configuration/locations?perpage=${perpage}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error('Failed to fetch delivery points');
+		}
+
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching delivery points:', error);
+		throw error;
+	}
+};
+
+export const getProductGroup = async (token: string, tenantId: string, id: string) => {
+	try {
+		const api_url = `/api/product-management/category/select-item-group/${id}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(api_url, options);
+		return response.json()
+	} catch (error) {
+		console.error('Error fetching getProductGroup:', error);
+		throw error;
+	}
+}
+

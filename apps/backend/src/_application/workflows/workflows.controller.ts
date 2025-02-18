@@ -24,6 +24,8 @@ import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import QueryParams, { QueryAdvance } from "lib/types";
 import {
   WorkflowCreateDto,
+  workflowDTO,
+  workflowUpdateDTO,
   WorkflowUpdateDto,
 } from "shared-dtos/workflows/workflows.dto";
 
@@ -102,10 +104,10 @@ export class WorkflowsController {
 
   @Post()
   @ApiBody({
-    type: WorkflowCreateDto,
+    type: workflowDTO,
     description: "WorkflowCreateDto",
   })
-  async create(@Req() req: Request, @Body() body: WorkflowCreateDto) {
+  async create(@Req() req: Request, @Body() body: workflowDTO) {
     this.logger.debug({
       file: WorkflowsController.name,
       function: this.create.name,
@@ -123,13 +125,13 @@ export class WorkflowsController {
     type: "uuid",
   })
   @ApiBody({
-    type: WorkflowUpdateDto,
+    type: workflowUpdateDTO,
     description: "WorkflowUpdateDto",
   })
   async update(
     @Req() req: Request,
     @Param("id") id: string,
-    @Body() body: WorkflowUpdateDto,
+    @Body() body: workflowUpdateDTO,
   ) {
     this.logger.debug({
       file: WorkflowsController.name,
@@ -139,7 +141,7 @@ export class WorkflowsController {
     this.logger.debug({ body: body });
 
     const { ...updateDto } = body;
-    updateDto.id = id;
+    // updateDto.id = id;
     this.logger.debug({ id: id, updateDto: updateDto });
     return this.workflowsService.update(req, id, body);
   }

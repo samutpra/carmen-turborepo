@@ -49,6 +49,9 @@ CREATE TYPE "enum_jv_status" AS ENUM ('draft', 'posted');
 -- CreateEnum
 CREATE TYPE "enum_tax_type" AS ENUM ('none', 'vat');
 
+-- CreateEnum
+CREATE TYPE "enum_comment_type" AS ENUM ('user', 'system');
+
 -- CreateTable
 CREATE TABLE "tb_activity" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -645,6 +648,7 @@ CREATE TABLE "tb_unit_conversion" (
     "from_unit_qty" DECIMAL(20,5) DEFAULT 1,
     "to_unit_id" UUID,
     "to_unit_qty" DECIMAL(20,5) DEFAULT 1,
+    "is_default" BOOLEAN DEFAULT false,
     "description" TEXT,
     "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -813,6 +817,65 @@ CREATE TABLE "tb_product_location" (
     CONSTRAINT "tb_product_location_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tb_department_user" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" UUID NOT NULL,
+    "department_id" UUID NOT NULL,
+    "hod" BOOLEAN DEFAULT false,
+
+    CONSTRAINT "tb_department_user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_attachment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "filename" VARCHAR(255),
+    "filetype" VARCHAR(255),
+    "data" BYTEA,
+
+    CONSTRAINT "tb_attachment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_currency_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "type" "enum_comment_type",
+    "user_id" UUID,
+    "message" VARCHAR(255),
+    "attachments" JSON[],
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+
+    CONSTRAINT "tb_currency_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_unit_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "type" "enum_comment_type",
+    "user_id" UUID,
+    "message" VARCHAR(255),
+    "attachments" JSON[],
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+
+    CONSTRAINT "tb_unit_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_user_location" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "user_id" UUID NOT NULL,
+    "location_id" UUID NOT NULL,
+
+    CONSTRAINT "tb_user_location_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "activity_entitytype_entityid_idx" ON "tb_activity"("entity_type", "entity_id");
 
@@ -947,6 +1010,12 @@ CREATE INDEX "workflow_name_u" ON "tb_workflow"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_location_u" ON "tb_product_location"("product_id", "location_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "department_user_u" ON "tb_department_user"("department_id", "user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_location_u" ON "tb_user_location"("user_id", "location_id");
 
 -- AddForeignKey
 ALTER TABLE "tb_credit_note" ADD CONSTRAINT "tb_credit_note_inventory_transaction_id_fkey" FOREIGN KEY ("inventory_transaction_id") REFERENCES "tb_inventory_transaction"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -1124,3 +1193,9 @@ ALTER TABLE "tb_product_location" ADD CONSTRAINT "tb_product_location_location_i
 
 -- AddForeignKey
 ALTER TABLE "tb_product_location" ADD CONSTRAINT "tb_product_location_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_department_user" ADD CONSTRAINT "tb_department_user_department_id_fkey" FOREIGN KEY ("department_id") REFERENCES "tb_department"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_user_location" ADD CONSTRAINT "tb_user_location_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "tb_location"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

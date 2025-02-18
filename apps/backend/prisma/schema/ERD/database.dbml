@@ -128,6 +128,24 @@ TABLE CARMEN_SYSTEM.tb_business_unit {
   }
 }
 
+TABLE CARMEN_SYSTEM.tb_cluster_user {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+  cluster_id uuid [not null, ref: > CARMEN_SYSTEM.tb_cluster.id]
+
+  is_active bool [default: true]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
+
+  indexes {
+    (user_id, cluster_id) [unique, name: "user_cluster_u"]
+  }
+}
+
 TABLE CARMEN_SYSTEM.tb_user_tb_business_unit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   user_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
@@ -535,6 +553,7 @@ TABLE TENANT_DUMMY.tb_unit_conversion {
   from_unit_qty numeric(20,5) [default: 1]
   to_unit_id uuid [ref: > TENANT_DUMMY.tb_unit.id]
   to_unit_qty numeric(20,5) [default: 1]
+  is_default bool [default: false]
   description text
 
   is_active bool [default: true]
@@ -564,6 +583,27 @@ TABLE TENANT_DUMMY.tb_department {
 
   indexes {
     name [name: "department_name_u"]
+  }
+}
+
+TABLE TENANT_DUMMY.tb_department_user {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  department_id uuid [not null, ref: > TENANT_DUMMY.tb_department.id]
+  hod bool [default: false]
+
+  indexes {
+    (department_id, user_id) [unique ,name: "department_user_u"]
+  }
+}
+
+TABLE TENANT_DUMMY.tb_user_location {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  location_id uuid [not null, ref: > TENANT_DUMMY.tb_location.id]
+
+  indexes {
+    (user_id, location_id) [unique, name: "user_location_u"]
   }
 }
 
@@ -1450,6 +1490,48 @@ TABLE TENANT_DUMMY.tb_jv_detail {
 
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+Enum TENANT_DUMMY.enum_comment_type {
+  user
+  system
+}
+
+TABLE TENANT_DUMMY.tb_attachment {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  filename varchar(255)
+  filetype varchar(255)
+  data bytea
+}
+
+TABLE TENANT_DUMMY.tb_currency_comment {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  type TENANT_DUMMY.enum_comment_type
+
+  user_id uuid [null]
+  message varchar(255)
+  attachments json[]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid 
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid
+}
+
+TABLE TENANT_DUMMY.tb_unit_comment {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  type TENANT_DUMMY.enum_comment_type
+
+  user_id uuid [null]
+  message varchar(255)
+  attachments json[]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid 
 
   updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid

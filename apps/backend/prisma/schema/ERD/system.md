@@ -187,6 +187,16 @@ erDiagram
   String name
   String symbol
 }
+"tb_cluster_user" {
+  String id PK
+  String user_id FK "nullable"
+  String cluster_id FK
+  Boolean is_active "nullable"
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
 "tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_updated_by_idTotb_user
@@ -236,6 +246,10 @@ erDiagram
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_updated_by_idTotb_user
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_user_idTotb_user
 "tb_user_login_session" }o--|| "tb_user" : tb_user
+"tb_cluster_user" }o--|| "tb_cluster" : tb_cluster
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_created_by_idTotb_user
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_updated_by_idTotb_user
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_user_idTotb_user
 ```
 
 ### `tb_application_role`
@@ -454,3 +468,15 @@ erDiagram
   - `iso_code`: 
   - `name`: 
   - `symbol`: 
+
+### `tb_cluster_user`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
+  - `cluster_id`: 
+  - `is_active`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 

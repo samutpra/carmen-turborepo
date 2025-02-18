@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import * as m from '@/paraglide/messages.js';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
 	form: UseFormReturn<VendorCreateModel>;
@@ -48,7 +49,7 @@ const VendorInfo: React.FC<Props> = ({ form, isInputDisabled, onSubmit }) => {
 						<FormItem>
 							<FormLabel>{m.description()}</FormLabel>
 							<FormControl>
-								<Input
+								<Textarea
 									{...field}
 									disabled={isInputDisabled}
 									placeholder="Enter vendor description"

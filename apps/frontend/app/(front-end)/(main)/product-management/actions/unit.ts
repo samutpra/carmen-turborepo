@@ -108,3 +108,33 @@ export const submitUnit = async (
 		throw error;
 	}
 };
+
+
+export const fetchUnitList = async (
+	token: string,
+	tenantId: string,
+) => {
+	try {
+		const perpage = 99
+		const url = `/api/product-management/unit?perpage=${perpage}`;
+
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(url, options);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch list unit');
+		}
+		const result = await response.json();
+		return result.data;
+	} catch (error) {
+		console.error('Error fetching list unit:', error);
+		throw error;
+	}
+};

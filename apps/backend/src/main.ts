@@ -9,6 +9,7 @@ import {
 } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
+import { ValidationPipe } from "@nestjs/common";
 
 dotenv.config();
 
@@ -16,6 +17,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     transform: false,
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //   }),
+  // );
 
   // app.useGlobalPipes(
   //   new ValidationPipe({

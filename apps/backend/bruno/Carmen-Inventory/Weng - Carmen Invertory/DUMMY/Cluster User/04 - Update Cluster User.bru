@@ -1,0 +1,18 @@
+meta {
+  name: 04 - Update Cluster User
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/cluster-user/cfcb6641-3e00-4959-9846-3862b7ee9a0a
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "cluster_id": "206c2d68-0d60-4be3-b2e9-feb1be25b2b2",
+    "is_active": false
+  }
+}

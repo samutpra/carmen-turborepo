@@ -12,12 +12,12 @@ post {
 
 body:json {
   {
-    "code": "PRD-2025-004",
-    "name": "Premium Coffee Beans 4",
-    "local_name": "กาแฟ4",
+    "name": "Coffee 01",
+    "code": "C001",
+    "local_name": "กาแฟ1",
     "description": "High-quality Arabica coffee beans sourced from Colombia, perfect for brewing rich and aromatic coffee.",
-    "primary_unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
-    "product_item_group_id": "551aec2d-5f3a-47f8-8abb-8290589ec9bf",
+    "primary_unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
+    "product_item_group_id": "aa9c671b-3b6c-45ac-a3aa-d9a413f36c2a",
     "price": 88.44,
     "tax_type": "vat",
     "tax_rate": 7.00,
@@ -37,64 +37,70 @@ body:json {
     "locations": {
       "add": [
         {
-          "location_id": "9c2fba28-460e-4a31-a9da-4f484f45b07d"
+          "location_id": "983a82a4-3cac-49f8-8f25-6776c3ce03e7"
         },
         {
-          "location_id": "d66eed02-38e4-49a1-b87e-07a7ff9e0104"
+          "location_id": "74b412fe-101d-4365-b02f-8e9b66c4989e"
         }
       ]
     },
     "orderUnits": {
       "add": [
         {
-          "unit_id": "56703be2-d885-48c2-9003-eab2c5aa6026",
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
           "unit_quantity": 1,
-          "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+          "to_unit_id": "c924493a-35ff-475f-b4b8-b915c9d91dab",
           "to_quantity": 12,
-          "description": "1 Set = 12 Each"
+          "description": "1 Set = 12 Each",
+          "is_default": false
         },
         {
-          "unit_id": "56703be2-d885-48c2-9003-eab2c5aa6026",
+          "unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "unit_quantity": 1,
-          "to_unit_id": "8d32b547-f0ea-41af-a794-a6f6100f24da",
+          "to_unit_id": "c924493a-35ff-475f-b4b8-b915c9d91dab",
           "to_quantity": 24,
-          "description": "1 Box = 24 Each"
+          "description": "1 Box = 24 Each",
+          "is_default": false
         }
       ]
     },
     "recipeUnits": {
       "add": [
-        //       {
-        //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
-        //         "unit_quantity": 10,
-        //         "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
-        //         "to_unit_quantity": 1,
-        //         "description": "10 KG = 1 Box"
-        //       },
         {
-          "unit_id": "56703be2-d885-48c2-9003-eab2c5aa6026",
-          "unit_quantity": 30,
-          "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
+          "unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
+          "unit_quantity": 10,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "to_unit_quantity": 1,
-          "description": "30 Set = 1 Box"
+          "description": "10 KG = 1 Box",
+          "is_default": false
+        },
+        {
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
+          "unit_quantity": 30,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
+          "to_unit_quantity": 1,
+          "description": "30 Set = 1 Box",
+          "is_default": false
         }
       ]
     },
     "countUnits": {
       "add": [
-        //       {
-        //         "unit_id": "e3116f49-9497-46d8-ad6e-f5f9576d2551",
-        //         "unit_quantity": 10,
-        //         "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
-        //         "to_unit_quantity": 1,
-        //         "description": "10 KG = 1 Box"
-        //       },
         {
-          "unit_id": "56703be2-d885-48c2-9003-eab2c5aa6026",
-          "unit_quantity": 30,
-          "to_unit_id": "83e9be2a-ec79-4c47-bc91-5a6a296c6b82",
+          "unit_id": "7f38ded0-dd32-4f82-b6b3-153624b89ea1",
+          "unit_quantity": 10,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
           "to_unit_quantity": 1,
-          "description": "30 Set = 1 Box"
+          "description": "10 KG = 1 Box",
+          "is_default": false
+        },
+        {
+          "unit_id": "15020a63-37ac-4163-aba6-01492572880b",
+          "unit_quantity": 30,
+          "to_unit_id": "905e1743-fcc4-4b01-adca-d14d527043d8",
+          "to_unit_quantity": 1,
+          "description": "30 Set = 1 Box",
+          "is_default": false
         }
       ]
     }

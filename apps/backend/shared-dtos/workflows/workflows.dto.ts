@@ -1,3 +1,12 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { z } from "zod";
 
 export enum enum_workflow_type {
@@ -27,7 +36,7 @@ export class WorkflowCreateDto implements WorkflowCreateModel {
 }
 
 export const WorkflowUpdateSchema = z.object({
-  id: z.string(),
+  // id: z.string().uuid(),
   name: z.string().optional(),
   workflow_type: z
     .enum(Object.values(enum_workflow_type) as [string, ...string[]])
@@ -40,10 +49,78 @@ export const WorkflowUpdateSchema = z.object({
 export type WorkflowUpdateModel = z.infer<typeof WorkflowUpdateSchema>;
 
 export class WorkflowUpdateDto implements WorkflowUpdateModel {
-  id?: string;
+  // id?: string;
   name?: string;
   workflow_type?: enum_workflow_type;
   description?: string;
   data?: object;
+  is_active?: boolean;
+}
+
+export class workflowDTO {
+  @ApiProperty({
+    type: String,
+    nullable: false,
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty({
+    enum: enum_workflow_type,
+    nullable: false,
+    default: enum_workflow_type.purchase_request,
+  })
+  @IsString()
+  @IsNotEmpty()
+  workflow_type: enum_workflow_type;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiPropertyOptional({ type: Object, nullable: true })
+  @IsObject()
+  @IsOptional()
+  data?: object;
+
+  @ApiPropertyOptional({ type: Boolean, nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  is_active?: boolean;
+}
+
+export class workflowUpdateDTO {
+  @ApiPropertyOptional({
+    type: String,
+    nullable: true,
+  })
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @ApiPropertyOptional({
+    enum: enum_workflow_type,
+    nullable: true,
+    default: enum_workflow_type.purchase_request,
+  })
+  @IsEnum(enum_workflow_type)
+  @IsOptional()
+  workflow_type: enum_workflow_type;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiPropertyOptional({ type: Object, nullable: true })
+  @IsObject()
+  @IsOptional()
+  data?: object;
+
+  @ApiPropertyOptional({ type: Boolean, nullable: true })
+  @IsBoolean()
+  @IsOptional()
   is_active?: boolean;
 }

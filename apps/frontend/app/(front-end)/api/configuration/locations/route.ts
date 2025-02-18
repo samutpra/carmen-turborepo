@@ -4,24 +4,24 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 
-	const { searchParams } = new URL(request.url);
-	const search = searchParams.get('search') || '';
-	const page = searchParams.get('page') || '1';
-	const sort = searchParams.get('sort') || '';
+	const searchParams = request.nextUrl.searchParams;
+	const queryString = searchParams.toString();
+
+	const apiUrl = queryString
+		? `${API_URL}/v1/locations?${queryString}`
+		: `${API_URL}/v1/locations`;
 
 	const options = {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${token}`,
 			'x-tenant-id': 'DUMMY',
+			'Content-Type': 'application/json',
 		},
 	};
 
-	const locationUrl = `${API_URL}/v1/locations?search=${search}&page=${page}&sort=${sort}`;
-
 	try {
-		const response = await fetch(locationUrl, options);
-
+		const response = await fetch(apiUrl, options);
 		if (!response.ok) {
 			return NextResponse.json(
 				{ error: `Failed to fetch data: ${response.statusText}` },
