@@ -8,7 +8,7 @@ import StoreLocationDialog from './StoreLocationDialog';
 import {
 	deleteStoreLocation,
 	fetchStoreLocations,
-} from '../actions/store_location';
+} from '../../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
@@ -17,11 +17,11 @@ import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { FileDown, Printer } from 'lucide-react';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { LocationCreateModel } from '@/dtos/location.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
+import StoreLocationDisplay from './StoreLocationDisplay';
 
 export enum StoreLocationField {
 	Name = 'name',
@@ -139,6 +139,12 @@ const StoreLocationList = () => {
 		fetchData();
 	}, [token, tenantId, search, status, page, sort]);
 
+	const handlePageChange = (newPage: number) => {
+		const numericTotalPages = Number(pages);
+		if (newPage < 1 || newPage > numericTotalPages) return;
+		setPage(newPage.toString());
+	};
+
 	const title = `${m.store_location()}`;
 
 	const actionButtons = (
@@ -199,28 +205,19 @@ const StoreLocationList = () => {
 	);
 
 	const content = (
-		<DisplayComponent<LocationCreateModel>
-			items={storeLocations}
+		<StoreLocationDisplay
+			locations={storeLocations}
 			fields={sortFields}
-			idField="id"
-			onSuccess={handleSuccess}
-			onDelete={handleDelete}
-			editComponent={({ item, onSuccess }) => (
-				<StoreLocationDialog
-					mode={formType.EDIT}
-					defaultValues={item}
-					onSuccess={onSuccess}
-				/>
-			)}
 			page={+page}
 			totalPage={+pages}
-			setPage={setPage}
+			handlePageChange={handlePageChange}
 			sort={sort}
 			onSortChange={(newSort: SortQuery) => {
 				setSort(newSort);
 			}}
 			isLoading={isLoading}
-			data-id="store-location-display-component"
+			handleDelete={handleDelete}
+			data-id="product-list-product-display"
 		/>
 	);
 

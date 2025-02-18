@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
+import { FieldConfig, SortDirection, SortQuery } from '@/lib/util/uiConfig';
 import { ProductCreateModel } from '@/dtos/product.dto';
 import { ProductField, productStatusBadge } from './ProductList';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,7 @@ import {
 } from '@/components/ui/table';
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 import * as m from '@/paraglide/messages.js';
-
-export type SortDirection = 'asc' | 'desc';
-
+import SortButton from '@/components/SortButton';
 interface ProductDisplayProps {
 	products: ProductCreateModel[];
 	fields: FieldConfig<ProductCreateModel>[];
@@ -31,47 +29,6 @@ interface ProductDisplayProps {
 	onSortChange?: (sort: SortQuery) => void;
 	isLoading?: boolean;
 }
-
-interface SortButtonProps {
-	field: string;
-	label: string;
-	isActive: boolean;
-	direction: SortDirection;
-	onSort: (field: string) => void;
-}
-
-const SortButton: React.FC<SortButtonProps> = ({
-	field,
-	label,
-	isActive,
-	direction,
-	onSort,
-}) => (
-	<div className="flex items-center gap-1">
-		<span>{label}</span>
-		<Button
-			variant="ghost"
-			size="sm"
-			className="h-6 w-6 p-0"
-			onClick={() => onSort(field)}
-			aria-label={`Sort by ${label} ${isActive ? direction === 'asc' ? 'descending' : 'ascending' : ''}`}
-		>
-			{isActive ? (
-				direction === 'asc' ? (
-					<ChevronUp className="h-4 w-4" />
-				) : (
-					<ChevronDown className="h-4 w-4" />
-				)
-			) : (
-				<div className="flex flex-col -space-y-2">
-					<ChevronUp className="h-3 w-3 opacity-50" />
-					<ChevronDown className="h-3 w-3 opacity-50" />
-				</div>
-			)}
-		</Button>
-	</div>
-);
-
 
 const ProductDisplay: React.FC<ProductDisplayProps> = ({
 	products,
@@ -106,7 +63,7 @@ const ProductDisplay: React.FC<ProductDisplayProps> = ({
 
 	const renderFieldValue = (field: FieldConfig<ProductCreateModel>, product: ProductCreateModel) => {
 		if (field.key === ProductField.STATUS) {
-			return productStatusBadge(product[field.key]); // ใช้ Badge ถ้าเป็น Status
+			return productStatusBadge(product[field.key]);
 		}
 		if (field.render) {
 			return field.render(product[field.key], product);
@@ -253,17 +210,6 @@ const ProductDisplay: React.FC<ProductDisplayProps> = ({
 					onPageChange={handlePageChange}
 				/>
 			</div>
-			{/* <ProductDesktop
-				products={products}
-				fields={fields}
-				page={page}
-				totalPage={totalPage}
-				handlePageChange={handlePageChange}
-				sortField={sortField}
-				sortDirection={sortDirection}
-				handleSort={handleSort}
-				isLoading={isLoading}
-			/> */}
 		</>
 	);
 };

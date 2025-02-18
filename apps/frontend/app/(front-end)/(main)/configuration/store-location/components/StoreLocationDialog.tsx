@@ -34,13 +34,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { submitStoreLocation } from '../actions/store_location';
+import { submitStoreLocation } from '../../actions/store_location';
 import { formType } from '@/types/form_type';
 import * as m from '@/paraglide/messages.js';
 import { enum_location_type, LocationCreateModel, LocationCreateSchema } from '@/dtos/location.dto';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
-import { fetchListDP } from '../actions/delivery_point';
-import DeliveryPointSelect from './DeliveryPointSelect ';
+import { fetchListDP } from '../../actions/delivery_point';
+import DeliveryPointSelect from '../../components/DeliveryPointSelect ';
 import { StoreLocationField } from './StoreLocationList';
 import { locationField } from '@/lib/util/fields';
 
