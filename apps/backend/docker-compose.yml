@@ -31,6 +31,16 @@ services:
   #   ports:
   #     - "8080:8080"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+
   dev-api:
     build:
       context: .
@@ -40,12 +50,13 @@ services:
     ports:
       - "4000:4000"
     environment:
-      # - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/carmen_db
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432?schema=public
+      - DATABASE_URL_SYSTEM=postgresql://postgres:postgres@postgres:5432?schema=CARMEN_SYSTEM
+      - DATABASE_URL_TENANT=postgresql://postgres:postgres@postgres:5432?schema=TENANT_DUMMY
       # - FRONTEND_URL=http://localhost:3500
       # - JWT_SECRET=4bDFs8qwAHRw9AMURufYt3UblS5FT4wCJV18ASte
       # - JWT_EXPIRES_IN=1d
       # - JWT_REFRESH_EXPIRES_IN=7d
-      # - DATABASE_URL=postgresql://postgres:postgres@www.semapru.com:5432?schema=public
       # - DATABASE_URL_SYSTEM=postgresql://postgres:postgres@www.semapru.com:5432?schema=CARMEN_SYSTEM
       # - DATABASE_URL_TENANT=postgresql://postgres:postgres@www.semapru.com:5432?schema=TENANT_DUMMY
       # - RESEND_TOKEN=re_2sry5ThE_L1XbBnv7waauFQkgjqMS6s1W
@@ -70,3 +81,4 @@ networks:
 
 volumes:
   postgres-data:
+  redis_data:
