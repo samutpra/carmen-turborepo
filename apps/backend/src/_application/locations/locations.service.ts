@@ -236,12 +236,12 @@ export class LocationsService {
         await Promise.all(
           updateDto.user.remove.map(async (user) => {
             const findUserLocation =
-              await this.db_tenant.tb_user_location.findUnique({
-                where: { id: user.user_location_id },
+              await this.db_tenant.tb_user_location.findFirst({
+                where: { user_id: user.user_id, location_id: id },
               });
 
             if (!findUserLocation) {
-              userLocationNotFound.push(user.user_location_id);
+              userLocationNotFound.push(user.user_id);
             }
           }),
         );
@@ -251,6 +251,27 @@ export class LocationsService {
             statusCode: HttpStatus.NOT_FOUND,
             message: "Remove User not found",
             data: userLocationNotFound,
+          });
+        }
+
+        let userNotFound = [];
+        await Promise.all(
+          updateDto.user.remove.map(async (user) => {
+            const findUserLocation = await this.db_system.tb_user.findUnique({
+              where: { id: user.user_id },
+            });
+
+            if (!findUserLocation) {
+              userNotFound.push(user.user_id);
+            }
+          }),
+        );
+
+        if (userNotFound.length > 0) {
+          throw new NotFoundException({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: "Remove User not found",
+            data: userNotFound,
           });
         }
       }
@@ -265,7 +286,7 @@ export class LocationsService {
       },
     });
 
-    const locationObj = {
+    const updateLocationObj = {
       name: updateDto.name ?? oldLocation.name,
       location_type: location_type ?? oldLocation.location_type,
       description: updateDto.description ?? oldLocation.description,
@@ -282,7 +303,7 @@ export class LocationsService {
         id,
       },
       data: {
-        ...locationObj,
+        ...updateLocationObj,
       },
     });
 
@@ -293,6 +314,8 @@ export class LocationsService {
           user_id: user.user_id,
         }));
 
+        console.log(userLocationAddObj);
+
         await this.db_tenant.tb_user_location.createMany({
           data: userLocationAddObj,
         });
@@ -300,14 +323,15 @@ export class LocationsService {
 
       if (updateDto.user.remove) {
         const userLocationRemoveObj = updateDto.user.remove.map((user) => ({
-          user_location_id: user.user_location_id,
+          location_id: id,
+          user_id: user.user_id,
         }));
 
         await this.db_tenant.tb_user_location.deleteMany({
           where: {
             location_id: id,
-            id: {
-              in: userLocationRemoveObj.map((user) => user.user_location_id),
+            user_id: {
+              in: userLocationRemoveObj.map((user) => user.user_id),
             },
           },
         });
