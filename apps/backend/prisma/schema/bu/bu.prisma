@@ -874,6 +874,12 @@ model tb_user_location {
   @@unique([user_id, location_id], map: "user_location_u")
 }
 
+model tb_config_running_code {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type   String? @db.VarChar(255)
+  config Json?   @default("{}") @db.Json
+}
+
 enum enum_activity_action {
   view
   create

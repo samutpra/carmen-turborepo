@@ -33,6 +33,7 @@ erDiagram
   String description "nullable"
   Boolean is_hq "nullable"
   Boolean is_active "nullable"
+  String db_connection "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
@@ -285,6 +286,7 @@ erDiagram
   - `description`: 
   - `is_hq`: 
   - `is_active`: 
+  - `db_connection`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 

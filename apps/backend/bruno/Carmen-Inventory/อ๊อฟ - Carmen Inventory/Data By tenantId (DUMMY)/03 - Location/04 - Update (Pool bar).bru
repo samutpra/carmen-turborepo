@@ -1,0 +1,17 @@
+meta {
+  name: 04 - Update (Pool bar)
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{host}}/api/v1/locations/5864bcd4-7c29-4be6-af69-480f74a7a32e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "delivery_point_id": "fb7f884b-1c92-45dc-bb22-a64fd9bbe466"
+  }
+}

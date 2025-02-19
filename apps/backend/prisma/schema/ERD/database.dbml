@@ -115,6 +115,8 @@ TABLE CARMEN_SYSTEM.tb_business_unit {
   is_hq bool [default: true]
   is_active bool [default: true]
 
+  db_connection varchar(255) [null]
+
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
 
@@ -1535,4 +1537,10 @@ TABLE TENANT_DUMMY.tb_unit_comment {
 
   updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid
+}
+ 
+TABLE TENANT_DUMMY.tb_config_running_code {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  type varchar(255)
+  config json [null, default: '{}']
 }

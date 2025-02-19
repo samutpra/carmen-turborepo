@@ -224,6 +224,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_business_unit" (
   "description" text,
   "is_hq" bool DEFAULT true,
   "is_active" bool DEFAULT true,
+  "db_connection" varchar(255),
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -1038,6 +1039,12 @@ CREATE TABLE "TENANT_DUMMY"."tb_unit_comment" (
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_config_running_code" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "type" varchar(255),
+  "config" json DEFAULT '{}'
 );
 
 CREATE INDEX "user_username_idx" ON "CARMEN_SYSTEM"."tb_user" ("username");
