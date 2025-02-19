@@ -5,29 +5,29 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/locations/e9fb201d-2585-424a-bf97-62d23dd1569a
+  url: {{host}}/api/v1/locations/49804088-fd0e-4966-83de-865e3c7bf663
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "Pool bar",
+    "name": "Pool bar update",
     //   "description": "Pool bar",
     //   "is_active": true,
     //   "location_type": "direct",
     //   "deliveryPointId": "6ba7b8b6-9dad-11d1-80b4-00c04fd430c8",
     "user": {
-      //     "add": [
-      //       {
-      //         "user_id": "c145198d-9107-44f8-9a77-7c78c80df663"
-      //       }
-      //     ],
-      "remove": [
-        {
-          "user_location_id": "21132c06-a5b6-45f3-9390-b65a333430e9"
-        }
-      ]
+          "add": [
+            {
+              "user_id": "6ba7b8ac-9dad-11d1-80b4-00c04fd430c8"
+            }
+          ]
+  //     "remove": [
+  //       {
+  //         "user_id": "c145198d-9107-44f8-9a77-7c78c80df663"
+  //       }
+  //     ]
     }
   }
 }
