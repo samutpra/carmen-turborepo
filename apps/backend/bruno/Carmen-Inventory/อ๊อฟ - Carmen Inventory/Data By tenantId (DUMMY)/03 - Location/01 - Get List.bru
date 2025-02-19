@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/locations
+  url: {{host}}/api/v1/locations?search=Main
   body: none
   auth: none
 }
 
 params:query {
+  search: Main
   ~sort: name
   ~filter[DeliveryPoint.name]: samp
   ~page: 1

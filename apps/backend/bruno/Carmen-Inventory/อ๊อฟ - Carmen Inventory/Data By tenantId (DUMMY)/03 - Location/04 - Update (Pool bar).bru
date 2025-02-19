@@ -5,13 +5,29 @@ meta {
 }
 
 patch {
-  url: {{host}}/api/v1/locations/5864bcd4-7c29-4be6-af69-480f74a7a32e
+  url: {{host}}/api/v1/locations/e9fb201d-2585-424a-bf97-62d23dd1569a
   body: json
   auth: none
 }
 
 body:json {
   {
-    "delivery_point_id": "fb7f884b-1c92-45dc-bb22-a64fd9bbe466"
+    "name": "Pool bar",
+    //   "description": "Pool bar",
+    //   "is_active": true,
+    //   "location_type": "direct",
+    //   "deliveryPointId": "6ba7b8b6-9dad-11d1-80b4-00c04fd430c8",
+    "user": {
+      //     "add": [
+      //       {
+      //         "user_id": "c145198d-9107-44f8-9a77-7c78c80df663"
+      //       }
+      //     ],
+      "remove": [
+        {
+          "user_location_id": "21132c06-a5b6-45f3-9390-b65a333430e9"
+        }
+      ]
+    }
   }
 }
