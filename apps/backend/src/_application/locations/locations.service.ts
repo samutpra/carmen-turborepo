@@ -354,6 +354,12 @@ export class LocationsService {
       throw new NotFoundException("Location not found");
     }
 
+    await this.db_tenant.tb_user_location.deleteMany({
+      where: {
+        location_id: id,
+      },
+    });
+
     await this.db_tenant.tb_location.delete({
       where: {
         id,
