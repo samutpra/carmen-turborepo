@@ -33,15 +33,20 @@ export const LocationCreateSchema = z.object({
 			item_count: z.number().optional(),
 			last_count: z.string().optional(),
 		})
-		.optional(),
+		.optional()
+		.nullable(),
 	users: z
 		.object({
-			add: z.object({
-				id: z.string().uuid(),
-			}),
-			delete: z.object({
-				id: z.string().uuid(),
-			}),
+			add: z.array(
+				z.object({
+					id: z.string().uuid(),
+				})
+			),
+			delete: z.array(
+				z.object({
+					id: z.string().uuid(),
+				})
+			),
 		})
 		.optional(),
 });
