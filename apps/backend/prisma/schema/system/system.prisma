@@ -58,6 +58,7 @@ model tb_business_unit {
   description                                     String?
   is_hq                                           Boolean?                     @default(true)
   is_active                                       Boolean?                     @default(true)
+  db_connection                                   String?                      @db.VarChar(255)
   created_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)
   created_by_id                                   String?                      @db.Uuid
   updated_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)

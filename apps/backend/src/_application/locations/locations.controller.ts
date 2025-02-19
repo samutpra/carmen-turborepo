@@ -1,6 +1,10 @@
 import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import QueryParams, { QueryAdvance } from "lib/types";
-import { LocationCreateDto, LocationUpdateDto } from "shared-dtos";
+import {
+  enum_location_type,
+  LocationCreateDto,
+  LocationUpdateDto,
+} from "shared-dtos";
 import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
 
 import {
@@ -71,8 +75,7 @@ export class LocationsController {
     const defaultSearchFields: string[] = [
       "name",
       "description",
-      "locationType",
-      "deliveryPointId",
+      // "location_type",
     ];
 
     this.logger.debug({

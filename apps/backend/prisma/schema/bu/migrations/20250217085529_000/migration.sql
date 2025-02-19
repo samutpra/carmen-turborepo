@@ -876,6 +876,15 @@ CREATE TABLE "tb_user_location" (
     CONSTRAINT "tb_user_location_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tb_config_running_code" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "type" VARCHAR(255),
+    "config" JSON DEFAULT '{}',
+
+    CONSTRAINT "tb_config_running_code_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "activity_entitytype_entityid_idx" ON "tb_activity"("entity_type", "entity_id");
 

@@ -40,6 +40,7 @@ CREATE TABLE "tb_business_unit" (
     "description" TEXT,
     "is_hq" BOOLEAN DEFAULT true,
     "is_active" BOOLEAN DEFAULT true,
+    "db_connection" VARCHAR(255),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,

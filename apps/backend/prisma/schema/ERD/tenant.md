@@ -634,6 +634,11 @@ erDiagram
   String user_id
   String location_id FK
 }
+"tb_config_running_code" {
+  String id PK
+  String type "nullable"
+  Json config "nullable"
+}
 "tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
 "tb_exchange_rate" }o--o| "tb_currency" : tb_currency
@@ -1422,3 +1427,10 @@ erDiagram
   - `id`: 
   - `user_id`: 
   - `location_id`: 
+
+### `tb_config_running_code`
+
+**Properties**
+  - `id`: 
+  - `type`: 
+  - `config`: 
