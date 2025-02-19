@@ -79,109 +79,119 @@ const LocationHeaderDetail: React.FC<Props> = ({
     };
 
     return (
-        <Card className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    {isEdit ? (
-                        <Input defaultValue={name || ""} />
-                    ) : (
-                        <p className="text-xl font-bold">{name}</p>
-                    )}
+			<Card className="p-4 space-y-2">
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2">
+						{isEdit ? (
+							<div className="space-y-1">
+								<p className="text-gray-500 text-xs font-medium">Name</p>
+								<Input defaultValue={name || ''} />
+							</div>
+						) : (
+							<p className="text-xl font-bold">{name}</p>
+						)}
 
-                    {isEdit ? (
-                        <RadioGroup
-                            defaultValue={is_active ? "active" : "inactive"}
-                            className="flex space-x-4"
-                        >
-                            <label className="flex items-center space-x-2">
-                                <RadioGroupItem value="active" id="active" />
-                                <span className="text-sm font-medium">Active</span>
-                            </label>
-                            <label className="flex items-center space-x-2">
-                                <RadioGroupItem value="inactive" id="inactive" />
-                                <span className="text-sm font-medium">Inactive</span>
-                            </label>
-                        </RadioGroup>
-                    ) : (
-                        <Badge variant={is_active ? "default" : "destructive"}>
-                            {is_active ? "Active" : "Inactive"}
-                        </Badge>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                    {isEdit ? (
-                        <>
-                            <Button size="sm" variant="outline">
-                                <Save className="w-4 h-4 mr-2" />
-                                Save
-                            </Button>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={onCancel}
-                            >
-                                <X className="w-4 h-4 mr-2" />
-                                Cancel
-                            </Button>
-                        </>
-                    ) : (
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setIsEdit(true)}
-                        >
-                            <Pen className="w-4 h-4 mr-2" />
-                            Edit
-                        </Button>
-                    )}
-                </div>
-            </div>
-            <div className="grid grid-cols-4 gap-4">
-                <div className='space-y-1'>
-                    <p className="text-gray-500 text-xs font-medium">Description</p>
-                    {isEdit ? (
-                        <Textarea defaultValue={description || ""} />
-                    ) : (
-                        <p className="text-xs font-normal">{description}</p>
-                    )}
-                </div>
-                <div className='space-y-1'>
-                    <p className="text-gray-500 text-xs font-medium">Location Type</p>
-                    {isEdit ? (
-                        <Select defaultValue={Object.values(enum_location_type).includes(type) ? type : undefined}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select location Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value={enum_location_type.inventory}>Inventory</SelectItem>
-                                    <SelectItem value={enum_location_type.direct}>Direct</SelectItem>
-                                    <SelectItem value={enum_location_type.consignment}>Consignment</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    ) : (
-                        <p className="text-xs font-normal">
-                            {type ? type.charAt(0).toUpperCase() + type.slice(1) : ""}
-                        </p>
-                    )}
-
-                </div>
-                <div className='space-y-1'>
-                    <p className="text-gray-500 text-xs font-medium">Delivery Point</p>
-                    <DeliveryPointSelector
-                        isEdit={isEdit}
-                        isLoading={isLoading}
-                        error={error}
-                        deliveryPoints={deliveryPoints}
-                        selectedDeliveryPoint={selectedDeliveryPoint}
-                        selectedDeliveryPointName={selectedDeliveryPointName}
-                        onDeliveryPointChange={handleDeliveryPointChange}
-                    />
-                </div>
-            </div>
-        </Card>
-    );
+						{isEdit ? (
+							<RadioGroup
+								defaultValue={is_active ? 'active' : 'inactive'}
+								className="flex space-x-4"
+							>
+								<label className="flex items-center space-x-2">
+									<RadioGroupItem value="active" id="active" />
+									<span className="text-sm font-medium">Active</span>
+								</label>
+								<label className="flex items-center space-x-2">
+									<RadioGroupItem value="inactive" id="inactive" />
+									<span className="text-sm font-medium">Inactive</span>
+								</label>
+							</RadioGroup>
+						) : (
+							<Badge variant={is_active ? 'default' : 'destructive'}>
+								{is_active ? 'Active' : 'Inactive'}
+							</Badge>
+						)}
+					</div>
+					<div className="flex items-center gap-2">
+						{isEdit ? (
+							<>
+								<Button size="sm" variant="outline">
+									<Save className="w-4 h-4 mr-2" />
+									Save
+								</Button>
+								<Button size="sm" variant="outline" onClick={onCancel}>
+									<X className="w-4 h-4 mr-2" />
+									Cancel
+								</Button>
+							</>
+						) : (
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => setIsEdit(true)}
+							>
+								<Pen className="w-4 h-4 mr-2" />
+								Edit
+							</Button>
+						)}
+					</div>
+				</div>
+				<div className="grid grid-cols-4 gap-4">
+					<div className="space-y-1">
+						<p className="text-gray-500 text-xs font-medium">Description</p>
+						{isEdit ? (
+							<Textarea defaultValue={description || ''} />
+						) : (
+							<p className="text-xs font-normal">{description}</p>
+						)}
+					</div>
+					<div className="space-y-1">
+						<p className="text-gray-500 text-xs font-medium">Location Type</p>
+						{isEdit ? (
+							<Select
+								defaultValue={
+									Object.values(enum_location_type).includes(type)
+										? type
+										: undefined
+								}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Select location Type" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectItem value={enum_location_type.inventory}>
+											Inventory
+										</SelectItem>
+										<SelectItem value={enum_location_type.direct}>
+											Direct
+										</SelectItem>
+										<SelectItem value={enum_location_type.consignment}>
+											Consignment
+										</SelectItem>
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						) : (
+							<p className="text-xs font-normal">
+								{type ? type.charAt(0).toUpperCase() + type.slice(1) : ''}
+							</p>
+						)}
+					</div>
+					<div className="space-y-1">
+						<p className="text-gray-500 text-xs font-medium">Delivery Point</p>
+						<DeliveryPointSelector
+							isEdit={isEdit}
+							isLoading={isLoading}
+							error={error}
+							deliveryPoints={deliveryPoints}
+							selectedDeliveryPoint={selectedDeliveryPoint}
+							selectedDeliveryPointName={selectedDeliveryPointName}
+							onDeliveryPointChange={handleDeliveryPointChange}
+						/>
+					</div>
+				</div>
+			</Card>
+		);
 };
 
 export default LocationHeaderDetail;
