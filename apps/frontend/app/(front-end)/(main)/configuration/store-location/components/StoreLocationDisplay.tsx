@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { LocationCreateModel } from '@/dtos/location.dto'
 import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
-import { ChevronDown, ChevronUp, Pen, Trash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PaginationComponent from '@/components/PaginationComponent';
 import { CardsContainerSkeleton } from '@/components/ui-custom/Loading/CardsContainerSkeleton';
@@ -161,7 +161,7 @@ const StoreLocationDisplay: React.FC<Props> = ({
                                         aria-label={`View product ${location.id} details`}
                                     >
                                         <Link href={`/configuration/store-location/${location.id}`}>
-                                            <Pen />
+                                            <Eye />
                                         </Link>
                                     </Button>
                                     <Button
@@ -233,7 +233,7 @@ const StoreLocationDisplay: React.FC<Props> = ({
                                             aria-label={`View product ${location.id} details`}
                                         >
                                             <Link href={`/configuration/store-location/${location.id}`}>
-                                                <Pen />
+                                                <Eye />
                                             </Link>
                                         </Button>
                                         <Button

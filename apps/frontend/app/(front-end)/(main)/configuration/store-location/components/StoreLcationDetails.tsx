@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowBigDown, ArrowBigLeft, ArrowBigRight, ArrowBigUp } from "lucide-react";
-import { enum_location_type, LocationCreateModel } from "@/dtos/location.dto";
+import { enum_location_type, LocationCreateModel, LocationCreateSchema } from "@/dtos/location.dto";
 import { useAuth } from "@/app/context/AuthContext";
 import LocationHeaderDetail from "./LocationHeaderDetail";
 import {
@@ -18,6 +18,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { fetchLocationByID } from "../../actions/store_location";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ProductLoading from "@/components/ui-custom/Loading/ProductLoading";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const userActive = [
     { id: "user-1", full_name: "John Doe", email: "john.doe@example.com" },
@@ -55,6 +57,21 @@ const StoreLcationDetails: React.FC<Props> = ({ id }) => {
     const [selectedAvailableUsers, setSelectedAvalibleUsers] = useState<string[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+
+    const defaultLocationValues: LocationCreateModel = {
+        name: locationData?.name || '',
+        location_type: enum_location_type.inventory,
+        description: locationData?.description || '',
+        is_active: locationData?.is_active ?? true,
+        delivery_point_id: locationData?.delivery_point_id || '',
+        info: locationData?.info ?? undefined,
+        users: locationData?.users ?? undefined,
+    };
+
+    const form = useForm<LocationCreateModel>({
+        resolver: zodResolver(LocationCreateSchema),
+        defaultValues: defaultLocationValues,
+    });
 
     useEffect(() => {
         const loadData = async () => {

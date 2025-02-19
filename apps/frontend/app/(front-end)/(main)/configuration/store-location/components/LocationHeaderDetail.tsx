@@ -7,6 +7,10 @@ import { enum_location_type } from '@/dtos/location.dto';
 import { Pen, Save, X } from 'lucide-react';
 import { fetchListDP } from '../../actions/delivery_point';
 import { DeliveryPointSelector } from './DeliveryPointSelect';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface Props {
     name: string;
@@ -78,10 +82,31 @@ const LocationHeaderDetail: React.FC<Props> = ({
         <Card className="p-4 space-y-2">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <p className="text-xl font-bold">{name}</p>
-                    <Badge variant={is_active ? 'default' : 'destructive'}>
-                        {is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                    {isEdit ? (
+                        <Input defaultValue={name || ""} />
+                    ) : (
+                        <p className="text-xl font-bold">{name}</p>
+                    )}
+
+                    {isEdit ? (
+                        <RadioGroup
+                            defaultValue={is_active ? "active" : "inactive"}
+                            className="flex space-x-4"
+                        >
+                            <label className="flex items-center space-x-2">
+                                <RadioGroupItem value="active" id="active" />
+                                <span className="text-sm font-medium">Active</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <RadioGroupItem value="inactive" id="inactive" />
+                                <span className="text-sm font-medium">Inactive</span>
+                            </label>
+                        </RadioGroup>
+                    ) : (
+                        <Badge variant={is_active ? "default" : "destructive"}>
+                            {is_active ? "Active" : "Inactive"}
+                        </Badge>
+                    )}
                 </div>
                 <div className="flex items-center gap-2">
                     {isEdit ? (
@@ -114,11 +139,33 @@ const LocationHeaderDetail: React.FC<Props> = ({
             <div className="grid grid-cols-4 gap-4">
                 <div className='space-y-1'>
                     <p className="text-gray-500 text-xs font-medium">Description</p>
-                    <p className="text-xs font-normal">{description}</p>
+                    {isEdit ? (
+                        <Textarea defaultValue={description || ""} />
+                    ) : (
+                        <p className="text-xs font-normal">{description}</p>
+                    )}
                 </div>
                 <div className='space-y-1'>
                     <p className="text-gray-500 text-xs font-medium">Location Type</p>
-                    <p className="text-xs font-normal">{type}</p>
+                    {isEdit ? (
+                        <Select defaultValue={Object.values(enum_location_type).includes(type) ? type : undefined}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select location Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value={enum_location_type.inventory}>Inventory</SelectItem>
+                                    <SelectItem value={enum_location_type.direct}>Direct</SelectItem>
+                                    <SelectItem value={enum_location_type.consignment}>Consignment</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    ) : (
+                        <p className="text-xs font-normal">
+                            {type ? type.charAt(0).toUpperCase() + type.slice(1) : ""}
+                        </p>
+                    )}
+
                 </div>
                 <div className='space-y-1'>
                     <p className="text-gray-500 text-xs font-medium">Delivery Point</p>

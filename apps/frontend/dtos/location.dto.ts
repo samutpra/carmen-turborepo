@@ -34,6 +34,16 @@ export const LocationCreateSchema = z.object({
 			last_count: z.string().optional(),
 		})
 		.optional(),
+	users: z
+		.object({
+			add: z.object({
+				id: z.string().uuid(),
+			}),
+			delete: z.object({
+				id: z.string().uuid(),
+			}),
+		})
+		.optional(),
 });
 
 export type LocationCreateModel = z.infer<typeof LocationCreateSchema>;
