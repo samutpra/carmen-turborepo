@@ -8,7 +8,6 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card } from '@/components/ui/card';
 
 interface UserTableProps {
 	users: { id: string; full_name: string; email: string }[];
@@ -16,6 +15,7 @@ interface UserTableProps {
 	isEdit: boolean;
 	onUserChange: (id: string) => void;
 	title: string;
+	onCheckAll?: (checked: boolean) => void;
 }
 
 const UserTable: React.FC<UserTableProps> = ({
@@ -24,60 +24,132 @@ const UserTable: React.FC<UserTableProps> = ({
 	isEdit,
 	onUserChange,
 	title,
+	onCheckAll,
 }) => {
+	const handleCheckAll = (checked: boolean) => {
+		onCheckAll?.(checked);
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent, callback: () => void) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			callback();
+		}
+	};
+
+	const isAllSelected =
+		users.length > 0 && users.every((user) => selectedUsers.includes(user.id));
+
 	return (
-		<Card
-			className="w-full lg:w-1/2 p-4 h-[55vh] overflow-y-auto"
-			data-id="user-table-card"
-		>
-			<p className="px-2 text-md font-semibold" data-id="user-table-title">
+		<div className="w-full">
+			<p
+				className="px-2 text-md font-semibold mb-4"
+				data-id="user-table-title"
+				role="heading"
+				aria-level={2}
+			>
 				{title}
 			</p>
-			<Table data-id="user-table">
-				<TableHeader data-id="user-table-header">
-					<TableRow data-id="user-table-row">
-						{isEdit && <TableHead className="w-[30px]"></TableHead>}
-						<TableHead className="w-[100px]">Full Name</TableHead>
-						<TableHead>Email</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody data-id="user-table-body">
-					{users.length > 0 ? (
-						users.map((user) => (
-							<TableRow key={user.id} data-id="user-table-row">
-								{isEdit && (
-									<TableCell className="w-[30px]" data-id="user-table-cell">
-										<Checkbox
-											id={user.id}
-											checked={selectedUsers.includes(user.id)}
-											onCheckedChange={() => onUserChange(user.id)}
-											data-id="user-table-checkbox"
-										/>
-									</TableCell>
-								)}
-								<TableCell
-									className="w-[100px] font-medium"
-									data-id="user-table-cell"
-								>
-									{user.full_name}
-								</TableCell>
-								<TableCell data-id="user-table-cell">{user.email}</TableCell>
-							</TableRow>
-						))
-					) : (
-						<TableRow data-id="user-table-row">
-							<TableCell
-								colSpan={isEdit ? 3 : 2}
-								className="text-center"
-								data-id="user-table-cell"
+			<div className="relative flex-1 w-full">
+				<div className="rounded-md">
+					<div className="w-full">
+						<div className="border-b">
+							<Table
+								className="w-full"
+								data-id="user-table"
+								role="grid"
+								aria-label="Users list"
 							>
-								No users found.
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-		</Card>
+								{isEdit && (
+									<TableHeader
+										className="bg-background"
+										data-id="user-table-header"
+									>
+										<TableRow data-id="user-table-row">
+											{isEdit && (
+												<TableHead className="w-[30px]">
+													<Checkbox
+														checked={isAllSelected}
+														onCheckedChange={handleCheckAll}
+														aria-label={`Select all ${users.length} users`}
+														data-id="select-all-checkbox"
+														onKeyDown={(e) =>
+															handleKeyDown(e, () =>
+																handleCheckAll(!isAllSelected)
+															)
+														}
+													/>
+												</TableHead>
+											)}
+											<TableHead className="w-[120px]" scope="col">
+												Full Name
+											</TableHead>
+											<TableHead scope="col">Email</TableHead>
+										</TableRow>
+									</TableHeader>
+								)}
+							</Table>
+						</div>
+						<div className="overflow-y-auto max-h-[calc(51vh-80px)]">
+							<Table
+								className="w-full"
+								data-id="user-table"
+								aria-label="Users data"
+							>
+								<TableBody data-id="user-table-body">
+									{users.length > 0 ? (
+										users.map((user) => (
+											<TableRow
+												key={user.id}
+												data-id="user-table-row"
+												role="row"
+											>
+												{isEdit && (
+													<TableCell
+														className="w-[30px]"
+														data-id="user-table-cell"
+													>
+														<Checkbox
+															id={user.id}
+															checked={selectedUsers.includes(user.id)}
+															onCheckedChange={() => onUserChange(user.id)}
+															aria-label={`Select ${user.full_name}`}
+															data-id="user-table-checkbox"
+															onKeyDown={(e) =>
+																handleKeyDown(e, () => onUserChange(user.id))
+															}
+														/>
+													</TableCell>
+												)}
+												<TableCell
+													className="w-[120px] font-medium"
+													data-id="user-table-cell"
+												>
+													{user.full_name}
+												</TableCell>
+												<TableCell data-id="user-table-cell">
+													{user.email}
+												</TableCell>
+											</TableRow>
+										))
+									) : (
+										<TableRow data-id="user-table-row">
+											<TableCell
+												colSpan={isEdit ? 3 : 2}
+												className="text-center"
+												data-id="user-table-cell"
+											>
+												No users found.
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	);
 };
 

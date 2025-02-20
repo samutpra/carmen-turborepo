@@ -83,54 +83,51 @@ const NewSidebar = () => {
     };
 
     const DynamicIcon: React.FC<DynamicIconProps> = ({ iconName }) => {
-        const IconComponent = LucideIcons[iconName as LucideIconName] as React.ElementType;
-        return IconComponent ? <IconComponent className="w-5 h-5" /> : null;
-    };
+			const IconComponent = LucideIcons[
+				iconName as LucideIconName
+			] as React.ElementType;
+			return IconComponent ? <IconComponent className="w-4 h-4" /> : null;
+		};
 
-    const renderSubItems = (item: MenuItem) => {
-        return item.subItems?.map((subItem: SubItem) => {
-            const isActive = pathname === subItem.path;
-            return (
+		const renderSubItems = (item: MenuItem) => {
+			return item.subItems?.map((subItem: SubItem) => {
+				const isActive = pathname === subItem.path;
+				return (
+					<div
+						className={cn(
+							'text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden group'
+						)}
+						key={subItem.path}
+					>
+						<Link
+							className={cn(
+								'w-full p-2 rounded-lg',
+								isActive
+									? 'font-medium bg-primary text-background'
+									: 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
+							)}
+							href={subItem.path}
+						>
+							{subItem.name}
+						</Link>
+						<Button
+							variant="ghost"
+							size="sm"
+							data-id="menu-item-pin-button"
+							onClick={() => {
+								alert(subItem.path);
+							}}
+							className="opacity-0 group-hover:opacity-100 transition-opacity"
+							aria-label="Pin menu item"
+						>
+							<Pin className="h-2 w-2" data-id="pin-menu-item-icon" />
+						</Button>
+					</div>
+				);
+			});
+		};
 
-                <div
-                    className={cn(
-                        'text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden'
-                    )}
-                    key={subItem.path}
-                >
-                    <Link
-                        className={cn(
-                            'w-full p-2 rounded-lg',
-                            isActive
-                                ? 'font-medium bg-primary text-background'
-                                : 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
-                        )}
-                        href={subItem.path}
-                    >
-
-                        {subItem.name}
-
-                    </Link>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        data-id="menu-item-pin-button"
-                        onClick={() => {
-                            alert(subItem.path)
-                        }}
-                    >
-                        <Pin
-                            data-id="pin-menu-item-icon"
-                        />
-                    </Button>
-
-                </div>
-
-            );
-        });
-    };
-
-    return (
+		return (
 			<div
 				className="top-1 z-50 flex-col gap-4 relative bg-background"
 				data-id="sidebar-container"
@@ -149,7 +146,7 @@ const NewSidebar = () => {
 						isSidebarOpen || isDesktop
 							? 'translate-x-0 md:sticky'
 							: '-translate-x-full',
-						isExpanded ? 'w-[280px]' : 'w-[70px]'
+						isExpanded ? 'w-[220px]' : 'w-[60px]'
 					)}
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
@@ -190,7 +187,7 @@ const NewSidebar = () => {
 								isExpanded ? 'justify-start' : 'justify-center'
 							)}
 						>
-							<Star />
+							<Star className="w-4 h-4" />
 							{isExpanded && (
 								<span className="ml-3 font-medium">Favorite Menu</span>
 							)}
@@ -199,13 +196,22 @@ const NewSidebar = () => {
 							<div className="text-xs rounded-lg whitespace-nowrap flex flex-col">
 								{favoriteMenu &&
 									favoriteMenu.map((item: FavMenuItem, index: number) => (
-										<Link
-											href={item.path}
+										<div
 											key={index}
-											className="p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg"
+											className="flex items-center justify-between p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg"
 										>
-											{isExpanded && <span className="ml-3">{item.title}</span>}
-										</Link>
+											<Link href={item.path} className="flex-1">
+												{isExpanded && (
+													<span className="ml-3">{item.title}</span>
+												)}
+											</Link>
+											{isExpanded && (
+												<Pin
+													className="h-4 w-4"
+													data-id="favorite-menu-pin-icon"
+												/>
+											)}
+										</div>
 									))}
 							</div>
 						)}

@@ -30,7 +30,8 @@ import {
 	ChevronRight,
 	ChevronUp,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/lib/i18n';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
 	defaultValues?: Partial<
@@ -44,7 +45,6 @@ type Props = {
 	isNew?: boolean;
 };
 
-// Define the form state type
 interface LocationFormState {
 	id: string;
 	name: string;
@@ -68,7 +68,6 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 	const tenantId = 'DUMMY';
 	const [isEdit, setIsEdit] = useState(isNew);
 
-	// Initialize with empty arrays for users
 	const [originalValues, setOriginalValues] = useState<LocationFormState>(
 		defaultValues
 			? {
@@ -93,7 +92,6 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 				}
 	);
 
-	// Initialize available users with empty array if undefined
 	const [availableUsers, setAvailableUsers] = useState<UserLocationModel[]>(
 		defaultValues?.users?.in_active || []
 	);
@@ -201,7 +199,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		setShowDeleteDialog(false);
 	};
 
-	const handleMoveLeft = () => {
+	const handleMoveLeftConfirm = () => {
 		const selectedUsers = availableUsers.filter((user) =>
 			selectedUsersToAdd.includes(user.id)
 		);
@@ -229,6 +227,28 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 
 		setAvailableUsers(updatedAvailableUsers);
 		setSelectedUsersToAdd([]);
+		setShowDeleteDialog(false);
+	};
+
+	const handleCheckAll = (
+		checked: boolean,
+		tableType: 'active' | 'inactive'
+	) => {
+		if (tableType === 'active') {
+			if (checked) {
+				const allUserIds = originalValues.users.active.map((user) => user.id);
+				setSelectedUsersToDelete(allUserIds);
+			} else {
+				setSelectedUsersToDelete([]);
+			}
+		} else {
+			if (checked) {
+				const allUserIds = availableUsers.map((user) => user.id);
+				setSelectedUsersToAdd(allUserIds);
+			} else {
+				setSelectedUsersToAdd([]);
+			}
+		}
 	};
 
 	return (
@@ -248,60 +268,67 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						defaultValues={originalValues}
 						data-id="location-info"
 					/>
-					<div
-						className="flex flex-col lg:flex-row items-center w-full gap-4"
-						data-id="location-form-user-table-div"
-					>
-						<UserTable
-							users={originalValues.users.active}
-							selectedUsers={selectedUsersToDelete}
-							isEdit={isEdit}
-							onUserChange={handleUserChange}
-							title="Available Users"
-							data-id="location-form-user-table"
-						/>
-						<div
-							className="flex flex-row lg:flex-col gap-2"
-							data-id="location-form-user-table-button-div"
-						>
-							<Button
-								variant={'outline'}
-								type="button"
-								size="icon"
-								onClick={(e) => {
-									e.preventDefault();
-									setShowDeleteDialog(true);
-								}}
-								disabled={!isEdit || selectedUsersToDelete.length === 0}
-								data-id="location-form-user-table-button"
+
+					<Card>
+						<CardHeader className="px-6 pt-6 pb-2">
+							<CardTitle className="text-xl font-bold">
+								Assigned Users
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="flex flex-col items-center justify-center lg:flex-row gap-4 p-4">
+							<UserTable
+								users={originalValues.users.active}
+								selectedUsers={selectedUsersToDelete}
+								isEdit={isEdit}
+								onUserChange={handleUserChange}
+								title="Available Users"
+								data-id="location-form-user-table"
+								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
+							/>
+							<div
+								className="flex flex-row lg:flex-col gap-2"
+								data-id="location-form-user-table-button-div"
 							>
-								<ChevronDown className="block lg:hidden" />
-								<ChevronRight className="hidden lg:block" />
-							</Button>
-							<Button
-								variant={'outline'}
-								type="button"
-								size="icon"
-								onClick={(e) => {
-									e.preventDefault();
-									handleMoveLeft();
-								}}
-								disabled={!isEdit || selectedUsersToAdd.length === 0}
-								data-id="location-form-user-table-button"
-							>
-								<ChevronUp className="block lg:hidden" />
-								<ChevronLeft className="hidden lg:block" />
-							</Button>
-						</div>
-						<UserTable
-							users={availableUsers}
-							selectedUsers={selectedUsersToAdd}
-							isEdit={isEdit}
-							onUserChange={handleAddUserChange}
-							title="Assigned Users"
-							data-id="location-form-user-table"
-						/>
-					</div>
+								<Button
+									variant={'outline'}
+									type="button"
+									size="icon"
+									onClick={(e) => {
+										e.preventDefault();
+										handleMoveRight();
+									}}
+									disabled={!isEdit || selectedUsersToDelete.length === 0}
+									data-id="location-form-user-table-button"
+								>
+									<ChevronDown className="block lg:hidden" />
+									<ChevronRight className="hidden lg:block" />
+								</Button>
+								<Button
+									variant={'outline'}
+									type="button"
+									size="icon"
+									onClick={(e) => {
+										e.preventDefault();
+										setShowDeleteDialog(true);
+									}}
+									disabled={!isEdit || selectedUsersToAdd.length === 0}
+									data-id="location-form-user-table-button"
+								>
+									<ChevronUp className="block lg:hidden" />
+									<ChevronLeft className="hidden lg:block" />
+								</Button>
+							</div>
+							<UserTable
+								users={availableUsers}
+								selectedUsers={selectedUsersToAdd}
+								isEdit={isEdit}
+								onUserChange={handleAddUserChange}
+								title="Assigned Users"
+								data-id="location-form-user-table"
+								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
+							/>
+						</CardContent>
+					</Card>
 				</div>
 			</form>
 
@@ -316,7 +343,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 							Are you sure?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will remove the selected users from the active users list.
+							This will add the selected users to the active users list.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter data-id="location-form-alert-dialog-footer">
@@ -324,7 +351,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 							Cancel
 						</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={handleMoveRight}
+							onClick={handleMoveLeftConfirm}
 							data-id="location-form-alert-dialog-action"
 						>
 							Continue
