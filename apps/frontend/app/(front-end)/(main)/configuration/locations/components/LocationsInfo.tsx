@@ -185,7 +185,7 @@ const LocationsInfo = ({
 								disabled={isLoading}
 								data-id="store-location-dialog-footer-submit-button"
 							>
-								<Save className="h-4 w-4 mr-2" />
+								<Save />
 								{save_text()}
 							</Button>
 							<Button
@@ -194,7 +194,7 @@ const LocationsInfo = ({
 								type="button"
 								onClick={handleCancel}
 							>
-								<X className="h-4 w-4 mr-2" />
+								<X />
 								{cancel_text()}
 							</Button>
 						</>
@@ -209,7 +209,7 @@ const LocationsInfo = ({
 							}}
 							disabled={isLoading}
 						>
-							<Pen className="h-4 w-4" />
+							<Pen />
 						</Button>
 					)}
 				</div>
@@ -248,7 +248,7 @@ const LocationsInfo = ({
 									</SelectContent>
 								</Select>
 							) : (
-								<p className="text-sm">
+								<p className="text-xs">
 									{locationField.find(
 										(item) => item.value === defaultValues?.location_type
 									)?.label || defaultValues?.location_type}
@@ -257,7 +257,7 @@ const LocationsInfo = ({
 							<FormMessage />
 						</FormItem>
 					)}
-					required
+					required={isEdit}
 				/>
 
 				<FormField
@@ -287,7 +287,7 @@ const LocationsInfo = ({
 									/>
 								</FormControl>
 							) : (
-								<p className="text-sm">
+								<p className="text-xs">
 									{selectedDeliveryPoint?.name ||
 										defaultValues?.delivery_point?.name}
 								</p>
@@ -295,7 +295,7 @@ const LocationsInfo = ({
 							<FormMessage />
 						</FormItem>
 					)}
-					required
+					required={isEdit}
 				/>
 			</div>
 
@@ -315,14 +315,14 @@ const LocationsInfo = ({
 									/>
 								</FormControl>
 							) : (
-								<p className="text-sm whitespace-pre-wrap">
+								<p className="text-xs whitespace-pre-wrap">
 									{defaultValues?.description}
 								</p>
 							)}
 							<FormMessage />
 						</FormItem>
 					)}
-					required
+					required={isEdit}
 				/>
 			</div>
 		</Card>
