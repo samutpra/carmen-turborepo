@@ -24,7 +24,12 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ChevronUp,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Props = {
@@ -93,8 +98,6 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		defaultValues?.users?.in_active || []
 	);
 
-	console.log('availableUsers', availableUsers);
-
 	const [selectedUsersToDelete, setSelectedUsersToDelete] = useState<string[]>(
 		[]
 	);
@@ -108,25 +111,15 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 
 	const onCancel = () => {
 		if (isNew) {
-			// If it's a new form, navigate back to locations list
 			router.push('/configuration/locations');
 			return;
 		}
 
-		// Reset form to original values
 		form.reset(originalValues);
-
-		// Reset available users to original state
 		setAvailableUsers(defaultValues?.users?.in_active || []);
-
-		// Clear any selected users
 		setSelectedUsersToDelete([]);
 		setSelectedUsersToAdd([]);
-
-		// Exit edit mode
 		setIsEdit(false);
-
-		// Reset original values to initial state
 		setOriginalValues(
 			defaultValues
 				? {
@@ -189,7 +182,6 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 
 		const updatedInactiveUsers = [...availableUsers, ...selectedUsers];
 
-		// Update both active and inactive users in form values
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
 		form.setValue('users.in_active', updatedInactiveUsers, {
 			shouldValidate: true,
@@ -222,7 +214,6 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 			(user) => !selectedUsersToAdd.includes(user.id)
 		);
 
-		// Update form values
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
 		form.setValue('users.in_active', updatedAvailableUsers, {
 			shouldValidate: true,
@@ -261,21 +252,22 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 							onUserChange={handleUserChange}
 							title="Active Users"
 						/>
-						<div className="flex flex-col gap-2">
+						<div className="flex flex-row lg:flex-col gap-2">
 							<Button
-								variant="outline"
+								variant="destructive"
 								type="button"
 								size="icon"
+								className="bg-red-500"
 								onClick={(e) => {
 									e.preventDefault();
 									setShowDeleteDialog(true);
 								}}
 								disabled={!isEdit || selectedUsersToDelete.length === 0}
 							>
-								<ChevronRight className="h-4 w-4" />
+								<ChevronDown className="block lg:hidden" />
+								<ChevronRight className="hidden lg:block" />
 							</Button>
 							<Button
-								variant="outline"
 								type="button"
 								size="icon"
 								onClick={(e) => {
@@ -284,7 +276,8 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 								}}
 								disabled={!isEdit || selectedUsersToAdd.length === 0}
 							>
-								<ChevronLeft className="h-4 w-4" />
+								<ChevronUp className="block lg:hidden" />
+								<ChevronLeft className="hidden lg:block" />
 							</Button>
 						</div>
 						<UserTable

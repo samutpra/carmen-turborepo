@@ -35,7 +35,7 @@ import DeliveryPointSelect from '../../components/DeliveryPointSelect ';
 import { Button } from '@/components/ui/button';
 import { Pen, Save, X } from 'lucide-react';
 import { Badge } from '@/components/ui-custom/is-active-badge';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 
 interface LocationFormState {
 	id: string;
@@ -63,6 +63,12 @@ interface Props {
 	defaultValues?: Partial<LocationFormState>;
 }
 
+// Add this interface for better type safety
+interface DeliveryPointValue {
+	id: string;
+	name: string;
+}
+
 const LocationsInfo = ({
 	control,
 	token,
@@ -77,6 +83,9 @@ const LocationsInfo = ({
 	>([]);
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [selectedDeliveryPoint, setSelectedDeliveryPoint] =
+		useState<DeliveryPointValue | null>(defaultValues?.delivery_point || null);
+
 	const fetchData = useCallback(async () => {
 		if (!token) return;
 
@@ -95,12 +104,6 @@ const LocationsInfo = ({
 		fetchData();
 	}, []);
 
-	const deliveryPointName = deliveryPoints.find(
-		(dp) => dp.id === defaultValues?.delivery_point?.id
-	)?.name;
-
-	const dpName = isLoading ? <p>Loading...</p> : deliveryPointName;
-
 	const handleCancel = (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsEdit(false);
@@ -108,223 +111,229 @@ const LocationsInfo = ({
 	};
 
 	return (
-		<>
-			<Card className="p-4">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						{isEdit ? (
-							<FormField
-								control={control}
-								name="name"
-								data-id="store-location-dialog-form-name-field"
-								render={({ field }) => (
-									<FormItem data-id="store-location-dialog-form-name-item">
-										<FormLabel data-id="store-location-dialog-form-name-label">
-											{store_location_name_label()}
-										</FormLabel>
-										<FormControl>
-											<InputCustom
-												placeholder={placeholder_store_location_name()}
-												{...field}
-												data-id="store-location-dialog-form-name-input"
-											/>
-										</FormControl>
-										<FormMessage data-id="store-location-dialog-form-name-message" />
-									</FormItem>
-								)}
-								required
-							/>
-						) : (
-							<p className="text-xl font-bold">{defaultValues?.name}</p>
-						)}
+		<Card className="p-6">
+			<div className="flex items-center justify-between mb-6">
+				<div className="flex items-center gap-4">
+					{isEdit ? (
+						<FormField
+							control={control}
+							name="name"
+							data-id="store-location-dialog-form-name-field"
+							render={({ field }) => (
+								<FormItem data-id="store-location-dialog-form-name-item">
+									<FormLabel data-id="store-location-dialog-form-name-label">
+										{store_location_name_label()}
+									</FormLabel>
+									<FormControl>
+										<InputCustom
+											placeholder={placeholder_store_location_name()}
+											{...field}
+											className="max-w-[300px]"
+											data-id="store-location-dialog-form-name-input"
+										/>
+									</FormControl>
+									<FormMessage data-id="store-location-dialog-form-name-message" />
+								</FormItem>
+							)}
+							required
+						/>
+					) : (
+						<div className="space-y-1">
+							<p className="text-sm text-muted-foreground">
+								{store_location_name_label()}
+							</p>
+							<p className="text-xl font-semibold">{defaultValues?.name}</p>
+						</div>
+					)}
 
-						{!isEdit && (
-							<Badge
-								variant={defaultValues?.is_active ? 'default' : 'destructive'}
+					{isEdit ? (
+						<FormField
+							control={control}
+							name="is_active"
+							data-id="store-location-dialog-form-active-field"
+							render={({ field }) => (
+								<FormItem
+									data-id="store-location-dialog-form-active-item"
+									className="flex flex-row items-center gap-2 space-y-0"
+								>
+									<FormControl>
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											aria-label="Toggle active status"
+										/>
+									</FormControl>
+									<FormLabel className="text-sm font-medium">
+										{field.value ? 'Active' : 'Inactive'}
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+					) : (
+						<Badge
+							variant={defaultValues?.is_active ? 'default' : 'destructive'}
+						>
+							{defaultValues?.is_active ? 'Active' : 'Inactive'}
+						</Badge>
+					)}
+				</div>
+
+				<div className="flex items-center gap-2">
+					{isEdit ? (
+						<>
+							<Button
+								type="submit"
+								size="sm"
+								disabled={isLoading}
+								data-id="store-location-dialog-footer-submit-button"
 							>
-								{defaultValues?.is_active ? 'Active' : 'Inactive'}
-							</Badge>
-						)}
-					</div>
-					<div className="flex items-center gap-2">
-						{isEdit ? (
-							<>
-								<Button
-									type="submit"
-									size="sm"
-									data-id="store-location-dialog-footer-submit-button"
-								>
-									<Save />
-									{save_text()}
-								</Button>
-								<Button
-									size="sm"
-									variant="outline"
-									type="button"
-									onClick={handleCancel}
-								>
-									<X />
-									{cancel_text()}
-								</Button>
-							</>
-						) : (
+								<Save className="h-4 w-4 mr-2" />
+								{save_text()}
+							</Button>
 							<Button
 								size="sm"
 								variant="outline"
 								type="button"
-								onClick={(e) => {
-									e.preventDefault();
-									setIsEdit(true);
-								}}
-								disabled={isLoading}
+								onClick={handleCancel}
 							>
-								<Pen />
+								<X className="h-4 w-4 mr-2" />
+								{cancel_text()}
 							</Button>
-						)}
-					</div>
+						</>
+					) : (
+						<Button
+							size="sm"
+							variant="outline"
+							type="button"
+							onClick={(e) => {
+								e.preventDefault();
+								setIsEdit(true);
+							}}
+							disabled={isLoading}
+						>
+							<Pen className="h-4 w-4" />
+						</Button>
+					)}
 				</div>
+			</div>
 
-				<div className="grid grid-cols-4 gap-4">
-					<div className="space-y-2">
-						<FormField
-							control={control}
-							name="location_type"
-							render={({ field }) => (
-								<FormItem data-id="store-location-dialog-form-location-type-item">
-									<FormLabel data-id="store-location-dialog-form-location-type-label">
-										{location_type_label()}
-									</FormLabel>
-									{isEdit ? (
-										<FormControl>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={field.value ?? undefined}
-												data-id="store-location-dialog-form-location-type-select"
-											>
-												<SelectTrigger
-													className="h-8"
-													data-id="store-location-dialog-form-location-type-select-trigger"
-												>
-													<SelectValue placeholder="Select type" />
-												</SelectTrigger>
-												<SelectContent data-id="store-location-dialog-form-location-type-select-content">
-													{locationField.map(({ label, value }) => (
-														<SelectItem
-															key={value}
-															value={value}
-															data-id={`store-location-dialog-form-location-type-select-item-${value}`}
-															className="cursor-pointer hover:bg-muted text-xs"
-														>
-															{label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</FormControl>
-									) : (
-										<p className="text-xs font-normal">
-											{defaultValues?.location_type}
-										</p>
-									)}
-
-									<FormMessage data-id="store-location-dialog-form-location-type-message" />
-								</FormItem>
-							)}
-							required
-						/>
-					</div>
-
-					<div className="space-y-2">
-						<FormField
-							control={control}
-							name="delivery_point.id"
-							data-id="store-location-dialog-form-delivery_point_id-field"
-							render={({ field }) => (
-								<FormItem data-id="store-location-dialog-form-delivery_point_id-item">
-									<FormLabel data-id="store-location-dialog-form-delivery_point_id-label">
-										{delivery_point()}
-									</FormLabel>
-									{isEdit ? (
-										<FormControl>
-											<DeliveryPointSelect
-												value={field.value || ''}
-												onValueChange={field.onChange}
-												items={deliveryPoints}
-											/>
-										</FormControl>
-									) : (
-										<p className="text-xs font-normal">{dpName}</p>
-									)}
-									<FormMessage data-id="store-location-dialog-form-delivery_point_id-message" />
-								</FormItem>
-							)}
-							required
-						/>
-					</div>
-
-					<div className="space-y-2">
-						<FormField
-							control={control}
-							name="description"
-							data-id="store-location-dialog-form-description-field"
-							render={({ field }) => (
-								<FormItem data-id="store-location-dialog-form-description-item">
-									<FormLabel data-id="store-location-dialog-form-description-label">
-										{description()}
-									</FormLabel>
-									{isEdit ? (
-										<FormControl>
-											<Textarea
-												placeholder={placeholder_enter()}
-												{...field}
-												data-id="store-location-dialog-form-description-textarea"
-											/>
-										</FormControl>
-									) : (
-										<p className="text-xs font-normal">
-											{defaultValues?.description}
-										</p>
-									)}
-									<FormMessage data-id="store-location-dialog-form-description-message" />
-								</FormItem>
-							)}
-							required
-						/>
-					</div>
-					<div>
-						{isEdit && (
-							<FormField
-								control={control}
-								name="is_active"
-								data-id="store-location-dialog-form-active-field"
-								render={({ field }) => (
-									<FormItem data-id="store-location-dialog-form-active-item">
-										<FormControl>
-											<RadioGroup
-												defaultValue={field.value ? 'active' : 'inactive'}
-												className="flex space-x-4"
-												onValueChange={(value: 'active' | 'inactive') =>
-													field.onChange(value === 'active')
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<FormField
+					control={control}
+					name="location_type"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{location_type_label()}</FormLabel>
+							{isEdit ? (
+								<Select
+									onValueChange={field.onChange}
+									value={field.value || defaultValues?.location_type}
+									disabled={isLoading}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="Select type">
+												{
+													locationField.find(
+														(item) => item.value === field.value
+													)?.label
 												}
+											</SelectValue>
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{locationField.map(({ label, value }) => (
+											<SelectItem
+												key={value}
+												value={value}
+												className="cursor-pointer"
 											>
-												<div className="flex flex-col justify-center items-center gap-1">
-													<p className="text-xs font-medium">Active</p>
-													<RadioGroupItem value="active" id="active" />
-												</div>
-												<div className="flex flex-col justify-center items-center gap-1">
-													<p className="text-xs font-medium">Inactive</p>
-													<RadioGroupItem value="inactive" id="inactive" />
-												</div>
-											</RadioGroup>
-										</FormControl>
-									</FormItem>
-								)}
-							/>
-						)}
-					</div>
-				</div>
-			</Card>
-		</>
+												{label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							) : (
+								<p className="text-sm">
+									{locationField.find(
+										(item) => item.value === defaultValues?.location_type
+									)?.label || defaultValues?.location_type}
+								</p>
+							)}
+							<FormMessage />
+						</FormItem>
+					)}
+					required
+				/>
+
+				<FormField
+					control={control}
+					name="delivery_point.id"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{delivery_point()}</FormLabel>
+							{isEdit ? (
+								<FormControl>
+									<DeliveryPointSelect
+										value={field.value || defaultValues?.delivery_point?.id}
+										onValueChange={(value) => {
+											field.onChange(value);
+											// Update the selected delivery point name
+											const selectedDP = deliveryPoints.find(
+												(dp) => dp.id === value
+											);
+											if (selectedDP) {
+												setSelectedDeliveryPoint({
+													id: selectedDP.id,
+													name: selectedDP.name,
+												});
+											}
+										}}
+										items={deliveryPoints}
+										disabled={isLoading}
+									/>
+								</FormControl>
+							) : (
+								<p className="text-sm">
+									{selectedDeliveryPoint?.name ||
+										defaultValues?.delivery_point?.name}
+								</p>
+							)}
+							<FormMessage />
+						</FormItem>
+					)}
+					required
+				/>
+			</div>
+
+			<div className="mt-6">
+				<FormField
+					control={control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{description()}</FormLabel>
+							{isEdit ? (
+								<FormControl>
+									<Textarea
+										placeholder={placeholder_enter()}
+										className="resize-none min-h-[100px]"
+										{...field}
+										value={field.value || defaultValues?.description || ''}
+									/>
+								</FormControl>
+							) : (
+								<p className="text-sm whitespace-pre-wrap">
+									{defaultValues?.description}
+								</p>
+							)}
+							<FormMessage />
+						</FormItem>
+					)}
+					required
+				/>
+			</div>
+		</Card>
 	);
 };
 
