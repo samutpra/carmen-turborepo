@@ -28,6 +28,7 @@ import {
 	placeholder_enter,
 	save_text,
 	cancel_text,
+	status_text,
 } from '@/paraglide/messages';
 import { Textarea } from '@/components/ui/textarea';
 import { locationField } from '@/lib/util/fields';
@@ -63,12 +64,6 @@ interface Props {
 	defaultValues?: Partial<LocationFormState>;
 }
 
-// Add this interface for better type safety
-interface DeliveryPointValue {
-	id: string;
-	name: string;
-}
-
 const LocationsInfo = ({
 	control,
 	token,
@@ -84,7 +79,14 @@ const LocationsInfo = ({
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedDeliveryPoint, setSelectedDeliveryPoint] =
-		useState<DeliveryPointValue | null>(defaultValues?.delivery_point || null);
+		useState<DeliveryPointCreateModel | null>(
+			defaultValues?.delivery_point
+				? {
+						id: defaultValues.delivery_point.id,
+						name: defaultValues.delivery_point.name,
+					}
+				: null
+		);
 
 	const fetchData = useCallback(async () => {
 		if (!token) return;
@@ -112,7 +114,7 @@ const LocationsInfo = ({
 
 	return (
 		<Card className="p-6">
-			<div className="flex items-center justify-between mb-6">
+			<div className="flex items-center justify-between mb-4">
 				<div className="flex items-center gap-4">
 					{isEdit ? (
 						<FormField
@@ -128,7 +130,6 @@ const LocationsInfo = ({
 										<InputCustom
 											placeholder={placeholder_store_location_name()}
 											{...field}
-											className="max-w-[300px]"
 											data-id="store-location-dialog-form-name-input"
 										/>
 									</FormControl>
@@ -139,9 +140,6 @@ const LocationsInfo = ({
 						/>
 					) : (
 						<div className="space-y-1">
-							<p className="text-sm text-muted-foreground">
-								{store_location_name_label()}
-							</p>
 							<p className="text-xl font-semibold">{defaultValues?.name}</p>
 						</div>
 					)}
@@ -154,8 +152,11 @@ const LocationsInfo = ({
 							render={({ field }) => (
 								<FormItem
 									data-id="store-location-dialog-form-active-item"
-									className="flex flex-row items-center gap-2 space-y-0"
+									className="flex flex-col items-center gap-2 space-y-0"
 								>
+									<FormLabel className="text-xs font-medium">
+										{status_text()}
+									</FormLabel>
 									<FormControl>
 										<Switch
 											checked={field.value}
@@ -163,9 +164,6 @@ const LocationsInfo = ({
 											aria-label="Toggle active status"
 										/>
 									</FormControl>
-									<FormLabel className="text-sm font-medium">
-										{field.value ? 'Active' : 'Inactive'}
-									</FormLabel>
 								</FormItem>
 							)}
 						/>
@@ -222,23 +220,19 @@ const LocationsInfo = ({
 					control={control}
 					name="location_type"
 					render={({ field }) => (
-						<FormItem>
-							<FormLabel>{location_type_label()}</FormLabel>
+						<FormItem data-id="store-location-dialog-form-location-type-item">
+							<FormLabel data-id="store-location-dialog-form-location-type-label">
+								{location_type_label()}
+							</FormLabel>
 							{isEdit ? (
 								<Select
 									onValueChange={field.onChange}
-									value={field.value || defaultValues?.location_type}
+									value={field.value}
 									disabled={isLoading}
 								>
 									<FormControl>
-										<SelectTrigger>
-											<SelectValue placeholder="Select type">
-												{
-													locationField.find(
-														(item) => item.value === field.value
-													)?.label
-												}
-											</SelectValue>
+										<SelectTrigger data-id="store-location-dialog-form-location-type-select-trigger">
+											<SelectValue placeholder="Select type" />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -268,25 +262,24 @@ const LocationsInfo = ({
 
 				<FormField
 					control={control}
-					name="delivery_point.id"
+					name="delivery_point"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>{delivery_point()}</FormLabel>
 							{isEdit ? (
 								<FormControl>
 									<DeliveryPointSelect
-										value={field.value || defaultValues?.delivery_point?.id}
+										value={field.value?.id || ''}
 										onValueChange={(value) => {
-											field.onChange(value);
-											// Update the selected delivery point name
 											const selectedDP = deliveryPoints.find(
 												(dp) => dp.id === value
 											);
 											if (selectedDP) {
-												setSelectedDeliveryPoint({
+												field.onChange({
 													id: selectedDP.id,
 													name: selectedDP.name,
 												});
+												setSelectedDeliveryPoint(selectedDP);
 											}
 										}}
 										items={deliveryPoints}
@@ -317,9 +310,8 @@ const LocationsInfo = ({
 								<FormControl>
 									<Textarea
 										placeholder={placeholder_enter()}
-										className="resize-none min-h-[100px]"
+										className="resize-none"
 										{...field}
-										value={field.value || defaultValues?.description || ''}
 									/>
 								</FormControl>
 							) : (
