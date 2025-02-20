@@ -357,7 +357,7 @@ export const menuItems = [
 			},
 			{
 				name: `${m.store_location()}`,
-				path: '/configuration/store-location',
+				path: '/configuration/locations',
 				visible: true,
 				enabled: true,
 			},

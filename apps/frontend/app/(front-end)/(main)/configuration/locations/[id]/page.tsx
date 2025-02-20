@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import LocationForm from '../components/LocationForm';
-import { LocationCreateModel } from '@/dtos/location.dto';
+import { LocationsModel } from '@/dtos/location.dto';
 import { useAuth } from '@/app/context/AuthContext';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { fetchLocationByID } from '../../actions/store_location';
@@ -16,7 +16,7 @@ type Props = {
 
 const EditLocationPage = ({ params: { id } }: Props) => {
 	const { accessToken } = useAuth();
-	const [location, setLocation] = useState<LocationCreateModel | null>(null);
+	const [location, setLocation] = useState<LocationsModel | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const tenantId = 'DUMMY';

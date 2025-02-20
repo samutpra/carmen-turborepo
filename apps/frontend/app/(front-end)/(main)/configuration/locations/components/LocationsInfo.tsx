@@ -1,5 +1,5 @@
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
-import { LocationCreateModel } from '@/dtos/location.dto';
+import { enum_location_type, UserLocationModel } from '@/dtos/location.dto';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { fetchListDP } from '../../actions/delivery_point';
@@ -18,7 +18,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { LocationField } from './LocationComponents';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import {
 	description,
@@ -38,14 +37,30 @@ import { Pen, Save, X } from 'lucide-react';
 import { Badge } from '@/components/ui-custom/is-active-badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
+interface LocationFormState {
+	id: string;
+	name: string;
+	description: string;
+	is_active: boolean;
+	location_type: enum_location_type;
+	delivery_point: {
+		id: string;
+		name: string;
+	};
+	users: {
+		active: UserLocationModel[];
+		in_active: UserLocationModel[];
+	};
+}
+
 interface Props {
-	control: Control<LocationCreateModel>;
+	control: Control<LocationFormState>;
 	token: string;
 	tenantId: string;
 	isEdit: boolean;
 	setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
 	onCancel: () => void;
-	defaultValues?: Partial<LocationCreateModel>;
+	defaultValues?: Partial<LocationFormState>;
 }
 
 const LocationsInfo = ({
@@ -60,8 +75,6 @@ const LocationsInfo = ({
 	const [deliveryPoints, setDeliveryPoints] = useState<
 		DeliveryPointCreateModel[]
 	>([]);
-
-	console.log('deliveryPoints', deliveryPoints);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const fetchData = useCallback(async () => {
@@ -83,10 +96,8 @@ const LocationsInfo = ({
 	}, []);
 
 	const deliveryPointName = deliveryPoints.find(
-		(dp) => dp.id === defaultValues?.delivery_point_id
+		(dp) => dp.id === defaultValues?.delivery_point?.id
 	)?.name;
-
-	console.log('deliveryPointName', deliveryPointName);
 
 	const dpName = isLoading ? <p>Loading...</p> : deliveryPointName;
 
@@ -104,7 +115,7 @@ const LocationsInfo = ({
 						{isEdit ? (
 							<FormField
 								control={control}
-								name={LocationField.Name}
+								name="name"
 								data-id="store-location-dialog-form-name-field"
 								render={({ field }) => (
 									<FormItem data-id="store-location-dialog-form-name-item">
@@ -173,11 +184,11 @@ const LocationsInfo = ({
 					</div>
 				</div>
 
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-4 gap-4">
 					<div className="space-y-2">
 						<FormField
 							control={control}
-							name={LocationField.LocationType}
+							name="location_type"
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-location-type-item">
 									<FormLabel data-id="store-location-dialog-form-location-type-label">
@@ -226,7 +237,7 @@ const LocationsInfo = ({
 					<div className="space-y-2">
 						<FormField
 							control={control}
-							name={LocationField.DeliveryPointID}
+							name="delivery_point.id"
 							data-id="store-location-dialog-form-delivery_point_id-field"
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-delivery_point_id-item">
@@ -254,7 +265,7 @@ const LocationsInfo = ({
 					<div className="space-y-2">
 						<FormField
 							control={control}
-							name={LocationField.Description}
+							name="description"
 							data-id="store-location-dialog-form-description-field"
 							render={({ field }) => (
 								<FormItem data-id="store-location-dialog-form-description-item">
@@ -284,7 +295,7 @@ const LocationsInfo = ({
 						{isEdit && (
 							<FormField
 								control={control}
-								name={LocationField.isActive}
+								name="is_active"
 								data-id="store-location-dialog-form-active-field"
 								render={({ field }) => (
 									<FormItem data-id="store-location-dialog-form-active-item">
