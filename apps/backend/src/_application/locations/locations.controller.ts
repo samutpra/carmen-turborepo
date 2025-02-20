@@ -1,6 +1,10 @@
 import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
 import QueryParams, { QueryAdvance } from "lib/types";
-import { LocationCreateDto, LocationUpdateDto } from "shared-dtos";
+import {
+  enum_location_type,
+  LocationCreateDto,
+  LocationUpdateDto,
+} from "shared-dtos";
 import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
 
 import {
@@ -47,10 +51,6 @@ export class LocationsController {
     required: true,
     type: "uuid",
   })
-  @ApiBody({
-    type: "any",
-    description: "",
-  })
   async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.locationsService.findOne(req, id);
@@ -71,8 +71,7 @@ export class LocationsController {
     const defaultSearchFields: string[] = [
       "name",
       "description",
-      "locationType",
-      "deliveryPointId",
+      // "location_type",
     ];
 
     this.logger.debug({

@@ -1,0 +1,20 @@
+meta {
+  name: 01 - Get List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/v1/vendor?sort=name:desc
+  body: none
+  auth: none
+}
+
+params:query {
+  sort: name:desc
+  ~filter[DeliveryPoint.name]: samp
+}
+
+headers {
+  ~sort: 
+}

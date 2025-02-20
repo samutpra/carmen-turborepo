@@ -58,6 +58,7 @@ model tb_business_unit {
   description                                     String?
   is_hq                                           Boolean?                     @default(true)
   is_active                                       Boolean?                     @default(true)
+  db_connection                                   String?                      @db.VarChar(255)
   created_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)
   created_by_id                                   String?                      @db.Uuid
   updated_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)
@@ -317,18 +318,19 @@ model tb_user_tb_application_role {
 }
 
 model tb_user_tb_business_unit {
-  id                                                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                                                 String?           @db.Uuid
-  business_unit_id                                        String?           @db.Uuid
-  is_active                                               Boolean?          @default(true)
-  created_at                                              DateTime?         @default(now()) @db.Timestamptz(6)
-  created_by_id                                           String?           @db.Uuid
-  updated_at                                              DateTime?         @default(now()) @db.Timestamptz(6)
-  updated_by_id                                           String?           @db.Uuid
-  tb_business_unit                                        tb_business_unit? @relation(fields: [business_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_user_tb_business_unit_created_by_idTotb_user tb_user?          @relation("tb_user_tb_business_unit_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_user_tb_business_unit_updated_by_idTotb_user tb_user?          @relation("tb_user_tb_business_unit_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_user_tb_business_unit_user_idTotb_user       tb_user?          @relation("tb_user_tb_business_unit_user_idTotb_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                                      String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                                                 String?                      @db.Uuid
+  business_unit_id                                        String?                      @db.Uuid
+  role                                                    enum_user_business_unit_role @default(user)
+  is_active                                               Boolean?                     @default(true)
+  created_at                                              DateTime?                    @default(now()) @db.Timestamptz(6)
+  created_by_id                                           String?                      @db.Uuid
+  updated_at                                              DateTime?                    @default(now()) @db.Timestamptz(6)
+  updated_by_id                                           String?                      @db.Uuid
+  tb_business_unit                                        tb_business_unit?            @relation(fields: [business_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_user_tb_business_unit_created_by_idTotb_user tb_user?                     @relation("tb_user_tb_business_unit_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_user_tb_business_unit_updated_by_idTotb_user tb_user?                     @relation("tb_user_tb_business_unit_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_user_tb_business_unit_user_idTotb_user       tb_user?                     @relation("tb_user_tb_business_unit_user_idTotb_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_id, business_unit_id], map: "user_businessunit_user_business_unit_u")
 }
@@ -375,4 +377,9 @@ enum enum_subscription_status {
 enum enum_token_type {
   access_token
   refresh_token
+}
+
+enum enum_user_business_unit_role {
+  admin
+  user
 }

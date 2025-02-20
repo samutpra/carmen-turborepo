@@ -7,6 +7,11 @@ CREATE TYPE "CARMEN_SYSTEM"."enum_token_type" AS ENUM (
   'refresh_token'
 );
 
+CREATE TYPE "CARMEN_SYSTEM"."enum_user_business_unit_role" AS ENUM (
+  'admin',
+  'user'
+);
+
 CREATE TYPE "CARMEN_SYSTEM"."enum_subscription_status" AS ENUM (
   'active',
   'inactive',
@@ -224,6 +229,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_business_unit" (
   "description" text,
   "is_hq" bool DEFAULT true,
   "is_active" bool DEFAULT true,
+  "db_connection" varchar(255),
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -245,6 +251,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "user_id" uuid,
   "business_unit_id" uuid,
+  "role" "CARMEN_SYSTEM".enum_user_business_unit_role NOT NULL DEFAULT 'user',
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
@@ -1021,7 +1028,7 @@ CREATE TABLE "TENANT_DUMMY"."tb_currency_comment" (
   "type" "TENANT_DUMMY".enum_comment_type,
   "user_id" uuid,
   "message" varchar(255),
-  "attachments" json[],
+  "attachments" json DEFAULT '{}',
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
@@ -1033,11 +1040,17 @@ CREATE TABLE "TENANT_DUMMY"."tb_unit_comment" (
   "type" "TENANT_DUMMY".enum_comment_type,
   "user_id" uuid,
   "message" varchar(255),
-  "attachments" json[],
+  "attachments" json DEFAULT '{}',
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,
   "updated_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "updated_by_id" uuid
+);
+
+CREATE TABLE "TENANT_DUMMY"."tb_config_running_code" (
+  "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
+  "type" varchar(255),
+  "config" json DEFAULT '{}'
 );
 
 CREATE INDEX "user_username_idx" ON "CARMEN_SYSTEM"."tb_user" ("username");

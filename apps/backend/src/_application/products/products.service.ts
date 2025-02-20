@@ -576,7 +576,7 @@ export class ProductsService {
       }
     }
 
-    if (createDto.locations.add) {
+    if (createDto.locations?.add) {
       let locationNotFound = [];
       await Promise.all(
         createDto.locations.add.map(async (location) => {
@@ -652,13 +652,7 @@ export class ProductsService {
       this.logger.debug(product_obj);
 
       const createObj = await transactionClient.tb_product.create({
-        data: {
-          ...product_obj,
-          created_by_id: user_id,
-          created_at: new Date(),
-          updated_by_id: user_id,
-          updated_at: new Date(),
-        },
+        data: product_obj,
       });
 
       const product_Info_obj: any = {
@@ -684,7 +678,7 @@ export class ProductsService {
         },
       });
 
-      if (createDto.locations.add) {
+      if (createDto.locations?.add) {
         const product_location_obj = createDto.locations?.add?.map(
           (location) => ({
             location_id: location.location_id,

@@ -1,29 +1,38 @@
 'use client';
 
 import { useAuth } from '@/app/context/AuthContext';
-import { Button } from '@/components/ui/button';
-import React, { useEffect, useState, useCallback } from 'react';
-import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
-import StoreLocationDialog from './StoreLocationDialog';
+import { LocationCreateModel } from '@/dtos/location.dto';
+import { useURL } from '@/hooks/useURL';
+import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
+import {
+	status_text,
+	description,
+	location_type_label,
+	store_location_name_label,
+	store_location,
+	fail_del_store,
+	export_text,
+	print_text,
+	Search,
+} from '@/paraglide/messages';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	deleteStoreLocation,
 	fetchStoreLocations,
 } from '../../actions/store_location';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
+import { Button } from '@/components/ui/button';
+import { FileDown, Plus, Printer } from 'lucide-react';
+import { Link } from '@/lib/i18n';
 import SearchForm from '@/components/ui-custom/SearchForm';
-import { useURL } from '@/hooks/useURL';
-import { statusOptions } from '@/lib/statusOptions';
-import * as m from '@/paraglide/messages.js';
-import { FileDown, Printer } from 'lucide-react';
-import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
-import { FieldConfig, SortQuery } from '@/lib/util/uiConfig';
-import ErrorCard from '@/components/ui-custom/error/ErrorCard';
-import { LocationCreateModel } from '@/dtos/location.dto';
 import SortComponent from '@/components/ui-custom/SortComponent';
-import StoreLocationDisplay from './StoreLocationDisplay';
+import { statusOptions } from '@/lib/statusOptions';
+import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import LocationList from './LocationList';
 
-export enum StoreLocationField {
+export const enum LocationField {
 	Name = 'name',
 	LocationType = 'location_type',
 	DeliveryPointID = 'delivery_point_id',
@@ -33,37 +42,33 @@ export enum StoreLocationField {
 
 const sortFields: FieldConfig<LocationCreateModel>[] = [
 	{
-		key: StoreLocationField.Name,
-		label: m.store_location_name_label(),
+		key: LocationField.Name,
+		label: store_location_name_label(),
 		className: 'w-24',
 	},
 	{
-		key: StoreLocationField.Description,
-		label: m.description(),
+		key: LocationField.Description,
+		label: description(),
 		className: 'w-40',
 	},
 	{
-		key: StoreLocationField.LocationType,
-		label: m.location_type_label(),
-		className: 'w-10'
+		key: LocationField.LocationType,
+		label: location_type_label(),
+		className: 'w-10',
 	},
 	{
-		key: StoreLocationField.isActive,
-		label: m.status_text(),
+		key: LocationField.isActive,
+		label: status_text(),
 		type: 'badge',
 		className: 'w-10',
 	},
 ];
 
-
-const StoreLocationList = () => {
+const LocationComponents = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [storeLocations, setStoreLocations] = useState<LocationCreateModel[]>(
-		[]
-	);
-
+	const [locations, setLocations] = useState<LocationCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [statusOpen, setStatusOpen] = useState(false);
@@ -73,25 +78,14 @@ const StoreLocationList = () => {
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
 
-	const handleSuccess = useCallback(
-		(values: LocationCreateModel) => {
-			setStoreLocations((prev) => {
-				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				mapValues.set(values.id, values);
-				return Array.from(mapValues.values());
-			});
-		},
-		[setStoreLocations]
-	);
-
 	const handleDelete = useCallback(
 		async (id: string) => {
 			try {
 				const res = await deleteStoreLocation(id, token, tenantId);
 				if (res) {
-					setStoreLocations((prev) => prev.filter((p) => p.id !== id));
+					setLocations((prev) => prev.filter((p) => p.id !== id));
 					toastSuccess({
-						message: `${m.store_location()} deleted successfully`,
+						message: `${store_location()} deleted successfully`,
 					});
 				}
 			} catch (error) {
@@ -102,7 +96,7 @@ const StoreLocationList = () => {
 						});
 					} else {
 						toastError({
-							message: `${m.fail_del_store()}: ${error.message}`,
+							message: `${fail_del_store()}: ${error.message}`,
 						});
 					}
 				} else {
@@ -116,16 +110,16 @@ const StoreLocationList = () => {
 		[token, tenantId]
 	);
 
-	const fetchData = async () => {
+	const fetchLocations = async () => {
 		try {
 			setIsLoading(true);
 			const data = await fetchStoreLocations(token, tenantId, {
 				search,
 				status,
 				page,
-				sort
+				sort,
 			});
-			setStoreLocations(data.data);
+			setLocations(data.data);
 			setPage(data.pagination.page);
 			setPages(data.pagination.pages);
 		} catch (err) {
@@ -136,7 +130,7 @@ const StoreLocationList = () => {
 	};
 
 	useEffect(() => {
-		fetchData();
+		fetchLocations();
 	}, [token, tenantId, search, status, page, sort]);
 
 	const handlePageChange = (newPage: number) => {
@@ -145,31 +139,35 @@ const StoreLocationList = () => {
 		setPage(newPage.toString());
 	};
 
-	const title = `${m.store_location()}`;
+	const title = `${store_location()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<StoreLocationDialog
-				mode={formType.ADD}
-				onSuccess={handleSuccess}
-				data-id="store-location-dialog-add-button"
-			/>
+		<div
+			className="action-btn-container"
+			data-id="store-location-action-btn-container"
+		>
+			<Button asChild size={'sm'} data-id="store-location-add-button">
+				<Link href="/configuration/locations/new">
+					<Plus data-id="store-location-add-icon" />
+					{store_location()}
+				</Link>
+			</Button>
 			<Button
 				variant="outline"
 				className="group"
 				size={'sm'}
 				data-id="store-location-export-button"
 			>
-				<FileDown className="h-4 w-4" data-id="store-location-export-icon" />
-				{m.export_text()}
+				<FileDown data-id="store-location-export-icon" />
+				{export_text()}
 			</Button>
 			<Button
 				variant="outline"
 				size={'sm'}
 				data-id="store-location-print-button"
 			>
-				<Printer className="h-4 w-4" data-id="store-location-print-icon" />
-				{m.print_text()}
+				<Printer data-id="store-location-print-icon" />
+				{print_text()}
 			</Button>
 		</div>
 	);
@@ -179,7 +177,7 @@ const StoreLocationList = () => {
 			<SearchForm
 				onSearch={setSearch}
 				defaultValue={search}
-				placeholder={`${m.Search()} ${m.store_location()}...`}
+				placeholder={`${Search()} ${store_location()}...`}
 				data-id="store-location-search-form"
 			/>
 			<div
@@ -205,8 +203,8 @@ const StoreLocationList = () => {
 	);
 
 	const content = (
-		<StoreLocationDisplay
-			locations={storeLocations}
+		<LocationList
+			locations={locations}
 			fields={sortFields}
 			page={+page}
 			totalPage={+pages}
@@ -236,4 +234,4 @@ const StoreLocationList = () => {
 	);
 };
 
-export default StoreLocationList;
+export default LocationComponents;

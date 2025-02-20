@@ -843,7 +843,7 @@ CREATE TABLE "tb_currency_comment" (
     "type" "enum_comment_type",
     "user_id" UUID,
     "message" VARCHAR(255),
-    "attachments" JSON[],
+    "attachments" JSON DEFAULT '{}',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -858,7 +858,7 @@ CREATE TABLE "tb_unit_comment" (
     "type" "enum_comment_type",
     "user_id" UUID,
     "message" VARCHAR(255),
-    "attachments" JSON[],
+    "attachments" JSON DEFAULT '{}',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -874,6 +874,15 @@ CREATE TABLE "tb_user_location" (
     "location_id" UUID NOT NULL,
 
     CONSTRAINT "tb_user_location_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_config_running_code" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "type" VARCHAR(255),
+    "config" JSON DEFAULT '{}',
+
+    CONSTRAINT "tb_config_running_code_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

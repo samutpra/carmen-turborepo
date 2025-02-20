@@ -612,7 +612,7 @@ erDiagram
   enum_comment_type type "nullable"
   String user_id "nullable"
   String message "nullable"
-  Json attachments
+  Json attachments "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -623,7 +623,7 @@ erDiagram
   enum_comment_type type "nullable"
   String user_id "nullable"
   String message "nullable"
-  Json attachments
+  Json attachments "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -633,6 +633,11 @@ erDiagram
   String id PK
   String user_id
   String location_id FK
+}
+"tb_config_running_code" {
+  String id PK
+  String type "nullable"
+  Json config "nullable"
 }
 "tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
@@ -1422,3 +1427,10 @@ erDiagram
   - `id`: 
   - `user_id`: 
   - `location_id`: 
+
+### `tb_config_running_code`
+
+**Properties**
+  - `id`: 
+  - `type`: 
+  - `config`: 

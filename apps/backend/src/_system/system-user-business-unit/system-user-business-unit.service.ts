@@ -1,25 +1,25 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitUpdateDto,
-} from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+} from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbSystem,
   tb_user_tb_business_unit,
-} from '@prisma-carmen-client-system';
+} from "@prisma-carmen-client-system";
 
-import { SystemUserBusinessUnitController } from './system-user-business-unit.controller';
+import { SystemUserBusinessUnitController } from "./system-user-business-unit.controller";
 
 @Injectable()
 export class SystemUserBusinessUnitService {
@@ -40,7 +40,7 @@ export class SystemUserBusinessUnitService {
       where: {
         id: id,
       },
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       include: {
         tb_business_unit: {
           select: {
@@ -73,7 +73,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User - BusinessUnit not found');
+      throw new NotFoundException("User - BusinessUnit not found");
     }
     const res: ResponseSingle<tb_user_tb_business_unit> = {
       data: oneObj,
@@ -81,10 +81,7 @@ export class SystemUserBusinessUnitService {
     return res;
   }
 
-  async findAll(
-    req: Request,
-    q: QueryParams,
-  ): Promise<ResponseList<tb_user_tb_business_unit>> {
+  async findAll(req: Request, q: QueryParams) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_System = this.prismaClientMamager.getSystemDB();
     const max = await this.db_System.tb_user_tb_business_unit.count({
@@ -93,9 +90,9 @@ export class SystemUserBusinessUnitService {
 
     const q_include = {
       ...q.findMany(),
-      relationLoadStrategy: 'join',
+      relationLoadStrategy: "join",
       include: {
-        business_unit_table: {
+        tb_business_unit: {
           select: {
             cluster_id: true,
             code: true,
@@ -104,7 +101,7 @@ export class SystemUserBusinessUnitService {
             is_active: true,
           },
         },
-        user_table: {
+        tb_user_tb_user_tb_business_unit_user_idTotb_user: {
           select: {
             username: true,
             email: true,
@@ -118,8 +115,26 @@ export class SystemUserBusinessUnitService {
       q_include, // q.findMany(),
     );
 
-    const res: ResponseList<tb_user_tb_business_unit> = {
-      data: listObj,
+    const newFormatListObj = listObj.map((item: any) => {
+      return {
+        id: item.id,
+        user: {
+          id: item.user_id,
+          username:
+            item.tb_user_tb_user_tb_business_unit_user_idTotb_user.username,
+          email: item.tb_user_tb_user_tb_business_unit_user_idTotb_user.email,
+        },
+        business_unit: {
+          id: item.business_unit_id,
+          code: item.tb_business_unit.code,
+          name: item.tb_business_unit.name,
+          is_hq: item.tb_business_unit.is_hq,
+        },
+      };
+    });
+
+    const res: ResponseList<any> = {
+      data: newFormatListObj,
       pagination: {
         total: max,
         page: q.page,
@@ -139,15 +154,17 @@ export class SystemUserBusinessUnitService {
 
     const found = await this.db_System.tb_user_tb_business_unit.findFirst({
       where: {
-        user_id: createDto.user_id,
-        business_unit_id: createDto.business_unit_id,
+        AND: [
+          { user_id: createDto.user_id },
+          { business_unit_id: createDto.business_unit_id },
+        ],
       },
     });
 
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'User - BusinessUnit already exists',
+        message: "User - BusinessUnit already exists",
         id: found.id,
       });
     }
@@ -179,7 +196,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User - BusinessUnit not found');
+      throw new NotFoundException("User - BusinessUnit not found");
     }
 
     const updateObj = await this.db_System.tb_user_tb_business_unit.update({
@@ -202,7 +219,7 @@ export class SystemUserBusinessUnitService {
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User - BusinessUnit not found');
+      throw new NotFoundException("User - BusinessUnit not found");
     }
 
     await this.db_System.tb_user_tb_business_unit.delete({

@@ -41,7 +41,9 @@ import { DepartmentUserModule } from "./_application/department-user/department-
 import { APP_FILTER } from "@nestjs/core";
 import { HttpExceptionFilter } from "lib/filters/http-exception.filter";
 import { LocationsUserModule } from "./_system/locations-user/locations-user.module";
-import { UserLocationModule } from "./_application/user-location/user-location.module";
+import { UserLocationModule } from "./_application/users/user-location/user-location.module";
+import { UnitCommentModule } from "./_application/unit-comment/unit-comment.module";
+import { User_BusinessUnitModule } from "./_application/users/user-business-unit/user-business-unit.module";
 
 @Module({
   imports: [
@@ -91,6 +93,8 @@ import { UserLocationModule } from "./_application/user-location/user-location.m
     DepartmentUserModule,
     LocationsUserModule,
     UserLocationModule,
+    UnitCommentModule,
+    User_BusinessUnitModule,
   ],
   controllers: [AppController],
   providers: [

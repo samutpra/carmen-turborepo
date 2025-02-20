@@ -846,7 +846,7 @@ model tb_currency_comment {
   type          enum_comment_type?
   user_id       String?            @db.Uuid
   message       String?            @db.VarChar(255)
-  attachments   Json[]             @db.Json
+  attachments   Json?              @default("{}") @db.Json
   created_at    DateTime?          @default(now()) @db.Timestamptz(6)
   created_by_id String?            @db.Uuid
   updated_at    DateTime?          @default(now()) @db.Timestamptz(6)
@@ -858,7 +858,7 @@ model tb_unit_comment {
   type          enum_comment_type?
   user_id       String?            @db.Uuid
   message       String?            @db.VarChar(255)
-  attachments   Json[]             @db.Json
+  attachments   Json?              @default("{}") @db.Json
   created_at    DateTime?          @default(now()) @db.Timestamptz(6)
   created_by_id String?            @db.Uuid
   updated_at    DateTime?          @default(now()) @db.Timestamptz(6)
@@ -872,6 +872,12 @@ model tb_user_location {
   tb_location tb_location @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_id, location_id], map: "user_location_u")
+}
+
+model tb_config_running_code {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type   String? @db.VarChar(255)
+  config Json?   @default("{}") @db.Json
 }
 
 enum enum_activity_action {

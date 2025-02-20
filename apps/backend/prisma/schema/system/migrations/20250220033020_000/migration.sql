@@ -4,6 +4,9 @@ CREATE TYPE "enum_subscription_status" AS ENUM ('active', 'inactive', 'expired')
 -- CreateEnum
 CREATE TYPE "enum_token_type" AS ENUM ('access_token', 'refresh_token');
 
+-- CreateEnum
+CREATE TYPE "enum_user_business_unit_role" AS ENUM ('admin', 'user');
+
 -- CreateTable
 CREATE TABLE "tb_application_role" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -40,6 +43,7 @@ CREATE TABLE "tb_business_unit" (
     "description" TEXT,
     "is_hq" BOOLEAN DEFAULT true,
     "is_active" BOOLEAN DEFAULT true,
+    "db_connection" VARCHAR(255),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -227,6 +231,7 @@ CREATE TABLE "tb_user_tb_business_unit" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID,
     "business_unit_id" UUID,
+    "role" "enum_user_business_unit_role" NOT NULL DEFAULT 'user',
     "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,

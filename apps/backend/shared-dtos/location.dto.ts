@@ -15,6 +15,15 @@ export type location_info = {
   lastCount?: string;
 };
 
+export const location_user_schema = z.object({
+  user_id: z.string().uuid(),
+});
+
+export type location_user = z.infer<typeof location_user_schema>;
+export class location_user_item implements location_user {
+  user_id!: string;
+}
+
 export const LocationCreateSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1, "name must be at least 1 character"),
@@ -46,6 +55,9 @@ export class LocationCreateDto implements LocationCreateModel {
   location_type!: enum_location_type;
   deliveryPointId?: string | null;
   info?: location_info;
+  user?: {
+    add?: location_user_item[];
+  };
 }
 
 export const LocationUpdateSchema = z.object({
@@ -79,6 +91,10 @@ export class LocationUpdateDto implements LocationUpdateModel {
   location_type!: enum_location_type;
   deliveryPointId?: string | null;
   info?: location_info;
+  user?: {
+    add?: location_user_item[];
+    remove?: location_user_item[];
+  };
 }
 
 export const mockLocations: LocationCreateDto[] = [

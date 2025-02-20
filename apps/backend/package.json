@@ -107,7 +107,10 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@app/(.*)$": "<rootDir>/$1"
+    }
   },
   "prisma": {
     "seed": "tsx prisma/schema/system/seed.ts && tsx prisma/schema/bu/seed.ts"
