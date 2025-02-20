@@ -60,93 +60,95 @@ export class LocationsService {
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
     this.db_system = this.prismaClientMamager.getSystemDB();
 
+    console.log(business_unit_id, "business_unit_id");
+
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException("Location not found");
     }
 
-    const usersActive = await this.db_tenant.tb_user_location.findMany({
-      where: {
-        location_id: id,
-      },
-      select: {
-        user_id: true,
-      },
-    });
-
-    const userInActive = await this.db_system.tb_user_tb_business_unit.findMany(
-      {
+    const usersActive = await this.db_tenant.tb_user_location
+      .findMany({
         where: {
+          location_id: id,
+        },
+        select: {
+          user_id: true,
+        },
+      })
+      .then((res) => {
+        return Promise.all(
+          res.map(async (item) => {
+            const user = await this.db_system.tb_user.findMany({
+              where: {
+                id: item.user_id,
+              },
+              select: {
+                id: true,
+                email: true,
+                tb_user_profile_tb_user_profile_user_idTotb_user: {
+                  select: {
+                    firstname: true,
+                    lastname: true,
+                    middlename: true,
+                  },
+                },
+              },
+            });
+
+            return {
+              id: user[0].id,
+              email: user[0].email,
+              userInfo:
+                user[0].tb_user_profile_tb_user_profile_user_idTotb_user[0],
+            };
+          }),
+        );
+      });
+
+    const userInActive = await this.db_system.tb_user_tb_business_unit
+      .findMany({
+        where: {
+          business_unit_id: "6ba7b921-9dad-11d1-80b4-00c04fd430c8",
+          is_active: true,
           user_id: {
-            notIn: [...usersActive.map((user) => user.user_id), user_id],
+            notIn: usersActive.map((user) => user.id),
           },
         },
         select: {
           user_id: true,
         },
-      },
-    );
-
-    const userNameActive = await this.db_system.tb_user
-      .findMany({
-        where: {
-          id: {
-            in: usersActive.map((user) => user.user_id),
-          },
-        },
-        select: {
-          id: true,
-          email: true,
-          tb_user_profile_tb_user_profile_user_idTotb_user: {
-            select: {
-              firstname: true,
-              lastname: true,
-              middlename: true,
-            },
-          },
-        },
       })
-      .then((users) =>
-        users.map((user) => {
-          const newFormatUser = {
-            ...user,
-            userInfo: user.tb_user_profile_tb_user_profile_user_idTotb_user[0],
-          };
-          delete newFormatUser.tb_user_profile_tb_user_profile_user_idTotb_user;
-          return newFormatUser;
-        }),
-      );
+      .then((res) => {
+        return Promise.all(
+          res.map(async (item) => {
+            const user = await this.db_system.tb_user.findMany({
+              where: {
+                id: item.user_id,
+              },
+              select: {
+                id: true,
+                email: true,
+                tb_user_profile_tb_user_profile_user_idTotb_user: {
+                  select: {
+                    firstname: true,
+                    lastname: true,
+                    middlename: true,
+                  },
+                },
+              },
+            });
 
-    const userNameInActive = await this.db_system.tb_user
-      .findMany({
-        where: {
-          id: {
-            in: userInActive.map((user) => user.user_id),
-          },
-        },
-        select: {
-          id: true,
-          email: true,
-          tb_user_profile_tb_user_profile_user_idTotb_user: {
-            select: {
-              firstname: true,
-              lastname: true,
-              middlename: true,
-            },
-          },
-        },
-      })
-      .then((users) =>
-        users.map((user) => {
-          const newFormatUser = {
-            ...user,
-            userInfo: user.tb_user_profile_tb_user_profile_user_idTotb_user[0],
-          };
-          delete newFormatUser.tb_user_profile_tb_user_profile_user_idTotb_user;
-          return newFormatUser;
-        }),
-      );
+            return {
+              id: user[0].id,
+              email: user[0].email,
+              userInfo:
+                user[0].tb_user_profile_tb_user_profile_user_idTotb_user[0],
+            };
+          }),
+        );
+      });
 
     const newFormatResponse: any = {
       id: oneObj.id,
@@ -160,8 +162,8 @@ export class LocationsService {
         name: oneObj.tb_delivery_point.name,
       },
       users: {
-        active: userNameActive,
-        inactive: userNameInActive,
+        active: usersActive,
+        inactive: userInActive,
       },
     };
 

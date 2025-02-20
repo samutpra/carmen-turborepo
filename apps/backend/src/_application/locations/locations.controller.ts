@@ -51,10 +51,6 @@ export class LocationsController {
     required: true,
     type: "uuid",
   })
-  @ApiBody({
-    type: "any",
-    description: "",
-  })
   async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.locationsService.findOne(req, id);
