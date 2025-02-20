@@ -1,0 +1,23 @@
+meta {
+  name: 04 - Update
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/unit-comment/8a6fd3f2-cb2d-4bde-9fe7-ae899cce8f28
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "user",
+    "message": "Test comment update",
+    "attachments": [
+      {
+        "test": "test update"
+      }
+    ]
+  }
+}
