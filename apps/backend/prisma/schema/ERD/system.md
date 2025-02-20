@@ -169,6 +169,7 @@ erDiagram
   String id PK
   String user_id FK "nullable"
   String business_unit_id FK "nullable"
+  enum_user_business_unit_role role
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
@@ -448,6 +449,7 @@ erDiagram
   - `id`: 
   - `user_id`: 
   - `business_unit_id`: 
+  - `role`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 

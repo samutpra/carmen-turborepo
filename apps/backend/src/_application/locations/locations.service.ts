@@ -31,29 +31,142 @@ export class LocationsService {
 
   logger = new Logger(LocationsService.name);
 
-  async _getById(db_tenant: dbTenant, id: string): Promise<tb_location> {
+  async _getById(db_tenant: dbTenant, id: string): Promise<any> {
     const res = await db_tenant.tb_location.findUnique({
       where: {
         id: id,
       },
+      select: {
+        id: true,
+        name: true,
+        location_type: true,
+        description: true,
+        info: true,
+        is_active: true,
+        tb_delivery_point: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
+
     return res;
   }
 
-  async findOne(
-    req: Request,
-    id: string,
-  ): Promise<ResponseSingle<tb_location>> {
+  async findOne(req: Request, id: string): Promise<ResponseSingle<any>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_system = this.prismaClientMamager.getSystemDB();
+
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
       throw new NotFoundException("Location not found");
     }
 
-    const res: ResponseSingle<tb_location> = {
-      data: oneObj,
+    const usersActive = await this.db_tenant.tb_user_location.findMany({
+      where: {
+        location_id: id,
+      },
+      select: {
+        user_id: true,
+      },
+    });
+
+    const userInActive = await this.db_system.tb_user_tb_business_unit.findMany(
+      {
+        where: {
+          user_id: {
+            notIn: [...usersActive.map((user) => user.user_id), user_id],
+          },
+        },
+        select: {
+          user_id: true,
+        },
+      },
+    );
+
+    const userNameActive = await this.db_system.tb_user
+      .findMany({
+        where: {
+          id: {
+            in: usersActive.map((user) => user.user_id),
+          },
+        },
+        select: {
+          id: true,
+          email: true,
+          tb_user_profile_tb_user_profile_user_idTotb_user: {
+            select: {
+              firstname: true,
+              lastname: true,
+              middlename: true,
+            },
+          },
+        },
+      })
+      .then((users) =>
+        users.map((user) => {
+          const newFormatUser = {
+            ...user,
+            userInfo: user.tb_user_profile_tb_user_profile_user_idTotb_user[0],
+          };
+          delete newFormatUser.tb_user_profile_tb_user_profile_user_idTotb_user;
+          return newFormatUser;
+        }),
+      );
+
+    const userNameInActive = await this.db_system.tb_user
+      .findMany({
+        where: {
+          id: {
+            in: userInActive.map((user) => user.user_id),
+          },
+        },
+        select: {
+          id: true,
+          email: true,
+          tb_user_profile_tb_user_profile_user_idTotb_user: {
+            select: {
+              firstname: true,
+              lastname: true,
+              middlename: true,
+            },
+          },
+        },
+      })
+      .then((users) =>
+        users.map((user) => {
+          const newFormatUser = {
+            ...user,
+            userInfo: user.tb_user_profile_tb_user_profile_user_idTotb_user[0],
+          };
+          delete newFormatUser.tb_user_profile_tb_user_profile_user_idTotb_user;
+          return newFormatUser;
+        }),
+      );
+
+    const newFormatResponse: any = {
+      id: oneObj.id,
+      name: oneObj.name,
+      location_type: oneObj.location_type,
+      description: oneObj.description,
+      info: oneObj.info,
+      is_active: oneObj.is_active,
+      delivery_point: {
+        id: oneObj.tb_delivery_point.id,
+        name: oneObj.tb_delivery_point.name,
+      },
+      users: {
+        active: userNameActive,
+        inactive: userNameInActive,
+      },
+    };
+
+    const res: ResponseSingle<any> = {
+      data: newFormatResponse,
     };
 
     return res;

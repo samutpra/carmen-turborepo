@@ -1,13 +1,13 @@
-import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
-import QueryParams, { QueryAdvance } from 'lib/types';
-import { ZodValidationPipe } from 'lib/types/ZodValidationPipe';
+import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
+import QueryParams, { QueryAdvance } from "lib/types";
+import { ZodValidationPipe } from "lib/types/ZodValidationPipe";
 import {
   UserBusinessUnitCreateDto,
   UserBusinessUnitCreateSchema,
   UserBusinessUnitUpdateDto,
   UserBusinessUnitUpdateSchema,
-} from 'shared-dtos';
-import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+} from "shared-dtos";
+import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
 
 import {
   BadRequestException,
@@ -23,23 +23,23 @@ import {
   Req,
   UseGuards,
   UsePipes,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { SystemUserBusinessUnitService } from './system-user-business-unit.service';
+import { SystemUserBusinessUnitService } from "./system-user-business-unit.service";
 
-@Controller('system-api/v1/user-business-unit')
-@ApiTags('system/user business-nit')
+@Controller("system-api/v1/user-business-unit")
+@ApiTags("system/user business-nit")
 @ApiBearerAuth()
 @ApiHeader({
-  name: 'x-tenant-id',
-  description: 'tenant id',
+  name: "x-tenant-id",
+  description: "tenant id",
 })
 @UseGuards(JwtAuthGuard)
 export class SystemUserBusinessUnitController {
@@ -49,14 +49,14 @@ export class SystemUserBusinessUnitController {
 
   private readonly logger = new Logger(SystemUserBusinessUnitController.name);
 
-  @Get(':id')
+  @Get(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async findOne(@Param('id') id: string, @Req() req: Request) {
+  async findOne(@Param("id") id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUserBusinessUnitService.findOne(req, id);
   }
@@ -65,13 +65,13 @@ export class SystemUserBusinessUnitController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query('page') page?: number,
-    @Query('perpage') perpage?: number,
-    @Query('search') search?: string,
-    @Query('searchfields') searchfields?: string,
-    @Query('filter') filter?: Record<string, string>,
-    @Query('sort') sort?: string,
-    @Query('advance') advance?: QueryAdvance,
+    @Query("page") page?: number,
+    @Query("perpage") perpage?: number,
+    @Query("search") search?: string,
+    @Query("searchfields") searchfields?: string,
+    @Query("filter") filter?: Record<string, string>,
+    @Query("sort") sort?: string,
+    @Query("advance") advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [];
 
@@ -103,7 +103,7 @@ export class SystemUserBusinessUnitController {
   @Post()
   @ApiBody({
     type: UserBusinessUnitCreateDto,
-    description: 'UserBusinessUnitCreateDto',
+    description: "UserBusinessUnitCreateDto",
   })
   @UsePipes(new ZodValidationPipe(UserBusinessUnitCreateSchema))
   async create(
@@ -119,19 +119,19 @@ export class SystemUserBusinessUnitController {
     return this.systemUserBusinessUnitService.create(req, createDto);
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
   @ApiBody({
     type: UserBusinessUnitUpdateDto,
-    description: 'UserBusinessUnitUpdateDto',
+    description: "UserBusinessUnitUpdateDto",
   })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateDto: UserBusinessUnitUpdateDto,
     @Req() req: Request,
   ) {
@@ -140,20 +140,20 @@ export class SystemUserBusinessUnitController {
     if (!parseObj.success) {
       throw new BadRequestException(parseObj.error.format());
     }
-    const updatedto = parseObj.data;
-    updatedto.id = id;
-    this.logger.log({ updatedto });
-    return this.systemUserBusinessUnitService.update(req, id, updatedto);
+    // const updatedto = parseObj.data;
+    // updatedto.id = id;
+    this.logger.log({ parseObj });
+    return this.systemUserBusinessUnitService.update(req, id, updateDto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiParam({
-    name: 'id',
-    description: 'id',
+    name: "id",
+    description: "id",
     required: true,
-    type: 'uuid',
+    type: "uuid",
   })
-  async delete(@Param('id') id: string, @Req() req: Request) {
+  async delete(@Param("id") id: string, @Req() req: Request) {
     this.logger.log({ id });
     return this.systemUserBusinessUnitService.delete(req, id);
   }

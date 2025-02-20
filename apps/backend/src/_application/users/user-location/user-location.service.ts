@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import { PrismaClientManagerService } from "../../_lib/prisma-client-manager/prisma-client-manager.service";
+import { PrismaClientManagerService } from "../../../_lib/prisma-client-manager/prisma-client-manager.service";
 import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
 import { PrismaClient as dbTenant } from "@prisma-carmen-client-tenant";
 import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";

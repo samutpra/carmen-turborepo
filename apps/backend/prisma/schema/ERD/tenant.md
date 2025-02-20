@@ -612,7 +612,7 @@ erDiagram
   enum_comment_type type "nullable"
   String user_id "nullable"
   String message "nullable"
-  Json attachments
+  Json attachments "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -623,7 +623,7 @@ erDiagram
   enum_comment_type type "nullable"
   String user_id "nullable"
   String message "nullable"
-  Json attachments
+  Json attachments "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
