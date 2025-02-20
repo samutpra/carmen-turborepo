@@ -154,8 +154,10 @@ export class SystemUserBusinessUnitService {
 
     const found = await this.db_System.tb_user_tb_business_unit.findFirst({
       where: {
-        user_id: createDto.user_id,
-        business_unit_id: createDto.business_unit_id,
+        AND: [
+          { user_id: createDto.user_id },
+          { business_unit_id: createDto.business_unit_id },
+        ],
       },
     });
 
