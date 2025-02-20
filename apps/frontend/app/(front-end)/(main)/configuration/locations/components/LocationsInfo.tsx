@@ -176,9 +176,9 @@ const LocationsInfo = ({
 					)}
 				</div>
 
-				<div className="flex items-center gap-2">
+				<div>
 					{isEdit ? (
-						<>
+						<div className="hidden md:flex items-center gap-2">
 							<Button
 								type="submit"
 								size="sm"
@@ -197,7 +197,7 @@ const LocationsInfo = ({
 								<X />
 								{cancel_text()}
 							</Button>
-						</>
+						</div>
 					) : (
 						<Button
 							size="sm"
@@ -324,6 +324,30 @@ const LocationsInfo = ({
 					)}
 					required={isEdit}
 				/>
+			</div>
+			<div className="flex md:hidden items-center justify-end gap-2 mt-4">
+				{isEdit && (
+					<>
+						<Button
+							type="submit"
+							size="sm"
+							disabled={isLoading}
+							data-id="store-location-dialog-footer-submit-button"
+						>
+							<Save />
+							{save_text()}
+						</Button>
+						<Button
+							size="sm"
+							variant="outline"
+							type="button"
+							onClick={handleCancel}
+						>
+							<X />
+							{cancel_text()}
+						</Button>
+					</>
+				)}
 			</div>
 		</Card>
 	);
