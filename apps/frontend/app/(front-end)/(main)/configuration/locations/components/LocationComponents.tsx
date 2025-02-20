@@ -142,8 +142,11 @@ const LocationComponents = () => {
 	const title = `${store_location()}`;
 
 	const actionButtons = (
-		<div className="action-btn-container">
-			<Button asChild size={'sm'}>
+		<div
+			className="action-btn-container"
+			data-id="store-location-action-btn-container"
+		>
+			<Button asChild size={'sm'} data-id="store-location-add-button">
 				<Link href="/configuration/locations/new">
 					<Plus data-id="store-location-add-icon" />
 					{store_location()}

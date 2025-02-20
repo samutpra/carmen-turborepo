@@ -232,9 +232,12 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 	};
 
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form">
-				<div className="p-6 flex flex-col space-y-4">
+		<Form {...form} data-id="location-form">
+			<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form-form">
+				<div
+					className="p-6 flex flex-col space-y-4"
+					data-id="location-form-div"
+				>
 					<LocationsInfo
 						control={form.control}
 						token={token}
@@ -243,31 +246,40 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						setIsEdit={setIsEdit}
 						onCancel={onCancel}
 						defaultValues={originalValues}
+						data-id="location-info"
 					/>
-					<div className="flex flex-col lg:flex-row items-center w-full gap-4">
+					<div
+						className="flex flex-col lg:flex-row items-center w-full gap-4"
+						data-id="location-form-user-table-div"
+					>
 						<UserTable
 							users={originalValues.users.active}
 							selectedUsers={selectedUsersToDelete}
 							isEdit={isEdit}
 							onUserChange={handleUserChange}
-							title="Active Users"
+							title="Available Users"
+							data-id="location-form-user-table"
 						/>
-						<div className="flex flex-row lg:flex-col gap-2">
+						<div
+							className="flex flex-row lg:flex-col gap-2"
+							data-id="location-form-user-table-button-div"
+						>
 							<Button
-								variant="destructive"
+								variant={'outline'}
 								type="button"
 								size="icon"
-								className="bg-red-500"
 								onClick={(e) => {
 									e.preventDefault();
 									setShowDeleteDialog(true);
 								}}
 								disabled={!isEdit || selectedUsersToDelete.length === 0}
+								data-id="location-form-user-table-button"
 							>
 								<ChevronDown className="block lg:hidden" />
 								<ChevronRight className="hidden lg:block" />
 							</Button>
 							<Button
+								variant={'outline'}
 								type="button"
 								size="icon"
 								onClick={(e) => {
@@ -275,6 +287,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 									handleMoveLeft();
 								}}
 								disabled={!isEdit || selectedUsersToAdd.length === 0}
+								data-id="location-form-user-table-button"
 							>
 								<ChevronUp className="block lg:hidden" />
 								<ChevronLeft className="hidden lg:block" />
@@ -285,23 +298,35 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 							selectedUsers={selectedUsersToAdd}
 							isEdit={isEdit}
 							onUserChange={handleAddUserChange}
-							title="Available Users"
+							title="Assigned Users"
+							data-id="location-form-user-table"
 						/>
 					</div>
 				</div>
 			</form>
 
-			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+			<AlertDialog
+				open={showDeleteDialog}
+				onOpenChange={setShowDeleteDialog}
+				data-id="location-form-alert-dialog"
+			>
+				<AlertDialogContent data-id="location-form-alert-dialog-content">
+					<AlertDialogHeader data-id="location-form-alert-dialog-header">
+						<AlertDialogTitle data-id="location-form-alert-dialog-title">
+							Are you sure?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
 							This will remove the selected users from the active users list.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={handleMoveRight}>
+					<AlertDialogFooter data-id="location-form-alert-dialog-footer">
+						<AlertDialogCancel data-id="location-form-alert-dialog-cancel">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleMoveRight}
+							data-id="location-form-alert-dialog-action"
+						>
 							Continue
 						</AlertDialogAction>
 					</AlertDialogFooter>

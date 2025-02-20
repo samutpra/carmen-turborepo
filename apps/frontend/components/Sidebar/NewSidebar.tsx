@@ -131,84 +131,88 @@ const NewSidebar = () => {
     };
 
     return (
-        <div
-            className="top-1 z-50 flex-col gap-4 relative bg-background"
-            data-id="sidebar-container"
-        >
-            {isSidebarOpen && !isDesktop && (
-                <div
-                    className="fixed md:sticky inset-0 z-40"
-                    onClick={onClose}
-                    data-id="sidebar-overlay"
-                />
-            )}
+			<div
+				className="top-1 z-50 flex-col gap-4 relative bg-background"
+				data-id="sidebar-container"
+			>
+				{isSidebarOpen && !isDesktop && (
+					<div
+						className="fixed md:sticky inset-0 z-40"
+						onClick={onClose}
+						data-id="sidebar-overlay"
+					/>
+				)}
 
-            <aside
-                className={cn(
-                    'fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r transition-all duration-700 ease-in-out',
-                    isSidebarOpen || isDesktop ? 'translate-x-0 md:sticky' : '-translate-x-full',
-                    isExpanded ? 'w-[280px]' : 'w-[70px]'
-                )}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                data-id="sidebar-container"
-            >
-                <SidebarLogo
-                    isExpanded={isExpanded}
-                    isPinned={isPinned}
-                    togglePin={togglePin}
-                    data-id="sidebar-logo"
-                />
+				<aside
+					className={cn(
+						'fixed left-0 h-full z-50 bg-[var(--cm-sidebar)] border-r transition-all duration-700 ease-in-out',
+						isSidebarOpen || isDesktop
+							? 'translate-x-0 md:sticky'
+							: '-translate-x-full',
+						isExpanded ? 'w-[280px]' : 'w-[70px]'
+					)}
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+					data-id="sidebar-container"
+				>
+					<SidebarLogo
+						isExpanded={isExpanded}
+						isPinned={isPinned}
+						togglePin={togglePin}
+						data-id="sidebar-logo"
+					/>
 
-                <div className="p-2 mt-2">
-                    <div
-                        className={cn(
-                            'flex items-center',
-                            isExpanded ? 'justify-start' : 'justify-center'
-                        )}
+					{activeMenuItem && (
+						<div className="py-2 overflow-hidden whitespace-nowrap">
+							<div
+								className={cn(
+									'flex items-center p-2',
+									isExpanded ? 'justify-start' : 'justify-center'
+								)}
+							>
+								<DynamicIcon iconName={activeMenuItem.icon} />
+								{isExpanded && (
+									<div className="ml-3 font-medium">{activeMenuItem.title}</div>
+								)}
+							</div>
+							<div className="p-2 mx-2">
+								{isExpanded && renderSubItems(activeMenuItem)}
+							</div>
+						</div>
+					)}
 
-                    >
-                        <Star />
-                        {isExpanded && <span className="ml-3 font-medium">Active Menu</span>}
-                    </div>
-                    {favoriteMenu.length > 0 && (
-                        <div className="text-xs rounded-lg whitespace-nowrap flex flex-col">
-                            {favoriteMenu && favoriteMenu.map((item: FavMenuItem, index: number) => (
-                                <Link href={item.path} key={index} className="p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg">
-                                    {isExpanded && <span className="ml-3">{item.title}</span>}
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </div>
+					<Separator />
 
-                <Separator />
-                {
-                    activeMenuItem && (
-                        <div className="py-2 overflow-hidden whitespace-nowrap">
-                            <div
-                                className={cn(
-                                    'flex items-center p-2',
-                                    isExpanded ? 'justify-start' : 'justify-center'
-                                )}
-                            >
-                                <DynamicIcon iconName={activeMenuItem.icon} />
-                                {isExpanded && (
-                                    <div className="ml-3 font-medium">
-                                        {activeMenuItem.title}
-                                    </div>
-                                )}
-                            </div>
-                            <div className='p-2 mx-2'>
-                                {isExpanded && renderSubItems(activeMenuItem)}
-                            </div>
-
-                        </div>
-                    )
-                }
-            </aside >
-        </div >
-    );
+					<div className="p-2 mt-2">
+						<div
+							className={cn(
+								'flex items-center',
+								isExpanded ? 'justify-start' : 'justify-center'
+							)}
+						>
+							<Star />
+							{isExpanded && (
+								<span className="ml-3 font-medium">Favorite Menu</span>
+							)}
+						</div>
+						{favoriteMenu.length > 0 && (
+							<div className="text-xs rounded-lg whitespace-nowrap flex flex-col">
+								{favoriteMenu &&
+									favoriteMenu.map((item: FavMenuItem, index: number) => (
+										<Link
+											href={item.path}
+											key={index}
+											className="p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg"
+										>
+											{isExpanded && <span className="ml-3">{item.title}</span>}
+										</Link>
+									))}
+							</div>
+						)}
+					</div>
+				</aside>
+			</div>
+		);
 }
 
 export default NewSidebar;

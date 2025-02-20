@@ -26,38 +26,51 @@ const UserTable: React.FC<UserTableProps> = ({
 	title,
 }) => {
 	return (
-		<Card className="w-full lg:w-1/2 p-4 h-[55vh] overflow-y-auto">
-			<p className="px-2 text-md font-semibold">{title}</p>
-			<Table>
-				<TableHeader>
-					<TableRow>
+		<Card
+			className="w-full lg:w-1/2 p-4 h-[55vh] overflow-y-auto"
+			data-id="user-table-card"
+		>
+			<p className="px-2 text-md font-semibold" data-id="user-table-title">
+				{title}
+			</p>
+			<Table data-id="user-table">
+				<TableHeader data-id="user-table-header">
+					<TableRow data-id="user-table-row">
 						{isEdit && <TableHead className="w-[30px]"></TableHead>}
 						<TableHead className="w-[100px]">Full Name</TableHead>
 						<TableHead>Email</TableHead>
 					</TableRow>
 				</TableHeader>
-				<TableBody>
+				<TableBody data-id="user-table-body">
 					{users.length > 0 ? (
 						users.map((user) => (
-							<TableRow key={user.id}>
+							<TableRow key={user.id} data-id="user-table-row">
 								{isEdit && (
-									<TableCell className="w-[30px]">
+									<TableCell className="w-[30px]" data-id="user-table-cell">
 										<Checkbox
 											id={user.id}
 											checked={selectedUsers.includes(user.id)}
 											onCheckedChange={() => onUserChange(user.id)}
+											data-id="user-table-checkbox"
 										/>
 									</TableCell>
 								)}
-								<TableCell className="w-[100px] font-medium">
+								<TableCell
+									className="w-[100px] font-medium"
+									data-id="user-table-cell"
+								>
 									{user.full_name}
 								</TableCell>
-								<TableCell>{user.email}</TableCell>
+								<TableCell data-id="user-table-cell">{user.email}</TableCell>
 							</TableRow>
 						))
 					) : (
-						<TableRow>
-							<TableCell colSpan={isEdit ? 3 : 2} className="text-center">
+						<TableRow data-id="user-table-row">
+							<TableCell
+								colSpan={isEdit ? 3 : 2}
+								className="text-center"
+								data-id="user-table-cell"
+							>
 								No users found.
 							</TableCell>
 						</TableRow>
