@@ -61,6 +61,8 @@ const LocationsInfo = ({
 		DeliveryPointCreateModel[]
 	>([]);
 
+	console.log('deliveryPoints', deliveryPoints);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const fetchData = useCallback(async () => {
 		if (!token) return;
@@ -79,6 +81,14 @@ const LocationsInfo = ({
 	useEffect(() => {
 		fetchData();
 	}, []);
+
+	const deliveryPointName = deliveryPoints.find(
+		(dp) => dp.id === defaultValues?.delivery_point_id
+	)?.name;
+
+	console.log('deliveryPointName', deliveryPointName);
+
+	const dpName = isLoading ? <p>Loading...</p> : deliveryPointName;
 
 	const handleCancel = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -163,7 +173,7 @@ const LocationsInfo = ({
 					</div>
 				</div>
 
-				<div className="grid grid-cols-3 gap-4">
+				<div className="grid grid-cols-2 gap-4">
 					<div className="space-y-2">
 						<FormField
 							control={control}
@@ -232,11 +242,7 @@ const LocationsInfo = ({
 											/>
 										</FormControl>
 									) : (
-										<p className="text-xs font-normal">
-											{deliveryPoints.find(
-												(dp) => dp.id === defaultValues?.delivery_point_id
-											)?.name || defaultValues?.delivery_point_id}
-										</p>
+										<p className="text-xs font-normal">{dpName}</p>
 									)}
 									<FormMessage data-id="store-location-dialog-form-delivery_point_id-message" />
 								</FormItem>
@@ -244,6 +250,7 @@ const LocationsInfo = ({
 							required
 						/>
 					</div>
+
 					<div className="space-y-2">
 						<FormField
 							control={control}
@@ -280,10 +287,7 @@ const LocationsInfo = ({
 								name={LocationField.isActive}
 								data-id="store-location-dialog-form-active-field"
 								render={({ field }) => (
-									<FormItem
-										className="flex-between rounded-lg border p-2"
-										data-id="store-location-dialog-form-active-item"
-									>
+									<FormItem data-id="store-location-dialog-form-active-item">
 										<FormControl>
 											<RadioGroup
 												defaultValue={field.value ? 'active' : 'inactive'}
@@ -293,11 +297,11 @@ const LocationsInfo = ({
 												}
 											>
 												<div className="flex flex-col justify-center items-center gap-1">
-													<p className="text-sm font-medium">Active</p>
+													<p className="text-xs font-medium">Active</p>
 													<RadioGroupItem value="active" id="active" />
 												</div>
 												<div className="flex flex-col justify-center items-center gap-1">
-													<p className="text-sm font-medium">Inactive</p>
+													<p className="text-xs font-medium">Inactive</p>
 													<RadioGroupItem value="inactive" id="inactive" />
 												</div>
 											</RadioGroup>

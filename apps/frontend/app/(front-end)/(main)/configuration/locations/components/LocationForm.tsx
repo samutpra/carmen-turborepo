@@ -8,9 +8,29 @@ import {
 	LocationCreateModel,
 	LocationCreateSchema,
 } from '@/dtos/location.dto';
-import { Form } from '@/components/ui-custom/FormCustom';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormMessage,
+} from '@/components/ui-custom/FormCustom';
 import { useAuth } from '@/app/context/AuthContext';
 import LocationsInfo from './LocationsInfo';
+import UserTable from './UserTable';
+import UserActions from './UserActions';
+import UserDialog from './UserDialog';
+import { Card } from '@/components/ui/card';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+import { FormItem } from '@/components/ui/form';
+import { InputCustom } from '@/components/ui-custom/InputCustom';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Props = {
 	defaultValues?: Partial<LocationCreateModel>;
@@ -22,9 +42,8 @@ const LocationForm = ({ defaultValues }: Props) => {
 	const tenantId = 'DUMMY';
 	const [isEdit, setIsEdit] = useState(false);
 
-	const [originalValues, setOriginalValues] = useState<
-		Partial<LocationCreateModel>
-	>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const [originalValues, setOriginalValues] = useState<any>(
 		defaultValues || {
 			name: '',
 			description: '',
@@ -39,6 +58,9 @@ const LocationForm = ({ defaultValues }: Props) => {
 		}
 	);
 
+	console.log('originalValues', defaultValues);
+	console.log('isEdit', isEdit);
+
 	const form = useForm<LocationCreateModel>({
 		resolver: zodResolver(LocationCreateSchema),
 		defaultValues: originalValues,
@@ -50,26 +72,20 @@ const LocationForm = ({ defaultValues }: Props) => {
 	};
 
 	const onSubmit = async (data: LocationCreateModel) => {
-		if (!isEdit) return;
+		console.log('Form submitted');
+		console.log('Form data:', data);
 
-		try {
-			console.log('Form submitted');
-			console.log('Form data:', data);
+		// Add your API call here
+		// const response = await saveLocation(formData);
 
-			// Add your API call here
-			// const response = await saveLocation(data);
-
-			setOriginalValues(data);
-			setIsEdit(false);
-		} catch (error) {
-			console.error('Submit error:', error);
-		}
+		setOriginalValues(data);
+		setIsEdit(false);
 	};
 
 	return (
-		<div className="p-4">
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form">
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form">
+				<div className="p-6 flex flex-col space-y-4">
 					<LocationsInfo
 						control={form.control}
 						token={token}
@@ -79,9 +95,68 @@ const LocationForm = ({ defaultValues }: Props) => {
 						onCancel={onCancel}
 						defaultValues={originalValues}
 					/>
-				</form>
-			</Form>
-		</div>
+					<div className="flex flex-col lg:flex-row items-center w-full gap-4">
+						<Card className="w-full lg:w-1/2 p-4 h-[55vh] overflow-y-auto">
+							<p className="px-2 text-md font-semibold">Active User</p>
+							<Table>
+								<TableHeader>
+									<TableRow>
+										{isEdit && <TableHead className="w-[30px]"></TableHead>}
+										<TableHead>Full Name</TableHead>
+										<TableHead>Email</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{originalValues.users?.length > 0 ? (
+										// eslint-disable-next-line @typescript-eslint/no-explicit-any
+										originalValues.users?.map((user: any) => (
+											<TableRow key={user.id}>
+												{isEdit && (
+													<TableCell className="font-medium">
+														<FormField
+															control={form.control}
+															name={`users.delete.${user.id}`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormControl>
+																		<Checkbox
+																			id={user.id}
+																			checked={!!field.value}
+																			onCheckedChange={(checked) =>
+																				field.onChange(checked)
+																			}
+																		/>
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+													</TableCell>
+												)}
+
+												<TableCell className="font-medium">
+													{user.full_name}
+												</TableCell>
+												<TableCell>{user.email}</TableCell>
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell
+												colSpan={isEdit ? 3 : 2}
+												className="text-center"
+											>
+												No users found.
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</Card>
+					</div>
+				</div>
+			</form>
+		</Form>
 	);
 };
 

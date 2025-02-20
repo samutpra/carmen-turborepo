@@ -115,16 +115,13 @@ export const submitStoreLocation = async (
 
 export const fetchLocationByID = async (id: string, token: string, tenantId: string) => {
 	try {
-		const response = await fetch(
-			`/api/configuration/locations/${id}`,
-			{
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"x-tenant-id": tenantId,
-				},
-			}
-		);
+		const response = await fetch(`/api/configuration/locations/v2/${id}`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch location data: ${response.status}`);
