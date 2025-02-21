@@ -45,7 +45,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ workflowId }) => {
 		setIsEditing(false);
 	};
 
-	const stageNames = workflow.stages.map((stage) => stage.name);
+	const stageNames = workflow.data.stages.map((stage) => stage.name);
 
 	return (
 		<div className="container mx-auto py-6">
@@ -78,24 +78,33 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ workflowId }) => {
 				</TabsContent>
 				<TabsContent value="stages">
 					<WorkflowStages
-						stages={workflow.stages}
+						stages={workflow.data.stages}
 						isEditing={isEditing}
-						onSave={(stages) => handleSave({ ...workflow, stages })}
+						onSave={(stages) =>
+							handleSave({ ...workflow, data: { ...workflow.data, stages } })
+						}
 					/>
 				</TabsContent>
 				<TabsContent value="routing">
 					<WorkflowRouting
-						rules={workflow.routingRules || []}
+						rules={workflow.data.routingRules || []}
 						stages={stageNames}
 						isEditing={isEditing}
-						onSave={(routingRules) => handleSave({ ...workflow, routingRules })}
+						onSave={(routingRules) =>
+							handleSave({
+								...workflow,
+								data: { ...workflow.data, routingRules },
+							})
+						}
 					/>
 				</TabsContent>
 				<TabsContent value="products">
 					<WorkflowProducts
-						products={workflow.products || []}
+						products={workflow.data.products || []}
 						isEditing={isEditing}
-						onSave={(products) => handleSave({ ...workflow, products })}
+						onSave={(products) =>
+							handleSave({ ...workflow, data: { ...workflow.data, products } })
+						}
 					/>
 				</TabsContent>
 			</Tabs>
