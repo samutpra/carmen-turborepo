@@ -86,7 +86,9 @@ const NewSidebar = () => {
 			const IconComponent = LucideIcons[
 				iconName as LucideIconName
 			] as React.ElementType;
-			return IconComponent ? <IconComponent className="w-4 h-4" /> : null;
+			return IconComponent ? (
+				<IconComponent className="ml-2 h-4 w-4 transition-all duration-300" />
+			) : null;
 		};
 
 		const renderSubItems = (item: MenuItem) => {
@@ -101,7 +103,7 @@ const NewSidebar = () => {
 					>
 						<Link
 							className={cn(
-								'w-full p-2 rounded-lg',
+								'w-full rounded-lg p-2',
 								isActive
 									? 'font-medium bg-primary text-background'
 									: 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
@@ -120,7 +122,10 @@ const NewSidebar = () => {
 							className="opacity-0 group-hover:opacity-100 transition-opacity"
 							aria-label="Pin menu item"
 						>
-							<Pin className="h-2 w-2" data-id="pin-menu-item-icon" />
+							<Pin
+								className="h-4 w-4 transition-all duration-300"
+								data-id="pin-menu-item-icon"
+							/>
 						</Button>
 					</div>
 				);
@@ -135,7 +140,7 @@ const NewSidebar = () => {
 				{isSidebarOpen && !isDesktop && (
 					<div
 						className="fixed md:sticky inset-0 z-40"
-						onClick={onClose}
+						onMouseDown={onClose}
 						data-id="sidebar-overlay"
 					/>
 				)}
@@ -146,7 +151,7 @@ const NewSidebar = () => {
 						isSidebarOpen || isDesktop
 							? 'translate-x-0 md:sticky'
 							: '-translate-x-full',
-						isExpanded ? 'w-[220px]' : 'w-[40px]'
+						isExpanded ? 'w-[220px]' : 'w-[55px]'
 					)}
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
@@ -161,19 +166,33 @@ const NewSidebar = () => {
 					/>
 
 					{activeMenuItem && (
-						<div className="py-2 overflow-hidden whitespace-nowrap">
+						<div className="py-2 overflow-hidden">
 							<div
 								className={cn(
-									'flex items-center p-2',
+									'flex items-center p-2 transition-all duration-300',
 									isExpanded ? 'justify-start' : 'justify-center'
 								)}
 							>
 								<DynamicIcon iconName={activeMenuItem.icon} />
-								{isExpanded && (
-									<div className="ml-3 font-medium">{activeMenuItem.title}</div>
-								)}
+								<div
+									className={cn(
+										'ml-3 font-medium transition-all duration-300',
+										isExpanded
+											? 'opacity-100 delay-200'
+											: 'opacity-0 pointer-events-none w-0'
+									)}
+								>
+									{activeMenuItem.title}
+								</div>
 							</div>
-							<div className="p-2 mx-2">
+							<div
+								className={cn(
+									'p-2 mx-2 transition-all duration-300',
+									isExpanded
+										? 'opacity-100 delay-200'
+										: 'opacity-0 pointer-events-none h-0'
+								)}
+							>
 								{isExpanded && renderSubItems(activeMenuItem)}
 							</div>
 						</div>
@@ -184,38 +203,70 @@ const NewSidebar = () => {
 					<div className="p-2 mt-2">
 						<div
 							className={cn(
-								'flex items-center',
+								'flex items-center transition-all duration-300',
 								isExpanded ? 'justify-start' : 'justify-center'
 							)}
 						>
-							<Star className="w-4 h-4" />
-							{isExpanded && (
-								<span className="ml-3 font-medium overflow-hidden whitespace-nowrap">
-									Favorite Menu
-								</span>
-							)}
+							<Star className="ml-2 h-4 w-4 transition-all duration-300" />
+							<span
+								className={cn(
+									'ml-3 font-medium transition-all duration-300',
+									isExpanded
+										? 'opacity-100 delay-200'
+										: 'opacity-0 pointer-events-none w-0'
+								)}
+							>
+								Favorite Menu
+							</span>
 						</div>
 						{favoriteMenu.length > 0 && (
-							<div className="text-xs rounded-lg overflow-hidden whitespace-nowrap flex flex-col">
-								{favoriteMenu &&
-									favoriteMenu.map((item: FavMenuItem, index: number) => (
-										<div
-											key={index}
-											className="flex items-center justify-between p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))] rounded-lg"
+							<div
+								className={cn(
+									'text-xs rounded-lg pt-2 transition-all duration-300',
+									isExpanded
+										? 'opacity-100 delay-200'
+										: 'opacity-0 pointer-events-none h-0'
+								)}
+							>
+								{favoriteMenu.map((item: FavMenuItem, index: number) => (
+									<div
+										className="text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden group"
+										key={index}
+									>
+										<Link
+											href={item.path}
+											className="flex-1 p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]"
 										>
-											<Link href={item.path} className="flex-1">
-												{isExpanded && (
-													<span className="ml-3">{item.title}</span>
+											<span
+												className={cn(
+													'ml-2 text-xs transition-all duration-300',
+													isExpanded
+														? 'opacity-100 delay-200'
+														: 'opacity-0 pointer-events-none w-0'
 												)}
-											</Link>
-											{isExpanded && (
-												<Pin
-													className="h-4 w-4"
-													data-id="favorite-menu-pin-icon"
-												/>
+											>
+												{item.title}
+											</span>
+										</Link>
+										<Button
+											variant="ghost"
+											size="sm"
+											data-id="favorite-menu-pin-button"
+											className={cn(
+												'transition-all duration-300',
+												isExpanded
+													? 'opacity-0 group-hover:opacity-100'
+													: 'hidden'
 											)}
-										</div>
-									))}
+											aria-label="favorite pin menu item"
+										>
+											<Pin
+												className="h-4 w-4 transition-all duration-300"
+												data-id="favorite-menu-item-icon"
+											/>
+										</Button>
+									</div>
+								))}
 							</div>
 						)}
 					</div>
