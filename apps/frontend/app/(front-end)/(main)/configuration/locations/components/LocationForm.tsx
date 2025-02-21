@@ -71,25 +71,25 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 	const [originalValues, setOriginalValues] = useState<LocationFormState>(
 		defaultValues
 			? {
-					id: defaultValues.id || '',
-					name: defaultValues.name || '',
-					description: defaultValues.description || '',
-					is_active: defaultValues.is_active ?? true,
-					location_type:
-						(defaultValues.location_type as enum_location_type) ||
-						enum_location_type.inventory,
-					delivery_point: defaultValues.delivery_point || { id: '', name: '' },
-					users: defaultValues.users || { active: [], inactive: [] },
-				}
+				id: defaultValues.id || '',
+				name: defaultValues.name || '',
+				description: defaultValues.description || '',
+				is_active: defaultValues.is_active ?? true,
+				location_type:
+					(defaultValues.location_type as enum_location_type) ||
+					enum_location_type.inventory,
+				delivery_point: defaultValues.delivery_point || { id: '', name: '' },
+				users: defaultValues.users || { active: [], inactive: [] },
+			}
 			: {
-					id: '',
-					name: '',
-					description: '',
-					is_active: true,
-					location_type: enum_location_type.inventory,
-					delivery_point: { id: '', name: '' },
-					users: { active: [], inactive: [] },
-				}
+				id: '',
+				name: '',
+				description: '',
+				is_active: true,
+				location_type: enum_location_type.inventory,
+				delivery_point: { id: '', name: '' },
+				users: { active: [], inactive: [] },
+			}
 	);
 
 	const [availableUsers, setAvailableUsers] = useState<UserLocationModel[]>(
@@ -121,28 +121,28 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		setOriginalValues(
 			defaultValues
 				? {
-						id: defaultValues.id || '',
-						name: defaultValues.name || '',
-						description: defaultValues.description || '',
-						is_active: defaultValues.is_active ?? true,
-						location_type:
-							(defaultValues.location_type as enum_location_type) ||
-							enum_location_type.inventory,
-						delivery_point: defaultValues.delivery_point || {
-							id: '',
-							name: '',
-						},
-						users: defaultValues.users || { active: [], inactive: [] },
-					}
-				: {
+					id: defaultValues.id || '',
+					name: defaultValues.name || '',
+					description: defaultValues.description || '',
+					is_active: defaultValues.is_active ?? true,
+					location_type:
+						(defaultValues.location_type as enum_location_type) ||
+						enum_location_type.inventory,
+					delivery_point: defaultValues.delivery_point || {
 						id: '',
 						name: '',
-						description: '',
-						is_active: true,
-						location_type: enum_location_type.inventory,
-						delivery_point: { id: '', name: '' },
-						users: { active: [], inactive: [] },
-					}
+					},
+					users: defaultValues.users || { active: [], inactive: [] },
+				}
+				: {
+					id: '',
+					name: '',
+					description: '',
+					is_active: true,
+					location_type: enum_location_type.inventory,
+					delivery_point: { id: '', name: '' },
+					users: { active: [], inactive: [] },
+				}
 		);
 	};
 
@@ -327,62 +327,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
 							/>
 						</CardContent>
-						{/* <CardContent className="flex flex-col items-start lg:flex-row gap-4 p-4 bg-green-300">
-							<UserTable
-								users={originalValues.users.active}
-								selectedUsers={selectedUsersToDelete}
-								isEdit={isEdit}
-								onUserChange={handleUserChange}
-								title="Available Users"
-								data-id="location-form-user-table"
-								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
-							/>
-							<div className="flex items-center bg-yellow-300">
-								<div
-									className="flex flex-row lg:flex-col gap-2 items-center h-fit"
-									data-id="location-form-user-table-button-div"
-								>
-									<Button
-										variant={'outline'}
-										type="button"
-										size="icon"
-										onClick={(e) => {
-											e.preventDefault();
-											handleMoveRight();
-										}}
-										disabled={!isEdit || selectedUsersToDelete.length === 0}
-										data-id="location-form-user-table-button"
-									>
-										<ChevronDown className="block lg:hidden" />
-										<ChevronRight className="hidden lg:block" />
-									</Button>
-									<Button
-										variant={'outline'}
-										type="button"
-										size="icon"
-										onClick={(e) => {
-											e.preventDefault();
-											setShowDeleteDialog(true);
-										}}
-										disabled={!isEdit || selectedUsersToAdd.length === 0}
-										data-id="location-form-user-table-button"
-									>
-										<ChevronUp className="block lg:hidden" />
-										<ChevronLeft className="hidden lg:block" />
-									</Button>
-								</div>
-							</div>
 
-							<UserTable
-								users={availableUsers}
-								selectedUsers={selectedUsersToAdd}
-								isEdit={isEdit}
-								onUserChange={handleAddUserChange}
-								title="Assigned Users"
-								data-id="location-form-user-table"
-								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
-							/>
-						</CardContent> */}
 					</Card>
 				</div>
 			</form>
