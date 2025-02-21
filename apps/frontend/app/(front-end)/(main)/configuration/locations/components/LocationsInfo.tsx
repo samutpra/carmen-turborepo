@@ -50,7 +50,7 @@ interface LocationFormState {
 	};
 	users: {
 		active: UserLocationModel[];
-		in_active: UserLocationModel[];
+		inactive: UserLocationModel[];
 	};
 }
 
@@ -113,7 +113,7 @@ const LocationsInfo = ({
 	};
 
 	return (
-		<Card className="p-6">
+		<Card className="px-3 py-3">
 			<div className="flex items-center justify-between mb-4">
 				<div className="flex items-center gap-4">
 					{isEdit ? (
@@ -139,8 +139,8 @@ const LocationsInfo = ({
 							required
 						/>
 					) : (
-						<div className="space-y-1">
-							<p className="text-xl font-semibold">{defaultValues?.name}</p>
+						<div className="">
+							<p className="text-xl font-bold">{defaultValues?.name}</p>
 						</div>
 					)}
 

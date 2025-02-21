@@ -38,6 +38,7 @@ export async function GET(
         }
 
         const result = await response.json();
+        console.log('result', result);
         if (!result) {
             throw new Error('Invalid response from API');
         }

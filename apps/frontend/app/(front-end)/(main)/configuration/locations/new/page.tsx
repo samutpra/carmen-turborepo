@@ -49,7 +49,7 @@ const NewLocationPage = () => {
 			defaultValues={{
 				users: {
 					active: [],
-					in_active: availableUsers,
+					inactive: availableUsers,
 				},
 			}}
 		/>

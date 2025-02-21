@@ -9,16 +9,18 @@ interface Props {
 	isExpanded: boolean;
 	isPinned: boolean;
 	togglePin: () => void;
+	className?: string;
 }
 
 const SidebarLogo: React.FC<Props> = ({
 	isExpanded,
 	isPinned,
-	togglePin
+	togglePin,
+	className,
 }) => {
 	return (
 		<div
-			className="logo-container"
+			className={cn('logo-container', className)}
 			data-id="sidebar-logo-container"
 		>
 			<Link href="/" className="all-center" data-id="sidebar-logo-link">
@@ -38,7 +40,10 @@ const SidebarLogo: React.FC<Props> = ({
 						</span>
 					</div>
 				) : (
-					<Avatar data-id="sidebar-logo-avatar">
+					<Avatar
+						data-id="sidebar-logo-avatar"
+						className="transition-opacity duration-[1000ms] delay-[5000ms] hover:opacity-100"
+					>
 						<AvatarImage
 							src="/images/carmen_pic.png"
 							alt="@shadcn"
@@ -63,6 +68,6 @@ const SidebarLogo: React.FC<Props> = ({
 			)}
 		</div>
 	);
-}
+};
 
 export default SidebarLogo

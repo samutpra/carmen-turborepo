@@ -10,7 +10,15 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface UserTableProps {
-	users: { id: string; full_name: string; email: string }[];
+	users: {
+		id: string;
+		email: string;
+		userInfo: {
+			firstname: string;
+			lastname: string;
+			middlename: string;
+		};
+	}[];
 	selectedUsers: string[];
 	isEdit: boolean;
 	onUserChange: (id: string) => void;
@@ -43,7 +51,7 @@ const UserTable: React.FC<UserTableProps> = ({
 	return (
 		<div className="w-full">
 			<p
-				className="px-2 text-md font-semibold mb-4"
+				className="text-base font-semibold mb-2"
 				data-id="user-table-title"
 				role="heading"
 				aria-level={2}
@@ -81,7 +89,7 @@ const UserTable: React.FC<UserTableProps> = ({
 													/>
 												</TableHead>
 											)}
-											<TableHead className="w-[120px]" scope="col">
+											<TableHead className="" scope="col">
 												Full Name
 											</TableHead>
 											<TableHead scope="col">Email</TableHead>
@@ -113,7 +121,7 @@ const UserTable: React.FC<UserTableProps> = ({
 															id={user.id}
 															checked={selectedUsers.includes(user.id)}
 															onCheckedChange={() => onUserChange(user.id)}
-															aria-label={`Select ${user.full_name}`}
+															aria-label={`Select ${user.userInfo.firstname} ${user.userInfo.lastname}`}
 															data-id="user-table-checkbox"
 															onKeyDown={(e) =>
 																handleKeyDown(e, () => onUserChange(user.id))
@@ -122,10 +130,10 @@ const UserTable: React.FC<UserTableProps> = ({
 													</TableCell>
 												)}
 												<TableCell
-													className="w-[120px] font-medium"
+													className="font-medium"
 													data-id="user-table-cell"
 												>
-													{user.full_name}
+													{`${user.userInfo.firstname} ${user.userInfo.lastname}`}
 												</TableCell>
 												<TableCell data-id="user-table-cell">
 													{user.email}
@@ -139,7 +147,7 @@ const UserTable: React.FC<UserTableProps> = ({
 												className="text-center"
 												data-id="user-table-cell"
 											>
-												No users found.
+												Empty.
 											</TableCell>
 										</TableRow>
 									)}

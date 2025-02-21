@@ -135,20 +135,26 @@ export type StateType = {
 	deletedLocations: LocationState[];
 };
 
+export const UserInfoSchema = z.object({
+	firstname: z.string(),
+	lastname: z.string(),
+	middlename: z.string(),
+});
+
 export const UserLocationSchema = z.object({
 	id: z.string().uuid(),
-	full_name: z.string(),
 	email: z.string().email(),
+	userInfo: UserInfoSchema,
 });
 export type UserLocationModel = z.infer<typeof UserLocationSchema>;
 
 export const UsersSchema = z.object({
 	active: z.array(UserLocationSchema),
-	in_active: z.array(UserLocationSchema),
+	inactive: z.array(UserLocationSchema),
 });
 
 const DeliveryPointSchema = z.object({
-	id: z.string(),
+	id: z.string().uuid(),
 	name: z.string(),
 });
 
@@ -165,3 +171,4 @@ export const LocationSchema = z.object({
 });
 
 export type LocationsModel = z.infer<typeof LocationSchema>;
+

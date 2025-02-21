@@ -38,7 +38,7 @@ type Props = {
 		LocationsModel & {
 			users: {
 				active: UserLocationModel[];
-				in_active: UserLocationModel[];
+				inactive: UserLocationModel[];
 			};
 		}
 	>;
@@ -57,7 +57,7 @@ interface LocationFormState {
 	};
 	users: {
 		active: UserLocationModel[];
-		in_active: UserLocationModel[];
+		inactive: UserLocationModel[];
 	};
 }
 
@@ -79,7 +79,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						(defaultValues.location_type as enum_location_type) ||
 						enum_location_type.inventory,
 					delivery_point: defaultValues.delivery_point || { id: '', name: '' },
-					users: defaultValues.users || { active: [], in_active: [] },
+					users: defaultValues.users || { active: [], inactive: [] },
 				}
 			: {
 					id: '',
@@ -88,12 +88,12 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 					is_active: true,
 					location_type: enum_location_type.inventory,
 					delivery_point: { id: '', name: '' },
-					users: { active: [], in_active: [] },
+					users: { active: [], inactive: [] },
 				}
 	);
 
 	const [availableUsers, setAvailableUsers] = useState<UserLocationModel[]>(
-		defaultValues?.users?.in_active || []
+		defaultValues?.users?.inactive || []
 	);
 
 	const [selectedUsersToDelete, setSelectedUsersToDelete] = useState<string[]>(
@@ -114,7 +114,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		}
 
 		form.reset(originalValues);
-		setAvailableUsers(defaultValues?.users?.in_active || []);
+		setAvailableUsers(defaultValues?.users?.inactive || []);
 		setSelectedUsersToDelete([]);
 		setSelectedUsersToAdd([]);
 		setIsEdit(false);
@@ -132,7 +132,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 							id: '',
 							name: '',
 						},
-						users: defaultValues.users || { active: [], in_active: [] },
+						users: defaultValues.users || { active: [], inactive: [] },
 					}
 				: {
 						id: '',
@@ -141,7 +141,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						is_active: true,
 						location_type: enum_location_type.inventory,
 						delivery_point: { id: '', name: '' },
-						users: { active: [], in_active: [] },
+						users: { active: [], inactive: [] },
 					}
 		);
 	};
@@ -181,7 +181,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		const updatedInactiveUsers = [...availableUsers, ...selectedUsers];
 
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
-		form.setValue('users.in_active', updatedInactiveUsers, {
+		form.setValue('users.inactive', updatedInactiveUsers, {
 			shouldValidate: true,
 		});
 
@@ -213,7 +213,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		);
 
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
-		form.setValue('users.in_active', updatedAvailableUsers, {
+		form.setValue('users.inactive', updatedAvailableUsers, {
 			shouldValidate: true,
 		});
 
@@ -255,7 +255,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		<Form {...form} data-id="location-form">
 			<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form-form">
 				<div
-					className="p-6 flex flex-col space-y-4"
+					className="p-3 flex flex-col space-y-3"
 					data-id="location-form-div"
 				>
 					<LocationsInfo
@@ -270,12 +270,12 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 					/>
 
 					<Card>
-						<CardHeader className="px-6 pt-6 pb-2">
-							<CardTitle className="text-xl font-bold">
-								Assigned Users
+						<CardHeader className="p-3">
+							<CardTitle className="text-lg font-semibold">
+								Assign Users
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="flex flex-col items-center justify-center lg:flex-row gap-4 p-4">
+						<CardContent className="px-3 pt-0 pb-3 flex gap-2 w-full">
 							<UserTable
 								users={originalValues.users.active}
 								selectedUsers={selectedUsersToDelete}
@@ -285,39 +285,94 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 								data-id="location-form-user-table"
 								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
 							/>
-							<div
-								className="flex flex-row lg:flex-col gap-2"
-								data-id="location-form-user-table-button-div"
-							>
-								<Button
-									variant={'outline'}
-									type="button"
-									size="icon"
-									onClick={(e) => {
-										e.preventDefault();
-										handleMoveRight();
-									}}
-									disabled={!isEdit || selectedUsersToDelete.length === 0}
-									data-id="location-form-user-table-button"
-								>
-									<ChevronDown className="block lg:hidden" />
-									<ChevronRight className="hidden lg:block" />
-								</Button>
-								<Button
-									variant={'outline'}
-									type="button"
-									size="icon"
-									onClick={(e) => {
-										e.preventDefault();
-										setShowDeleteDialog(true);
-									}}
-									disabled={!isEdit || selectedUsersToAdd.length === 0}
-									data-id="location-form-user-table-button"
-								>
-									<ChevronUp className="block lg:hidden" />
-									<ChevronLeft className="hidden lg:block" />
-								</Button>
+							<div className="flex items-center">
+								<div className="p-2 h-fit">
+									<Button
+										variant={'outline'}
+										type="button"
+										size="icon"
+										onClick={(e) => {
+											e.preventDefault();
+											handleMoveRight();
+										}}
+										disabled={!isEdit || selectedUsersToDelete.length === 0}
+										data-id="location-form-user-table-button"
+									>
+										<ChevronDown className="block lg:hidden" />
+										<ChevronRight className="hidden lg:block" />
+									</Button>
+									<Button
+										variant={'outline'}
+										type="button"
+										size="icon"
+										onClick={(e) => {
+											e.preventDefault();
+											setShowDeleteDialog(true);
+										}}
+										disabled={!isEdit || selectedUsersToAdd.length === 0}
+										data-id="location-form-user-table-button"
+									>
+										<ChevronUp className="block lg:hidden" />
+										<ChevronLeft className="hidden lg:block" />
+									</Button>
+								</div>
 							</div>
+							<UserTable
+								users={availableUsers}
+								selectedUsers={selectedUsersToAdd}
+								isEdit={isEdit}
+								onUserChange={handleAddUserChange}
+								title="Assign Users"
+								data-id="location-form-user-table"
+								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
+							/>
+						</CardContent>
+						{/* <CardContent className="flex flex-col items-start lg:flex-row gap-4 p-4 bg-green-300">
+							<UserTable
+								users={originalValues.users.active}
+								selectedUsers={selectedUsersToDelete}
+								isEdit={isEdit}
+								onUserChange={handleUserChange}
+								title="Available Users"
+								data-id="location-form-user-table"
+								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
+							/>
+							<div className="flex items-center bg-yellow-300">
+								<div
+									className="flex flex-row lg:flex-col gap-2 items-center h-fit"
+									data-id="location-form-user-table-button-div"
+								>
+									<Button
+										variant={'outline'}
+										type="button"
+										size="icon"
+										onClick={(e) => {
+											e.preventDefault();
+											handleMoveRight();
+										}}
+										disabled={!isEdit || selectedUsersToDelete.length === 0}
+										data-id="location-form-user-table-button"
+									>
+										<ChevronDown className="block lg:hidden" />
+										<ChevronRight className="hidden lg:block" />
+									</Button>
+									<Button
+										variant={'outline'}
+										type="button"
+										size="icon"
+										onClick={(e) => {
+											e.preventDefault();
+											setShowDeleteDialog(true);
+										}}
+										disabled={!isEdit || selectedUsersToAdd.length === 0}
+										data-id="location-form-user-table-button"
+									>
+										<ChevronUp className="block lg:hidden" />
+										<ChevronLeft className="hidden lg:block" />
+									</Button>
+								</div>
+							</div>
+
 							<UserTable
 								users={availableUsers}
 								selectedUsers={selectedUsersToAdd}
@@ -327,7 +382,7 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 								data-id="location-form-user-table"
 								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
 							/>
-						</CardContent>
+						</CardContent> */}
 					</Card>
 				</div>
 			</form>

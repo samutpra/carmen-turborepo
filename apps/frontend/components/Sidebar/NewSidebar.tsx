@@ -146,7 +146,7 @@ const NewSidebar = () => {
 						isSidebarOpen || isDesktop
 							? 'translate-x-0 md:sticky'
 							: '-translate-x-full',
-						isExpanded ? 'w-[220px]' : 'w-[60px]'
+						isExpanded ? 'w-[220px]' : 'w-[40px]'
 					)}
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
@@ -157,6 +157,7 @@ const NewSidebar = () => {
 						isPinned={isPinned}
 						togglePin={togglePin}
 						data-id="sidebar-logo"
+						className={isExpanded ? 'p-3' : ''}
 					/>
 
 					{activeMenuItem && (
@@ -189,11 +190,13 @@ const NewSidebar = () => {
 						>
 							<Star className="w-4 h-4" />
 							{isExpanded && (
-								<span className="ml-3 font-medium">Favorite Menu</span>
+								<span className="ml-3 font-medium overflow-hidden whitespace-nowrap">
+									Favorite Menu
+								</span>
 							)}
 						</div>
 						{favoriteMenu.length > 0 && (
-							<div className="text-xs rounded-lg whitespace-nowrap flex flex-col">
+							<div className="text-xs rounded-lg overflow-hidden whitespace-nowrap flex flex-col">
 								{favoriteMenu &&
 									favoriteMenu.map((item: FavMenuItem, index: number) => (
 										<div
