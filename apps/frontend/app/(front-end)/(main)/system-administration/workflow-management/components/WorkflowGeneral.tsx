@@ -81,7 +81,7 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 					<div>
 						<Label htmlFor="type">Type</Label>
 						<Select
-							value={editedWorkflow.type}
+							value={editedWorkflow.workflow_type}
 							onValueChange={handleSelectChange}
 							disabled={!isEditing}
 						>
@@ -103,12 +103,12 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 						<div className="flex items-center space-x-2">
 							<Switch
 								id="status"
-								checked={editedWorkflow.status === 'Active'}
+								checked={editedWorkflow.is_active}
 								onCheckedChange={handleStatusChange}
 								disabled={!isEditing}
 							/>
 							<Label htmlFor="status" className="text-sm text-muted-foreground">
-								{editedWorkflow.status === 'Active' ? 'Active' : 'Inactive'}
+								{editedWorkflow.is_active ? 'Active' : 'Inactive'}
 							</Label>
 						</div>
 					</div>

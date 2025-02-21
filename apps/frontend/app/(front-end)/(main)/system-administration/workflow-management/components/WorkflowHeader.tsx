@@ -32,16 +32,14 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 						<CardTitle className="text-2xl font-bold">
 							{workflow.name}
 						</CardTitle>
-						{workflow.status && (
-							<Badge
-								variant={workflow.status === 'Active' ? 'default' : 'secondary'}
-							>
-								{workflow.status}
+						{workflow.is_active && (
+							<Badge variant={workflow.is_active ? 'default' : 'secondary'}>
+								{workflow.is_active}
 							</Badge>
 						)}
 					</div>
 					<CardDescription>
-						ID: {workflow.id} | Type: {workflow.type}
+						ID: {workflow.id} | Type: {workflow.workflow_type}
 					</CardDescription>
 				</div>
 				<div className="flex space-x-2">
