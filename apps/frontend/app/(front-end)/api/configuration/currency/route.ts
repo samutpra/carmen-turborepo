@@ -34,6 +34,16 @@ interface TransformedCurrencyData {
 	is_active: boolean;
 }
 
+interface CurrencyApiResponse {
+	success: boolean;
+	data: TransformedCurrencyData[];
+}
+
+// Add this interface
+interface CurrencyPayload {
+	list: TransformedCurrencyData[];
+}
+
 const validateAuth = (request: NextRequest) => {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 	const tenantId = request.headers.get('x-tenant-id');
@@ -84,26 +94,14 @@ const fetchCurrencyData = async (
 	return response.json();
 };
 
-interface CurrencyPayload {
-	list: TransformedCurrencyData[];
-}
-
 const postCurrencyData = async (
 	data: TransformedCurrencyData[],
 	token: string,
 	tenantId: string
-): Promise<unknown> => {
+): Promise<CurrencyApiResponse> => {
 	const payload: CurrencyPayload = {
 		list: data,
 	};
-
-	console.log('Request URL:', `${API_URL}/v1/currencies/batch`);
-	console.log('Request Headers:', {
-		Authorization: 'Bearer [REDACTED]',
-		'x-tenant-id': tenantId,
-		'Content-Type': 'application/json',
-	});
-	console.log('Request Payload:', JSON.stringify(payload, null, 2));
 
 	try {
 		const response = await fetch(`${API_URL}/v1/currencies/batch`, {
@@ -118,36 +116,7 @@ const postCurrencyData = async (
 
 		const responseData = await response.json();
 
-		console.log('Response Status:', response.status);
-		console.log(
-			'Response Headers:',
-			Object.fromEntries(response.headers.entries())
-		);
-		console.log('Response Data:', JSON.stringify(responseData, null, 2));
-
-		if (!response.ok) {
-			const errorDetails = {
-				status: response.status,
-				statusText: response.statusText,
-				headers: Object.fromEntries(response.headers.entries()),
-				body: responseData,
-				url: response.url,
-			};
-
-			console.error('API Error Details:', errorDetails);
-
-			throw new ApiError(
-				response.status,
-				`Failed to post currency data: ${response.statusText}`,
-				{
-					error: responseData,
-					requestPayload: payload,
-					...errorDetails,
-				}
-			);
-		}
-
-		return responseData;
+		return { success: true, data: responseData };
 	} catch (error) {
 		if (error instanceof ApiError) {
 			throw error;
@@ -159,6 +128,7 @@ const postCurrencyData = async (
 		});
 	}
 };
+
 export async function GET(request: NextRequest) {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 
@@ -206,70 +176,57 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		// Validate authentication
 		const { token, tenantId } = validateAuth(request);
-
-		// Parse and validate request body
 		const body = await request.json();
 		const currencyCodes = body.data;
 
 		if (!Array.isArray(currencyCodes) || currencyCodes.length === 0) {
-			throw new ApiError(
-				400,
-				'Request body must contain a non-empty array of currency codes in the data property'
+			return NextResponse.json(
+				{
+					success: false,
+					message:
+						'Request body must contain a non-empty array of currency codes',
+				},
+				{ status: 400 }
 			);
 		}
 
-		// Fetch currency data
 		const currencyData = await fetchCurrencyData(
 			request.nextUrl.origin,
 			token,
 			tenantId
 		);
 
-		// Transform data
 		const transformedCurrencies = transformCurrencyData(
 			currencyData,
 			currencyCodes
 		);
 
-		// Post transformed data
+		if (!transformedCurrencies.length) {
+			return NextResponse.json(
+				{
+					success: false,
+					message: 'No matching currencies found',
+				},
+				{ status: 404 }
+			);
+		}
+
 		const result = await postCurrencyData(
 			transformedCurrencies,
 			token,
 			tenantId
 		);
-		return NextResponse.json({ success: true, data: result });
-	} catch (error) {
-		console.error('Currency creation error:', error);
 
-		if (error instanceof ApiError) {
-			// log รายละเอียดเพิ่มเติมสำหรับ debug
-			console.error('API Error Details:', {
-				status: error.status,
-				message: error.message,
-				details: error.details,
-			});
-
-			return NextResponse.json(
-				{
-					error: error.message,
-					details: error.details,
-				},
-				{ status: error.status }
-			);
+		if (result.success) {
+			return NextResponse.json({ success: true, data: transformedCurrencies });
+		} else {
+			return NextResponse.json({ success: false, data: result.data });
 		}
-
-		// log รายละเอียดของ unexpected errors
-		console.error('Unexpected Error Details:', {
-			name: error instanceof Error ? error.name : 'Unknown',
-			message: error instanceof Error ? error.message : 'Unknown error',
-			stack: error instanceof Error ? error.stack : undefined,
-		});
-
+	} catch (error) {
 		return NextResponse.json(
 			{
-				error: 'Internal server error',
+				success: false,
 				message: error instanceof Error ? error.message : 'Unknown error',
 			},
 			{ status: 500 }

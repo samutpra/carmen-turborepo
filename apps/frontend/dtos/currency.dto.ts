@@ -69,7 +69,10 @@ export const SystemCurrencyCreateSchema = z.object({
 	symbol: z.string().max(5).nullable().optional(),
 	description: z.string().nullable().optional(),
 	is_active: z.boolean().default(true).nullable().optional(),
-	exchange_rate: z.number().default(1).nullable().optional(),
+	exchange_rate: z
+		.number()
+		.min(0.0001, 'exchange_rate must be a positive number')
+		.transform((val) => (val % 1 === 0 ? parseFloat(val.toFixed(2)) : val)),
 });
 
 export type SystemCurrencyCreateModel = z.infer<typeof SystemCurrencyCreateSchema>;

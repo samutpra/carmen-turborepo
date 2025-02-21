@@ -47,7 +47,7 @@ import {
 interface CurrencyDialogProps {
 	mode: formType;
 	defaultValues?: CurrencyCreateModel;
-	onSuccess: (currency: CurrencyCreateModel) => void;
+	onSuccess: (currency: CurrencyCreateModel | CurrencyCreateModel[]) => void;
 }
 
 const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
@@ -130,22 +130,62 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		resolver: zodResolver(SystemCurrencyCreateSchema),
 		defaultValues:
 			mode === formType.EDIT && defaultValues
-				? { ...defaultValues }
+				? {
+						...defaultValues,
+						iso_code: defaultValues.code,
+						exchange_rate: defaultValues.exchange_rate ?? 0,
+					}
 				: defaultCurrencyValues,
 	});
 
 	useEffect(() => {
 		if (mode === formType.EDIT && defaultValues) {
-			form.reset({ ...defaultValues });
+			form.reset({
+				...defaultValues,
+				iso_code: defaultValues.code,
+				exchange_rate: defaultValues.exchange_rate ?? 0,
+			});
 		} else {
-			form.reset({ ...defaultCurrencyValues });
+			form.reset(defaultCurrencyValues);
 		}
 	}, [mode, defaultValues, form]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('Submitting:', selectedCurrencies);
-		handleClose();
+		setIsLoading(true);
+
+		console.log('selectedCurrencies', selectedCurrencies);
+
+		try {
+			const response = await fetch('/api/configuration/currency', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+					'x-tenant-id': tenantId,
+				},
+				body: JSON.stringify({
+					data: selectedCurrencies,
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to update currencies');
+			}
+
+			const result = await response.json();
+			console.log('result', result);
+
+			if (result.success) {
+				onSuccess(result.data);
+			}
+
+			handleClose();
+		} catch (error) {
+			console.error('Error updating currencies:', error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleClose = () => {

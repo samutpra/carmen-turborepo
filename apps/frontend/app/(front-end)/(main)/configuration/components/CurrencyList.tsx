@@ -98,10 +98,13 @@ const CurrencyList = () => {
 	}, [token, tenantId, search, status]);
 
 	const handleSuccess = useCallback(
-		(values: CurrencyCreateModel) => {
+		(value: CurrencyCreateModel | CurrencyCreateModel[]) => {
 			setCurrencies((prev) => {
+				const values = Array.isArray(value) ? value : [value];
 				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				mapValues.set(values.id, values);
+				values.forEach((v) => {
+					mapValues.set(v.id, v);
+				});
 				return Array.from(mapValues.values());
 			});
 		},
@@ -132,6 +135,81 @@ const CurrencyList = () => {
 		},
 		[token, tenantId, deleteCurrency]
 	);
+
+	const onRefreshExchangeRate = async () => {
+		try {
+			const currencyList = currencies.map((currency) => ({
+				id: currency.id,
+				code: currency.code,
+				exchange_rate: currency.exchange_rate,
+			}));
+
+			const response = await fetch(
+				`/api/system/currency-api?base_currency=THB`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'x-tenant-id': tenantId,
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to fetch currency data');
+			}
+
+			const responseData = await response.json();
+			const data = Array.isArray(responseData)
+				? responseData
+				: responseData.result;
+
+			if (!Array.isArray(data)) {
+				throw new Error(
+					'Invalid response format: expected an array of currencies'
+				);
+			}
+
+			const changedRates = data
+				.filter((apiCurrency: { code: string; historical_rate: number }) => {
+					const existingCurrency = currencyList.find(
+						(currency) => currency.code === apiCurrency.code
+					);
+
+					if (!existingCurrency) return false;
+
+					const existingRate = Number(existingCurrency.exchange_rate);
+					const newRate = Number(apiCurrency.historical_rate);
+
+					return existingRate.toFixed(2) !== newRate.toFixed(2);
+				})
+				.map((apiCurrency) => {
+					const currency = currencyList.find(
+						(c) => c.code === apiCurrency.code
+					);
+					return {
+						at_date: new Date().toISOString(),
+						rate: apiCurrency.historical_rate,
+						currency_id: currency?.id,
+					};
+				});
+
+			if (changedRates.length === 0) {
+				console.log('No exchange rate changes detected');
+			} else {
+				console.log('Changed rates payload:', changedRates);
+			}
+		} catch (error) {
+			console.error('Error refreshing exchange rates:', error);
+			toastError({
+				message:
+					error instanceof Error
+						? error.message
+						: 'Failed to refresh exchange rates',
+			});
+		}
+	};
 
 	if (showRefreshToken) {
 		return (
@@ -167,6 +245,7 @@ const CurrencyList = () => {
 				variant={'outline'}
 				size={'sm'}
 				data-id="currency-refresh-exchange-rate-button"
+				onClick={onRefreshExchangeRate}
 			>
 				{refresh_exchange_rate()}
 			</Button>
