@@ -56,7 +56,7 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 	const handleStatusChange = (checked: boolean) => {
 		const updatedWorkflow = {
 			...editedWorkflow,
-			is_active: checked,
+			status: checked ? 'Active' : 'Inactive',
 		};
 		setEditedWorkflow(updatedWorkflow);
 		onSave(updatedWorkflow);
@@ -103,12 +103,12 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 						<div className="flex items-center space-x-2">
 							<Switch
 								id="status"
-								checked={editedWorkflow.is_active}
+								checked={editedWorkflow.status === 'Active'}
 								onCheckedChange={handleStatusChange}
 								disabled={!isEditing}
 							/>
 							<Label htmlFor="status" className="text-sm text-muted-foreground">
-								{editedWorkflow.is_active ? 'Active' : 'Inactive'}
+								{editedWorkflow.status === 'Active' ? 'Active' : 'Inactive'}
 							</Label>
 						</div>
 					</div>
