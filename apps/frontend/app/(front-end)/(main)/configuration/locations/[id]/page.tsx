@@ -7,6 +7,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { fetchLocationByID } from '../../actions/store_location';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
+import { formType } from '@/types/form_type';
 
 type Props = {
 	params: {
@@ -43,7 +44,13 @@ const EditLocationPage = ({ params: { id } }: Props) => {
 	if (error) return <ErrorCard message={error} />;
 	if (!location) return <ErrorCard message="Location not found" />;
 
-	return <LocationForm defaultValues={location} data-id="location-form" />;
+	return (
+		<LocationForm
+			defaultValues={location}
+			data-id="location-form"
+			type={formType.EDIT}
+		/>
+	);
 };
 
 export default EditLocationPage;

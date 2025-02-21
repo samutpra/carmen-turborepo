@@ -125,9 +125,9 @@ export interface LocationChanges {
 	delete: { location_id: string }[];
 }
 
-export type LocationState = {
-	location_id: string;
-};
+// export type LocationState = {
+// 	location_id: string;
+// };
 
 export type StateType = {
 	addedLocations: LocationState[];
@@ -171,4 +171,42 @@ export const LocationSchema = z.object({
 });
 
 export type LocationsModel = z.infer<typeof LocationSchema>;
+
+export interface LocationState {
+	id: string;
+	name: string;
+	description: string;
+	is_active: boolean;
+	location_type: enum_location_type;
+	delivery_point: {
+		id: string;
+		name: string;
+	};
+	users: {
+		active: UserLocationModel[];
+		inactive: UserLocationModel[];
+	};
+}
+export const LocationPayloadSchema = z.object({
+	name: z.string().min(1, 'Name is required'),
+	description: z.string(),
+	is_active: z.boolean(),
+	location_type: z.nativeEnum(enum_location_type),
+	deliveryPointId: z.string().uuid('Invalid delivery point ID'),
+	user: z.object({
+		add: z.array(
+			z.object({
+				user_id: z.string().uuid('Invalid user ID'),
+			})
+		),
+		remove: z.array(
+			z.object({
+				user_id: z.string().uuid('Invalid user ID'),
+			})
+		),
+	}),
+	id: z.string().uuid('Invalid ID').optional(),
+});
+
+export type LocationPayload = z.infer<typeof LocationPayloadSchema>;
 

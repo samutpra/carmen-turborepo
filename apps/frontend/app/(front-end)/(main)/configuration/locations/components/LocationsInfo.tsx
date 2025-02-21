@@ -54,14 +54,15 @@ interface LocationFormState {
 	};
 }
 
-interface Props {
+interface LocationsInfoProps {
 	control: Control<LocationFormState>;
 	token: string;
 	tenantId: string;
 	isEdit: boolean;
-	setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsEdit: (value: boolean) => void;
 	onCancel: () => void;
-	defaultValues?: Partial<LocationFormState>;
+	defaultValues: LocationFormState;
+	isFormIncomplete: boolean;
 }
 
 const LocationsInfo = ({
@@ -72,7 +73,8 @@ const LocationsInfo = ({
 	setIsEdit,
 	onCancel,
 	defaultValues,
-}: Props) => {
+	isFormIncomplete,
+}: LocationsInfoProps) => {
 	const [deliveryPoints, setDeliveryPoints] = useState<
 		DeliveryPointCreateModel[]
 	>([]);
@@ -130,6 +132,7 @@ const LocationsInfo = ({
 										<InputCustom
 											placeholder={placeholder_store_location_name()}
 											{...field}
+											maxLength={50}
 											data-id="store-location-dialog-form-name-input"
 										/>
 									</FormControl>
@@ -182,7 +185,7 @@ const LocationsInfo = ({
 							<Button
 								type="submit"
 								size="sm"
-								disabled={isLoading}
+								disabled={isLoading || isFormIncomplete}
 								data-id="store-location-dialog-footer-submit-button"
 							>
 								<Save />
@@ -312,6 +315,7 @@ const LocationsInfo = ({
 										placeholder={placeholder_enter()}
 										className="resize-none"
 										{...field}
+										maxLength={200}
 									/>
 								</FormControl>
 							) : (
@@ -331,7 +335,7 @@ const LocationsInfo = ({
 						<Button
 							type="submit"
 							size="sm"
-							disabled={isLoading}
+							disabled={isLoading || isFormIncomplete}
 							data-id="store-location-dialog-footer-submit-button"
 						>
 							<Save />

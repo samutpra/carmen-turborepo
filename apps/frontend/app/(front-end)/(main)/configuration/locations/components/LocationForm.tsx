@@ -8,6 +8,9 @@ import {
 	LocationsModel,
 	LocationSchema,
 	UserLocationModel,
+	LocationState,
+	LocationPayload,
+	LocationPayloadSchema,
 } from '@/dtos/location.dto';
 import { Form } from '@/components/ui-custom/FormCustom';
 import { useAuth } from '@/app/context/AuthContext';
@@ -30,8 +33,11 @@ import {
 	ChevronRight,
 	ChevronUp,
 } from 'lucide-react';
-import { useRouter } from '@/lib/i18n';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formType } from '@/types/form_type';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { submitStoreLocation } from '../../actions/store_location';
 
 type Props = {
 	defaultValues?: Partial<
@@ -42,85 +48,25 @@ type Props = {
 			};
 		}
 	>;
-	isNew?: boolean;
+	type: formType;
 };
 
-interface LocationFormState {
-	id: string;
-	name: string;
-	description: string;
-	is_active: boolean;
-	location_type: enum_location_type;
-	delivery_point: {
-		id: string;
-		name: string;
-	};
-	users: {
-		active: UserLocationModel[];
-		inactive: UserLocationModel[];
-	};
+const enum formWatchedFields {
+	name = 'name',
+	location_type = 'location_type',
+	delivery_point = 'delivery_point',
 }
 
-const LocationForm = ({ defaultValues, isNew = false }: Props) => {
+const LocationForm = ({ defaultValues, type }: Props) => {
 	const router = useRouter();
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
-	const [isEdit, setIsEdit] = useState(isNew);
+	const [isEdit, setIsEdit] = useState(type === formType.ADD ? true : false);
 
-	const [originalValues, setOriginalValues] = useState<LocationFormState>(
+	const [originalValues, setOriginalValues] = useState<LocationState>(
 		defaultValues
 			? {
-				id: defaultValues.id || '',
-				name: defaultValues.name || '',
-				description: defaultValues.description || '',
-				is_active: defaultValues.is_active ?? true,
-				location_type:
-					(defaultValues.location_type as enum_location_type) ||
-					enum_location_type.inventory,
-				delivery_point: defaultValues.delivery_point || { id: '', name: '' },
-				users: defaultValues.users || { active: [], inactive: [] },
-			}
-			: {
-				id: '',
-				name: '',
-				description: '',
-				is_active: true,
-				location_type: enum_location_type.inventory,
-				delivery_point: { id: '', name: '' },
-				users: { active: [], inactive: [] },
-			}
-	);
-
-	const [availableUsers, setAvailableUsers] = useState<UserLocationModel[]>(
-		defaultValues?.users?.inactive || []
-	);
-
-	const [selectedUsersToDelete, setSelectedUsersToDelete] = useState<string[]>(
-		[]
-	);
-	const [selectedUsersToAdd, setSelectedUsersToAdd] = useState<string[]>([]);
-	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-	const form = useForm<LocationFormState>({
-		resolver: zodResolver(LocationSchema),
-		defaultValues: originalValues,
-	});
-
-	const onCancel = () => {
-		if (isNew) {
-			router.push('/configuration/locations');
-			return;
-		}
-
-		form.reset(originalValues);
-		setAvailableUsers(defaultValues?.users?.inactive || []);
-		setSelectedUsersToDelete([]);
-		setSelectedUsersToAdd([]);
-		setIsEdit(false);
-		setOriginalValues(
-			defaultValues
-				? {
 					id: defaultValues.id || '',
 					name: defaultValues.name || '',
 					description: defaultValues.description || '',
@@ -128,13 +74,10 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 					location_type:
 						(defaultValues.location_type as enum_location_type) ||
 						enum_location_type.inventory,
-					delivery_point: defaultValues.delivery_point || {
-						id: '',
-						name: '',
-					},
+					delivery_point: defaultValues.delivery_point || { id: '', name: '' },
 					users: defaultValues.users || { active: [], inactive: [] },
 				}
-				: {
+			: {
 					id: '',
 					name: '',
 					description: '',
@@ -143,14 +86,126 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 					delivery_point: { id: '', name: '' },
 					users: { active: [], inactive: [] },
 				}
+	);
+
+	const [selectedUsersToDelete, setSelectedUsersToDelete] = useState<string[]>(
+		[]
+	);
+	const [selectedUsersToAdd, setSelectedUsersToAdd] = useState<string[]>([]);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+	const form = useForm<LocationState>({
+		resolver: zodResolver(LocationSchema),
+		defaultValues: originalValues,
+		mode: 'onChange',
+	});
+
+	const watchedFields = {
+		name: form.watch(formWatchedFields.name),
+		locationType: form.watch(formWatchedFields.location_type),
+		deliveryPoint: form.watch(formWatchedFields.delivery_point),
+	};
+
+	const isFormIncomplete =
+		!watchedFields.name ||
+		!watchedFields.locationType ||
+		!watchedFields.deliveryPoint?.id;
+
+	const onCancel = async () => {
+		if (type === formType.ADD) {
+			await router.back();
+			return;
+		}
+
+		form.reset(originalValues);
+		setSelectedUsersToDelete([]);
+		setSelectedUsersToAdd([]);
+		setIsEdit(false);
+		setOriginalValues(
+			defaultValues
+				? {
+						id: defaultValues.id || '',
+						name: defaultValues.name || '',
+						description: defaultValues.description || '',
+						is_active: defaultValues.is_active ?? true,
+						location_type:
+							(defaultValues.location_type as enum_location_type) ||
+							enum_location_type.inventory,
+						delivery_point: defaultValues.delivery_point || {
+							id: '',
+							name: '',
+						},
+						users: defaultValues.users || { active: [], inactive: [] },
+					}
+				: {
+						id: '',
+						name: '',
+						description: '',
+						is_active: true,
+						location_type: enum_location_type.inventory,
+						delivery_point: { id: '', name: '' },
+						users: { active: [], inactive: [] },
+					}
 		);
 	};
 
-	const onSubmit = async (formData: LocationFormState) => {
-		console.log('formData', formData);
+	const onSubmit = async (formData: LocationState) => {
+		try {
+			console.log('Form submit event triggered');
 
-		setOriginalValues(formData);
-		setIsEdit(false);
+			const payload: LocationPayload = {
+				name: formData.name,
+				description: formData.description,
+				is_active: formData.is_active,
+				location_type: formData.location_type,
+				deliveryPointId: formData.delivery_point.id,
+				user: {
+					add: formData.users.active.map((user) => ({
+						user_id: user.id,
+					})),
+					remove: formData.users.inactive.map((user) => ({
+						user_id: user.id,
+					})),
+				},
+				...(type === formType.ADD ? {} : { id: formData.id }),
+			};
+
+			const validationResult = LocationPayloadSchema.safeParse(payload);
+			if (!validationResult.success) {
+				console.log(
+					'Payload validation failed:',
+					validationResult.error.errors
+				);
+				return;
+			}
+
+			const result = await submitStoreLocation(
+				payload,
+				type,
+				token,
+				tenantId,
+				formData.id
+			);
+
+			if (result) {
+				const updatedFormData = {
+					...formData,
+					id: type === formType.ADD ? result.id : formData.id,
+				};
+				setOriginalValues(updatedFormData);
+				form.setValue('id', updatedFormData.id);
+				setIsEdit(false);
+
+				if (type === formType.ADD) {
+					router.replace(`/configuration/locations/${result.id}`);
+				}
+
+				toastSuccess({ message: 'Location submitted successfully' });
+			}
+		} catch (error) {
+			console.error('Submit error:', error);
+			toastError({ message: 'Failed to submit location' });
+		}
 	};
 
 	const handleUserChange = (userId: string) => {
@@ -170,16 +225,16 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 	};
 
 	const handleMoveRight = () => {
-		const selectedUsers = originalValues.users.active.filter((user) =>
+		const selectedUsers = originalValues.users.inactive.filter((user) =>
 			selectedUsersToDelete.includes(user.id)
 		);
-
-		const updatedActiveUsers = originalValues.users.active.filter(
+		const updatedInactiveUsers = originalValues.users.inactive.filter(
 			(user) => !selectedUsersToDelete.includes(user.id)
 		);
-
-		const updatedInactiveUsers = [...availableUsers, ...selectedUsers];
-
+		const updatedActiveUsers = [
+			...originalValues.users.active,
+			...selectedUsers,
+		];
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
 		form.setValue('users.inactive', updatedInactiveUsers, {
 			shouldValidate: true,
@@ -188,44 +243,36 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		setOriginalValues((prev) => ({
 			...prev,
 			users: {
-				...prev.users,
 				active: updatedActiveUsers,
-				in_active: updatedInactiveUsers,
+				inactive: updatedInactiveUsers,
 			},
 		}));
-
-		setAvailableUsers(updatedInactiveUsers);
 		setSelectedUsersToDelete([]);
 		setShowDeleteDialog(false);
 	};
 
 	const handleMoveLeftConfirm = () => {
-		const selectedUsers = availableUsers.filter((user) =>
+		const selectedUsers = originalValues.users.active.filter((user) =>
 			selectedUsersToAdd.includes(user.id)
 		);
-
-		const updatedActiveUsers = [
-			...originalValues.users.active,
-			...selectedUsers,
-		];
-		const updatedAvailableUsers = availableUsers.filter(
+		const updatedActiveUsers = originalValues.users.active.filter(
 			(user) => !selectedUsersToAdd.includes(user.id)
 		);
-
+		const updatedInactiveUsers = [
+			...originalValues.users.inactive,
+			...selectedUsers,
+		];
 		form.setValue('users.active', updatedActiveUsers, { shouldValidate: true });
-		form.setValue('users.inactive', updatedAvailableUsers, {
+		form.setValue('users.inactive', updatedInactiveUsers, {
 			shouldValidate: true,
 		});
-
 		setOriginalValues((prev) => ({
 			...prev,
 			users: {
-				...prev.users,
 				active: updatedActiveUsers,
+				inactive: updatedInactiveUsers,
 			},
 		}));
-
-		setAvailableUsers(updatedAvailableUsers);
 		setSelectedUsersToAdd([]);
 		setShowDeleteDialog(false);
 	};
@@ -234,16 +281,16 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 		checked: boolean,
 		tableType: 'active' | 'inactive'
 	) => {
-		if (tableType === 'active') {
+		if (tableType === 'inactive') {
 			if (checked) {
-				const allUserIds = originalValues.users.active.map((user) => user.id);
+				const allUserIds = originalValues.users.inactive.map((user) => user.id);
 				setSelectedUsersToDelete(allUserIds);
 			} else {
 				setSelectedUsersToDelete([]);
 			}
 		} else {
 			if (checked) {
-				const allUserIds = availableUsers.map((user) => user.id);
+				const allUserIds = originalValues.users.active.map((user) => user.id);
 				setSelectedUsersToAdd(allUserIds);
 			} else {
 				setSelectedUsersToAdd([]);
@@ -253,7 +300,14 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 
 	return (
 		<Form {...form} data-id="location-form">
-			<form onSubmit={form.handleSubmit(onSubmit)} data-id="location-form-form">
+			<form
+				onSubmit={async (e) => {
+					e.preventDefault();
+					console.log('Form submit event triggered');
+					await onSubmit(form.getValues());
+				}}
+				data-id="location-form-form"
+			>
 				<div
 					className="p-3 flex flex-col space-y-3"
 					data-id="location-form-div"
@@ -266,9 +320,9 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						setIsEdit={setIsEdit}
 						onCancel={onCancel}
 						defaultValues={originalValues}
+						isFormIncomplete={isFormIncomplete}
 						data-id="location-info"
 					/>
-
 					<Card>
 						<CardHeader className="p-3">
 							<CardTitle className="text-lg font-semibold">
@@ -277,13 +331,13 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 						</CardHeader>
 						<CardContent className="px-3 pt-0 pb-3 flex gap-2 w-full">
 							<UserTable
-								users={originalValues.users.active}
+								users={originalValues.users.inactive}
 								selectedUsers={selectedUsersToDelete}
 								isEdit={isEdit}
 								onUserChange={handleUserChange}
 								title="Available Users"
 								data-id="location-form-user-table"
-								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
+								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
 							/>
 							<div className="flex items-center">
 								<div className="p-2 h-fit">
@@ -318,16 +372,15 @@ const LocationForm = ({ defaultValues, isNew = false }: Props) => {
 								</div>
 							</div>
 							<UserTable
-								users={availableUsers}
+								users={originalValues.users.active}
 								selectedUsers={selectedUsersToAdd}
 								isEdit={isEdit}
 								onUserChange={handleAddUserChange}
 								title="Assign Users"
 								data-id="location-form-user-table"
-								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
+								onCheckAll={(checked) => handleCheckAll(checked, 'active')}
 							/>
 						</CardContent>
-
 					</Card>
 				</div>
 			</form>
