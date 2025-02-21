@@ -75,7 +75,10 @@ const UserTable: React.FC<UserTableProps> = ({
 									>
 										<TableRow data-id="user-table-row">
 											{isEdit && (
-												<TableHead className="w-[30px]">
+												<TableHead
+													className="w-[30px]"
+													data-id="user-table-head-checkbox"
+												>
 													<Checkbox
 														checked={isAllSelected}
 														onCheckedChange={handleCheckAll}
@@ -89,10 +92,15 @@ const UserTable: React.FC<UserTableProps> = ({
 													/>
 												</TableHead>
 											)}
-											<TableHead className="" scope="col">
+											<TableHead
+												className="w-1/3"
+												data-id="user-table-head-full-name"
+											>
 												Full Name
 											</TableHead>
-											<TableHead scope="col">Email</TableHead>
+											<TableHead data-id="user-table-head-email">
+												Email
+											</TableHead>
 										</TableRow>
 									</TableHeader>
 								)}
@@ -107,11 +115,7 @@ const UserTable: React.FC<UserTableProps> = ({
 								<TableBody data-id="user-table-body">
 									{users.length > 0 ? (
 										users.map((user) => (
-											<TableRow
-												key={user.id}
-												data-id="user-table-row"
-												role="row"
-											>
+											<TableRow key={user.id} data-id="user-table-row">
 												{isEdit && (
 													<TableCell
 														className="w-[30px]"
@@ -130,7 +134,7 @@ const UserTable: React.FC<UserTableProps> = ({
 													</TableCell>
 												)}
 												<TableCell
-													className="font-medium"
+													className="font-medium w-1/3"
 													data-id="user-table-cell"
 												>
 													{`${user.userInfo.firstname} ${user.userInfo.lastname}`}
