@@ -97,13 +97,14 @@ const NewSidebar = () => {
 				return (
 					<div
 						className={cn(
-							'text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden group'
+							'ml-2 text-xs rounded-lg whitespace-nowrap flex justify-between items-center overflow-hidden group'
 						)}
 						key={subItem.path}
 					>
 						<Link
 							className={cn(
-								'w-full rounded-lg p-2',
+								'w-full rounded-lg',
+								`${isExpanded ? 'p-2' : ''}`,
 								isActive
 									? 'font-medium bg-primary text-background'
 									: 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]'
@@ -151,7 +152,7 @@ const NewSidebar = () => {
 						isSidebarOpen || isDesktop
 							? 'translate-x-0 md:sticky'
 							: '-translate-x-full',
-						isExpanded ? 'w-[220px]' : 'w-[55px]'
+						isExpanded ? 'w-[220px]' : 'w-[40px]'
 					)}
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
@@ -169,7 +170,7 @@ const NewSidebar = () => {
 						<div className="py-2 overflow-hidden">
 							<div
 								className={cn(
-									'flex items-center p-2 transition-all duration-300',
+									'flex items-center transition-all duration-300',
 									isExpanded ? 'justify-start' : 'justify-center'
 								)}
 							>
@@ -187,7 +188,7 @@ const NewSidebar = () => {
 							</div>
 							<div
 								className={cn(
-									'p-2 mx-2 transition-all duration-300',
+									'transition-all duration-300',
 									isExpanded
 										? 'opacity-100 delay-200'
 										: 'opacity-0 pointer-events-none h-0'
@@ -200,7 +201,7 @@ const NewSidebar = () => {
 
 					<Separator />
 
-					<div className="p-2 mt-2">
+					<div className="mt-2">
 						<div
 							className={cn(
 								'flex items-center transition-all duration-300',
@@ -235,7 +236,11 @@ const NewSidebar = () => {
 									>
 										<Link
 											href={item.path}
-											className="flex-1 p-2 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]"
+											className={cn(
+												'flex-1 rounded-lg',
+												`${isExpanded ? 'p-2' : ''}`,
+												`${isExpanded ? 'hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]' : ''}`
+											)}
 										>
 											<span
 												className={cn(

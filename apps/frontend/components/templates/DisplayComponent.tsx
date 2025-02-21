@@ -238,13 +238,12 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 							onClick={() => handleSort(String(field.key))}
 						>
 							{field.label}
-							{sortField === field.key && (
-								sortDirection === 'asc' ? (
+							{sortField === field.key &&
+								(sortDirection === 'asc' ? (
 									<ChevronUp className="ml-1 h-4 w-4" />
 								) : (
 									<ChevronDown className="ml-1 h-4 w-4" />
-								)
-							)}
+								))}
 						</Button>
 					))}
 				</div>
@@ -265,8 +264,13 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									<CardContent className="p-4">
 										<div className="space-y-4">
 											{fields.map((field) => (
-												<div key={String(field.key)} className="flex items-center">
-													<span className="w-[30%] text-xs font-medium">{field.label}:</span>
+												<div
+													key={String(field.key)}
+													className="flex items-center"
+												>
+													<span className="w-[30%] text-xs font-medium">
+														{field.label}:
+													</span>
 													<div className="w-[70%]">
 														{renderField(field, item)}
 													</div>
@@ -309,11 +313,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 						</TableRow>
 					</TableHeader>
 					{isLoading ? (
-						<TableBodySkeleton
-							columns={fields.length}
-							rows={10}
-							withAction
-						/>
+						<TableBodySkeleton columns={fields.length} rows={10} withAction />
 					) : (
 						<TableBody>
 							{items.map((item, index) => (
@@ -322,8 +322,9 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									{fields.map((field) => (
 										<TableCell
 											key={String(field.key)}
-											className={`text-${field.align || 'left'} ${field.className || ''
-												}`}
+											className={`text-${field.align || 'left'} ${
+												field.className || ''
+											}`}
 										>
 											{renderField(field, item)}
 										</TableCell>
@@ -335,7 +336,6 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 							))}
 						</TableBody>
 					)}
-
 				</Table>
 			</div>
 			<PaginationComponent

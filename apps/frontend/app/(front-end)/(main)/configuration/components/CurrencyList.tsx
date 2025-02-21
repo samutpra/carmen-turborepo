@@ -32,7 +32,7 @@ enum CurrencyField {
 
 const sortFields: FieldConfig<CurrencyCreateModel>[] = [
 	{ key: CurrencyField.Code, label: `${code_label()}`, className: 'w-20' },
-	{ key: CurrencyField.Name, label: `${currency_name()}`, className: 'w-40' },
+	{ key: CurrencyField.Name, label: `${currency_name()}`, className: 'w-20' },
 	{ key: CurrencyField.Rate, label: `${rate_label()}`, className: 'w-20' },
 	{
 		key: CurrencyField.isActive,
@@ -236,6 +236,7 @@ const CurrencyList = () => {
 			totalPage={+pages}
 			setPage={setPage}
 			data-id="currency-display-component"
+			isLoading={isLoading}
 		/>
 	);
 
@@ -245,7 +246,6 @@ const CurrencyList = () => {
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 			data-id="currency-data-display-template"
 		/>
 	);

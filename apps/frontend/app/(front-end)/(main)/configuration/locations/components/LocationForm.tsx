@@ -33,11 +33,11 @@ import {
 	ChevronRight,
 	ChevronUp,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formType } from '@/types/form_type';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitStoreLocation } from '../../actions/store_location';
+import { useRouter } from '@/lib/i18n';
 
 type Props = {
 	defaultValues?: Partial<

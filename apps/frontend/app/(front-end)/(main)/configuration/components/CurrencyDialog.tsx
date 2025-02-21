@@ -5,7 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { Loader2, PencilIcon, PlusIcon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Loader2 } from 'lucide-react';
 import {
 	Table,
 	TableBody,
@@ -37,7 +37,11 @@ import {
 import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
 import { fetchSystemCurrencies } from '../actions/currency';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
-import { CurrencyCreateModel, SystemCurrencyCreateModel, SystemCurrencyCreateSchema } from '@/dtos/currency.dto';
+import {
+	CurrencyCreateModel,
+	SystemCurrencyCreateModel,
+	SystemCurrencyCreateSchema,
+} from '@/dtos/currency.dto';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
@@ -57,9 +61,9 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const token = accessToken || '';
 	const tenantId = 'DUMMY';
 
-	const [listCurrencies, setListCurrencies] = useState<SystemCurrencyCreateModel[]>(
-		[]
-	);
+	const [listCurrencies, setListCurrencies] = useState<
+		SystemCurrencyCreateModel[]
+	>([]);
 	const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
 	const [pagination, setPagination] = useState({
 		page: 1,
@@ -159,17 +163,6 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 	const handleSortChange = (field: SORT_OPTIONS) => {
 		setSort((prev) => toggleSort(field, prev) as SORT_OPTIONS);
 	};
-
-	if (isLoading) {
-		return (
-			<div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center z-50">
-				<Loader2
-					className="h-8 w-8 animate-spin text-primary"
-					data-id="currency-loading-icon"
-				/>
-			</div>
-		);
-	}
 
 	return (
 		<Dialog
@@ -276,30 +269,42 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 								</TableRow>
 							</TableHeader>
 							<TableBody data-id="currency-table-body">
-								{listCurrencies.map((currency) => (
-									<TableRow key={currency.id} data-id="currency-table-row">
-										<TableCell data-id="currency-table-cell-code">
-											{currency.iso_code}
-										</TableCell>
-										<TableCell data-id="currency-table-cell-name">
-											{currency.name}
-										</TableCell>
-										<TableCell data-id="currency-table-cell-symbol">
-											{currency.symbol}
-										</TableCell>
-										<TableCell data-id="currency-table-cell-status">
-											<Switch
-												checked={selectedCurrencies.includes(currency.iso_code)}
-												onCheckedChange={(checked) =>
-													handleSwitchChange(currency.iso_code, checked)
-												}
-												aria-label={`Select ${currency.name}`}
-												disabled={isLoading}
-												data-id={`switch-${currency.iso_code}`}
-											/>
+								{isLoading ? (
+									<TableRow>
+										<TableCell colSpan={4} className="h-24 text-center">
+											<div className="flex items-center justify-center">
+												<Loader2 className="h-6 w-6 animate-spin text-primary" />
+											</div>
 										</TableCell>
 									</TableRow>
-								))}
+								) : (
+									listCurrencies.map((currency) => (
+										<TableRow key={currency.id} data-id="currency-table-row">
+											<TableCell data-id="currency-table-cell-code">
+												{currency.iso_code}
+											</TableCell>
+											<TableCell data-id="currency-table-cell-name">
+												{currency.name}
+											</TableCell>
+											<TableCell data-id="currency-table-cell-symbol">
+												{currency.symbol}
+											</TableCell>
+											<TableCell data-id="currency-table-cell-status">
+												<Switch
+													checked={selectedCurrencies.includes(
+														currency.iso_code
+													)}
+													onCheckedChange={(checked) =>
+														handleSwitchChange(currency.iso_code, checked)
+													}
+													aria-label={`Select ${currency.name}`}
+													disabled={isLoading}
+													data-id={`switch-${currency.iso_code}`}
+												/>
+											</TableCell>
+										</TableRow>
+									))
+								)}
 							</TableBody>
 						</Table>
 						<PaginationComponent
