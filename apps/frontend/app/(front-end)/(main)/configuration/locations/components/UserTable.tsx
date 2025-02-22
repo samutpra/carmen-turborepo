@@ -51,7 +51,7 @@ const UserTable: React.FC<UserTableProps> = ({
 	return (
 		<div className="w-full">
 			<p
-				className="text-base font-semibold mb-2"
+				className="text-sm font-semibold mb-2"
 				data-id="user-table-title"
 				role="heading"
 				aria-level={2}
