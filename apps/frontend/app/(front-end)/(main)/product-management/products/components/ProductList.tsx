@@ -65,11 +65,25 @@ export const PRODUCT_STATUS_COLORS: Record<string, string> = {
 	"": "bg-gray-400 text-white",
 };
 
-export const productStatusBadge = (status: string) => (
-	<span className={`px-2 py-1 rounded-full text-xs ${PRODUCT_STATUS_COLORS[status] || "bg-gray-400 text-white"}`}>
-		{status.charAt(0).toUpperCase() + status.slice(1)}
-	</span>
-);
+export const productStatusBadge = (status?: string) => {
+	if (!status) {
+		return (
+			<span className="px-2 py-1 rounded-full text-xs bg-gray-400 text-white">
+				Unknown
+			</span>
+		);
+	}
+
+	return (
+		<span
+			className={`px-2 py-1 rounded-full text-xs ${
+				PRODUCT_STATUS_COLORS[status] || 'bg-gray-400 text-white'
+			}`}
+		>
+			{status.charAt(0).toUpperCase() + status.slice(1)}
+		</span>
+	);
+};
 
 const ProductList = () => {
 	const { accessToken } = useAuth();
@@ -84,7 +98,6 @@ const ProductList = () => {
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
 
-
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
@@ -92,7 +105,7 @@ const ProductList = () => {
 				search,
 				status,
 				page,
-				sort
+				sort,
 			});
 			setProducts(data.data);
 			setPage(data.pagination.page);

@@ -89,8 +89,11 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 							? 'Vendor created successfully'
 							: 'Vendor updated successfully',
 				});
-				// router.push('/vendor-management/vendors');
-				// รอ รีโหลด
+
+				if (mode === formType.ADD && result.id) {
+					router.replace(`/vendor-management/vendors/${result.id}`);
+					setIsEditing(true);
+				}
 			}
 		} catch (error) {
 			console.error('Error saving vendor:', error);
@@ -168,8 +171,8 @@ const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
 					</>
 				)
 			) : (
-				<Button onClick={form.handleSubmit(onSubmit)}>
-					<Save className="h-4 w-4 mr-2" />
+				<Button onClick={form.handleSubmit(onSubmit)} size={'sm'}>
+					<Save />
 					{m.save_text()}
 				</Button>
 			)}

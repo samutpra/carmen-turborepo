@@ -15,7 +15,7 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Trash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
 import * as m from '@/paraglide/messages.js';
 import {
 	Table,
@@ -75,6 +75,45 @@ export interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 	isLoading?: boolean;
 	'data-id'?: string;
 }
+
+interface SortButtonProps {
+	field: string;
+	label: string;
+	currentSortField: string | null;
+	currentSortDirection: SortDirection;
+	onSort: (field: string) => void;
+}
+
+const SortButton: React.FC<SortButtonProps> = ({
+	field,
+	label,
+	currentSortField,
+	currentSortDirection,
+	onSort,
+}) => (
+	<div className="flex items-center gap-1">
+		<span>{label}</span>
+		<Button
+			variant="ghost"
+			size="sm"
+			className="h-6 w-6 p-0"
+			onClick={() => onSort(field)}
+		>
+			{currentSortField === field ? (
+				currentSortDirection === 'asc' ? (
+					<ChevronUp className="h-4 w-4" />
+				) : (
+					<ChevronDown className="h-4 w-4" />
+				)
+			) : (
+				<div className="flex flex-col -space-y-2">
+					<ChevronUp className="h-3 w-3 opacity-50" />
+					<ChevronDown className="h-3 w-3 opacity-50" />
+				</div>
+			)}
+		</Button>
+	</div>
+);
 
 const DisplayComponent = <T extends Record<string, FieldValue>>({
 	items,
@@ -191,6 +230,24 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 		<div data-id={dataId}>
 			{/* Mobile */}
 			<div className="block md:hidden">
+				<div className="flex items-center gap-2 mb-4 overflow-x-auto">
+					{fields.map((field) => (
+						<Button
+							key={String(field.key)}
+							variant="outline"
+							size="sm"
+							onClick={() => handleSort(String(field.key))}
+						>
+							{field.label}
+							{sortField === field.key &&
+								(sortDirection === 'asc' ? (
+									<ChevronUp className="ml-1 h-4 w-4" />
+								) : (
+									<ChevronDown className="ml-1 h-4 w-4" />
+								))}
+						</Button>
+					))}
+				</div>
 				<div className="grid grid-cols-1 gap-4">
 					{isLoading ? (
 						<CardsContainerSkeleton
@@ -242,10 +299,15 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 								<TableHead
 									key={String(field.key)}
 									style={{ width: field.width }}
-									className="text-xs cursor-pointer hover:bg-muted/50"
-									onClick={() => handleSort(String(field.key))}
+									className="text-xs"
 								>
-									{field.label}
+									<SortButton
+										field={String(field.key)}
+										label={field.label}
+										currentSortField={sortField}
+										currentSortDirection={sortDirection}
+										onSort={handleSort}
+									/>
 								</TableHead>
 							))}
 							<TableHead className="text-center">{m.action_text()}</TableHead>

@@ -7,7 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import CurrencyDialog from './CurrencyDialog';
 import RefreshToken from '@/components/RefreshToken';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { deleteCurrency, fetchCurrencies } from '../actions/currency';
+import {
+	deleteCurrency,
+	fetchCurrencies,
+	fetchExchangeRates,
+	findChangedRates,
+	prepareCurrentRates,
+} from '../actions/currency';
 import { formType } from '@/types/form_type';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
@@ -19,7 +25,23 @@ import DisplayComponent from '@/components/templates/DisplayComponent';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { CurrencyCreateModel } from '@/dtos/currency.dto';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
-import { code_label, currency, currency_delete_success, currency_name, error_del_text, export_text, fail_del_currency, fail_to_text, print_text, rate_label, refresh_exchange_rate, Search, session_expire, status_text, symbol_label } from '@/paraglide/messages.js';
+import {
+	code_label,
+	currency,
+	currency_delete_success,
+	currency_name,
+	error_del_text,
+	export_text,
+	fail_del_currency,
+	fail_to_text,
+	print_text,
+	rate_label,
+	refresh_exchange_rate,
+	Search,
+	session_expire,
+	status_text,
+	symbol_label,
+} from '@/paraglide/messages.js';
 
 enum CurrencyField {
 	Code = 'code',
@@ -38,7 +60,7 @@ const sortFields: FieldConfig<CurrencyCreateModel>[] = [
 		key: CurrencyField.isActive,
 		label: `${status_text()}`,
 		type: 'badge',
-		className: 'w-24',
+		className: 'w-10',
 	},
 ];
 
@@ -138,62 +160,9 @@ const CurrencyList = () => {
 
 	const onRefreshExchangeRate = async () => {
 		try {
-			const currencyList = currencies.map((currency) => ({
-				id: currency.id,
-				code: currency.code,
-				exchange_rate: currency.exchange_rate,
-			}));
-
-			const response = await fetch(
-				`/api/system/currency-api?base_currency=THB`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'x-tenant-id': tenantId,
-						'Content-Type': 'application/json',
-					},
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error('Failed to fetch currency data');
-			}
-
-			const responseData = await response.json();
-			const data = Array.isArray(responseData)
-				? responseData
-				: responseData.result;
-
-			if (!Array.isArray(data)) {
-				throw new Error(
-					'Invalid response format: expected an array of currencies'
-				);
-			}
-
-			const changedRates = data
-				.filter((apiCurrency: { code: string; historical_rate: number }) => {
-					const existingCurrency = currencyList.find(
-						(currency) => currency.code === apiCurrency.code
-					);
-
-					if (!existingCurrency) return false;
-
-					const existingRate = Number(existingCurrency.exchange_rate);
-					const newRate = Number(apiCurrency.historical_rate);
-
-					return existingRate.toFixed(2) !== newRate.toFixed(2);
-				})
-				.map((apiCurrency) => {
-					const currency = currencyList.find(
-						(c) => c.code === apiCurrency.code
-					);
-					return {
-						at_date: new Date().toISOString(),
-						rate: apiCurrency.historical_rate,
-						currency_id: currency?.id,
-					};
-				});
+			const currentRates = prepareCurrentRates(currencies);
+			const apiData = await fetchExchangeRates(token, tenantId);
+			const changedRates = findChangedRates(apiData, currentRates);
 
 			if (changedRates.length === 0) {
 				console.log('No exchange rate changes detected');
@@ -303,14 +272,6 @@ const CurrencyList = () => {
 			idField="id"
 			onSuccess={handleSuccess}
 			onDelete={handleDelete}
-			editComponent={({ item, onSuccess }) => (
-				<CurrencyDialog
-					mode={formType.EDIT}
-					defaultValues={item}
-					onSuccess={onSuccess}
-					data-id="currency-edit-dialog"
-				/>
-			)}
 			page={+page}
 			totalPage={+pages}
 			setPage={setPage}

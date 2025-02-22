@@ -144,3 +144,81 @@ export const fetchSystemCurrencies = async (
 	}
 	return await response.json();
 };
+
+export const fetchExchangeRates = async (token: string, tenantId: string) => {
+	const response = await fetch(`/api/system/currency-api?base_currency=THB`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'x-tenant-id': tenantId,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch currency data');
+	}
+
+	const responseData = await response.json();
+	const data = Array.isArray(responseData) ? responseData : responseData.result;
+
+	if (!Array.isArray(data)) {
+		throw new Error('Invalid response format: expected an array of currencies');
+	}
+
+	return data;
+};
+
+export const prepareCurrentRates = (currencies: CurrencyCreateModel[]) => {
+	return currencies
+		.filter(
+			(
+				currency
+			): currency is CurrencyCreateModel & {
+				id: string;
+				code: string;
+				exchange_rate: number;
+			} => {
+				return (
+					!!currency.id &&
+					!!currency.code &&
+					typeof currency.exchange_rate === 'number'
+				);
+			}
+		)
+		.map((currency) => ({
+			id: currency.id,
+			code: currency.code,
+			exchange_rate: currency.exchange_rate,
+		}));
+};
+
+export const findChangedRates = (
+	apiData: Array<{ code: string; historical_rate: number }>,
+	currentRates: Array<{ id: string; code: string; exchange_rate: number }>
+) => {
+	return apiData
+		.filter((apiCurrency) => {
+			const existingCurrency = currentRates.find(
+				(currency) => currency.code === apiCurrency.code
+			);
+
+			if (!existingCurrency) return false;
+
+			const existingRate = Number(existingCurrency.exchange_rate);
+			const newRate = Number(apiCurrency.historical_rate);
+
+			return existingRate.toFixed(2) !== newRate.toFixed(2);
+		})
+		.map((apiCurrency) => {
+			const currency = currentRates.find((c) => c.code === apiCurrency.code);
+			if (!currency?.id) return null;
+
+			return {
+				at_date: new Date().toISOString(),
+				rate: apiCurrency.historical_rate,
+				currency_id: currency.id,
+			};
+		})
+		.filter((rate): rate is NonNullable<typeof rate> => rate !== null);
+};

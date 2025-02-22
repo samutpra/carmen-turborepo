@@ -73,7 +73,11 @@ export const GET = async (request: NextRequest) => {
 
 		const productResponse = await fetchData(productUrl, token, tenantId);
 
+		console.log('productResponse', productResponse);
+
 		const data = await getProducts(productResponse.data, token, tenantId);
+
+		console.log('data', data);
 
 		return NextResponse.json({ data, pagination: productResponse.pagination });
 	} catch (error) {
