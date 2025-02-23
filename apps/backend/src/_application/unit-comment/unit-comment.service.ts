@@ -47,7 +47,8 @@ export class UnitCommentService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 
@@ -69,7 +70,8 @@ export class UnitCommentService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_unit_comment.count({
       where: q.where(),
@@ -103,7 +105,8 @@ export class UnitCommentService {
       function: this.create.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {
       const commentObj: any = {
@@ -137,7 +140,8 @@ export class UnitCommentService {
       function: this.update.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 
@@ -171,7 +175,8 @@ export class UnitCommentService {
       function: this.delete.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 

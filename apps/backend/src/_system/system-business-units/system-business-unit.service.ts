@@ -1,29 +1,29 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils';
-import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils";
+import { BusinessUnitCreateDto, BusinessUnitUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbSystem,
   tb_business_unit,
-} from '@prisma-carmen-client-system';
+} from "@prisma-carmen-client-system";
 
-import { SystemBusinessUnitController } from './system-business-unit.controller';
+import { SystemBusinessUnitController } from "./system-business-unit.controller";
 
 @Injectable()
 export class SystemBusinessUnitService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -43,11 +43,11 @@ export class SystemBusinessUnitService {
     id: string,
   ): Promise<ResponseSingle<tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('BusinessUnit not found');
+      throw new NotFoundException("BusinessUnit not found");
     }
     const res: ResponseSingle<tb_business_unit> = {
       data: oneObj,
@@ -61,7 +61,7 @@ export class SystemBusinessUnitService {
     q: QueryParams,
   ): Promise<ResponseList<tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const max = await this.db_System.tb_business_unit.count({
       where: q.where(),
     });
@@ -87,7 +87,7 @@ export class SystemBusinessUnitService {
     createDto: BusinessUnitCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
 
     const found = await this.db_System.tb_business_unit.findUnique({
       where: {
@@ -101,7 +101,7 @@ export class SystemBusinessUnitService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'BusinessUnit already exists',
+        message: "BusinessUnit already exists",
         id: found.id,
       });
     }
@@ -129,11 +129,11 @@ export class SystemBusinessUnitService {
     updateDto: BusinessUnitUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('BusinessUnit not found');
+      throw new NotFoundException("BusinessUnit not found");
     }
 
     if (updateDto.cluster_id == null) {
@@ -181,11 +181,11 @@ export class SystemBusinessUnitService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('BusinessUnit not found');
+      throw new NotFoundException("BusinessUnit not found");
     }
 
     await this.db_System.tb_business_unit.delete({

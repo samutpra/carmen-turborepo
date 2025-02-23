@@ -43,7 +43,8 @@ export class ProductsService {
       function: this.getByItemsGroup.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_product.count({
       where: q.where(),
@@ -76,7 +77,8 @@ export class ProductsService {
       function: this.getOrderUnitByProductId.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_unit_conversion.count({
       where: {
@@ -176,7 +178,8 @@ export class ProductsService {
       function: this.getCountUnitByProductId.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_unit_conversion.count({
       where: {
@@ -276,7 +279,8 @@ export class ProductsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_unit_conversion.count({
       where: {
@@ -392,7 +396,8 @@ export class ProductsService {
       function: this.findOne.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 
@@ -497,7 +502,8 @@ export class ProductsService {
       function: this.findAll.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const max = await this.db_tenant.tb_product.count({
       where: q.where(),
     });
@@ -529,7 +535,8 @@ export class ProductsService {
       function: this.create.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.tb_product.findFirst({
       where: {
@@ -779,7 +786,8 @@ export class ProductsService {
       function: this.update.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -1634,7 +1642,8 @@ export class ProductsService {
       function: this.delete.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

@@ -1,27 +1,27 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
-import { UserCreateDto, UserUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
+import { UserCreateDto, UserUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbSystem,
   tb_user,
-} from '@prisma-carmen-client-system';
+} from "@prisma-carmen-client-system";
 
 @Injectable()
 export class SystemUsersService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -40,13 +40,13 @@ export class SystemUsersService {
     db_System: dbSystem,
     username: string,
   ): Promise<tb_user> {
-    this.logger.debug({ function: 'findByUsername', username: username });
+    this.logger.debug({ function: "findByUsername", username: username });
 
     const res = await db_System.tb_user.findFirst({
       where: {
         username: {
           equals: username,
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       },
     });
@@ -55,11 +55,11 @@ export class SystemUsersService {
 
   async findOne(req: Request, id: string): Promise<ResponseSingle<tb_user>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
     const res: ResponseSingle<tb_user> = {
       data: oneObj,
@@ -69,7 +69,7 @@ export class SystemUsersService {
 
   async findAll(req: Request, q: QueryParams): Promise<ResponseList<tb_user>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const max = await this.db_System.tb_user.count({
       where: q.where(),
     });
@@ -92,7 +92,7 @@ export class SystemUsersService {
     createDto: UserCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const found = await this.db_System.tb_user.findUnique({
       where: {
         username: createDto.username,
@@ -102,7 +102,7 @@ export class SystemUsersService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'User already exists',
+        message: "User already exists",
         id: found.id,
       });
     }
@@ -131,11 +131,11 @@ export class SystemUsersService {
     updateDto: UserUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     const updateObj = await this.db_System.tb_user.update({
@@ -154,11 +154,11 @@ export class SystemUsersService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     //check if uses is inused

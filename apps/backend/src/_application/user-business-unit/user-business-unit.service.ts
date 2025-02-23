@@ -16,7 +16,7 @@ export class UserBusinessUnitService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -53,7 +53,7 @@ export class UserBusinessUnitService {
     id: string,
   ): Promise<ResponseSingle<tb_user_tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id, user_id);
 
     if (!oneObj) {
@@ -70,7 +70,7 @@ export class UserBusinessUnitService {
     q: QueryParams,
   ): Promise<ResponseList<tb_user_tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const q_where = {
       ...q.where(),
       AND: {

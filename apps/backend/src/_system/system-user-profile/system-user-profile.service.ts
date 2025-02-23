@@ -1,27 +1,27 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
-import { UserProfileCreateDto, UserProfileUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
+import { UserProfileCreateDto, UserProfileUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbSystem,
   tb_user_profile,
-} from '@prisma-carmen-client-system';
+} from "@prisma-carmen-client-system";
 
 @Injectable()
 export class SystemUserProfileService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -41,11 +41,11 @@ export class SystemUserProfileService {
     id: string,
   ): Promise<ResponseSingle<tb_user_profile>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
     const res: ResponseSingle<tb_user_profile> = {
       data: oneObj,
@@ -59,7 +59,7 @@ export class SystemUserProfileService {
     q: QueryParams,
   ): Promise<ResponseList<tb_user_profile>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const max = await this.db_System.tb_user_profile.count({
       where: q.where(),
     });
@@ -83,7 +83,7 @@ export class SystemUserProfileService {
     createDto: UserProfileCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
 
     const found = await this.db_System.tb_user_profile.findFirst({
       where: {
@@ -94,7 +94,7 @@ export class SystemUserProfileService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'UserProfile already exists',
+        message: "UserProfile already exists",
         id: found.id,
       });
     }
@@ -127,11 +127,11 @@ export class SystemUserProfileService {
     updateDto: UserProfileUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
 
     const updateObj = await this.db_System.tb_user_profile.update({
@@ -158,11 +158,11 @@ export class SystemUserProfileService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('UserProfile not found');
+      throw new NotFoundException("UserProfile not found");
     }
 
     await this.db_System.tb_user_profile.delete({

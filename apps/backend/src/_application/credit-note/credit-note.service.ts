@@ -1,14 +1,14 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { CreditNoteCreateDto, CreditNoteUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { CreditNoteCreateDto, CreditNoteUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
-import { Injectable, Logger, NotFoundException, Request } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Request } from "@nestjs/common";
 import {
   PrismaClient as dbTenant,
   tb_credit_note,
-} from '@prisma-carmen-client-tenant';
+} from "@prisma-carmen-client-tenant";
 
 @Injectable()
 export class CreditNoteService {
@@ -43,11 +43,12 @@ export class CreditNoteService {
       function: this.findOne.name,
     });
     const { business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     const res: ResponseSingle<tb_credit_note> = {
@@ -65,7 +66,8 @@ export class CreditNoteService {
       function: this.findAll.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_credit_note.count({
       where: q.where(),
@@ -91,7 +93,8 @@ export class CreditNoteService {
       function: this.create.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     // const found = await this.db_tenant.credit_note_table.findUnique({
     // 	where: {
@@ -130,12 +133,13 @@ export class CreditNoteService {
       function: this.update.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     const updatedObj = await this.db_tenant.tb_credit_note.update({
@@ -155,12 +159,13 @@ export class CreditNoteService {
       function: this.delete.name,
     });
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Credit Note not found');
+      throw new NotFoundException("Credit Note not found");
     }
 
     await this.db_tenant.tb_credit_note.delete({
