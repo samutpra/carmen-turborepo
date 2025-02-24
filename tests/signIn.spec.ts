@@ -58,7 +58,7 @@ test.describe('SignIn', () => {
 			password: 'Daew2222',
 		};
 
-		const signInResponse = await request.post('/api/auth/signin', {
+		const signInResponse = await request.post('/api/auth/sign-in', {
 			data: testCredentials,
 		});
 
@@ -80,7 +80,7 @@ test.describe('SignIn', () => {
 			password: 'wrongpassword',
 		};
 
-		const signInResponse = await request.post('/api/auth/signin', {
+		const signInResponse = await request.post('/api/auth/sign-in', {
 			data: invalidCredentials,
 		});
 
@@ -97,7 +97,7 @@ test.describe('SignIn', () => {
 	});
 
 	test('should handle API network errors', async ({ request, page }) => {
-		await page.route('/api/auth/signin', (route) =>
+		await page.route('/api/auth/sign-in', (route) =>
 			route.fulfill({
 				status: 500,
 				body: JSON.stringify({ message: 'Internal server error' }),

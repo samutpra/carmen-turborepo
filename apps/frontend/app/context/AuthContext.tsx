@@ -25,6 +25,10 @@ interface AuthState {
 	user: User | null;
 	refresh_token: string;
 	access_token?: string;
+	tenant: {
+		id: string;
+		name: string;
+	}[];
 }
 
 interface AuthContextType {
@@ -35,7 +39,10 @@ interface AuthContextType {
 	handleLogin: (data: AuthState, token: string) => Promise<void>;
 	handleLogout: () => Promise<void>;
 	updateAccessToken: (token: string) => void;
-	tenantId: string;
+	tenant: {
+		id: string;
+		name: string;
+	}[];
 }
 
 const COOKIE_OPTIONS = {
@@ -47,6 +54,8 @@ const COOKIE_OPTIONS = {
 const defaultAuthState: AuthState = {
 	user: null,
 	refresh_token: '',
+	access_token: '',
+	tenant: [],
 };
 
 const defaultAuthContext: AuthContextType = {
@@ -54,10 +63,10 @@ const defaultAuthContext: AuthContextType = {
 	accessToken: null,
 	isAuthenticated: false,
 	isLoading: true,
-	handleLogin: async () => { },
-	handleLogout: async () => { },
-	updateAccessToken: () => { },
-	tenantId: '',
+	handleLogin: async () => {},
+	handleLogout: async () => {},
+	updateAccessToken: () => {},
+	tenant: [],
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -67,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const router = useRouter();
 	const pathname = usePathname();
-	const tenantId = '6ba7b921-9dad-11d1-80b4-00c04fd430c8';
 
 	const [isLoading, setIsLoading] = useState(true);
 	// Initialize authState from localStorage
@@ -78,6 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 		return defaultAuthState;
 	});
+
+	console.log('authState', authState);
 
 	const [accessToken, setAccessToken] = useState<string | null>(() => {
 		if (typeof window !== 'undefined') {
@@ -97,6 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		setAuthState(defaultAuthState);
 		setAccessToken(null);
 		deleteCookie('access_token');
+		deleteCookie('user_id');
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('auth_state');
 	};
@@ -146,17 +157,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		return !!accessToken;
 	}, [accessToken]);
 
-	// Memoize handlers to prevent unnecessary re-creations
 	const handlers = useMemo(
 		() => ({
-			handleLogin: async (data: AuthState, token: string): Promise<void> => {
+			handleLogin: async (data: AuthState, token: string) => {
+				console.log('data', data);
 				try {
-					setAuthState(data);
+					// Transform the login response data to match our AuthState structure
+					const authStateData: AuthState = {
+						user: {
+							id: data.user?.id ?? '',
+							username: data.user?.username ?? '',
+						},
+						refresh_token: data.refresh_token,
+						access_token: data.access_token,
+						tenant: Array.isArray(data.tenant) ? data.tenant : [],
+					};
+
+					setAuthState(authStateData);
 					setAccessToken(token);
 					setCookie('access_token', token, COOKIE_OPTIONS);
-					setCookie('user_id', data?.user?.id)
+					setCookie('user_id', authStateData.user?.id);
 					localStorage.setItem('access_token', token);
-					localStorage.setItem('auth_state', JSON.stringify(data));
+					localStorage.setItem('auth_state', JSON.stringify(authStateData));
 					router.push('/dashboard');
 				} catch (error) {
 					console.error('Login error:', error);
@@ -196,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			accessToken,
 			isAuthenticated,
 			isLoading,
-			tenantId,
+			tenant: authState.tenant,
 			...handlers,
 		}),
 		[authState, accessToken, isAuthenticated, isLoading, handlers]

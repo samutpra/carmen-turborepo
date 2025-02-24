@@ -1,11 +1,17 @@
 "use client"
 
-import React, { useState } from 'react'
-import { useRouter } from '@/lib/i18n';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SignInSchema, SignInType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { PasswordInput } from '@/components/ui-custom/PasswordInput';
 import { CustomButton } from '@/components/ui-custom/CustomButton';
@@ -24,7 +30,6 @@ import {
 } from '@/paraglide/messages';
 
 const SignInForm = () => {
-	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const { handleLogin } = useAuth();
 
@@ -41,11 +46,11 @@ const SignInForm = () => {
 		try {
 			const result = await signInAction(data);
 
+			console.log('result', result);
 			if (!result) {
 				toastError({ message: 'Sign in failed' });
 			} else {
 				await processLogin(result, handleLogin);
-				router.push('/dashboard');
 			}
 		} catch (error) {
 			handleSignInException(error);
