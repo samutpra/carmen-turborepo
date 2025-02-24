@@ -50,7 +50,6 @@ const unitFields: FieldConfig<UnitCreateModel>[] = [
 const UnitList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [units, setUnits] = useState<UnitCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -60,6 +59,7 @@ const UnitList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
+	const { tenantId } = useAuth();
 
 	const fetchData = async () => {
 		try {

@@ -20,6 +20,7 @@ const NewLocationPage = () => {
 				},
 			}}
 		/>
+
 	);
 };
 

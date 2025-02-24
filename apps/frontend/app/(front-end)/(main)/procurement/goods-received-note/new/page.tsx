@@ -1,9 +1,9 @@
 import React from 'react'
 
-const NewGRNPage = () => {
+const NewGoodRecieveNotePage = () => {
     return (
-        <div>NewGRNPage</div>
+        <div>NewGoodRecieveNotePage</div>
     )
 }
 
-export default NewGRNPage
+export default NewGoodRecieveNotePage

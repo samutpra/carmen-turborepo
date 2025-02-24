@@ -6,6 +6,10 @@ import { NextRequest, NextResponse } from 'next/server';
 export const GET = async (request: NextRequest) => {
 	try {
 		const token = extractToken(request);
+		const tenantId = request.headers.get('x-tenant-id');
+
+		console.log('tetnantId:', tenantId);
+
 		if (!token) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
@@ -24,12 +28,13 @@ export const GET = async (request: NextRequest) => {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 		};
 
 		const response = await fetch(apiUrl, options);
+
 		if (response.status === 401) {
 			return NextResponse.json(
 				{ error: 'Unauthorized access - Invalid or expired token' },

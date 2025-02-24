@@ -35,6 +35,7 @@ interface AuthContextType {
 	handleLogin: (data: AuthState, token: string) => Promise<void>;
 	handleLogout: () => Promise<void>;
 	updateAccessToken: (token: string) => void;
+	tenantId: string;
 }
 
 const COOKIE_OPTIONS = {
@@ -56,6 +57,7 @@ const defaultAuthContext: AuthContextType = {
 	handleLogin: async () => { },
 	handleLogout: async () => { },
 	updateAccessToken: () => { },
+	tenantId: '',
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -65,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const router = useRouter();
 	const pathname = usePathname();
+	const tenantId = '6ba7b921-9dad-11d1-80b4-00c04fd430c8';
 
 	const [isLoading, setIsLoading] = useState(true);
 	// Initialize authState from localStorage
@@ -193,6 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			accessToken,
 			isAuthenticated,
 			isLoading,
+			tenantId,
 			...handlers,
 		}),
 		[authState, accessToken, isAuthenticated, isLoading, handlers]

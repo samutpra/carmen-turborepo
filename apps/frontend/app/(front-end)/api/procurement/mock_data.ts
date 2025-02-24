@@ -131,7 +131,6 @@ export const staticCreditNotes: CreditNoteType[] = [
 		items: [],
 		attachments: [],
 	},
-	// Add more mock data entries here
 	{
 		id: 'credit-note-3',
 		refNumber: 'CN-003',

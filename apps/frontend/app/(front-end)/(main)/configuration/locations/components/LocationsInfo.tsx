@@ -115,7 +115,7 @@ const LocationsInfo = ({
 	};
 
 	return (
-		<Card className="px-3 py-3">
+		<Card className="p-3">
 			<div className="flex items-center justify-between mb-4">
 				<div className="flex items-center gap-4">
 					{isEdit ? (
@@ -155,7 +155,7 @@ const LocationsInfo = ({
 							render={({ field }) => (
 								<FormItem
 									data-id="store-location-dialog-form-active-item"
-									className="flex flex-col items-center gap-2 space-y-0"
+									className="flex flex-col items-center space-y-0"
 								>
 									<FormLabel className="text-xs font-medium">
 										{status_text()}
@@ -218,7 +218,7 @@ const LocationsInfo = ({
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 				<FormField
 					control={control}
 					name="location_type"
@@ -302,7 +302,7 @@ const LocationsInfo = ({
 				/>
 			</div>
 
-			<div className="mt-6">
+			<div className="mt-2">
 				<FormField
 					control={control}
 					name="description"

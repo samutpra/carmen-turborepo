@@ -151,8 +151,6 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 
 	const onSubmit = async (formData: LocationState) => {
 		try {
-			console.log('Form submit event triggered');
-
 			const payload: LocationPayload = {
 				name: formData.name,
 				description: formData.description,
@@ -307,9 +305,10 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 					await onSubmit(form.getValues());
 				}}
 				data-id="location-form-form"
+				className="w-full flex justify-center items-center"
 			>
 				<div
-					className="p-3 flex flex-col space-y-3"
+					className="p-3 flex flex-col space-y-3 w-full lg:max-w-4xl"
 					data-id="location-form-div"
 				>
 					<LocationsInfo
@@ -329,7 +328,7 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 								Assign Users
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="px-3 pt-0 pb-3 flex gap-2 w-full">
+						<CardContent className="px-3 pt-0 pb-3 flex flex-col lg:flex-row items-center lg:items-start gap-2 w-full">
 							<UserTable
 								users={originalValues.users.inactive}
 								selectedUsers={selectedUsersToDelete}
@@ -339,18 +338,19 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 								data-id="location-form-user-table"
 								onCheckAll={(checked) => handleCheckAll(checked, 'inactive')}
 							/>
-							<div className="flex items-center">
+							<div className="flex items-center h-10 lg:h-40">
 								<div className="p-2 h-fit">
 									<Button
 										variant={'outline'}
 										type="button"
-										size="icon"
+										size={'sm'}
 										onClick={(e) => {
 											e.preventDefault();
 											handleMoveRight();
 										}}
 										disabled={!isEdit || selectedUsersToDelete.length === 0}
 										data-id="location-form-user-table-button"
+										className="mr-1 lg:mr-0 lg:mb-1"
 									>
 										<ChevronDown className="block lg:hidden" />
 										<ChevronRight className="hidden lg:block" />
@@ -358,13 +358,14 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 									<Button
 										variant={'outline'}
 										type="button"
-										size="icon"
+										size={'sm'}
 										onClick={(e) => {
 											e.preventDefault();
 											setShowDeleteDialog(true);
 										}}
 										disabled={!isEdit || selectedUsersToAdd.length === 0}
 										data-id="location-form-user-table-button"
+										className="ml-1 lg:ml-0 lg:mt-1"
 									>
 										<ChevronUp className="block lg:hidden" />
 										<ChevronLeft className="hidden lg:block" />

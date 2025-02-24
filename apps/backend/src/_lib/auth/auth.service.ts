@@ -388,6 +388,30 @@ export class AuthService {
         ...user
       } = findUser;
 
+      const userBusinessUnit = await this.db_System.tb_user_tb_business_unit
+        .findMany({
+          where: {
+            user_id: findUser.id,
+            is_active: true,
+          },
+          select: {
+            tb_business_unit: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        })
+        .then((res) => {
+          return res.map((item) => {
+            return {
+              id: item.tb_business_unit.id,
+              name: item.tb_business_unit.name,
+            };
+          });
+        });
+
       const payload_refresh = {
         ...user,
         is_refresh: true,
@@ -400,6 +424,7 @@ export class AuthService {
         refresh_token: this.jwtService.sign(payload_refresh, {
           expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
         }),
+        tenant: userBusinessUnit,
       };
 
       // delete session is expired
