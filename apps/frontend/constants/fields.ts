@@ -1,4 +1,4 @@
-import { GoodsReceiveNote, PrType } from '@/lib/types';
+import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 
 export enum GOOD_RECIEIVE_NOTE_FIELDS {
@@ -27,7 +27,7 @@ export const goodsReceiveNoteFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DESCRIPTION, label: 'Description' },
 ];
 
-enum PrField {
+const enum PrField {
 	Id = 'id',
 	Type = 'type',
 	Description = 'description',
@@ -47,4 +47,48 @@ export const prSortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Status, label: 'Status', type: 'badge' },
 	{ key: PrField.Amount, label: 'Amount', type: 'amount' },
 	{ key: PrField.CurrentStage, label: 'Current Stage' },
+];
+export const enum PoField {
+	Id = 'poId',
+	Number = 'number',
+	VendorId = 'vendorId',
+	VendorName = 'vendorName',
+	OrderDate = 'orderDate',
+	DeliveryDate = 'deliveryDate',
+	Status = 'status',
+	CurrencyCode = 'currencyCode',
+	BaseCurrencyCode = 'baseCurrencyCode',
+	ExchangeRate = 'exchangeRate',
+	Notes = 'notes',
+	CreatedBy = 'createdBy',
+	ApprovedBy = 'approvedBy',
+	ApprovalDate = 'approvalDate',
+	Email = 'email',
+	Buyer = 'buyer',
+	CreditTerms = 'creditTerms',
+	Description = 'description',
+	Remarks = 'remarks',
+	BaseSubTotalPrice = 'baseSubTotalPrice',
+	SubTotalPrice = 'subTotalPrice',
+	BaseNetAmount = 'baseNetAmount',
+	NetAmount = 'netAmount',
+	BaseDiscAmount = 'baseDiscAmount',
+	DiscountAmount = 'discountAmount',
+	BaseTaxAmount = 'baseTaxAmount',
+	TaxAmount = 'taxAmount',
+	BaseTotalAmount = 'baseTotalAmount',
+	TotalAmount = 'totalAmount',
+}
+
+export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
+	{ key: PoField.Number, label: 'Number' },
+	{ key: PoField.VendorName, label: 'Vendor Name' },
+	{ key: PoField.OrderDate, label: 'Order Date', type: 'date' },
+	{ key: PoField.DeliveryDate, label: 'Delivery Date', type: 'date' },
+	{ key: PoField.Status, label: 'Status', type: 'badge' },
+	{ key: PoField.TotalAmount, label: 'Total Amount', type: 'amount' },
+	{ key: PoField.CurrencyCode, label: 'Currency' },
+	{ key: PoField.ExchangeRate, label: 'Exchange Rate', type: 'decimal' },
+	{ key: PoField.BaseCurrencyCode, label: 'Base Currency' },
+	{ key: PoField.ApprovalDate, label: 'Approval Date', type: 'date' },
 ];

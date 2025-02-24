@@ -1157,12 +1157,12 @@ export type AttachmentType = z.infer<typeof AttachmentSchema>;
 
 
 const CreditNoteItemSchema = z.object({
-  id: z.number(),
-  description: z.string(),
-  quantity: z.number(),
-  unitPrice: z.number(),
-  discountPercentage: z.number(),
-  taxPercentage: z.number(),
+	id: z.string(),
+	description: z.string(),
+	quantity: z.number(),
+	unitPrice: z.number(),
+	discountPercentage: z.number(),
+	taxPercentage: z.number(),
 });
 
 const CreditNoteAttachmentSchema = z.object({
