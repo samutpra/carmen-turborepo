@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
 
 export async function GET(request: NextRequest) {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${token}`,
-			'x-tenant-id': 'DUMMY',
+			'x-tenant-id': `${tenantId}`,
 		},
 	};
 

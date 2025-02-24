@@ -1,6 +1,5 @@
 export const fetchWorkflows = async (
 	token: string,
-	tenantId: string,
 	params: {
 		search?: string;
 		status?: string;
@@ -36,13 +35,12 @@ export const fetchWorkflows = async (
 			query.append('sort', params.sort);
 		}
 
-		const url = `/api/system/workflow-api/?${query}`;
+		const url = `/api/system-administration/workflow-api/?${query}`;
 
 		const options = {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		};
@@ -61,16 +59,11 @@ export const fetchWorkflows = async (
 	}
 };
 
-export const deleteWorkflow = async (
-	id: string,
-	token: string,
-	tenantId: string
-) => {
-	const response = await fetch(`/system/workflow-api/${id}`, {
+export const deleteWorkflow = async (id: string, token: string) => {
+	const response = await fetch(`/system-administration/workflow-api/${id}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `Bearer ${token}`,
-			'x-tenant-id': tenantId,
 		},
 	});
 

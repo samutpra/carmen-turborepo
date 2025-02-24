@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { Eye, PlusCircle } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useURL } from '@/hooks/useURL';
-import { fetchWorkflows } from '../../actions/workflow';
+import { fetchWorkflows } from '../actions/workflow';
 import { toastError } from '@/components/ui-custom/Toast';
 import { statusOptions } from '@/lib/statusOptions';
 import {
@@ -141,7 +141,6 @@ const renderFieldValue = (
 const WorkflowList = () => {
 	const { accessToken } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -158,7 +157,7 @@ const WorkflowList = () => {
 	const fetchList = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchWorkflows(token, tenantId, {
+			const data = await fetchWorkflows(token, {
 				search,
 				status,
 				page,
@@ -186,7 +185,7 @@ const WorkflowList = () => {
 
 	useEffect(() => {
 		fetchList();
-	}, [token, tenantId, search, status]);
+	}, [token, search, status]);
 
 	useEffect(() => {
 		if (!sort) return;
