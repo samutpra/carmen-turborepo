@@ -190,28 +190,26 @@ const ProductList = () => {
 		</div>
 	);
 
-	const content = (
-		<ProductDisplay
-			products={products}
-			fields={fields}
-			page={+page}
-			totalPage={+pages}
-			handlePageChange={handlePageChange}
-			sort={sort}
-			onSortChange={(newSort: SortQuery) => {
-				setSort(newSort);
-			}}
-			isLoading={isLoading}
-			data-id="product-list-product-display"
-		/>
-	);
-
 	return (
 		<DataDisplayTemplate
 			title="Products List"
 			actionButtons={actionButtons}
 			filters={filter}
-			content={content}
+			content={
+				<ProductDisplay
+					products={products}
+					fields={fields}
+					page={+page}
+					totalPage={+pages}
+					handlePageChange={handlePageChange}
+					sort={sort}
+					onSortChange={(newSort: SortQuery) => {
+						setSort(newSort);
+					}}
+					isLoading={isLoading}
+					data-id="product-list-product-display"
+				/>
+			}
 			data-id="product-list-data-display-template"
 		/>
 	);

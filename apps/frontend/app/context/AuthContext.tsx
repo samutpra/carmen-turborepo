@@ -87,8 +87,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		return defaultAuthState;
 	});
 
-	console.log('authState', authState);
-
 	const [accessToken, setAccessToken] = useState<string | null>(() => {
 		if (typeof window !== 'undefined') {
 			return (getCookie('access_token') as string) || null;
@@ -223,6 +221,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		}),
 		[authState, accessToken, isAuthenticated, isLoading, handlers]
 	);
+
+	console.log('value', value);
+	
 
 	// Don't render children until initial auth check is complete
 	if (isLoading) {
