@@ -395,6 +395,7 @@ export class AuthService {
             is_active: true,
           },
           select: {
+            is_default: true,
             tb_business_unit: {
               select: {
                 id: true,
@@ -408,6 +409,7 @@ export class AuthService {
             return {
               id: item.tb_business_unit.id,
               name: item.tb_business_unit.name,
+              is_default: item.is_default,
             };
           });
         });

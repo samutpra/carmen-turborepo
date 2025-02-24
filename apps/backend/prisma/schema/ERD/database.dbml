@@ -158,6 +158,7 @@ TABLE CARMEN_SYSTEM.tb_user_tb_business_unit {
   user_id uuid [ref: > CARMEN_SYSTEM.tb_user.id]
   business_unit_id uuid [ref: > CARMEN_SYSTEM.tb_business_unit.id]
   role CARMEN_SYSTEM.enum_user_business_unit_role [not null, default: 'user']
+  is_default bool [default: false]
 
   is_active bool [default: true]
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
