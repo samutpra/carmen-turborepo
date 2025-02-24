@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Workflow } from '../types/workflow';
+import { Workflow } from '@/dtos/workflow.dto';
+import { workflowTypeField } from '@/lib/util/fields';
 
 interface WorkflowGeneralProps {
 	workflow: Workflow;
@@ -64,11 +65,11 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 
 	return (
 		<Card>
-			<CardHeader>
+			<CardHeader className="px-6 py-4">
 				<CardTitle>General Information</CardTitle>
 			</CardHeader>
-			<CardContent>
-				<form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+			<CardContent className="px-6 py-4">
+				<form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
 					<div>
 						<Label htmlFor="name">Workflow Name</Label>
 						<Input
@@ -85,16 +86,19 @@ const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
 							onValueChange={handleSelectChange}
 							disabled={!isEditing}
 						>
-							<SelectTrigger id="type">
-								<SelectValue placeholder="Select type" />
+							<SelectTrigger id="workflow_type">
+								<SelectValue placeholder="Select Workflow Type" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="Purchase Request">
-									Purchase Request
-								</SelectItem>
-								<SelectItem value="Store Requisition">
-									Store Requisition
-								</SelectItem>
+								{workflowTypeField.map(({ label, value }) => (
+									<SelectItem
+										key={value}
+										value={value}
+										className="cursor-pointer"
+									>
+										{label}
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>

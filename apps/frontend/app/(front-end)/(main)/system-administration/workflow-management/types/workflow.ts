@@ -8,6 +8,10 @@ export type NotificationEventTrigger =
 	| 'onSendBack'
 	| 'onSLA';
 
+export type AvailableActions = 'submit' | 'approve' | 'reject' | 'send_back';
+
+export type PageMode = 'add' | 'edit' | 'view';
+
 export interface Product {
 	id: number;
 	name: string;
@@ -23,7 +27,7 @@ export interface Stage {
 	description: string;
 	sla: string;
 	slaUnit: string;
-	availableActions: string[];
+	availableActions: AvailableActions[];
 	hideFields: {
 		pricePerUnit: boolean;
 		totalPrice: boolean;
@@ -77,12 +81,11 @@ export interface Template {
 }
 
 export interface WorkflowData {
-	documentReferencePattern: string;
-
+	document_reference_pattern: string;
 	stages: Stage[];
-	routingRules: RoutingRule[];
+	routing_rules: RoutingRule[];
 	notifications: WorkflowNotification[];
-	notificationTemplates: Template[];
+	notification_templates: Template[];
 	products: Product[];
 }
 

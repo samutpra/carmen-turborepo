@@ -21,7 +21,8 @@ function WorkflowConfigurationContent() {
 	const defaultTab = searchParams.get('tab') || 'workflow';
 
 	// Get notification templates from the first workflow as initial templates
-	const initialTemplates = sampleWorkflows[0]?.data.notificationTemplates || [];
+	const initialTemplates =
+		sampleWorkflows[0]?.data.notification_templates || [];
 
 	return (
 		<div className="container mx-auto py-6 space-y-6">

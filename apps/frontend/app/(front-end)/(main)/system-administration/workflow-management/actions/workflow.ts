@@ -1,4 +1,27 @@
-export const fetchWorkflows = async (
+export const fetchWorkflow = async (token: string, wfId: string) => {
+	try {
+		const url = `/api/system-administration/workflow/${wfId}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+		};
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			throw new Error('Failed to fetch workflow');
+		}
+		const data = await response.json();
+		return data.data;
+	} catch (error) {
+		throw new Error(
+			error instanceof Error ? error.message : 'Failed to fetch workflow data'
+		);
+	}
+};
+
+export const fetchWorkflowList = async (
 	token: string,
 	params: {
 		search?: string;
@@ -35,7 +58,7 @@ export const fetchWorkflows = async (
 			query.append('sort', params.sort);
 		}
 
-		const url = `/api/system-administration/workflow-api/?${query}`;
+		const url = `/api/system-administration/workflow/?${query}`;
 
 		const options = {
 			method: 'GET',
@@ -60,7 +83,7 @@ export const fetchWorkflows = async (
 };
 
 export const deleteWorkflow = async (id: string, token: string) => {
-	const response = await fetch(`/system-administration/workflow-api/${id}`, {
+	const response = await fetch(`/system-administration/workflow/${id}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `Bearer ${token}`,

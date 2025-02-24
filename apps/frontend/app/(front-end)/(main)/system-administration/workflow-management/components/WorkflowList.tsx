@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { Eye, PlusCircle } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useURL } from '@/hooks/useURL';
-import { fetchWorkflows } from '../actions/workflow';
+import { fetchWorkflowList } from '../actions/workflow';
 import { toastError } from '@/components/ui-custom/Toast';
 import { statusOptions } from '@/lib/statusOptions';
 import {
@@ -157,7 +157,7 @@ const WorkflowList = () => {
 	const fetchList = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchWorkflows(token, {
+			const data = await fetchWorkflowList(token, {
 				search,
 				status,
 				page,

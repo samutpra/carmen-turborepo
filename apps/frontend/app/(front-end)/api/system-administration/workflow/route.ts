@@ -1,6 +1,6 @@
+import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
 
 export async function GET(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 		},
 	};
 
-	const url = `${apiUrl}/v1/workflows?search=${search}`;
+	const url = `${API_URL}/v1/workflows?search=${search}`;
 
 	try {
 		const response = await fetch(url, options);

@@ -17,6 +17,7 @@ import { Stage } from '../types/workflow';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '../data/mockUser';
+import { enum_available_actions } from '@/dtos/workflow.dto';
 
 interface WorkflowStagesProps {
 	stages: Stage[];
@@ -86,7 +87,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 		setStages(updatedStages);
 	};
 
-	const handleActionToggle = (action: string) => {
+	const handleActionToggle = (action: enum_available_actions) => {
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
@@ -149,7 +150,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 			description: '',
 			sla: '24',
 			slaUnit: 'hours',
-			availableActions: ['Submit'],
+			availableActions: [enum_available_actions.submit],
 			hideFields: {
 				pricePerUnit: false,
 				totalPrice: false,
@@ -327,23 +328,27 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 										<div>
 											<Label>Available Actions</Label>
 											<div className="flex flex-wrap gap-2 mt-2">
-												{['Submit', 'Approve', 'Reject', 'Send Back'].map(
-													(action) => (
-														<Button
-															key={action}
-															variant={
-																selectedStage.availableActions.includes(action)
-																	? 'default'
-																	: 'outline'
-															}
-															size="sm"
-															onClick={() => handleActionToggle(action)}
-															disabled={!isStageEditing}
-														>
-															{action}
-														</Button>
-													)
-												)}
+												{(
+													Object.keys(enum_available_actions) as Array<
+														keyof typeof enum_available_actions
+													>
+												).map((action) => (
+													<Button
+														key={action}
+														variant={
+															selectedStage.availableActions.includes(action)
+																? 'default'
+																: 'outline'
+														}
+														size="sm"
+														onClick={() =>
+															handleActionToggle(enum_available_actions[action])
+														}
+														disabled={!isStageEditing}
+													>
+														{action}
+													</Button>
+												))}
 											</div>
 										</div>
 
@@ -390,7 +395,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 								<TabsContent value="notifications">
 									<div className="space-y-6">
 										<div className="grid gap-6">
-											{selectedStage.availableActions.includes('Submit') && (
+											{selectedStage.availableActions.includes(
+												enum_available_actions.submit
+											) && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Submit Notification</CardTitle>
@@ -412,7 +419,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																	</Label>
 																</div>
 																{selectedStage.availableActions.includes(
-																	'Approve'
+																	enum_available_actions.approve
 																) && (
 																	<div className="flex items-center space-x-2">
 																		<Switch
@@ -446,7 +453,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Approve') && (
+											{selectedStage.availableActions.includes(
+												enum_available_actions.approve
+											) && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Approve Notification</CardTitle>
@@ -480,7 +489,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																	</Label>
 																</div>
 																{selectedStage.availableActions.includes(
-																	'Approve'
+																	enum_available_actions.approve
 																) && (
 																	<div className="flex items-center space-x-2">
 																		<Switch
@@ -514,7 +523,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Reject') && (
+											{selectedStage.availableActions.includes(
+												enum_available_actions.reject
+											) && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Reject Notification</CardTitle>
@@ -566,7 +577,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Send Back') && (
+											{selectedStage.availableActions.includes(
+												enum_available_actions.send_back
+											) && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Send Back Notification</CardTitle>

@@ -26,7 +26,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 }: WorkflowHeaderProps) => {
 	return (
 		<Card>
-			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 py-4">
 				<div>
 					<div className="flex items-center space-x-2">
 						<CardTitle className="text-2xl font-bold">
@@ -34,7 +34,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 						</CardTitle>
 						{workflow.is_active && (
 							<Badge variant={workflow.is_active ? 'default' : 'secondary'}>
-								{workflow.is_active}
+								{workflow.is_active ? 'Active' : 'Inactive'}
 							</Badge>
 						)}
 					</div>
@@ -72,7 +72,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 					)}
 				</div>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="px-6 py-4">
 				<p className="text-sm text-muted-foreground">{workflow.description}</p>
 			</CardContent>
 		</Card>

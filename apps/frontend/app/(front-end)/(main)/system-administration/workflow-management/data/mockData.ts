@@ -1,6 +1,6 @@
 import { RoutingRule, Template, Workflow, Product } from '../types/workflow';
 
-const notificationTemplates: Template[] = [
+const notification_templates: Template[] = [
 	{
 		id: 1,
 		name: 'Request Submitted',
@@ -53,7 +53,7 @@ export const sampleWorkflows: Workflow[] = [
 		name: 'General Purchase Workflow',
 		workflow_type: 'purchase_request',
 		data: {
-			documentReferencePattern: 'GP-{YYYY}-{00000}',
+			document_reference_pattern: 'GP-{YYYY}-{00000}',
 
 			stages: [
 				{
@@ -136,7 +136,7 @@ export const sampleWorkflows: Workflow[] = [
 					assignedUsers: [],
 				},
 			],
-			routingRules: [
+			routing_rules: [
 				{
 					id: 1,
 					name: 'Amount <= 10,000 BAHT',
@@ -199,7 +199,7 @@ export const sampleWorkflows: Workflow[] = [
 					channels: ['Email', 'System'],
 				},
 			],
-			notificationTemplates,
+			notification_templates,
 			products: [initialProducts[0], initialProducts[2]],
 		},
 		description:
@@ -211,7 +211,7 @@ export const sampleWorkflows: Workflow[] = [
 		name: 'Market List Workflow',
 		workflow_type: 'purchase_request',
 		data: {
-			documentReferencePattern: 'ML-{YYYY}-{00000}',
+			document_reference_pattern: 'ML-{YYYY}-{00000}',
 
 			stages: [
 				{
@@ -267,7 +267,7 @@ export const sampleWorkflows: Workflow[] = [
 					assignedUsers: [],
 				},
 			],
-			routingRules: [
+			routing_rules: [
 				{
 					id: 1,
 					name: 'Amount <= 5,000 BAHT',
@@ -304,7 +304,7 @@ export const sampleWorkflows: Workflow[] = [
 					channels: ['Email', 'System'],
 				},
 			],
-			notificationTemplates: [],
+			notification_templates: [],
 			products: [initialProducts[2], initialProducts[3]],
 		},
 		description: 'Workflow for market list requests in a hotel environment',
@@ -313,4 +313,4 @@ export const sampleWorkflows: Workflow[] = [
 ];
 
 export const mockRoutingRules: RoutingRule[] =
-	sampleWorkflows[0].data?.routingRules;
+	sampleWorkflows[0].data?.routing_rules;
