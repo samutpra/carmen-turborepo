@@ -9,7 +9,7 @@ import { FilterBuilder } from './FilterBuilder';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { GoodsReceiveNote } from '@/lib/types';
-import { GOOD_RECIEIVE_NOTE_FIELDS, sortFields } from '@/constants/fields';
+import { GOOD_RECIEIVE_NOTE_FIELDS, grnSortFields } from '@/constants/fields';
 
 interface GRNFiltersProps {
 	search: string;
@@ -77,7 +77,7 @@ export const GRNFilters: React.FC<GRNFiltersProps> = ({
 					</DialogContent>
 				</Dialog>
 				<SortDropDown
-					fieldConfigs={sortFields}
+					fieldConfigs={grnSortFields}
 					items={grnData}
 					onSort={setGrnData}
 				/>

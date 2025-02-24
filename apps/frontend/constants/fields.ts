@@ -1,4 +1,4 @@
-import { GoodsReceiveNote } from '@/lib/types';
+import { GoodsReceiveNote, PrType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 
 export enum GOOD_RECIEIVE_NOTE_FIELDS {
@@ -12,7 +12,7 @@ export enum GOOD_RECIEIVE_NOTE_FIELDS {
 	STATUS = 'status',
 }
 
-export const sortFields: FieldConfig<GoodsReceiveNote>[] = [
+export const grnSortFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DATE, label: 'Date' },
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.REF, label: 'Code' },
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.VENDOR, label: 'Vendor' },
@@ -23,6 +23,28 @@ export const sortFields: FieldConfig<GoodsReceiveNote>[] = [
 ];
 
 export const goodsReceiveNoteFields: FieldConfig<GoodsReceiveNote>[] = [
-	...sortFields,
+	...grnSortFields,
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DESCRIPTION, label: 'Description' },
+];
+
+enum PrField {
+	Id = 'id',
+	Type = 'type',
+	Description = 'description',
+	Requestor = 'requestor',
+	Department = 'department',
+	Date = 'date',
+	Status = 'status',
+	Amount = 'amount',
+	CurrentStage = 'currentStage',
+}
+
+export const prSortFields: FieldConfig<PrType>[] = [
+	{ key: PrField.Type, label: 'Type' },
+	{ key: PrField.Requestor, label: 'Requestor' },
+	{ key: PrField.Department, label: 'Department' },
+	{ key: PrField.Date, label: 'Date', type: 'date' },
+	{ key: PrField.Status, label: 'Status', type: 'badge' },
+	{ key: PrField.Amount, label: 'Amount', type: 'amount' },
+	{ key: PrField.CurrentStage, label: 'Current Stage' },
 ];
