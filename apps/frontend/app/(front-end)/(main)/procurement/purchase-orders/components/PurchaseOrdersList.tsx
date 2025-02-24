@@ -9,6 +9,7 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import PoData from './PoData';
 import { poSortFields } from '@/constants/fields';
 import { usePOderData } from '../../hooks/usePo';
+import { po_title } from '@/paraglide/messages.js';
 
 const PurchaseOrdersList = () => {
 	const { poData, setPoData, isLoading, error } = usePOderData();
@@ -16,34 +17,32 @@ const PurchaseOrdersList = () => {
 	const [search, setSearch] = useURL('search');
 	const [status, setStatus] = useURL('status');
 
-	const actionButtons = <PoActions />;
-
-	const filter = (
-		<PoFilters
-			search={search}
-			setSearch={setSearch}
-			status={status}
-			setStatus={setStatus}
-			statusOpen={statusOpen}
-			setStatusOpen={setStatusOpen}
-			poData={poData}
-			setPoData={setPoData}
-		/>
-	);
-
-	const content = (
-		<PoData poDatas={poData} fields={poSortFields} isLoading={isLoading} />
-	);
-	console.log('error', error);
-
 	if (error) return <ErrorCard message={error} />;
 
 	return (
 		<DataDisplayTemplate
-			title="Purchase Orders"
-			actionButtons={actionButtons}
-			filters={filter}
-			content={content}
+			title={po_title()}
+			actionButtons={<PoActions />}
+			filters={
+				<PoFilters
+					search={search}
+					setSearch={setSearch}
+					status={status}
+					setStatus={setStatus}
+					statusOpen={statusOpen}
+					setStatusOpen={setStatusOpen}
+					poData={poData}
+					setPoData={setPoData}
+				/>
+
+			}
+			content={
+				<PoData
+					poDatas={poData}
+					fields={poSortFields}
+					isLoading={isLoading}
+				/>
+			}
 		/>
 	);
 };

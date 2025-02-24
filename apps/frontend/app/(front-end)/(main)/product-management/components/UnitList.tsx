@@ -59,7 +59,8 @@ const UnitList = () => {
 	const [page, setPage] = useURL('page');
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
-	const { tenantId } = useAuth();
+	const { tenant } = useAuth();
+	const tenantId = tenant?.[0]?.id || '';
 
 	const fetchData = async () => {
 		try {

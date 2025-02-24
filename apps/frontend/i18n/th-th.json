@@ -236,6 +236,8 @@
 	"fail_del_store": "ไม่สามารถลบตำแหน่งร้านค้าได้",
 	"refresh_exchange_rate": "รีเฟรชอัตราแลกเปลี่ยน",
 	"recipe_cuisine_types": "สูตรอาหาร ประเภทอาหาร",
+	"status_discontinued": "ยกเลิกการผลิต",
 	"department_label": "แผนก",
-	"status_discontinued": "ยกเลิกการผลิต"
+	"purchase_request_title": "คำขอสั่งซื้อ",
+	"po_title": "ใบสั่งซื้อ"
 }
