@@ -1,10 +1,8 @@
 "use client";
 import { toastError } from '@/components/ui-custom/Toast';
-import { Button } from '@/components/ui/button';
 import { useURL } from '@/hooks/useURL';
 import { PrType } from '@/lib/types';
-import { FileDown, Plus, Printer } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import * as m from '@/paraglide/messages.js';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
@@ -12,8 +10,8 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import { statusOptions } from '@/lib/statusOptions';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import PurchaseDisplay from './PurchaseDisplay';
-import { Link } from '@/lib/i18n';
 import { prSortFields } from '@/constants/fields';
+import PrActions from './PrActions';
 
 const PurchaseRequestList = () => {
 	const [prList, setPrList] = useState<PrType[]>([]);
@@ -49,25 +47,6 @@ const PurchaseRequestList = () => {
 
 	const title = 'Purchase Requests';
 
-	const actionButtons = (
-		<div className="action-btn-container">
-			<Button variant={'outline'} size={'sm'} asChild>
-				<Link href={'/procurement/purchase-requests/new'}>
-					<Plus />
-					New Purchase Request
-				</Link>
-			</Button>
-			<Button variant="outline" className="group" size={'sm'}>
-				<FileDown className="h-4 w-4" />
-				{m.export_text()}
-			</Button>
-			<Button variant="outline" size={'sm'}>
-				<Printer className="h-4 w-4" />
-				{m.print_text()}
-			</Button>
-		</div>
-	);
-
 	const filter = (
 		<div className="filter-container">
 			<SearchForm
@@ -92,15 +71,20 @@ const PurchaseRequestList = () => {
 		</div>
 	);
 
-	const content = <PurchaseDisplay prData={prList} fields={prSortFields} />;
+	const content = (
+		<PurchaseDisplay
+			prData={prList}
+			fields={prSortFields}
+			isLoading={isLoading}
+		/>
+	);
 
 	return (
 		<DataDisplayTemplate
 			title={title}
-			actionButtons={actionButtons}
+			actionButtons={<PrActions />}
 			filters={filter}
 			content={content}
-			isLoading={isLoading}
 		/>
 	);
 };

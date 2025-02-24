@@ -8,9 +8,9 @@ import * as m from '@/paraglide/messages.js';
 import { Button } from '@/components/ui/button';
 import { useURL } from '@/hooks/useURL';
 import GoodsReceiveDisplay from './GoodsReceiveDisplay';
-import { useGRNData } from '../hooks/useGRNData';
 import { GRNFilters } from './GRNFilters';
 import { goodsReceiveNoteFields } from '@/constants/fields';
+import { useGRNData } from '../../hooks/useGRNData';
 
 const GoodsReceiveNoteList = () => {
 	const { grnData, setGrnData, isLoading, error } = useGRNData();
