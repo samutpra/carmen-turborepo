@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import { mockGoodsReceiveNotes } from '../mock_data';
+import { formatDateCustom } from '@/lib/formatDate';
 
 export const GET = async () => {
 	try {
+		const formattedData = mockGoodsReceiveNotes.map((note) => ({
+			...note,
+			date: formatDateCustom(note.date),
+			invoiceDate: formatDateCustom(note.invoiceDate),
+		}));
+
 		return NextResponse.json(
 			{
 				message: 'Goods received notes fetched successfully',
-				data: mockGoodsReceiveNotes,
+				data: formattedData,
 			},
 			{ status: 200 }
 		);
