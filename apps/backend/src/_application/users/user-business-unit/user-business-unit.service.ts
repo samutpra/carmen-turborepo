@@ -70,4 +70,66 @@ export class UserBusinessUnitService {
 
     return res;
   }
+
+  async setDefaultTenant(req: Request) {
+    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+    this.db_system = this.prismaClientManager.getSystemDB();
+
+    // Update the default tenant
+    await this.db_system.tb_user_tb_business_unit.updateMany({
+      where: {
+        business_unit_id: business_unit_id,
+        user_id: user_id,
+      },
+      data: {
+        is_default: true,
+      },
+    });
+
+    // Update the default tenant to false
+    await this.db_system.tb_user_tb_business_unit.updateMany({
+      where: {
+        user_id: user_id,
+        business_unit_id: {
+          not: business_unit_id,
+        },
+      },
+      data: {
+        is_default: false,
+      },
+    });
+
+    // Retrieve the updated records
+    const updatedListRecords = await this.db_system.tb_user_tb_business_unit
+      .findMany({
+        where: {
+          user_id: user_id,
+          is_active: true,
+        },
+        select: {
+          is_default: true,
+          tb_business_unit: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      })
+      .then((res) => {
+        return res.map((item) => {
+          return {
+            id: item.tb_business_unit.id,
+            name: item.tb_business_unit.name,
+            is_default: item.is_default,
+          };
+        });
+      });
+
+    const res: ResponseSingle<any> = {
+      data: updatedListRecords,
+    };
+
+    return res; // Return the updated records if needed
+  }
 }

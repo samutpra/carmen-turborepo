@@ -252,6 +252,7 @@ CREATE TABLE "CARMEN_SYSTEM"."tb_user_tb_business_unit" (
   "user_id" uuid,
   "business_unit_id" uuid,
   "role" "CARMEN_SYSTEM".enum_user_business_unit_role NOT NULL DEFAULT 'user',
+  "is_default" bool DEFAULT false,
   "is_active" bool DEFAULT true,
   "created_at" timestamptz DEFAULT (CURRENT_TIMESTAMP),
   "created_by_id" uuid,

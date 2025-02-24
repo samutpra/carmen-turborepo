@@ -20,11 +20,6 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import QueryParams, { QueryAdvance } from "lib/types";
-import {
-  UserBusinessUnitCreateDto,
-  UserBusinessUnitUpdateDto,
-} from "shared-dtos/user-business-unit.dto";
 
 @Controller("api/v1/user/business-unit")
 @ApiTags("user-business-unit")
@@ -44,5 +39,10 @@ export class UserBusinessUnitController {
   @Get()
   async findOne(@Req() req: Request) {
     return this.userBusinessUnitService.findOne(req);
+  }
+
+  @Patch("/default/")
+  async setDefaultTenant(@Req() req: Request) {
+    return this.userBusinessUnitService.setDefaultTenant(req);
   }
 }
