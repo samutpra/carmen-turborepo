@@ -4,27 +4,43 @@ import { Mock_purchaseOrders } from '../mock_data';
 
 export const GET = async () => {
 	try {
+		// Validate that Mock_purchaseOrders exists and is an array
+		if (!Array.isArray(Mock_purchaseOrders)) {
+			throw new Error('Invalid purchase orders data format');
+		}
+
 		const formattedData = Mock_purchaseOrders.map((order) => ({
 			...order,
 			orderDate: formatDateCustom(order.orderDate ?? ''),
 			DeliveryDate: formatDateCustom(order.DeliveryDate ?? ''),
 		}));
 
-		return NextResponse.json(
-			{
+		// Ensure we're sending a proper JSON response
+		return new NextResponse(
+			JSON.stringify({
 				message: 'Purchase orders fetched successfully',
 				data: formattedData,
-			},
-			{ status: 200 }
+			}),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 	} catch (error) {
-		return NextResponse.json(
-			{
+		// Proper error response
+		return new NextResponse(
+			JSON.stringify({
 				message: 'Failed to fetch purchase orders',
-				error:
-					error instanceof Error ? error.message : 'Unknown error occurred',
-			},
-			{ status: 500 }
+				error: error instanceof Error ? error.message : 'Unknown error occurred',
+			}),
+			{
+				status: 500,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
 		);
 	}
 };

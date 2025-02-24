@@ -9,17 +9,17 @@ const PoActions = () => {
 		() => (
 			<div className="action-btn-container">
 				<Button asChild variant={'outline'} size={'sm'}>
-					<Link href="/procurement/goods-received-note/new">
-						<Plus className="h-4 w-4" />
-						Create Good Recieve Note
+					<Link href={`/procurement/purchase-orders/new`}>
+						<Plus />
+						Create Purchase Order
 					</Link>
 				</Button>
 				<Button variant="outline" className="group" size={'sm'}>
-					<FileDown className="h-4 w-4" />
+					<FileDown />
 					{export_text()}
 				</Button>
 				<Button variant="outline" size={'sm'}>
-					<Printer className="h-4 w-4" />
+					<Printer />
 					{print_text()}
 				</Button>
 			</div>

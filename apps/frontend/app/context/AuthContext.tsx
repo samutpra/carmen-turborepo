@@ -222,8 +222,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		[authState, accessToken, isAuthenticated, isLoading, handlers]
 	);
 
-	console.log('value', value);
-	
+	// console.log('value', value);
 
 	// Don't render children until initial auth check is complete
 	if (isLoading) {

@@ -53,7 +53,7 @@ const renderField = (
 const actionButton = (id: string) => (
 	<>
 		<Button asChild variant="ghost" size={'sm'}>
-			<Link href={`/procurement/goods-received-note/${id}`}>
+			<Link href={`/procurement/purchase-orders/${id}`}>
 				<Eye />
 			</Link>
 		</Button>
@@ -67,6 +67,7 @@ const actionButton = (id: string) => (
 );
 
 const PoData: React.FC<Props> = ({ poDatas, fields, isLoading }) => {
+
 	return (
 		<>
 			{/* Mobile View */}

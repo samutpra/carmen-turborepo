@@ -9,13 +9,30 @@ export const usePOderData = () => {
 	const fetchPo = async () => {
 		setIsLoading(true);
 		try {
-			const response = await fetch('/api/procurement/purchase-orders');
+			const response = await fetch('/api/procurement/purchase-orders', {
+				headers: {
+					Accept: 'application/json',
+				},
+			});
+
+			// Check if response is JSON
+			const contentType = response.headers.get('content-type');
+			if (!contentType?.includes('application/json')) {
+				throw new Error('Invalid response format from server');
+			}
+
 			const result = await response.json();
 
 			if (!response.ok) {
 				throw new Error(result.error || 'Failed to fetch purchase orders');
 			}
+
+			if (!Array.isArray(result.data)) {
+				throw new Error('Invalid data format received');
+			}
+
 			setPoData(result.data);
+			setError(null);
 		} catch (error) {
 			console.error('Error fetching Purchase Orders:', error);
 			setError(
@@ -23,6 +40,7 @@ export const usePOderData = () => {
 					? error.message
 					: 'Error fetching Purchase Orders'
 			);
+			setPoData([]);
 		} finally {
 			setIsLoading(false);
 		}
