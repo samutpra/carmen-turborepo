@@ -17,17 +17,18 @@ export class UserLocationService {
   private db_system: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
   logger = new Logger(UserLocationService.name);
 
   async getUsersByLocationId(req: Request, location_id: string) {
-    this.db_system = this.prismaClientMamager.getSystemDB();
+    this.db_system = this.prismaClientManager.getSystemDB();
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const users = await this.db_tenant.tb_user_location.findMany({
       where: {
@@ -54,8 +55,9 @@ export class UserLocationService {
     body: UpdateUserLocationDto,
   ) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientMamager.getSystemDB();
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_system = this.prismaClientManager.getSystemDB();
 
     const location = await this.db_tenant.tb_location.findUnique({
       where: { id: locationId },

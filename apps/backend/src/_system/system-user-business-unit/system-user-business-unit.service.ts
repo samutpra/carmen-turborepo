@@ -26,7 +26,7 @@ export class SystemUserBusinessUnitService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -69,7 +69,7 @@ export class SystemUserBusinessUnitService {
     id: string,
   ): Promise<ResponseSingle<tb_user_tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
@@ -83,7 +83,7 @@ export class SystemUserBusinessUnitService {
 
   async findAll(req: Request, q: QueryParams) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const max = await this.db_System.tb_user_tb_business_unit.count({
       where: q.where(),
     });
@@ -150,7 +150,7 @@ export class SystemUserBusinessUnitService {
     createDto: UserBusinessUnitCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
 
     const found = await this.db_System.tb_user_tb_business_unit.findFirst({
       where: {
@@ -192,7 +192,7 @@ export class SystemUserBusinessUnitService {
     updateDto: UserBusinessUnitUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
@@ -215,7 +215,7 @@ export class SystemUserBusinessUnitService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {

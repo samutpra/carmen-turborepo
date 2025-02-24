@@ -46,7 +46,7 @@ export class DepartmentUserService {
 
   async findOne(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prisma.getTenantDB(business_unit_id);
+    this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -64,7 +64,7 @@ export class DepartmentUserService {
     q: QueryParams,
   ): Promise<ResponseList<tb_department_user>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prisma.getTenantDB(business_unit_id);
+    this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
     const max = await this.db_tenant.tb_department_user.count({
       where: q.where(),
     });
@@ -99,7 +99,7 @@ export class DepartmentUserService {
 
   async create(req: Request, createDto: DepartmentUserCreateDto) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prisma.getTenantDB(business_unit_id);
+    this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
     this.db_system = this.prisma.getSystemDB();
 
     const user = await this.db_system.tb_user.findUnique({
@@ -146,7 +146,7 @@ export class DepartmentUserService {
 
   async update(req: Request, id: string, updateDto: DepartmentUserUpdateDto) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prisma.getTenantDB(business_unit_id);
+    this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -187,7 +187,7 @@ export class DepartmentUserService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prisma.getTenantDB(business_unit_id);
+    this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

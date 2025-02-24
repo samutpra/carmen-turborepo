@@ -16,7 +16,7 @@ export class LocationsUserService {
   private db_system: dbSystem;
   private db_tenant: dbTenant;
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -24,7 +24,8 @@ export class LocationsUserService {
 
   async getLocationsByUserId(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const locations = await this.db_tenant.tb_user_location.findMany({
       where: {
@@ -52,8 +53,9 @@ export class LocationsUserService {
     updateDto: UpdateLocationUserDto,
   ) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientMamager.getSystemDB();
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_system = this.prismaClientManager.getSystemDB();
 
     const user = await this.db_system.tb_user.findUnique({
       where: {

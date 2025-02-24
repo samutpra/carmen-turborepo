@@ -58,7 +58,8 @@ export class WorkflowsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -78,7 +79,8 @@ export class WorkflowsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_workflow.count({
       where: q.where(),
@@ -117,7 +119,8 @@ export class WorkflowsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.tb_workflow.findFirst({
       where: {
@@ -171,7 +174,8 @@ export class WorkflowsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
@@ -234,7 +238,8 @@ export class WorkflowsService {
     });
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

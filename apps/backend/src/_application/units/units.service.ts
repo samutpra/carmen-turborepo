@@ -1,27 +1,27 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
-import { UnitCreateDto, UnitUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
+import { UnitCreateDto, UnitUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbTenant,
   tb_unit,
-} from '@prisma-carmen-client-tenant';
+} from "@prisma-carmen-client-tenant";
 
 @Injectable()
 export class UnitsService {
   private db_tenant: dbTenant;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -38,11 +38,12 @@ export class UnitsService {
 
   async findOne(req: Request, id: string): Promise<ResponseSingle<tb_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
     const res: ResponseSingle<tb_unit> = {
       data: oneObj,
@@ -52,7 +53,8 @@ export class UnitsService {
 
   async findAll(req: Request, q: QueryParams): Promise<ResponseList<tb_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const max = await this.db_tenant.tb_unit.count({
       where: q.where(),
     });
@@ -75,7 +77,8 @@ export class UnitsService {
     createDto: UnitCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.tb_unit.findUnique({
       where: {
@@ -86,7 +89,7 @@ export class UnitsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'Unit already exists',
+        message: "Unit already exists",
         id: found.id,
       });
     }
@@ -112,11 +115,12 @@ export class UnitsService {
     updateDto: UnitUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
 
     const updateObj = await this.db_tenant.tb_unit.update({
@@ -135,11 +139,12 @@ export class UnitsService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException("Unit not found");
     }
 
     await this.db_tenant.tb_unit.delete({

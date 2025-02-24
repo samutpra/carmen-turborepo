@@ -1,9 +1,9 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
-import { ClusterCreateDto, ClusterUpdateDto } from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
+import { ClusterCreateDto, ClusterUpdateDto } from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   BadRequestException,
@@ -11,18 +11,18 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbSystem,
   tb_cluster,
-} from '@prisma-carmen-client-system';
+} from "@prisma-carmen-client-system";
 
 @Injectable()
 export class SystemClusterService {
   private db_System: dbSystem;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -39,11 +39,11 @@ export class SystemClusterService {
 
   async findOne(req: Request, id: string): Promise<ResponseSingle<tb_cluster>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Cluster not found');
+      throw new NotFoundException("Cluster not found");
     }
     const res: ResponseSingle<tb_cluster> = {
       data: oneObj,
@@ -57,7 +57,7 @@ export class SystemClusterService {
     q: QueryParams,
   ): Promise<ResponseList<tb_cluster>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const max = await this.db_System.tb_cluster.count({
       where: q.where(),
     });
@@ -81,7 +81,7 @@ export class SystemClusterService {
     createDto: ClusterCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
 
     const found = await this.db_System.tb_cluster.findUnique({
       where: {
@@ -92,7 +92,7 @@ export class SystemClusterService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'cluster already exists',
+        message: "cluster already exists",
         id: found.id,
       });
     }
@@ -120,11 +120,11 @@ export class SystemClusterService {
     updateDto: ClusterUpdateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Cluster not found');
+      throw new NotFoundException("Cluster not found");
     }
 
     if (oneObj.code !== updateDto.code) {
@@ -158,11 +158,11 @@ export class SystemClusterService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientMamager.getSystemDB();
+    this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id);
 
     if (!oneObj) {
-      throw new NotFoundException('Cluster not found');
+      throw new NotFoundException("Cluster not found");
     }
 
     const isActiveBUs = await this.db_System.tb_business_unit.count({
@@ -172,7 +172,7 @@ export class SystemClusterService {
     });
 
     if (isActiveBUs > 0) {
-      throw new BadRequestException('Cluster is in use');
+      throw new BadRequestException("Cluster is in use");
     }
 
     const res = await this.db_System.tb_cluster.delete({
@@ -182,7 +182,7 @@ export class SystemClusterService {
     });
 
     return {
-      message: 'Cluster deleted successfully',
+      message: "Cluster deleted successfully",
       id: res.id,
     };
   }

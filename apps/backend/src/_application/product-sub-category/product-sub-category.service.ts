@@ -1,30 +1,30 @@
-import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
-import QueryParams from 'lib/types';
-import { DuplicateException } from 'lib/utils/exceptions';
+import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
+import QueryParams from "lib/types";
+import { DuplicateException } from "lib/utils/exceptions";
 import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
-} from 'shared-dtos';
-import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
-import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+} from "shared-dtos";
+import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   PrismaClient as dbTenant,
   tb_product_sub_category,
-} from '@prisma-carmen-client-tenant';
+} from "@prisma-carmen-client-tenant";
 
 @Injectable()
 export class ProductSubCategoryService {
   private db_tenant: dbTenant;
 
   constructor(
-    private prismaClientMamager: PrismaClientManagerService,
+    private prismaClientManager: PrismaClientManagerService,
     private extractReqService: ExtractReqService,
   ) {}
 
@@ -47,11 +47,12 @@ export class ProductSubCategoryService {
     id: string,
   ): Promise<ResponseSingle<tb_product_sub_category>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
     const res: ResponseSingle<tb_product_sub_category> = {
       data: oneObj,
@@ -64,7 +65,8 @@ export class ProductSubCategoryService {
     q: QueryParams,
   ): Promise<ResponseList<tb_product_sub_category>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const max = await this.db_tenant.tb_product_sub_category.count({
       where: q.where(),
@@ -91,7 +93,8 @@ export class ProductSubCategoryService {
     createDto: ProductSubCategoryCreateDto,
   ): Promise<ResponseId<string>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
 
     const found = await this.db_tenant.tb_product_sub_category.findUnique({
       where: {
@@ -106,7 +109,7 @@ export class ProductSubCategoryService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: 'ProductSubCategory already exists',
+        message: "ProductSubCategory already exists",
         id: found.id,
       });
     }
@@ -132,11 +135,12 @@ export class ProductSubCategoryService {
     updateDto: ProductSubCategoryUpdateDto,
   ) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
 
     const updateObj = await this.db_tenant.tb_product_sub_category.update({
@@ -155,11 +159,12 @@ export class ProductSubCategoryService {
 
   async delete(req: Request, id: string) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientMamager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException('ProductSubCategory not found');
+      throw new NotFoundException("ProductSubCategory not found");
     }
 
     await this.db_tenant.tb_product_sub_category.delete({

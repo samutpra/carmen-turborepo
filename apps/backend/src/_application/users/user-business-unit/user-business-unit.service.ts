@@ -20,7 +20,8 @@ export class UserBusinessUnitService {
 
   async findOne(req: Request) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant = this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_tenant =
+      await this.prismaClientManager.getTenantDB(business_unit_id);
     this.db_system = this.prismaClientManager.getSystemDB();
 
     const userBusinessUnit = await this.db_system.tb_user_tb_business_unit
