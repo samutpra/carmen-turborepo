@@ -6,6 +6,7 @@ import { statusOptions } from '@/lib/statusOptions';
 import { PrType } from '@/lib/types';
 import { Search } from '@/paraglide/messages';
 import React from 'react'
+
 interface Props {
     search: string;
     setSearch: (value: string) => void;

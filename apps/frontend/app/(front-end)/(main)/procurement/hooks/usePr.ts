@@ -1,48 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PrType } from '@/lib/types';
+import { fetchPrList } from '../actions/purchase-request';
 
 export const usePr = () => {
     const [prList, setPrList] = useState<PrType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchPrList = async () => {
+    const getPrList = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
+
+        const controller = new AbortController();
+        const { signal } = controller;
+
         try {
-
-            const response = await fetch('/api/procurement/purchase-requests', {
-                headers: {
-                    Accept: 'application/json',
-                },
-            });
-
-            const contentType = response.headers.get('content-type');
-            if (!contentType?.includes('application/json')) {
-                throw new Error('Invalid response format from server');
-            }
-
-
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to fetch purchase requests');
-            }
-            setPrList(result.data);
+            const data = await fetchPrList(signal);
+            if (data) setPrList(data);
         } catch (error) {
-            console.error('Error fetching Purchase Requests:', error);
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : 'Error fetching Purchase Requests'
-            );
+            setError(error instanceof Error ? error.message : 'Error fetching Purchase Requests');
         } finally {
             setIsLoading(false);
         }
-    }
 
-    useEffect(() => {
-        fetchPrList();
+        return () => controller.abort();
     }, []);
 
-    return { prList, setPrList, isLoading, error };
+    useEffect(() => {
+        const abortController = new AbortController();
+        getPrList();
 
-}
+        return () => abortController.abort();
+    }, [getPrList]);
+
+    return { prList, setPrList, isLoading, error, getPrList };
+};

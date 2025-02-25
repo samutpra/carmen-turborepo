@@ -4,12 +4,12 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Eye, Pen, Trash } from 'lucide-react';
 import Link from 'next/link';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
 import * as m from '@/paraglide/messages.js';
 import { GoodsReceiveNote, GoodsReceiveNoteStatus } from '@/lib/types';
@@ -30,6 +30,7 @@ const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({
 	fields,
 	isLoading,
 }) => {
+
 	const renderField = (
 		field: FieldConfig<GoodsReceiveNote>,
 		item: GoodsReceiveNote
@@ -55,21 +56,6 @@ const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({
 		}
 	};
 
-	const actionButton = (id: string) => (
-		<>
-			<Button asChild variant="ghost" size={'sm'}>
-				<Link href={`/procurement/goods-received-note/${id}`}>
-					<Eye />
-				</Link>
-			</Button>
-			<Button variant={'ghost'} size={'sm'}>
-				<Pen />
-			</Button>
-			<Button variant={'ghost'} size={'sm'}>
-				<Trash />
-			</Button>
-		</>
-	);
 	return (
 		<>
 			{/* Mobile View */}
@@ -95,7 +81,17 @@ const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({
 									})}
 								</CardContent>
 								<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
-									{actionButton(data.id)}
+									<Button asChild variant="ghost" size={'sm'}>
+										<Link href={`/procurement/goods-received-note/${data.id}`}>
+											<Eye />
+										</Link>
+									</Button>
+									<Button variant={'ghost'} size={'sm'}>
+										<Pen />
+									</Button>
+									<Button variant={'ghost'} size={'sm'}>
+										<Trash />
+									</Button>
 								</CardFooter>
 							</Card>
 						))}
@@ -132,7 +128,17 @@ const GoodsReceiveDisplay: React.FC<GoodsReceiveProps> = ({
 										);
 									})}
 									<TableCell className="text-right w-52">
-										{actionButton(data.id)}
+										<Button asChild variant="ghost" size={'sm'}>
+											<Link href={`/procurement/goods-received-note/${data.id}`}>
+												<Eye />
+											</Link>
+										</Button>
+										<Button variant={'ghost'} size={'sm'}>
+											<Pen />
+										</Button>
+										<Button variant={'ghost'} size={'sm'}>
+											<Trash />
+										</Button>
 									</TableCell>
 								</TableRow>
 							))}

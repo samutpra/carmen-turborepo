@@ -1,54 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PurchaseOrderType } from '@/lib/types';
+import { fetchPurchaseOrders } from '../actions/purchase-order';
 
 export const usePOderData = () => {
 	const [poData, setPoData] = useState<PurchaseOrderType[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchPo = async () => {
+	const getPoData = useCallback(async () => {
 		setIsLoading(true);
+		setError(null);
+
+		const controller = new AbortController();
+		const { signal } = controller;
+
 		try {
-			const response = await fetch('/api/procurement/purchase-orders', {
-				headers: {
-					Accept: 'application/json',
-				},
-			});
-
-			// Check if response is JSON
-			const contentType = response.headers.get('content-type');
-			if (!contentType?.includes('application/json')) {
-				throw new Error('Invalid response format from server');
-			}
-
-			const result = await response.json();
-
-			if (!response.ok) {
-				throw new Error(result.error || 'Failed to fetch purchase orders');
-			}
-
-			if (!Array.isArray(result.data)) {
-				throw new Error('Invalid data format received');
-			}
-
-			setPoData(result.data);
-			setError(null);
+			const data = await fetchPurchaseOrders(signal);
+			if (data) setPoData(data);
 		} catch (error) {
-			console.error('Error fetching Purchase Orders:', error);
-			setError(
-				error instanceof Error
-					? error.message
-					: 'Error fetching Purchase Orders'
-			);
-			setPoData([]);
+			setError(error instanceof Error ? error.message : 'Error fetching Purchase Orders');
 		} finally {
 			setIsLoading(false);
 		}
-	};
 
-	useEffect(() => {
-		fetchPo();
+		return () => controller.abort();
 	}, []);
 
-	return { poData, setPoData, isLoading, error };
+	useEffect(() => {
+		const abortController = new AbortController();
+		getPoData();
+
+		return () => abortController.abort();
+	}, [getPoData]);
+
+	return { poData, setPoData, isLoading, error, getPoData };
 };

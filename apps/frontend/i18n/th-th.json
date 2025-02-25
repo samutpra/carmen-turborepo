@@ -239,5 +239,6 @@
 	"status_discontinued": "ยกเลิกการผลิต",
 	"department_label": "แผนก",
 	"purchase_request_title": "คำขอสั่งซื้อ",
-	"po_title": "ใบสั่งซื้อ"
+	"po_title": "ใบสั่งซื้อ",
+	"grn_title": "ใบรับสินค้า"
 }
