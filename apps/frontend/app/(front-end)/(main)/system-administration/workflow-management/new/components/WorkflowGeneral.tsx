@@ -55,7 +55,10 @@ const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
 						render={({ field }) => (
 							<Form.FormItem>
 								<Form.FormLabel>Type</Form.FormLabel>
-								<Select {...field}>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
 									<Form.FormControl>
 										<SelectTrigger id="workflow_type">
 											<SelectValue placeholder="Select Workflow Type" />

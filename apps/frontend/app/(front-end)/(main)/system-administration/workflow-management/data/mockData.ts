@@ -1,3 +1,4 @@
+import { enum_available_actions } from '@/dtos/workflow.dto';
 import { RoutingRule, Template, Workflow, Product } from '../types/workflow';
 
 const notification_templates: Template[] = [
@@ -62,7 +63,7 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Initial stage for creating and submitting requests',
 					sla: '4',
 					slaUnit: 'hours',
-					availableActions: ['Submit'],
+					availableActions: [enum_available_actions.submit],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -76,7 +77,11 @@ export const sampleWorkflows: Workflow[] = [
 						'Review by purchasing staff for accuracy and completeness',
 					sla: '8',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -89,7 +94,11 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Review and approval by department head',
 					sla: '12',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -102,7 +111,11 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Financial review and budget verification',
 					sla: '24',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -115,7 +128,11 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Final approval by general manager',
 					sla: '48',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -220,7 +237,7 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Initial stage for creating market list requests',
 					sla: '2',
 					slaUnit: 'hours',
-					availableActions: ['Submit'],
+					availableActions: [enum_available_actions.submit],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -233,7 +250,11 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Department head review of market list',
 					sla: '4',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
@@ -246,7 +267,11 @@ export const sampleWorkflows: Workflow[] = [
 					description: 'Review by purchasing for market list items',
 					sla: '6',
 					slaUnit: 'hours',
-					availableActions: ['Approve', 'Reject', 'Send Back'],
+					availableActions: [
+						enum_available_actions.approve,
+						enum_available_actions.reject,
+						enum_available_actions.send_back,
+					],
 					hideFields: {
 						pricePerUnit: false,
 						totalPrice: false,
