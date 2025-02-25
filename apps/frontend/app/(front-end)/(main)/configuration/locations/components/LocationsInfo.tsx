@@ -31,12 +31,12 @@ import {
 	status_text,
 } from '@/paraglide/messages';
 import { Textarea } from '@/components/ui/textarea';
-import { locationField } from '@/lib/util/fields';
 import DeliveryPointSelect from '../../components/DeliveryPointSelect ';
 import { Button } from '@/components/ui/button';
 import { Pen, Save, X } from 'lucide-react';
 import { Badge } from '@/components/ui-custom/is-active-badge';
 import { Switch } from '@/components/ui/switch';
+import { locationField } from '@/constants/fields';
 
 interface LocationFormState {
 	id: string;

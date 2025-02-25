@@ -1,4 +1,4 @@
-import { LocationCreateModel } from '@/dtos/location.dto';
+import { enum_location_type, LocationCreateModel } from '@/dtos/location.dto';
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
@@ -88,7 +88,6 @@ export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
 	},
 ];
 
-
 export const locationSortFields: FieldConfig<LocationCreateModel>[] = [
 	{
 		key: LocationField.Name,
@@ -111,4 +110,10 @@ export const locationSortFields: FieldConfig<LocationCreateModel>[] = [
 		type: 'badge',
 		className: 'w-10',
 	},
+];
+
+export const locationField = [
+	{ label: 'Inventory', value: enum_location_type.inventory },
+	{ label: 'Direct', value: enum_location_type.direct },
+	{ label: 'Consignment', value: enum_location_type.consignment },
 ];
