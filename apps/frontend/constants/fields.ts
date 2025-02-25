@@ -1,4 +1,5 @@
 import { UnitCreateModel } from '@/dtos/unit.dto';
+import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import * as m from '@/paraglide/messages.js';
@@ -120,5 +121,26 @@ export const unitFields: FieldConfig<UnitCreateModel>[] = [
 	{
 		key: UnitField.Description,
 		label: `${m.unit_des_label()}`,
+	},
+];
+
+export const enum VendorFields {
+	Name = 'name',
+	Description = 'description',
+	IsActive = 'is_active',
+}
+
+export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
+	{
+		key: VendorFields.Name,
+		label: m.vendor_name_label(),
+	},
+	{
+		key: VendorFields.Description,
+		label: m.description(),
+	},
+	{
+		key: VendorFields.IsActive,
+		label: m.status_text(),
 	},
 ];
