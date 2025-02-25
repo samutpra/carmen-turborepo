@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { mockGoodsReceiveNotes } from '../mock_data';
 import { formatDateCustom } from '@/lib/formatDate';
-
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const GET = async () => {
 	try {
 		const formattedData = mockGoodsReceiveNotes.map((note) => ({

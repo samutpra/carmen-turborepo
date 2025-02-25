@@ -17,11 +17,11 @@ export const sampleCreditNoteData: CreditNoteType[] = [
     status: "Approved",
     notes: "Additional notes for credit note 1",
     createdBy: "user1@example.com",
-    updatedDate: new Date ("2023-07-01T12:00:00Z"),
+    updatedDate: new Date("2023-07-01T12:00:00Z"),
     updatedBy: "user1@example.com",
     items: [
       {
-        id: 1,
+        id: "001",
         description: "Item 1 for CN0001",
         quantity: 5,
         unitPrice: 200,
@@ -55,11 +55,11 @@ export const sampleCreditNoteData: CreditNoteType[] = [
     status: "Pending",
     notes: "Additional notes for credit note 2",
     createdBy: "user2@example.com",
-    updatedDate: new Date ("2023-07-02T12:00:00Z"),
+    updatedDate: new Date("2023-07-02T12:00:00Z"),
     updatedBy: "user2@example.com",
     items: [
       {
-        id: 2,
+        id: "002",
         description: "Item 1 for CN0002",
         quantity: 10,
         unitPrice: 200,
@@ -93,11 +93,11 @@ export const sampleCreditNoteData: CreditNoteType[] = [
     status: "Approved",
     notes: "Additional notes for credit note 3",
     createdBy: "user3@example.com",
-    updatedDate: new Date ("2023-07-03T12:00:00Z"),
+    updatedDate: new Date("2023-07-03T12:00:00Z"),
     updatedBy: "user3@example.com",
     items: [
       {
-        id: 3,
+        id: "003",
         description: "Item 1 for CN0003",
         quantity: 3,
         unitPrice: 500,
@@ -131,11 +131,11 @@ export const sampleCreditNoteData: CreditNoteType[] = [
     status: "Rejected",
     notes: "Additional notes for credit note 4",
     createdBy: "user4@example.com",
-    updatedDate: new Date ("2023-07-04T12:00:00Z"),
+    updatedDate: new Date("2023-07-04T12:00:00Z"),
     updatedBy: "user4@example.com",
     items: [
       {
-        id: 4,
+        id: "004",
         description: "Item 1 for CN0004",
         quantity: 2,
         unitPrice: 250,
@@ -169,11 +169,11 @@ export const sampleCreditNoteData: CreditNoteType[] = [
     status: "Approved",
     notes: "Additional notes for credit note 5",
     createdBy: "user5@example.com",
-    updatedDate: new Date ("2023-07-05T12:00:00Z"),
+    updatedDate: new Date("2023-07-05T12:00:00Z"),
     updatedBy: "user5@example.com",
     items: [
       {
-        id: 5,
+        id: "005",
         description: "Item 1 for CN0005",
         quantity: 6,
         unitPrice: 500,

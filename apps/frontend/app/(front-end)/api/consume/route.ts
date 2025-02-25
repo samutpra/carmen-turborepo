@@ -1,12 +1,17 @@
 import { KafkaClient, Consumer, Message } from 'kafka-node';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import KAFKA_CONFIG from '@/lib/util/kafka.config';
+
 interface TransformedMessage {
 	topic: string;
 	value: string;
 	offset: number;
 	partition: number;
 }
+
+// Export config to mark route as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Singleton instances
 let consumer: Consumer | null = null;
@@ -25,16 +30,6 @@ const initializeKafka = (): Consumer | null => {
 		consumer.on('error', (error: Error) => {
 			console.error('Kafka consumer error:', error);
 		});
-
-		// Graceful shutdown
-		process.on('SIGTERM', () => {
-			if (consumer) {
-				consumer.close(() => {
-					console.log('Kafka consumer closed due to application termination');
-					process.exit(0);
-				});
-			}
-		});
 	}
 	return consumer;
 };
@@ -47,9 +42,10 @@ const transformMessage = (message: Message): TransformedMessage => ({
 	partition: message.partition || 0,
 });
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
 	try {
-		console.log('Incoming request:', req.url);
+		// Log request without using req.url
+		console.log('Incoming Kafka consumer request');
 
 		const consumer = initializeKafka();
 		if (!consumer) {

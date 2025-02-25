@@ -1,6 +1,7 @@
 import { validateRequest } from '@/lib/util/validateRequest';
 import { NextRequest, NextResponse } from 'next/server';
-
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 interface User {
     id: string;
     username: string;
