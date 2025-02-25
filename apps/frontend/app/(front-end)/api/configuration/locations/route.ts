@@ -4,6 +4,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
 	const { token, tenantId } = extractRequest(request);
+
+	if (!token || !tenantId) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	const searchParams = request.nextUrl.searchParams;
 	const queryString = searchParams.toString();
 
@@ -46,11 +51,9 @@ export async function POST(request: NextRequest) {
 		const { token, tenantId } = extractRequest(request);
 
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Token or tenant ID is missing from the headers' },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
+
 		const body = await request.json();
 
 		const response = await fetch(API_URL + '/v1/locations', {
