@@ -127,5 +127,10 @@ export const fetchWithToken = async (
 export const extractRequest = (request: NextRequest): TokenExtract => {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
 	const tenantId = request.headers.get('x-tenant-id');
+	
+	if (!token || !tenantId) {
+		throw new Error('Unauthorized');
+	}
+	
 	return { token, tenantId };
 };

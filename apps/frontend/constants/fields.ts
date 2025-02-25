@@ -1,3 +1,4 @@
+import { LocationCreateModel } from '@/dtos/location.dto';
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
@@ -142,5 +143,37 @@ export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
 	{
 		key: VendorFields.IsActive,
 		label: m.status_text(),
+	},
+];
+
+export const enum LocationField {
+	Name = 'name',
+	LocationType = 'location_type',
+	DeliveryPointID = 'delivery_point_id',
+	Description = 'description',
+	isActive = 'is_active',
+}
+
+export const locationSortFields: FieldConfig<LocationCreateModel>[] = [
+	{
+		key: LocationField.Name,
+		label: m.store_location_name_label(),
+		className: 'w-24',
+	},
+	{
+		key: LocationField.Description,
+		label: m.description(),
+		className: 'w-40',
+	},
+	{
+		key: LocationField.LocationType,
+		label: m.location_type_label(),
+		className: 'w-10',
+	},
+	{
+		key: LocationField.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-10',
 	},
 ];
