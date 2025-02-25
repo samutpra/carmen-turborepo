@@ -17,6 +17,7 @@ import { unitFields } from '@/constants/fields';
 import UnitFilter from './UnitFilter';
 import { unit } from '@/paraglide/messages.js';
 import UnitAction from './UnitAction';
+import { CommentAttachments } from './CommentAttachments ';
 
 const UnitList = () => {
 	const { accessToken } = useAuth();
@@ -146,6 +147,7 @@ const UnitList = () => {
 				/>
 			}
 			data-id="unit-list-data-display-template"
+			commentAttachments={<CommentAttachments />}
 		/>
 	);
 };

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode } from 'react';
 import SkeltonLoad from '../ui-custom/Loading/SkeltonLoad';
 
 interface Props {
@@ -6,6 +6,7 @@ interface Props {
 	actionButtons?: ReactNode;
 	filters?: ReactNode;
 	content: ReactNode;
+	commentAttachments?: ReactNode;
 	bulkActions?: ReactNode;
 	isLoading?: boolean;
 }
@@ -15,11 +16,17 @@ const DataDisplayTemplate: React.FC<Props> = ({
 	actionButtons,
 	filters,
 	content,
+	commentAttachments,
 	bulkActions,
 	isLoading,
 }) => {
 	return (
-		<div className="flex flex-col p-6 justify-center">
+		<div
+			className={`flex w-full flex-col p-6 justify-center transition-all duration-300 ease-in-out`}
+		>
+			{commentAttachments && (
+				<div className="mb-4 text-right">{commentAttachments}</div>
+			)}
 			<div className="sticky top-0 z-10">
 				<div className="md:flex justify-between items-start">
 					<h1 className="text-2xl font-semibold">{title}</h1>
@@ -35,4 +42,4 @@ const DataDisplayTemplate: React.FC<Props> = ({
 	);
 };
 
-export default DataDisplayTemplate
+export default DataDisplayTemplate;
