@@ -1,5 +1,7 @@
+import { UnitCreateModel } from '@/dtos/unit.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
+import * as m from '@/paraglide/messages.js';
 
 export enum GOOD_RECIEIVE_NOTE_FIELDS {
 	DATE = 'date',
@@ -91,4 +93,32 @@ export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
 	{ key: PoField.ExchangeRate, label: 'Exchange Rate', type: 'decimal' },
 	{ key: PoField.BaseCurrencyCode, label: 'Base Currency' },
 	{ key: PoField.ApprovalDate, label: 'Approval Date', type: 'date' },
+];
+
+export const enum UnitField {
+	Name = 'name',
+	Description = 'description',
+	Status = 'is_active',
+}
+
+export const unitSortFields: FieldConfig<UnitCreateModel>[] = [
+	{
+		key: UnitField.Name,
+		label: `${m.unit_name_label()}`,
+		className: 'w-24',
+	},
+];
+
+export const unitFields: FieldConfig<UnitCreateModel>[] = [
+	...unitSortFields,
+	{
+		key: UnitField.Status,
+		label: `${m.status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
+	{
+		key: UnitField.Description,
+		label: `${m.unit_des_label()}`,
+	},
 ];
