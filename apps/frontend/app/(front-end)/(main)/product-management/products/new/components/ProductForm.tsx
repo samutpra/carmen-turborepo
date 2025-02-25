@@ -16,9 +16,8 @@ import { useAuth } from '@/app/context/AuthContext';
 import { PD_STATUS } from '@/lib/util/status';
 
 export default function ProductForm() {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 
 	const form = useForm<ProductFormType>({
 		resolver: zodResolver(productFormSchema),

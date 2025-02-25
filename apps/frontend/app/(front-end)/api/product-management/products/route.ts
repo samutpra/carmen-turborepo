@@ -51,14 +51,14 @@ export interface Product {
 export const GET = async (request: NextRequest) => {
 	try {
 		const token = extractToken(request);
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
-				{ status: 400 }
+				{ error: 'Unauthorized access - Invalid or expired token' },
+				{ status: 401 }
 			);
 		}
-
-		const tenantId = 'DUMMY';
+		
 		const { searchParams } = new URL(request.url);
 
 		const search = searchParams.get('search') || '';

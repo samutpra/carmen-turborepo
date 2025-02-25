@@ -54,6 +54,7 @@ const SignIn = () => {
 						{
 							id: result.tenant?.id || '',
 							name: result.tenant?.name || '',
+							is_default: result.tenant?.is_default ?? false,
 						},
 					],
 				},

@@ -91,9 +91,8 @@ const recipeCuisineFields: FieldConfig<RecipeCuisineCreateModel>[] = [
 ];
 
 const RecipeCuisineList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [cuisineData, setCuisineData] = useState<RecipeCuisine[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

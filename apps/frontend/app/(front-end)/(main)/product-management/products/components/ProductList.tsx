@@ -86,9 +86,8 @@ export const productStatusBadge = (status?: string) => {
 };
 
 const ProductList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [products, setProducts] = useState<ProductCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [statusOpen, setStatusOpen] = useState(false);

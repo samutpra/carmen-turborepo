@@ -53,10 +53,8 @@ interface InventoryData {
 	};
 }
 const Inventory = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
-
 
 	const [inventoryData, setInventoryData] = useState<InventoryData>({
 		totalStock: {

@@ -33,7 +33,7 @@ type CategorySummary = {
 };
 
 const CategorieList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const [categorys, setCategorys] = useState<ProductCategoryCreateModel[]>([]);
 	const [subCategorys, setSubCategorys] = useState<
 		ProductSubCategoryCreateModel[]
@@ -57,7 +57,6 @@ const CategorieList = () => {
 	const [isAddItemGroupOpen, setIsAddItemGroupOpen] = useState(false);
 
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 
 	useEffect(() => {
 		const fetchData = async () => {

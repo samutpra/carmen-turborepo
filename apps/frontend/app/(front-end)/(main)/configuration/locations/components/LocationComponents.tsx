@@ -65,9 +65,8 @@ const sortFields: FieldConfig<LocationCreateModel>[] = [
 ];
 
 const LocationComponents = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [locations, setLocations] = useState<LocationCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

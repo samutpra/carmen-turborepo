@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Select,
 	SelectContent,
@@ -7,51 +7,89 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-
-interface ITenant {
-	id: string;
-	name: string;
-}
-const mockTenants: ITenant[] = [
-	{ id: '1', name: 'Marketing' },
-	{ id: '2', name: 'Sales' },
-	{ id: '3', name: 'Human Resources' },
-	{ id: '4', name: 'Engineering' },
-	{ id: '5', name: 'Finance' },
-];
+import { useAuth } from '@/app/context/AuthContext';
+import { toastError, toastSuccess } from '../ui-custom/Toast';
 
 const TenantList = () => {
-	const [businessUnit, setBusinessUnit] = useState('');
-	const [list, setList] = useState<ITenant[]>([]);
+	const { tenant, tenantId, setTenantId, accessToken } = useAuth();
+	const [isLoading, setIsLoading] = useState(false);
+	const token = accessToken || '';
 
 	useEffect(() => {
-		setList(mockTenants);
-	}, []);
+		if (tenant?.length && !tenantId) {
+			const defaultTenant = tenant.find((t) => t.is_default) || tenant[0];
+			setTenantId(defaultTenant.id);
+		}
+	}, [tenant, tenantId, setTenantId]);
+
+	const updateDefaultBusinessUnit = async (tenantId: string) => {
+		const response = await fetch('/api/system/business-unit/default', {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+			},
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			console.error('API Error:', {
+				status: response.status,
+				statusText: response.statusText,
+				data: errorData,
+			});
+			throw new Error(
+				`Failed to update default business unit: ${response.statusText}`
+			);
+		}
+
+		return await response.json();
+	};
+
+	const handleTenantChange = async (tenantId: string) => {
+		setTenantId(tenantId);
+		setIsLoading(true);
+		try {
+			console.log('tenantId ssss', tenantId);
+			await updateDefaultBusinessUnit(tenantId);
+			toastSuccess({ message: 'Default business unit updated successfully' });
+		} catch (error) {
+			toastError({ message: 'Failed to update default business unit' });
+			console.error('Error updating default business unit:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	if (!tenant?.length) {
+		return null;
+	}
 
 	return (
 		<Select
-			value={businessUnit}
-			onValueChange={(businessUnit) => {
-				console.log('Selected Business Unit ID:', businessUnit);
-				setBusinessUnit(businessUnit);
-			}}
+			value={tenantId}
+			onValueChange={handleTenantChange}
+			disabled={isLoading}
 			data-id="tenant-list-select"
 		>
-			<SelectTrigger data-id="tenant-list-select-trigger">
+			<SelectTrigger
+				className="w-full md:w-[300px] disabled:opacity-50 disabled:cursor-not-allowed"
+				data-id="tenant-list-select-trigger"
+			>
 				<SelectValue
 					placeholder="Business Unit"
-					className="w-full md:w-[300px]"
 					data-id="tenant-list-select-value"
 				/>
 			</SelectTrigger>
 			<SelectContent data-id="tenant-list-select-content">
-				{list.map((tenant) => (
+				{tenant.map((item) => (
 					<SelectItem
-						key={tenant.id}
-						value={tenant.id}
+						key={item.id}
+						value={item.id}
 						data-id="tenant-list-select-item"
 					>
-						{tenant.name}
+						{item.name}
 					</SelectItem>
 				))}
 			</SelectContent>

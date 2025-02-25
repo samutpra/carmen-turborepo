@@ -19,9 +19,8 @@ import StoreRequisitionsCard from './StoreRequisitionsCard';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const StoreRequisitionsList = () => {
-    const { accessToken } = useAuth();
-    const token = accessToken || '';
-    const tenantId = 'DUMMY';
+    const { accessToken, tenantId } = useAuth();
+		const token = accessToken || '';
     const [storeRequisition, setStoreRequisition] = useState<RequisitionType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

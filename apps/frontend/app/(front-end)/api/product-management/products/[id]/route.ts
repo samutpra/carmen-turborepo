@@ -8,14 +8,13 @@ export async function GET(
 ) {
 	try {
 		const token = extractToken(request)
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
-				{ status: 400 }
+				{ error: 'Unauthorized access - Invalid or expired token' },
+				{ status: 401 }
 			);
 		}
-
-		const tenantId = 'DUMMY';
 
 		const productUrl = `${API_URL}/v1/products/${params.id}`;
 

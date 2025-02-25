@@ -59,9 +59,8 @@ const enum formWatchedFields {
 
 const LocationForm = ({ defaultValues, type }: Props) => {
 	const router = useRouter();
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [isEdit, setIsEdit] = useState(type === formType.ADD ? true : false);
 
 	const [originalValues, setOriginalValues] = useState<LocationState>(

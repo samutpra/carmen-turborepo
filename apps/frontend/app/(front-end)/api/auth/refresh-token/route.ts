@@ -4,24 +4,21 @@ import { API_URL } from '@/lib/util/api';
 export const POST = async (request: NextRequest) => {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
+				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
 
-		console.log('token >>>', token);
-
 		const body = await request.json();
-
-		console.log('refresh_token >>>', body.refresh_token);
 
 		const response = await fetch(`${API_URL}/v1/auth/refresh`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({ refresh_token: body.refresh_token }),

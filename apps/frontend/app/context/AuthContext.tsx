@@ -28,6 +28,7 @@ interface AuthState {
 	tenant: {
 		id: string;
 		name: string;
+		is_default: boolean;
 	}[];
 }
 
@@ -42,7 +43,10 @@ interface AuthContextType {
 	tenant: {
 		id: string;
 		name: string;
+		is_default: boolean;
 	}[];
+	tenantId: string;
+	setTenantId: (tenantId: string) => void;
 }
 
 const COOKIE_OPTIONS = {
@@ -67,6 +71,8 @@ const defaultAuthContext: AuthContextType = {
 	handleLogout: async () => {},
 	updateAccessToken: () => {},
 	tenant: [],
+	tenantId: '',
+	setTenantId: () => {},
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -94,6 +100,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		return null;
 	});
 
+	const [tenantId, setTenantId] = useState<string>(() => {
+		if (typeof window !== 'undefined') {
+			return localStorage.getItem('tenant-id') || '';
+		}
+		return '';
+	});
+
 	// Update localStorage whenever authState changes
 	useEffect(() => {
 		if (authState !== defaultAuthState) {
@@ -101,13 +114,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	}, [authState]);
 
+	// Save tenant-id to localStorage when selectedTenant changes
+	useEffect(() => {
+		if (tenantId) {
+			localStorage.setItem('tenant-id', tenantId);
+		} else {
+			localStorage.removeItem('tenant-id');
+		}
+	}, [tenantId]);
+
 	const clearAuth = () => {
 		setAuthState(defaultAuthState);
 		setAccessToken(null);
+		setTenantId('');
 		deleteCookie('access_token');
 		deleteCookie('user_id');
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('auth_state');
+		localStorage.removeItem('tenant-id');
 	};
 
 	const initializeAuth = async () => {
@@ -158,9 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	const handlers = useMemo(
 		() => ({
 			handleLogin: async (data: AuthState, token: string) => {
-				console.log('data', data);
 				try {
-					// Transform the login response data to match our AuthState structure
 					const authStateData: AuthState = {
 						user: {
 							id: data.user?.id ?? '',
@@ -168,7 +190,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 						},
 						refresh_token: data.refresh_token,
 						access_token: data.access_token,
-						tenant: Array.isArray(data.tenant) ? data.tenant : [],
+						tenant: Array.isArray(data.tenant)
+							? data.tenant.map((t) => ({
+									...t,
+									is_default: t.is_default ?? false,
+								}))
+							: [],
 					};
 
 					setAuthState(authStateData);
@@ -209,7 +236,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		[router]
 	);
 
-	// Memoize the context value
 	const value = useMemo<AuthContextType>(
 		() => ({
 			authState,
@@ -217,9 +243,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			isAuthenticated,
 			isLoading,
 			tenant: authState.tenant,
+			tenantId,
+			setTenantId,
 			...handlers,
 		}),
-		[authState, accessToken, isAuthenticated, isLoading, handlers]
+		[authState, accessToken, isAuthenticated, isLoading, handlers, tenantId]
 	);
 
 	// console.log('value', value);

@@ -41,9 +41,8 @@ const deliveryPointsFields: FieldConfig<DeliveryPointCreateModel>[] = [
 ];
 
 const DeliveryPointList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [deliveryPoints, setDeliveryPoints] = useState<
 		DeliveryPointCreateModel[]
 	>([]);

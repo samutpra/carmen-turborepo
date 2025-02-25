@@ -41,8 +41,9 @@ export async function GET() {
 export async function POST(request: Request) {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id') || 'DUMMY';
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+
+		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
 				{ status: 400 }
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId,
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(payload),

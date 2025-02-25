@@ -16,11 +16,10 @@ type Props = {
 };
 
 const EditLocationPage = ({ params: { id } }: Props) => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const [location, setLocation] = useState<LocationsModel | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
-	const tenantId = 'DUMMY';
 
 	useEffect(() => {
 		const fetchLocation = async () => {

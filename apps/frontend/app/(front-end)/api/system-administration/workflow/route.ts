@@ -1,15 +1,14 @@
 import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
 
-const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
-
 export async function GET(request: NextRequest) {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+	const tenantId = request.headers.get('x-tenant-id');
 
-	if (!token) {
+	if (!token || !tenantId) {
 		return NextResponse.json(
-			{ error: 'Token or tenant ID is missing from the headers' },
-			{ status: 400 }
+			{ error: 'Unauthorized access - Invalid or expired token' },
+			{ status: 401 }
 		);
 	}
 
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${token}`,
-			'x-tenant-id': `${tenantId}`,
+			'x-tenant-id': tenantId || '',
 		},
 	};
 
