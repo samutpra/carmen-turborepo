@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { itemDetails } from '../../mock_data';
-
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const GET = async () => {
     try {
         return NextResponse.json({

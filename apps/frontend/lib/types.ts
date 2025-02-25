@@ -1157,12 +1157,12 @@ export type AttachmentType = z.infer<typeof AttachmentSchema>;
 
 
 const CreditNoteItemSchema = z.object({
-  id: z.number(),
-  description: z.string(),
-  quantity: z.number(),
-  unitPrice: z.number(),
-  discountPercentage: z.number(),
-  taxPercentage: z.number(),
+	id: z.string(),
+	description: z.string(),
+	quantity: z.number(),
+	unitPrice: z.number(),
+	discountPercentage: z.number(),
+	taxPercentage: z.number(),
 });
 
 const CreditNoteAttachmentSchema = z.object({
@@ -1305,27 +1305,31 @@ export type PaginationType = {
 }
 
 export interface SignInResponse {
-  id: string;
-  username: string;
-  refresh_token: string;
-  access_token: string;
-  message?: string;
+	id: string;
+	username: string;
+	refresh_token: string;
+	access_token: string;
+	message?: string;
+	tenant: {
+		id: string;
+		name: string;
+	}[];
 }
 
 export const SignInSchema = z.object({
-  username: z.string().min(2, {
-    message: `${m.username_zod_error()}`,
-  }),
-  password: z.string().min(6, {
-    message: `${m.password_zod_error()}`,
-  }),
+	username: z.string().min(2, {
+		message: `${m.username_zod_error()}`,
+	}),
+	password: z.string().min(6, {
+		message: `${m.password_zod_error()}`,
+	}),
 });
 
 export type SignInType = z.infer<typeof SignInSchema>;
 
 export interface User {
-  id: string;
-  username: string;
+	id: string;
+	username: string;
 }
 
 // export interface AuthContextType extends AuthState {
@@ -1343,20 +1347,26 @@ export interface User {
 // }
 
 export interface AuthContextType extends AuthState {
-  isAuthenticated: boolean;
-  accessToken: string | null;
-  handleLogin: (data: AuthState, token: string) => void;
-  handleLogout: () => void;
-  updateAccessToken: (token: string) => void;
-  authState: AuthState;
-  setAccessToken: (token: string) => void;
+	isAuthenticated: boolean;
+	accessToken: string | null;
+	handleLogin: (data: AuthState, token: string) => void;
+	handleLogout: () => void;
+	updateAccessToken: (token: string) => void;
+	authState: AuthState;
+	setAccessToken: (token: string) => void;
 }
 
-
 export interface AuthState {
-  user: User | null;
-  access_token: string
-  refresh_token: string;
+	user: {
+		id: string;
+		username: string;
+	} | null;
+	refresh_token: string;
+	access_token?: string;
+	tenant: {
+		id: string;
+		name: string;
+	}[];
 }
 export interface AuthenticatedRequestOptions extends RequestInit {
   skipAuthRefresh?: boolean;

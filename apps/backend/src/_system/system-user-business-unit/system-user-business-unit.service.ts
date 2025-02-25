@@ -40,7 +40,6 @@ export class SystemUserBusinessUnitService {
       where: {
         id: id,
       },
-      relationLoadStrategy: "join",
       include: {
         tb_business_unit: {
           select: {
@@ -90,7 +89,6 @@ export class SystemUserBusinessUnitService {
 
     const q_include = {
       ...q.findMany(),
-      relationLoadStrategy: "join",
       include: {
         tb_business_unit: {
           select: {

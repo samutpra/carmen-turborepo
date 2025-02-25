@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prData } from '../mock_data';
 
+export const dynamic = 'force-dynamic';
 
 export const GET = async () => {
     try {

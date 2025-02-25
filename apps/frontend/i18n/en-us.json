@@ -237,5 +237,9 @@
 	"fail_del_store": "Failed to delete store location",
 	"refresh_exchange_rate": "Refresh Exchange Rate",
 	"recipe_cuisine_types": "Recipe Cuisine Types",
-	"status_discontinued": "Discontinued"
+	"status_discontinued": "Discontinued",
+	"pr_title": "'Purchase Requests",
+	"purchase_request_title": "Purchase Requests",
+	"po_title": "Purchase Orders",
+	"grn_title": "Goods Receive Note"
 }

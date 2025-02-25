@@ -9,6 +9,9 @@ import { extractToken } from '@/lib/util/auth';
 import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export interface ProductInfo {
 	id: string;
 	product_id: string;
@@ -45,8 +48,6 @@ export interface Product {
 	category_name: string;
 }
 
-
-
 export const GET = async (request: NextRequest) => {
 	try {
 		const token = extractToken(request);
@@ -73,11 +74,7 @@ export const GET = async (request: NextRequest) => {
 
 		const productResponse = await fetchData(productUrl, token, tenantId);
 
-		console.log('productResponse', productResponse);
-
 		const data = await getProducts(productResponse.data, token, tenantId);
-
-		console.log('data', data);
 
 		return NextResponse.json({ data, pagination: productResponse.pagination });
 	} catch (error) {

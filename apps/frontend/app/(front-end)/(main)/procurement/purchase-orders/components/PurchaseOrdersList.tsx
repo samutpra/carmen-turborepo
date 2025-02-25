@@ -1,9 +1,50 @@
-import React from 'react'
+'use client';
+
+import React, { useState } from 'react';
+import { useURL } from '@/hooks/useURL';
+import PoActions from './PoActions';
+import PoFilters from './PoFilters';
+import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import PoData from './PoData';
+import { poSortFields } from '@/constants/fields';
+import { usePOderData } from '../../hooks/usePo';
+import { po_title } from '@/paraglide/messages.js';
 
 const PurchaseOrdersList = () => {
-    return (
-        <div>PurchaseOrdersList</div>
-    )
-}
+	const { poData, setPoData, isLoading, error } = usePOderData();
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
 
-export default PurchaseOrdersList
+	if (error) return <ErrorCard message={error} />;
+
+	return (
+		<DataDisplayTemplate
+			title={po_title()}
+			actionButtons={<PoActions />}
+			filters={
+				<PoFilters
+					search={search}
+					setSearch={setSearch}
+					status={status}
+					setStatus={setStatus}
+					statusOpen={statusOpen}
+					setStatusOpen={setStatusOpen}
+					poData={poData}
+					setPoData={setPoData}
+				/>
+
+			}
+			content={
+				<PoData
+					poDatas={poData}
+					fields={poSortFields}
+					isLoading={isLoading}
+				/>
+			}
+		/>
+	);
+};
+
+export default PurchaseOrdersList;
