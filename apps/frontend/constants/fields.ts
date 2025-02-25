@@ -4,17 +4,14 @@ import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import * as m from '@/paraglide/messages.js';
-
-export enum GOOD_RECIEIVE_NOTE_FIELDS {
-	DATE = 'date',
-	REF = 'ref',
-	DESCRIPTION = 'description',
-	VENDOR = 'vendor',
-	INVOICE_NUMBER = 'invoiceNumber',
-	INVOICE_DATE = 'invoiceDate',
-	TOTAL_AMOUNT = 'totalAmount',
-	STATUS = 'status',
-}
+import {
+	GOOD_RECIEIVE_NOTE_FIELDS,
+	LocationField,
+	PoField,
+	PrField,
+	UnitField,
+	VendorFields,
+} from './enums';
 
 export const grnSortFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DATE, label: 'Date' },
@@ -31,18 +28,6 @@ export const goodsReceiveNoteFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DESCRIPTION, label: 'Description' },
 ];
 
-const enum PrField {
-	Id = 'id',
-	Type = 'type',
-	Description = 'description',
-	Requestor = 'requestor',
-	Department = 'department',
-	Date = 'date',
-	Status = 'status',
-	Amount = 'amount',
-	CurrentStage = 'currentStage',
-}
-
 export const prSortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Type, label: 'Type' },
 	{ key: PrField.Requestor, label: 'Requestor' },
@@ -52,37 +37,6 @@ export const prSortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Amount, label: 'Amount', type: 'amount' },
 	{ key: PrField.CurrentStage, label: 'Current Stage' },
 ];
-export const enum PoField {
-	Id = 'poId',
-	Number = 'number',
-	VendorId = 'vendorId',
-	VendorName = 'vendorName',
-	OrderDate = 'orderDate',
-	DeliveryDate = 'deliveryDate',
-	Status = 'status',
-	CurrencyCode = 'currencyCode',
-	BaseCurrencyCode = 'baseCurrencyCode',
-	ExchangeRate = 'exchangeRate',
-	Notes = 'notes',
-	CreatedBy = 'createdBy',
-	ApprovedBy = 'approvedBy',
-	ApprovalDate = 'approvalDate',
-	Email = 'email',
-	Buyer = 'buyer',
-	CreditTerms = 'creditTerms',
-	Description = 'description',
-	Remarks = 'remarks',
-	BaseSubTotalPrice = 'baseSubTotalPrice',
-	SubTotalPrice = 'subTotalPrice',
-	BaseNetAmount = 'baseNetAmount',
-	NetAmount = 'netAmount',
-	BaseDiscAmount = 'baseDiscAmount',
-	DiscountAmount = 'discountAmount',
-	BaseTaxAmount = 'baseTaxAmount',
-	TaxAmount = 'taxAmount',
-	BaseTotalAmount = 'baseTotalAmount',
-	TotalAmount = 'totalAmount',
-}
 
 export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
 	{ key: PoField.Number, label: 'Number' },
@@ -96,12 +50,6 @@ export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
 	{ key: PoField.BaseCurrencyCode, label: 'Base Currency' },
 	{ key: PoField.ApprovalDate, label: 'Approval Date', type: 'date' },
 ];
-
-export const enum UnitField {
-	Name = 'name',
-	Description = 'description',
-	Status = 'is_active',
-}
 
 export const unitSortFields: FieldConfig<UnitCreateModel>[] = [
 	{
@@ -125,12 +73,6 @@ export const unitFields: FieldConfig<UnitCreateModel>[] = [
 	},
 ];
 
-export const enum VendorFields {
-	Name = 'name',
-	Description = 'description',
-	IsActive = 'is_active',
-}
-
 export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
 	{
 		key: VendorFields.Name,
@@ -146,13 +88,6 @@ export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
 	},
 ];
 
-export const enum LocationField {
-	Name = 'name',
-	LocationType = 'location_type',
-	DeliveryPointID = 'delivery_point_id',
-	Description = 'description',
-	isActive = 'is_active',
-}
 
 export const locationSortFields: FieldConfig<LocationCreateModel>[] = [
 	{
