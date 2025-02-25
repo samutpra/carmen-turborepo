@@ -21,6 +21,28 @@ export const enum PrField {
 	CurrentStage = 'currentStage',
 }
 
+
+export const enum UnitField {
+	Name = 'name',
+	Description = 'description',
+	Status = 'is_active',
+}
+
+export const enum VendorFields {
+	Name = 'name',
+	Description = 'description',
+	IsActive = 'is_active',
+}
+
+export const enum LocationField {
+	Name = 'name',
+	LocationType = 'location_type',
+	DeliveryPointID = 'delivery_point_id',
+	Description = 'description',
+	isActive = 'is_active',
+}
+
+
 export const enum PoField {
 	Id = 'poId',
 	Number = 'number',
@@ -51,24 +73,4 @@ export const enum PoField {
 	TaxAmount = 'taxAmount',
 	BaseTotalAmount = 'baseTotalAmount',
 	TotalAmount = 'totalAmount',
-}
-
-export const enum UnitField {
-	Name = 'name',
-	Description = 'description',
-	Status = 'is_active',
-}
-
-export const enum VendorFields {
-	Name = 'name',
-	Description = 'description',
-	IsActive = 'is_active',
-}
-
-export const enum LocationField {
-	Name = 'name',
-	LocationType = 'location_type',
-	DeliveryPointID = 'delivery_point_id',
-	Description = 'description',
-	isActive = 'is_active',
 }
