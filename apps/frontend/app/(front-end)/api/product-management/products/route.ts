@@ -5,7 +5,7 @@ import {
 } from '@/app/(front-end)/services/products';
 import { fetchProductItemGroup } from '@/app/(front-end)/services/products';
 import { API_URL } from '@/lib/util/api';
-import { extractToken } from '@/lib/util/auth';
+import { extractRequest } from '@/lib/util/auth';
 import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -50,21 +50,23 @@ export interface Product {
 
 export const GET = async (request: NextRequest) => {
 	try {
-		const token = extractToken(request);
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
-		
+
 		const { searchParams } = new URL(request.url);
 
 		const search = searchParams.get('search') || '';
 		const page = searchParams.get('page') || '1';
 		const sort = searchParams.get('sort') || '';
-		const status = searchParams.get('status') as PRODUCT_STATUS_FILTER || PRODUCT_STATUS_FILTER.ALL_STATUS;
+		const status =
+			(searchParams.get('status') as PRODUCT_STATUS_FILTER) ||
+			PRODUCT_STATUS_FILTER.ALL_STATUS;
 
 		let productUrl = `${API_URL}/v1/products?search=${search}&page=${page}&sort=${sort}`;
 

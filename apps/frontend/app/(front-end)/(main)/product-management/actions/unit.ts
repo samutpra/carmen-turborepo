@@ -1,10 +1,19 @@
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import { formType } from '@/types/form_type';
+interface UnitComment {
+	id: string;
+	message: string;
+}
 
 export const fetchUnits = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string; page?: string, sort?: string } = {}
+	params: {
+		search?: string;
+		status?: string;
+		page?: string;
+		sort?: string;
+	} = {}
 ) => {
 	try {
 		const query = new URLSearchParams();
@@ -109,13 +118,9 @@ export const submitUnit = async (
 	}
 };
 
-
-export const fetchUnitList = async (
-	token: string,
-	tenantId: string,
-) => {
+export const fetchUnitList = async (token: string, tenantId: string) => {
 	try {
-		const perpage = 99
+		const perpage = 99;
 		const url = `/api/product-management/unit?perpage=${perpage}`;
 
 		const options = {
@@ -138,3 +143,28 @@ export const fetchUnitList = async (
 		throw error;
 	}
 };
+
+export const fetchUnitComments = async (
+	token: string,
+	tenantId: string
+): Promise<{ data: UnitComment[] }> => {
+	if (!token || !tenantId) {
+		throw new Error('Missing required authentication parameters');
+	}
+
+	const response = await fetch('/api/comment/unit', {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'x-tenant-id': tenantId,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error(`Error: ${response.status} ${response.statusText}`);
+	}
+
+	return await response.json();
+};
+

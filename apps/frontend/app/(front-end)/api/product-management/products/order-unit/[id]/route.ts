@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/lib/util/api';
-import { extractToken } from '@/lib/util/auth';
+import { extractRequest } from '@/lib/util/auth';
 
 export async function GET(
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = extractToken(request);
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token is missing from the headers' },
