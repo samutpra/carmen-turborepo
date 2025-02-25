@@ -45,8 +45,6 @@ const SignInForm = () => {
 		setLoading(true);
 		try {
 			const result = await signInAction(data);
-
-			console.log('result', result);
 			if (!result) {
 				toastError({ message: 'Sign in failed' });
 			} else {
