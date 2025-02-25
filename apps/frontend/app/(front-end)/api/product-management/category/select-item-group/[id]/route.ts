@@ -8,29 +8,29 @@ export async function GET(
 ) {
     try {
         const token = extractToken(request);
-        const tenantId = 'DUMMY'
-        if (!token) {
-            return NextResponse.json(
-                { error: 'Token is missing from the headers' },
-                { status: 400 }
-            );
-        }
-        const { id } = params;
-        if (!id) {
-            return NextResponse.json(
-                { error: 'Product item group ID is required' },
-                { status: 400 }
-            );
-        }
+        const tenantId = request.headers.get('x-tenant-id');
+				if (!token || !tenantId) {
+					return NextResponse.json(
+						{ error: 'Unauthorized access - Invalid or expired token' },
+						{ status: 401 }
+					);
+				}
+				const { id } = params;
+				if (!id) {
+					return NextResponse.json(
+						{ error: 'Product item group ID is required' },
+						{ status: 400 }
+					);
+				}
 
-        const options = {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        };
+				const options = {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'x-tenant-id': tenantId || '',
+						'Content-Type': 'application/json',
+					},
+				};
 
         const response = await fetch(
             `${API_URL}/v1/product-item-group/sub-category/${id}`,

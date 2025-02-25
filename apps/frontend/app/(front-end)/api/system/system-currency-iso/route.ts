@@ -9,36 +9,37 @@ if (!API_URL) {
 export async function GET(request: NextRequest) {
     // Extract token and handle missing Authorization header
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        return NextResponse.json(
-            { error: 'Authorization token is missing or invalid' },
-            { status: 401 }
-        );
-    }
+    const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
+			return NextResponse.json(
+				{ error: 'Unauthorized access - Invalid or expired token' },
+				{ status: 401 }
+			);
+		}
 
-    // Parse URL search parameters
-    const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search') || '';
-    const page = searchParams.get('page') || '1';
-    const perpage = searchParams.get('perpage') || '10';
-    const sort = searchParams.get('sort') || 'name';
+		// Parse URL search parameters
+		const { searchParams } = new URL(request.url);
+		const search = searchParams.get('search') || '';
+		const page = searchParams.get('page') || '1';
+		const perpage = searchParams.get('perpage') || '10';
+		const sort = searchParams.get('sort') || 'name';
 
-    // Construct API URL with query parameters
-    const apiUrl = new URL(`${API_URL}/v1/system-currency-iso`);
+		// Construct API URL with query parameters
+		const apiUrl = new URL(`${API_URL}/v1/system-currency-iso`);
 
-    apiUrl.searchParams.set('search', search);
-    apiUrl.searchParams.set('page', page);
-    apiUrl.searchParams.set('perpage', perpage);
-    apiUrl.searchParams.set('sort', sort);
+		apiUrl.searchParams.set('search', search);
+		apiUrl.searchParams.set('page', page);
+		apiUrl.searchParams.set('perpage', perpage);
+		apiUrl.searchParams.set('sort', sort);
 
-    // Define fetch options
-    const options = {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'x-tenant-id': 'DUMMY',
-        },
-    };
+		// Define fetch options
+		const options = {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId || '',
+			},
+		};
 
     try {
         // Fetch data from the external API

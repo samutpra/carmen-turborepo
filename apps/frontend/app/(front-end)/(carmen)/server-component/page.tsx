@@ -5,9 +5,8 @@ import ServerListComponent from './ServerListComponent'
 import { useAuth } from '@/app/context/AuthContext';
 
 const ServerComponentPage = () => {
-    const { accessToken } = useAuth();
-    const token = accessToken || '';
-    const tenantId = 'DUMMY';
+	const { accessToken, tenantId } = useAuth();
+	const token = accessToken || '';
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <ServerListComponent token={token} tenantId={tenantId} />

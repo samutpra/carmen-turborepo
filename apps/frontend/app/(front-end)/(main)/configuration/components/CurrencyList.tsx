@@ -74,9 +74,8 @@ const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 ];
 
 const CurrencyList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [currencies, setCurrencies] = useState<CurrencyCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

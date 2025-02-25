@@ -45,9 +45,8 @@ const RecipeCategoryDialog: React.FC<RecipeCategoryDialogProps> = ({
 	onSuccess,
 }) => {
 	const [open, setOpen] = useState(false);
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [isLoading, setIsLoading] = useState(false);
 
 	const defaultRecipeCategoryValues: RecipeCategoryCreateModel = {

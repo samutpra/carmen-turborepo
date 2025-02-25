@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
 const RefreshToken = () => {
-	const { authState, updateAccessToken, accessToken } = useAuth();
+	const { authState, updateAccessToken, accessToken, tenantId } = useAuth();
 	const { refresh_token } = authState;
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,7 @@ const RefreshToken = () => {
 				method: 'POST',
 				headers: {
 					Authorization: `Bearer ${token}`,
-					'x-tenant-id': 'DUMMY',
+					'x-tenant-id': tenantId || '',
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ refresh_token: refresh_token }),

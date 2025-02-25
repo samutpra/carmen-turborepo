@@ -11,9 +11,8 @@ const VendorIDPage = () => {
 	const { id } = useParams() as { id: string };
 	const [error, setError] = useState<string | null>(null);
 	const [vendor, setVendor] = useState<VendorCreateModel | null>(null);
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 
 	useEffect(() => {
 		const getVendor = async () => {

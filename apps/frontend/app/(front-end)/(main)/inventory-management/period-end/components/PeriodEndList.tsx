@@ -18,12 +18,11 @@ import PeriodEndCard from './PeriodEndCard';
 
 
 const PeriodEndList = () => {
-    const { accessToken } = useAuth();
-    const token = accessToken || '';
-    const tenantId = 'DUMMY';
-    const [date, setDate] = useState<Date>();
-    const [periodEnd, setPeriodEnd] = useState<PeriodEndRecord[]>([]);
-    const [search, setSearch] = useURL('search');
+	const { accessToken, tenantId } = useAuth();
+	const token = accessToken || '';
+	const [date, setDate] = useState<Date>();
+	const [periodEnd, setPeriodEnd] = useState<PeriodEndRecord[]>([]);
+	const [search, setSearch] = useURL('search');
 
     const fetchPeriodEnd = async () => {
         setPeriodEnd(mockPeriodEndRecords);

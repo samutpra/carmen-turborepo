@@ -8,9 +8,10 @@ export const GET = async (
 ) => {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
+				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
@@ -19,7 +20,7 @@ export const GET = async (
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 		});
@@ -51,9 +52,10 @@ export const DELETE = async (
 ) => {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
+				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
@@ -62,7 +64,7 @@ export const DELETE = async (
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 		});
@@ -93,9 +95,10 @@ export const PATCH = async (
 ) => {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
+				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
@@ -116,7 +119,7 @@ export const PATCH = async (
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({

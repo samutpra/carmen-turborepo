@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
 				{ status: 400 }
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 		};
@@ -47,10 +48,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
 	try {
 		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		if (!token) {
-			console.error('Missing Authorization token');
+		const tenantId = request.headers.get('x-tenant-id');
+
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
+				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest) {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': 'DUMMY',
+				'x-tenant-id': tenantId || '',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
@@ -94,7 +96,6 @@ export async function POST(request: NextRequest) {
 		}
 
 		const result = await response.json();
-
 
 		return NextResponse.json(result, { status: 200 });
 	} catch (error) {

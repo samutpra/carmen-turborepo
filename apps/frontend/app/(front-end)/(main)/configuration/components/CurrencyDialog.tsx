@@ -57,9 +57,8 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 }) => {
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 
 	const [listCurrencies, setListCurrencies] = useState<
 		SystemCurrencyCreateModel[]

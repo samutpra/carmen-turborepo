@@ -8,13 +8,13 @@ export async function GET(
 ) {
 	try {
 		const token = extractToken(request);
-		if (!token) {
+		const tenantId = request.headers.get('x-tenant-id');
+		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token is missing from the headers' },
 				{ status: 400 }
 			);
 		}
-		const tenantId = 'DUMMY';
 		const URL = `${API_URL}/v1/products/order-unit/${params.id}`;
 		const options = {
 			method: 'GET',

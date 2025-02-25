@@ -46,9 +46,8 @@ const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
 	defaultValues,
 	onSuccess,
 }) => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 

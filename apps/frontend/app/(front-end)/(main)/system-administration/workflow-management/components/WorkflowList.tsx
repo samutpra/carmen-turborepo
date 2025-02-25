@@ -139,9 +139,8 @@ const renderFieldValue = (
 };
 
 const WorkflowList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

@@ -35,9 +35,8 @@ interface Props {
 }
 
 const VendorDetails: React.FC<Props> = ({ vendor, mode }) => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const router = useRouter();
 	const [isEditing, setIsEditing] = useState(false);
 

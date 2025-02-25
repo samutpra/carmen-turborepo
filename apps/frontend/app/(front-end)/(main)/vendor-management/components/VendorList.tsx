@@ -42,9 +42,8 @@ const sortFields: FieldConfig<VendorCreateModel>[] = [
 type SortQuery = `${VendorFields}:${SortDirection}` | '';
 
 const VendorList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [vendors, setVendors] = useState<VendorCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

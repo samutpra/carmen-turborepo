@@ -1366,6 +1366,7 @@ export interface AuthState {
 	tenant: {
 		id: string;
 		name: string;
+		is_default: boolean;
 	}[];
 }
 export interface AuthenticatedRequestOptions extends RequestInit {

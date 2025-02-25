@@ -85,9 +85,8 @@ const recipeCategoryFields: FieldConfig<RecipeCategoryCreateModel>[] = [
 	},
 ];
 const RecipeCategoryList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [categoryData, setCategoryData] = useState<RecipeCategoryCreateModel[]>(
 		[]
 	);

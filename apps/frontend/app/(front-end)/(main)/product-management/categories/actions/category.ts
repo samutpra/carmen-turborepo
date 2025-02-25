@@ -1,10 +1,7 @@
 import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
 import { formType } from '@/types/form_type';
 
-export const fetchCategoryList = async (
-	token: string,
-	tenantId: string = 'DUMMY'
-) => {
+export const fetchCategoryList = async (token: string, tenantId: string) => {
 	try {
 		const url = `/api/product-management/category/category-list`;
 

@@ -20,9 +20,8 @@ import { OrderUnitModel } from '@/dtos/order-unit.dto';
 import LocationList, { PRODUCT_ACTION } from '../components/LocationList';
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [product, setProduct] = useState<ProductModel>();
 	const [productLoading, setProductLoading] = useState(false);
 	const [locationsLoading, setLocationsLoading] = useState(true);

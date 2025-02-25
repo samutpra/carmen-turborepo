@@ -34,7 +34,10 @@ export const processLogin = async (
 			},
 			refresh_token: result.refresh_token,
 			access_token: result.access_token,
-			tenant: result.tenant,
+			tenant: result.tenant.map((t) => ({
+				...t,
+				is_default: false,
+			})),
 		},
 		result.access_token
 	);

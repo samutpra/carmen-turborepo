@@ -46,9 +46,8 @@ const departmentFields: FieldConfig<DepartmentCreateModel>[] = [
 ];
 
 const DepartmentList = () => {
-	const { accessToken } = useAuth();
+	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
-	const tenantId = 'DUMMY';
 	const [departments, setDepartments] = useState<DepartmentCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

@@ -1,10 +1,7 @@
 import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
 import { formType } from '@/types/form_type';
 
-export const fetchItemGroup = async (
-	token: string,
-	tenantId: string = 'DUMMY'
-) => {
+export const fetchItemGroup = async (token: string, tenantId: string) => {
 	try {
 		const url = `/api/product-management/category/product-item-group`;
 
