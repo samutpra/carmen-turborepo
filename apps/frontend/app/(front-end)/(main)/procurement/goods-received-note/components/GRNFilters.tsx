@@ -9,7 +9,7 @@ import { FilterBuilder } from './FilterBuilder';
 import { statusOptions } from '@/lib/statusOptions';
 import * as m from '@/paraglide/messages.js';
 import { GoodsReceiveNote } from '@/lib/types';
-import { GOOD_RECIEIVE_NOTE_FIELDS, grnSortFields } from '@/constants/fields';
+import { grnSortFields } from '@/constants/fields';
 
 interface GRNFiltersProps {
 	search: string;
@@ -56,20 +56,7 @@ export const GRNFilters: React.FC<GRNFiltersProps> = ({
 					</DialogTrigger>
 					<DialogContent className="sm:w-[70vw] max-w-[60vw]">
 						<FilterBuilder
-							fields={[
-								{ value: GOOD_RECIEIVE_NOTE_FIELDS.REF, label: 'Reference' },
-								{ value: GOOD_RECIEIVE_NOTE_FIELDS.VENDOR, label: 'Vendor' },
-								{ value: GOOD_RECIEIVE_NOTE_FIELDS.DATE, label: 'Date' },
-								{
-									value: GOOD_RECIEIVE_NOTE_FIELDS.INVOICE_NUMBER,
-									label: 'Invoice Number',
-								},
-								{
-									value: GOOD_RECIEIVE_NOTE_FIELDS.INVOICE_DATE,
-									label: 'Invoice Date',
-								},
-								{ value: GOOD_RECIEIVE_NOTE_FIELDS.STATUS, label: 'Status' },
-							]}
+							fields={grnSortFields.map(({ key, label }) => ({ value: key, label }))}
 							onFilterChange={(filters) => {
 								console.log(filters);
 							}}
