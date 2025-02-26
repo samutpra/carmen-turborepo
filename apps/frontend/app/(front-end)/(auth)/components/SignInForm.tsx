@@ -62,7 +62,7 @@ const SignInForm = () => {
 	return (
 		<div className="w-full h-screen flex items-center justify-center p-4">
 			<div className="w-full max-w-md">
-				<div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+				<div className="rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
 					<div className="p-8">
 						<Form {...form}>
 							<form
