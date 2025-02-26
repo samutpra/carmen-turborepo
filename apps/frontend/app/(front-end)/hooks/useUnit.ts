@@ -4,23 +4,20 @@ import { UnitCreateModel } from '@/dtos/unit.dto';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { deleteUnit, fetchUnits } from '@/app/(front-end)/services/unit';
 import { unit_delete_success } from '@/paraglide/messages.js';
-interface UseUnitProps {
-	search?: string;
-	status?: string;
-	page?: string;
-	sort?: string;
-}
+import { useURL } from '@/hooks/useURL';
 
-export const useUnit = ({ search, status, page, sort }: UseUnitProps) => {
+export const useUnit = () => {
 	const { accessToken, tenant } = useAuth();
 	const token = accessToken || '';
 	const tenantId = tenant?.[0]?.id || '';
-
 	const [units, setUnits] = useState<UnitCreateModel[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [totalPages, setTotalPages] = useState<number>(0);
-	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [search, setSearch] = useURL('search');
+	const [status, setStatus] = useURL('status');
+	const [page, setPage] = useURL('page');
+	const [pages, setPages] = useURL('pages');
+	const [sort, setSort] = useURL('sort');
 
 	const fetchData = useCallback(async () => {
 		if (!token || !tenantId) return;
@@ -34,8 +31,8 @@ export const useUnit = ({ search, status, page, sort }: UseUnitProps) => {
 				sort,
 			});
 			setUnits(data.data);
-			setCurrentPage(Number(data.pagination.page));
-			setTotalPages(Number(data.pagination.pages));
+			setPage(data.pagination.page);
+			setPages(data.pagination.pages);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
 		} finally {
@@ -90,10 +87,16 @@ export const useUnit = ({ search, status, page, sort }: UseUnitProps) => {
 		units,
 		isLoading,
 		error,
-		totalPages,
-		currentPage,
+		pages,
+		page,
 		handleSuccess,
 		handleDelete,
 		refreshData,
+		search,
+		status,
+		sort,
+		setSearch,
+		setStatus,
+		setSort,
 	};
 };

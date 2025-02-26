@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PurchaseRequestItem } from '@/lib/types';
 import { CheckCircle, Edit2Icon, Eye, ImageIcon, Plus, RotateCcw, Split, Trash2Icon, X, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import ItemDetailsEditForm from './ItemDetailsEditForm';
+import ItemDetailsEditForm from './item-details/ItemDetailsEditForm';
 import {
 	Dialog,
 	DialogContent,
