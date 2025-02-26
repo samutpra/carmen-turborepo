@@ -8,8 +8,8 @@ import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import PoData from './PoData';
 import { poSortFields } from '@/constants/fields';
-import { usePOderData } from '../../hooks/usePo';
 import { po_title } from '@/paraglide/messages.js';
+import { usePOderData } from '@/app/(front-end)/hooks/usePo';
 
 const PurchaseOrdersList = () => {
 	const { poData, setPoData, isLoading, error } = usePOderData();

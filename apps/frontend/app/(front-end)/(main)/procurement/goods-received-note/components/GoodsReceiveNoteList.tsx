@@ -7,9 +7,9 @@ import { useURL } from '@/hooks/useURL';
 import GoodsReceiveDisplay from './GoodsReceiveDisplay';
 import { GRNFilters } from './GRNFilters';
 import { goodsReceiveNoteFields } from '@/constants/fields';
-import { useGrn } from '../../hooks/useGrn';
 import { grn_title } from '@/paraglide/messages.js';
 import GrnActions from './GrnActions';
+import { useGrn } from '@/app/(front-end)/hooks/useGrn';
 
 const GoodsReceiveNoteList = () => {
 	const { grnData, setGrnData, isLoading, error } = useGrn();

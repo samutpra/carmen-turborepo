@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PurchaseOrderType } from '@/lib/types';
-import { fetchPurchaseOrders } from '../actions/purchase-order';
+import { fetchPurchaseOrders } from '../services/purchase-order';
 
 export const usePOderData = () => {
 	const [poData, setPoData] = useState<PurchaseOrderType[]>([]);
@@ -18,7 +18,11 @@ export const usePOderData = () => {
 			const data = await fetchPurchaseOrders(signal);
 			if (data) setPoData(data);
 		} catch (error) {
-			setError(error instanceof Error ? error.message : 'Error fetching Purchase Orders');
+			setError(
+				error instanceof Error
+					? error.message
+					: 'Error fetching Purchase Orders'
+			);
 		} finally {
 			setIsLoading(false);
 		}
