@@ -3,8 +3,8 @@ import UnitDialog from './UnitDialog';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
 import { export_text, print_text } from '@/paraglide/messages';
-import { formType } from '@/types/form_type';
 import { UnitCreateModel } from '@/dtos/unit.dto';
+import { formType } from '@/constants/enums';
 
 interface UnitActionProps {
 	handleSuccess: (values: UnitCreateModel) => void;

@@ -8,7 +8,7 @@ import {
 	SheetClose,
 } from '@/components/ui/sheet';
 import { useAuth } from '@/app/context/AuthContext';
-import { fetchUnitComments } from '../actions/unit';
+import { fetchUnitComments } from '@/app/(front-end)/services/unit';
 interface UnitComment {
 	id: string;
 	message: string;

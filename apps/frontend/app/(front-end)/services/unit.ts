@@ -167,4 +167,3 @@ export const fetchUnitComments = async (
 
 	return await response.json();
 };
-
