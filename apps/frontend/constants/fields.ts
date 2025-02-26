@@ -9,9 +9,11 @@ import {
 	LocationField,
 	PoField,
 	PrField,
+	ProductField,
 	UnitField,
 	VendorFields,
 } from './enums';
+import { ProductCreateModel } from '@/dtos/product.dto';
 
 export const grnSortFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DATE, label: 'Date' },
@@ -116,4 +118,27 @@ export const locationField = [
 	{ label: 'Inventory', value: enum_location_type.inventory },
 	{ label: 'Direct', value: enum_location_type.direct },
 	{ label: 'Consignment', value: enum_location_type.consignment },
+];
+
+export const sortProductFields: FieldConfig<ProductCreateModel>[] = [
+	{ key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
+	{ key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+];
+
+export const productFields: FieldConfig<ProductCreateModel>[] = [
+	...sortProductFields,
+	{
+		key: ProductField.DESCRIPTION as keyof ProductCreateModel,
+		label: 'Description',
+	},
+	{ key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
+	{
+		key: ProductField.SUBCATEGORY as keyof ProductCreateModel,
+		label: 'Subcategory',
+	},
+	{
+		key: ProductField.ITEM_GROUP as keyof ProductCreateModel,
+		label: 'Item Group',
+	},
+	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
 ];

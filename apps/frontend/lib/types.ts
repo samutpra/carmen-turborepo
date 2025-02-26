@@ -31,11 +31,11 @@ export type Money = {
 // Currency and Exchange Rate Types
 
 export interface Currency {
-  id: number;
-  code: string;
-  description: string;
-  active: boolean;
-  currency: string; // Currency symbol or code
+	id: number;
+	code: string;
+	description: string;
+	active: boolean;
+	currency: string;
 }
 
 export interface ExchangeRate {

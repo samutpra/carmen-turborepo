@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FieldConfig, SortDirection, SortQuery } from '@/lib/util/uiConfig';
 import { ProductCreateModel } from '@/dtos/product.dto';
-import { ProductField, productStatusBadge } from './ProductList';
+import { productStatusBadge } from './ProductList';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { CardsContainerSkeleton } from '@/components/ui-custom/Loading/CardsContainerSkeleton';
@@ -19,6 +19,7 @@ import {
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 import * as m from '@/paraglide/messages.js';
 import SortButton from '@/components/SortButton';
+import { ProductField } from '@/constants/enums';
 interface ProductDisplayProps {
 	products: ProductCreateModel[];
 	fields: FieldConfig<ProductCreateModel>[];

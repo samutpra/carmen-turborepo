@@ -36,8 +36,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formType } from '@/constants/enums';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { submitStoreLocation } from '../../actions/store_location';
 import { useRouter } from '@/lib/i18n';
+import { submitStoreLocation } from '@/app/(front-end)/services/location';
 
 type Props = {
 	defaultValues?: Partial<

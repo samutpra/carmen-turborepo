@@ -6,7 +6,7 @@ import { statusOptions } from '@/lib/statusOptions';
 import { Search, store_location } from '@/paraglide/messages';
 import React from 'react';
 
-interface Props {
+interface LocationFilterProps {
 	search: string;
 	setSearch: (search: string) => void;
 	status: string;
@@ -26,7 +26,7 @@ const LocationFilter = ({
 	setStatusOpen,
 	sort,
 	setSort,
-}: Props) => {
+}: LocationFilterProps) => {
 	return (
 		<div className="filter-container" data-id="store-location-filter-container">
 			<SearchForm

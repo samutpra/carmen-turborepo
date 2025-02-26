@@ -78,3 +78,14 @@ export const enum PoField {
 	BaseTotalAmount = 'baseTotalAmount',
 	TotalAmount = 'totalAmount',
 }
+
+
+export const enum ProductField {
+	NAME = 'name',
+	CODE = 'code',
+	DESCRIPTION = 'description',
+	CATEGORY = 'category_name',
+	SUBCATEGORY = 'sub_category_name',
+	ITEM_GROUP = 'item_group_name',
+	STATUS = 'product_status_type',
+}

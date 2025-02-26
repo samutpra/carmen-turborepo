@@ -5,9 +5,9 @@ import LocationForm from '../components/LocationForm';
 import { LocationsModel } from '@/dtos/location.dto';
 import { useAuth } from '@/app/context/AuthContext';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
-import { fetchLocationByID } from '../../actions/store_location';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
 import { formType } from '@/constants/enums';
+import { fetchLocationByID } from '@/app/(front-end)/services/location';
 
 type Props = {
 	params: {
