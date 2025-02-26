@@ -326,10 +326,7 @@ const PrDetail: React.FC<PrDetailProps> = ({
 						isReadOnly={isReadOnly}
 					/>
 
-					<Tabs
-						defaultValue={TAB_PR.ITEM}
-						className="w-full bg-white dark:bg-gray-800"
-					>
+					<Tabs defaultValue={TAB_PR.ITEM} className="w-full">
 						<TabsList className="grid w-full grid-cols-5">
 							{Object.values(TAB_PR).map((tab) => (
 								<TabsTrigger
