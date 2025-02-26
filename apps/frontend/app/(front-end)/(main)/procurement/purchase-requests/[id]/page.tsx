@@ -89,10 +89,9 @@ const PurchaseRequestIdPage = () => {
 
 	return (
 		<PrDetail
-			id={id}
 			prData={prData}
 			data-id="pr-detail-component"
-			formType={formType.EDIT}
+			formType={formType.VIEW}
 		/>
 	);
 };

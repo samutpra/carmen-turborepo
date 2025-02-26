@@ -1,30 +1,16 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
 import { formType } from '@/constants/enums';
-// Define the schema for the purchase request data
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import PrHeader from './PrHeader';
+
 const purchaseRequestSchema = z.object({
 	id: z.string().optional(),
 	type: z.string().min(1, { message: 'Type is required' }),
@@ -42,27 +28,45 @@ const purchaseRequestSchema = z.object({
 export type PurchaseRequestData = z.infer<typeof purchaseRequestSchema>;
 
 interface PrDetailProps {
-	id?: string;
 	prData?: PurchaseRequestData | null;
 	'data-id'?: string;
 	formType: formType;
 }
 
 const PrDetail: React.FC<PrDetailProps> = ({
-	id,
 	prData,
 	'data-id': dataId,
-	formType: formTypeValue,
+	formType: initialFormType,
 }) => {
-	const isReadOnly = formTypeValue === formType.VIEW;
-	const isCreate = formTypeValue === formType.ADD;
+	// Add state to track current form type
+	const [currentFormType, setCurrentFormType] =
+		useState<formType>(initialFormType);
+
+	// Add state to track submission status
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// Add state to store the updated data after submission
+	const [updatedData, setUpdatedData] = useState<PurchaseRequestData | null>(
+		prData || null
+	);
+
+	// Use the most up-to-date data for display
+	const displayData = updatedData || prData;
+
+	// Use the current form type for all checks
+	const isReadOnly = currentFormType === formType.VIEW;
+	const isCreate = currentFormType === formType.ADD;
+	const isViewMode = currentFormType === formType.VIEW;
+	const isEditMode = currentFormType === formType.EDIT;
 
 	const form = useForm<PurchaseRequestData>({
 		resolver: zodResolver(purchaseRequestSchema),
-		defaultValues: prData
+		defaultValues: displayData
 			? {
-					...prData,
-					date: prData.date ? format(new Date(prData.date), 'yyyy-MM-dd') : '',
+					...displayData,
+					date: displayData.date
+						? format(new Date(displayData.date), 'yyyy-MM-dd')
+						: '',
 				}
 			: {
 					id: '',
@@ -75,247 +79,87 @@ const PrDetail: React.FC<PrDetailProps> = ({
 					amount: 0,
 					currentStage: isCreate ? 'Initial' : '',
 				},
+		mode: 'onChange',
 	});
 
+	// Get form state to track validity
+	const { isValid, isDirty } = form.formState;
+
 	useEffect(() => {
+		if (displayData) {
+			form.reset({
+				...displayData,
+				date: displayData.date
+					? format(new Date(displayData.date), 'yyyy-MM-dd')
+					: '',
+			});
+		}
+	}, [displayData, form]);
+
+	const handleEditMode = () => {
+		setCurrentFormType(formType.EDIT);
+	};
+
+	const handleCancelEdit = () => {
 		if (prData) {
 			form.reset({
 				...prData,
 				date: prData.date ? format(new Date(prData.date), 'yyyy-MM-dd') : '',
 			});
 		}
-	}, [prData, form]);
+		setCurrentFormType(formType.VIEW);
+	};
 
 	const handleSubmit = async (data: PurchaseRequestData) => {
 		try {
-			const endpoint = isCreate
-				? '/api/procurement/purchase-requests'
-				: `/api/procurement/purchase-requests/${id}`;
+			setIsSubmitting(true);
 
-			const method = isCreate ? 'POST' : 'PUT';
+			console.log('Submitting data:', data);
 
-			const response = await fetch(endpoint, {
-				method,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
+			setUpdatedData({
+				...data,
+				status: data.status || (isCreate ? 'Draft' : updatedData?.status || ''),
+				currentStage:
+					data.currentStage ||
+					(isCreate ? 'Initial' : updatedData?.currentStage || ''),
+				date: data.date || format(new Date(), 'yyyy-MM-dd'),
 			});
 
-			if (!response.ok) {
-				throw new Error(
-					`Failed to ${isCreate ? 'create' : 'update'} purchase request`
-				);
-			}
-
-			// Handle successful submission
-			// Could redirect or show success message
+			setCurrentFormType(formType.VIEW);
+			toastSuccess({
+				message: isCreate
+					? 'Purchase Request Created'
+					: 'Purchase Request Updated',
+			});
 		} catch (error) {
 			console.error('Error submitting form:', error);
-			// Handle error - could show error message to user
+
+			toastError({
+				message: `Failed to ${isCreate ? 'create' : 'update'} the purchase request. Please try again.`,
+			});
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
 	return (
-		<div className="container mx-auto py-6" data-id={dataId}>
-			<Card>
-				<CardHeader>
-					<CardTitle>
-						{isCreate
-							? 'Create New Purchase Request'
-							: 'Purchase Request Details'}
-					</CardTitle>
-					<CardDescription>
-						{isCreate
-							? 'Fill in the details to create a new purchase request'
-							: `View details for purchase request ${id}`}
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(handleSubmit)}
-							className="space-y-6"
-						>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								{!isCreate && (
-									<FormField
-										control={form.control}
-										name="id"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>PR ID</FormLabel>
-												<FormControl>
-													<Input {...field} readOnly aria-readonly="true" />
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								)}
-
-								<FormField
-									control={form.control}
-									name="type"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Type</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													readOnly={isReadOnly}
-													aria-readonly={isReadOnly ? 'true' : 'false'}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="requestor"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Requestor</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													readOnly={isReadOnly}
-													aria-readonly={isReadOnly ? 'true' : 'false'}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="department"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Department</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													readOnly={isReadOnly}
-													aria-readonly={isReadOnly ? 'true' : 'false'}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{!isCreate && (
-									<FormField
-										control={form.control}
-										name="date"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Date</FormLabel>
-												<FormControl>
-													<Input {...field} readOnly aria-readonly="true" />
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								)}
-
-								{!isCreate && (
-									<FormField
-										control={form.control}
-										name="status"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Status</FormLabel>
-												<FormControl>
-													<Input {...field} readOnly aria-readonly="true" />
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								)}
-
-								<FormField
-									control={form.control}
-									name="amount"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Amount</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													type="number"
-													step="0.01"
-													readOnly={isReadOnly}
-													aria-readonly={isReadOnly ? 'true' : 'false'}
-													value={
-														isReadOnly
-															? `$${field.value.toFixed(2)}`
-															: field.value
-													}
-													onChange={isReadOnly ? undefined : field.onChange}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{!isCreate && (
-									<FormField
-										control={form.control}
-										name="currentStage"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Current Stage</FormLabel>
-												<FormControl>
-													<Input {...field} readOnly aria-readonly="true" />
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								)}
-
-								<FormField
-									control={form.control}
-									name="description"
-									render={({ field }) => (
-										<FormItem className="col-span-1 md:col-span-2">
-											<FormLabel>Description</FormLabel>
-											<FormControl>
-												<Textarea
-													{...field}
-													readOnly={isReadOnly}
-													aria-readonly={isReadOnly ? 'true' : 'false'}
-													className="min-h-[100px]"
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-
-							{!isReadOnly && (
-								<div className="flex justify-end space-x-2">
-									<Button type="submit">
-										{isCreate
-											? 'Create Purchase Request'
-											: 'Update Purchase Request'}
-									</Button>
-								</div>
-							)}
-						</form>
-					</Form>
-				</CardContent>
-			</Card>
-		</div>
+		<Card data-id={dataId} className="m-3">
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+					<PrHeader
+						control={form.control}
+						isCreate={isCreate}
+						isViewMode={isViewMode}
+						isReadOnly={isReadOnly}
+						isSubmitting={isSubmitting}
+						handleCancelEdit={handleCancelEdit}
+						isEditMode={isEditMode}
+						handleEditMode={handleEditMode}
+						isFormValid={isValid && isDirty}
+					/>
+				</form>
+			</Form>
+		</Card>
 	);
 };
 

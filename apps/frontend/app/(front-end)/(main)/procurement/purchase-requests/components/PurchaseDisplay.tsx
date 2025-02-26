@@ -138,16 +138,21 @@ const PurchaseDisplay: React.FC<Props> = ({ prData, fields, isLoading }) => {
 											{renderFieldValue(field, pr[field.key])}
 										</TableCell>
 									))}
-									<TableCell className="text-right flex flex-row justify-end items-center gap-4">
-										<Link href={`/procurement/purchase-requests/${pr.id}`}>
-											<Eye className="w-4 h-4" />
-										</Link>
-										<Trash
-											className="w-4 h-4 cursor-pointer"
+									<TableCell className="text-right flex flex-row justify-end items-center">
+										<Button variant={'ghost'} size={'icon'} asChild>
+											<Link href={`/procurement/purchase-requests/${pr.id}`}>
+												<Eye className="w-4 h-4" />
+											</Link>
+										</Button>
+										<Button
+											variant={'ghost'}
+											size={'sm'}
 											onClick={() => {
 												alert(pr.id);
 											}}
-										/>
+										>
+											<Trash className="w-4 h-4" />
+										</Button>
 									</TableCell>
 								</TableRow>
 							))}
