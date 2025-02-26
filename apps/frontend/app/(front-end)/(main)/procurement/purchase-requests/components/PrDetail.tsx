@@ -14,6 +14,13 @@ import { Button } from '@/components/ui/button';
 import { FileDown, Pencil, Printer, Save, Upload, X } from 'lucide-react';
 import { print_text } from '@/paraglide/messages';
 import { export_text } from '@/paraglide/messages';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import PrItem from './tabs/PrItem';
+import PrBudget from './tabs/PrBudget';
+import PrWorkFlow from './tabs/PrWorkFlow';
+import PrAttachment from './tabs/PrAttachment';
+import PrActivity from './tabs/PrActivity';
 
 const requestorSchema = z.object({
 	id: z.string(),
@@ -82,6 +89,15 @@ const purchaseRequestSchema = z
 
 export type PurchaseRequestData = z.infer<typeof purchaseRequestSchema>;
 
+// Change from const enum to regular enum
+enum TAB_PR {
+	ITEM = 'item',
+	BUDGET = 'budget',
+	WORKFLOW = 'workflow',
+	ATTACHMENT = 'attachment',
+	ACTIVITY = 'activity',
+}
+
 interface PrDetailProps {
 	prData?: PurchaseRequestData | null;
 	'data-id'?: string;
@@ -93,6 +109,7 @@ const PrDetail: React.FC<PrDetailProps> = ({
 	'data-id': dataId,
 	formType: initialFormType,
 }) => {
+	console.log(prData);
 	// Add state to track current form type
 	const [currentFormType, setCurrentFormType] =
 		useState<formType>(initialFormType);
@@ -308,6 +325,40 @@ const PrDetail: React.FC<PrDetailProps> = ({
 						isViewMode={isViewMode}
 						isReadOnly={isReadOnly}
 					/>
+
+					<Tabs
+						defaultValue={TAB_PR.ITEM}
+						className="w-full bg-white dark:bg-gray-800"
+					>
+						<TabsList className="grid w-full grid-cols-5">
+							{Object.values(TAB_PR).map((tab) => (
+								<TabsTrigger
+									key={tab}
+									value={tab}
+									className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+								>
+									{tab.charAt(0).toUpperCase() + tab.slice(1)}
+								</TabsTrigger>
+							))}
+						</TabsList>
+						<ScrollArea className="h-[400px] w-full rounded-md border mt-4">
+							<TabsContent value={TAB_PR.ITEM}>
+								<PrItem mode={currentFormType} />
+							</TabsContent>
+							<TabsContent value={TAB_PR.BUDGET}>
+								<PrBudget />
+							</TabsContent>
+							<TabsContent value={TAB_PR.WORKFLOW}>
+								<PrWorkFlow />
+							</TabsContent>
+							<TabsContent value={TAB_PR.ATTACHMENT}>
+								<PrAttachment />
+							</TabsContent>
+							<TabsContent value={TAB_PR.ACTIVITY}>
+								<PrActivity />
+							</TabsContent>
+						</ScrollArea>
+					</Tabs>
 				</form>
 			</Form>
 		</Card>
