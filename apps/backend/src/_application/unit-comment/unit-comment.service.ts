@@ -4,6 +4,7 @@ import {
   PrismaClient as dbTenant,
   tb_unit_comment,
 } from "@prisma-carmen-client-tenant";
+import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
 import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
 import QueryParams from "lib/types";
 import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
@@ -16,6 +17,7 @@ import { UnitCommentCreateDto, UnitCommentUpdateDto } from "shared-dtos";
 @Injectable()
 export class UnitCommentService {
   private db_tenant: dbTenant;
+  private db_system: dbSystem;
 
   constructor(
     private prismaClientManager: PrismaClientManagerService,
@@ -29,10 +31,33 @@ export class UnitCommentService {
       file: UnitCommentService.name,
       function: this._getById.name,
     });
-
-    const res = await db_tenant.tb_unit_comment.findUnique({
-      where: { id },
-    });
+    this.db_system = this.prismaClientManager.getSystemDB();
+    const res = await db_tenant.tb_unit_comment
+      .findUnique({
+        where: { id },
+      })
+      .then(async (res) => {
+        const userInfo = await this.db_system.tb_user.findMany({
+          where: { id: res.user_id },
+          select: {
+            id: true,
+            email: true,
+            tb_user_profile_tb_user_profile_user_idTotb_user: {
+              select: {
+                firstname: true,
+                lastname: true,
+                middlename: true,
+              },
+            },
+          },
+        });
+        return {
+          ...res,
+          email: userInfo[0].email,
+          userInfo:
+            userInfo[0].tb_user_profile_tb_user_profile_user_idTotb_user,
+        };
+      });
 
     return res;
   }
@@ -72,6 +97,7 @@ export class UnitCommentService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
+    this.db_system = this.prismaClientManager.getSystemDB();
 
     const max = await this.db_tenant.tb_unit_comment.count({
       where: q.where(),
@@ -81,9 +107,35 @@ export class UnitCommentService {
       ...q.findMany(),
     };
 
-    const listObj = await this.db_tenant.tb_unit_comment.findMany(include);
+    const listObj = await this.db_tenant.tb_unit_comment
+      .findMany(include)
+      .then((res) => {
+        return Promise.all(
+          res.map(async (item) => {
+            const userInfo = await this.db_system.tb_user.findMany({
+              where: { id: item.user_id },
+              select: {
+                email: true,
+                tb_user_profile_tb_user_profile_user_idTotb_user: {
+                  select: {
+                    firstname: true,
+                    lastname: true,
+                    middlename: true,
+                  },
+                },
+              },
+            });
+            return {
+              ...item,
+              email: userInfo[0].email,
+              userInfo:
+                userInfo[0].tb_user_profile_tb_user_profile_user_idTotb_user,
+            };
+          }),
+        );
+      });
 
-    const res: ResponseList<tb_unit_comment> = {
+    const res: ResponseList<any> = {
       data: listObj,
       pagination: {
         total: max,
