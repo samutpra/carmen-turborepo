@@ -21,7 +21,7 @@ import SortDropDown from '@/components/ui-custom/SortDropDown';
 import DisplayComponent from '@/components/templates/DisplayComponent';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import RecipeCuisineDialog from './RecipeCuisineDialog';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 enum RecipeCuisineField {
 	Name = 'name',

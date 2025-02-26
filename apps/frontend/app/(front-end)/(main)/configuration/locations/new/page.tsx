@@ -4,7 +4,7 @@ import React from 'react';
 import LocationForm from '../components/LocationForm';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
 import useAvailableUsers from './useAvailableUsers';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 const NewLocationPage = () => {
 	const { availableUsers, isLoading } = useAvailableUsers();

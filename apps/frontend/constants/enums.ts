@@ -1,3 +1,9 @@
+export const enum formType {
+	ADD = 'add',
+	EDIT = 'edit',
+	VIEW = 'view',
+}
+
 export const enum GOOD_RECIEIVE_NOTE_FIELDS {
 	DATE = 'date',
 	REF = 'ref',
@@ -21,7 +27,6 @@ export const enum PrField {
 	CurrentStage = 'currentStage',
 }
 
-
 export const enum UnitField {
 	Name = 'name',
 	Description = 'description',
@@ -41,7 +46,6 @@ export const enum LocationField {
 	Description = 'description',
 	isActive = 'is_active',
 }
-
 
 export const enum PoField {
 	Id = 'poId',

@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import CategoryDialog from './CategoryDialog';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import { toastError } from '@/components/ui-custom/Toast';
 import { ProductCategoryCreateModel } from '@/dtos/product-category.dto';
 

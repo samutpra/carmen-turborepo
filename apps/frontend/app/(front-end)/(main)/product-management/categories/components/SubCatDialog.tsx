@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/app/context/AuthContext';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitSubCategory } from '../actions/sub_category';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';

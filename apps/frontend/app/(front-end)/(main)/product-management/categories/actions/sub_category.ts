@@ -1,5 +1,5 @@
 import { ProductSubCategoryCreateModel } from '@/dtos/product-sub-category.dto';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 export const fetchSubProduct = async (token: string, tenantId: string) => {
 	try {

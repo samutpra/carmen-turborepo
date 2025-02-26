@@ -1,5 +1,5 @@
+import { formType } from '@/constants/enums';
 import { CurrencyCreateModel } from '@/dtos/currency.dto';
-import { formType } from '@/types/form_type';
 
 export const fetchCurrencies = async (
 	token: string,

@@ -24,7 +24,7 @@ import {
 } from '@/components/ui-custom/dialog/dialog';
 import PaginationComponent from '@/components/PaginationComponent';
 import * as m from '@/paraglide/messages.js';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import {
 	DropdownMenu,

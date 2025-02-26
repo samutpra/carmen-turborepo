@@ -7,7 +7,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { fetchLocationByID } from '../../actions/store_location';
 import ProductLoading from '@/components/ui-custom/Loading/ProductLoading';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 type Props = {
 	params: {

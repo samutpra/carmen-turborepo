@@ -1,5 +1,5 @@
 import { UnitCreateModel } from '@/dtos/unit.dto';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 interface UnitComment {
 	id: string;
 	message: string;

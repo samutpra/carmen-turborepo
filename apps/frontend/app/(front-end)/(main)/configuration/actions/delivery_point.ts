@@ -1,5 +1,5 @@
+import { formType } from '@/constants/enums';
 import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
-import { formType } from '@/types/form_type';
 
 export const fetchDeliveryPoints = async (
 	token: string,
@@ -55,12 +55,9 @@ export const fetchDeliveryPoints = async (
 	}
 };
 
-export const fetchListDP = async (
-	token: string,
-	tenantId: string,
-) => {
+export const fetchListDP = async (token: string, tenantId: string) => {
 	try {
-		const perpage = 99
+		const perpage = 99;
 		const url = `/api/configuration/delivery-point?perpage=${perpage}`;
 		const options = {
 			method: 'GET',

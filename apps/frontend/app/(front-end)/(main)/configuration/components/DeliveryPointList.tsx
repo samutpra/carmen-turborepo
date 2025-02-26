@@ -9,7 +9,7 @@ import {
 	fetchDeliveryPoints,
 } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';

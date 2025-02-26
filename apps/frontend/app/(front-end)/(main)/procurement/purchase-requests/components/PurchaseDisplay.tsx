@@ -1,22 +1,22 @@
 import { PrType } from '@/lib/types';
 import React from 'react';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/lib/i18n';
-import { Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Eye, Trash } from 'lucide-react';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import { CardsContainerSkeleton } from '@/components/ui-custom/Loading/CardsContainerSkeleton';
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 import { formatAmount } from '@/lib/formatPrice';
+import StatusBadge from '@/components/ui-custom/status-badge';
 
 interface Props {
 	prData: PrType[];
@@ -56,7 +56,7 @@ const renderFieldValue = (
 		case 'amount':
 			return <span className="font-mono">{formatAmount(value)}</span>;
 		case 'badge':
-			return <Badge>{value}</Badge>;
+			return <StatusBadge status={value} />;
 		default:
 			return value;
 	}
@@ -91,11 +91,19 @@ const PurchaseDisplay: React.FC<Props> = ({ prData, fields, isLoading }) => {
 										))}
 									</div>
 								</CardContent>
-								<CardFooter className="flex justify-end gap-2 pt-0 pb-2 px-2">
+								<CardFooter className="flex justify-end">
 									<Button asChild variant="ghost">
 										<Link href={`/procurement/purchase-requests/${pr.id}`}>
-											<Eye className="h-4 w-4" />
+											<Eye />
 										</Link>
+									</Button>
+									<Button
+										variant="ghost"
+										onClick={() => {
+											alert(pr.id);
+										}}
+									>
+										<Trash />
 									</Button>
 								</CardFooter>
 							</Card>
@@ -130,12 +138,16 @@ const PurchaseDisplay: React.FC<Props> = ({ prData, fields, isLoading }) => {
 											{renderFieldValue(field, pr[field.key])}
 										</TableCell>
 									))}
-									<TableCell className="text-right">
-										<Button asChild variant="ghost" size="sm">
-											<Link href={`/procurement/purchase-requests/${pr.id}`}>
-												<Eye className="h-4 w-4" />
-											</Link>
-										</Button>
+									<TableCell className="text-right flex flex-row justify-end items-center gap-4">
+										<Link href={`/procurement/purchase-requests/${pr.id}`}>
+											<Eye className="w-4 h-4" />
+										</Link>
+										<Trash
+											className="w-4 h-4 cursor-pointer"
+											onClick={() => {
+												alert(pr.id);
+											}}
+										/>
 									</TableCell>
 								</TableRow>
 							))}

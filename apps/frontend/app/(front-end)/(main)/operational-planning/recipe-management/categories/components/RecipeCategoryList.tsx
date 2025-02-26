@@ -8,7 +8,7 @@ import { useURL } from '@/hooks/useURL';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import React, { useCallback, useEffect, useState } from 'react';
 import * as m from '@/paraglide/messages.js';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
 import RecipeCategoryDialog from './RecipeCategoryDialog';

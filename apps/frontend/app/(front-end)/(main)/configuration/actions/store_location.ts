@@ -1,6 +1,5 @@
 import { LocationCreateModel } from '@/dtos/location.dto';
-import { formType } from '@/types/form_type';
-
+import { formType } from '@/constants/enums';
 export const fetchStoreLocations = async (
 	token: string,
 	tenantId: string,

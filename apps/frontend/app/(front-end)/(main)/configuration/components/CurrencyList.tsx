@@ -14,7 +14,7 @@ import {
 	findChangedRates,
 	prepareCurrentRates,
 } from '../actions/currency';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';

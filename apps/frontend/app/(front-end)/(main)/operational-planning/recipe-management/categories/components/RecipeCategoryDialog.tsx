@@ -26,7 +26,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import * as m from '@/paraglide/messages.js';
 import {
 	RecipeCategoryCreateModel,

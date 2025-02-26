@@ -1,10 +1,15 @@
+import { formType } from '@/constants/enums';
 import { DepartmentCreateModel } from '@/dtos/department.dto';
-import { formType } from '@/types/form_type';
 
 export const fetchDepartments = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string, page?: string; sort?: string } = {}
+	params: {
+		search?: string;
+		status?: string;
+		page?: string;
+		sort?: string;
+	} = {}
 ) => {
 	try {
 		if (!token) {

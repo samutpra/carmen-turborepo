@@ -28,7 +28,7 @@ import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { Textarea } from '@/components/ui/textarea';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { submitDepartment } from '../actions/department';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import * as m from '@/paraglide/messages.js';
 import {
 	DepartmentCreateModel,
