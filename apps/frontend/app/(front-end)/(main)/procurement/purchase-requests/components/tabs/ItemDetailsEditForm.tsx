@@ -13,10 +13,19 @@ import { PurchaseRequestItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { CalendarIcon, Edit, Package, TruckIcon, X, XIcon } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import PendingPurchaseOrders from './PendingPurchaseOrders';
 import InventoryBreakdown from './InventoryBreakdown';
 import { formType } from '@/constants/enums';
+import { useLocation } from '@/app/(front-end)/hooks/useLocation';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import { useProduct } from '@/app/(front-end)/hooks/useProduct';
 
 interface ItemDetailsFormProps {
 	onSave: (formData: PurchaseRequestItem) => void;
@@ -88,9 +97,49 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 	initialData,
 	mode,
 }) => {
-	const [formData, setFormData] = useState<PurchaseRequestItem>(
-		initialData ? { ...defaultValue, ...initialData } : defaultValue
-	);
+	const { locations } = useLocation();
+	const { products } = useProduct();
+
+	const getProductIdByName = (productName: string): string => {
+		const product = products.find((prod) => prod.name === productName);
+		return product?.id || '';
+	};
+
+	const getLocationIdByName = (locationName: string): string => {
+		const location = locations.find((loc) => loc.name === locationName);
+		return location?.id || '';
+	};
+
+	const getInitialFormData = () => {
+		if (!initialData) return defaultValue;
+
+		const formData = { ...defaultValue, ...initialData };
+
+		if (mode === formType.EDIT || mode === formType.VIEW) {
+			if (
+				formData.location &&
+				!locations.some((loc) => loc.id === formData.location)
+			) {
+				formData.location = getLocationIdByName(formData.location);
+			}
+			if (
+				formData.name &&
+				!products.some((prod) => prod.id === formData.name)
+			) {
+				formData.name = getProductIdByName(formData.name);
+			}
+		}
+
+		return formData;
+	};
+
+	const [formData, setFormData] =
+		useState<PurchaseRequestItem>(getInitialFormData());
+
+	useEffect(() => {
+		setFormData(getInitialFormData());
+	}, [initialData, locations, products]);
+
 	const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
 		formData.deliveryDate
 	);
@@ -112,6 +161,26 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 		event.preventDefault();
 		onSave(formData);
 	};
+
+	const handleLocationChange = (locationId: string) => {
+		setFormData((prevData) => ({
+			...prevData,
+			location: locationId,
+		}));
+	};
+
+	const handleProductChange = (productId: string) => {
+		setFormData((prevData) => ({
+			...prevData,
+			name: productId,
+		}));
+	};
+	// Helper function to get location name by ID
+	const getLocationNameById = (locationId: string) => {
+		const location = locations.find((loc) => loc.id === locationId);
+		return location ? location.name : '';
+	};
+
 	const FormField = ({
 		id,
 		label,
@@ -134,7 +203,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 				</Label>
 			</div>
 			{mode === formType.VIEW ? (
-				<div className="mt-1 text-sm">
+				<div className="mt-1">
 					{(() => {
 						const value = formData[id as keyof PurchaseRequestItem];
 						if (value instanceof Date) {
@@ -168,7 +237,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 				</h2>
 				<div className="flex items-center gap-2">
 					{mode === formType.VIEW && (
-						<Button variant="outline">
+						<Button variant={'outline'} size={'sm'}>
 							<Edit />
 							Edit
 						</Button>
@@ -176,106 +245,114 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 					<div className="flex flex-wrap justify-end gap-2 mt-4">
 						{mode === formType.VIEW ? (
 							<>
-								<Button variant="outline" onClick={onCancel}>
+								<Button variant={'outline'} size={'sm'} onClick={onCancel}>
 									Close
 								</Button>
 							</>
 						) : (
 							<>
-								<Button variant="outline" onClick={onCancel}>
+								<Button variant={'outline'} size={'sm'} onClick={onCancel}>
 									Cancel
 								</Button>
-								<Button type="submit" form="itemForm">
+								<Button type="submit" form="itemForm" size={'sm'}>
 									Save
 								</Button>
 							</>
 						)}
 					</div>
-					<Button variant="ghost" size="icon" onClick={onCancel}>
+					<Button variant={'ghost'} size={'icon'} onClick={onCancel}>
 						<X />
 					</Button>
 				</div>
 			</div>
 			<ScrollArea className="h-[calc(100vh-200px)]">
-				<form onSubmit={handleSubmit} className="space-y-4 p-4">
-					{/* Basic Item Information */}
-					<div>
-						<div className="flex justify-between items-center mb-2">
-							<h3 className="text-lg font-semibold">Basic Information</h3>
-							<Badge>{formData.status}</Badge>
-						</div>
-						<div className="grid grid-cols-1 sm:grid-cols-7 gap-2">
-							<FormField id="location" label="Location" required>
-								<Input
-									id="location"
-									name="location"
+				<form onSubmit={handleSubmit} className="space-y-2 p-3">
+					<div className="flex justify-between items-center mb-2">
+						<h3 className="text-lg font-semibold">Basic Information</h3>
+						<Badge>{formData.status}</Badge>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+						<FormField id="location" label="Location" required>
+							{mode === formType.VIEW ? (
+								<div className="mt-1">
+									{getLocationNameById(formData.location)}
+								</div>
+							) : (
+								<Select
 									value={formData.location}
+									onValueChange={handleLocationChange}
+								>
+									<SelectTrigger className="h-8">
+										<SelectValue placeholder="Select location..." />
+									</SelectTrigger>
+									<SelectContent>
+										{locations.map((location) => (
+											<SelectItem key={location.id} value={location.id ?? ''}>
+												{location.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							)}
+						</FormField>
+						<div className="sm:col-span-2">
+							<FormField id="name" label="Product name" required>
+								<Select
+									value={formData.name}
+									onValueChange={handleProductChange}
+								>
+									<SelectTrigger className="h-8">
+										<SelectValue placeholder="Select product..." />
+									</SelectTrigger>
+									<SelectContent>
+										{products.map((product) => (
+											<SelectItem key={product.id} value={product.id ?? ''}>
+												{product.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</FormField>
+						</div>
+
+						<div className="sm:col-span-1">
+							<FormField id="jobcode" label="Job code">
+								<Input
+									id="jobcode"
+									name="jobcode"
+									value={formData.jobCode}
 									onChange={handleInputChange}
 									required
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
-							<div className="sm:col-span-2">
-								<FormField id="name" label="Product name" required>
-									<Input
-										id="name"
-										name="Product name"
-										value={formData.name}
-										onChange={handleInputChange}
-										required
-										disabled={mode === formType.VIEW}
-										className="h-8 text-sm"
-									/>
-								</FormField>
-							</div>
-							<div className="sm:col-span-3">
-								<FormField id="description" label="Description" readOnly>
-									<Input
-										id="description"
-										name="description"
-										value={formData.description}
-										onChange={handleInputChange}
-										readOnly={true}
-										className="h-8 text-sm"
-									/>
-								</FormField>
-							</div>
-							<div className="sm:col-span-1">
-								<FormField id="jobcode" label="Job code">
-									<Input
-										id="jobcode"
-										name="jobcode"
-										value={formData.jobCode}
-										onChange={handleInputChange}
-										required
-										disabled={mode === formType.VIEW}
-										className="h-8 text-sm"
-									/>
-								</FormField>
-							</div>
 						</div>
-						<div className="w-full">
-							<FormField id="comment" label="Comment">
-								{mode === formType.VIEW ? (
-									<div className="mt-1 text-sm">{formData.comment}</div>
-								) : (
-									<Textarea
-										id="comment"
-										name="comment"
-										value={formData.comment}
-										onChange={handleInputChange}
-										placeholder="Add any additional notes here"
-										className="text-sm h-8"
-									/>
-								)}
-							</FormField>
-						</div>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+						<FormField id="description" label="Description" readOnly>
+							<Textarea
+								id="description"
+								name="description"
+								value={formData.description}
+								onChange={handleInputChange}
+								className="h-8 w-full"
+							/>
+						</FormField>
+						<FormField id="comment" label="Comment">
+							<Textarea
+								id="comment"
+								name="comment"
+								value={formData.comment}
+								onChange={handleInputChange}
+								placeholder="Add any additional notes here"
+								className="h-8 w-full"
+							/>
+						</FormField>
 					</div>
 
 					<Separator className="my-2" />
 
-					{/* Quantity and Delivery Section */}
 					<div>
 						<div className="flex justify-between items-center mb-2">
 							<h3 className="text-lg font-semibold">Quantity and Delivery</h3>
@@ -350,7 +427,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									onChange={handleInputChange}
 									required
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 							<FormField
@@ -369,7 +446,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									onChange={handleInputChange}
 									required
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 							<FormField
@@ -386,7 +463,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									value={formData.quantityApproved}
 									onChange={handleInputChange}
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 							<FormField id="foc" label="FOC Qty" baseValue="0">
@@ -399,7 +476,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									value={formData.foc}
 									onChange={handleInputChange}
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 							<FormField id="deliveryDate" label="Delivery Date" required>
@@ -413,7 +490,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 											<Button
 												variant={'outline'}
 												className={cn(
-													'w-full justify-start text-left font-normal h-8 text-sm',
+													'w-full justify-start text-left font-normal h-8',
 													!deliveryDate && 'text-muted-foreground'
 												)}
 											>
@@ -449,7 +526,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									value={formData.deliveryPoint}
 									onChange={handleInputChange}
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 						</div>
@@ -499,7 +576,7 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									onChange={handleInputChange}
 									placeholder="Vendor name"
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 							<FormField id="pricelistNumber" label="Pricelist Number">
@@ -510,25 +587,11 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 									onChange={handleInputChange}
 									placeholder="Pricelist #"
 									disabled={mode === formType.VIEW}
-									className="h-8 text-sm"
+									className="h-8"
 								/>
 							</FormField>
 						</div>
 					</div>
-					<Separator className="my-2" />
-
-					{/* Pricing Section */}
-					<div>
-						{/* <PricingFormComponent
-                            initialMode={mode}
-                            data={formData}
-                        /> */}
-					</div>
-
-					<Separator className="my-2" />
-
-					{/* Vendor and Additional Information Section */}
-
 					<Separator className="my-2" />
 				</form>
 			</ScrollArea>

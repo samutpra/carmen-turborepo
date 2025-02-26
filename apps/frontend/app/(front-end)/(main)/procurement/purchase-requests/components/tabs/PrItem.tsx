@@ -45,8 +45,6 @@ interface Props {
 }
 
 const PrItem = ({ mode }: Props) => {
-	console.log('mode', mode);
-
 	const [items, setItems] = useState<PurchaseRequestItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedItem, setSelectedItem] = useState<PurchaseRequestItem | null>(
@@ -508,7 +506,7 @@ const PrItem = ({ mode }: Props) => {
 						aria-label="Add new item"
 						tabIndex={0}
 					>
-						<Plus className="mr-1 h-4 w-4" />
+						<Plus />
 						Add Item
 					</Button>
 				)}
@@ -528,7 +526,7 @@ const PrItem = ({ mode }: Props) => {
 									aria-label="Accept selected items"
 									tabIndex={0}
 								>
-									<CheckCircle className="mr-1 h-4 w-4" />
+									<CheckCircle />
 									Accept Selected
 								</Button>
 							</TooltipTrigger>
@@ -549,7 +547,7 @@ const PrItem = ({ mode }: Props) => {
 									aria-label="Reject selected items"
 									tabIndex={0}
 								>
-									<XCircle className="mr-1 h-4 w-4" />
+									<XCircle />
 									Reject Selected
 								</Button>
 							</TooltipTrigger>
@@ -570,7 +568,7 @@ const PrItem = ({ mode }: Props) => {
 									aria-label="Review selected items"
 									tabIndex={0}
 								>
-									<RotateCcw className="mr-1 h-4 w-4" />
+									<RotateCcw />
 									Review Selected
 								</Button>
 							</TooltipTrigger>
@@ -591,7 +589,7 @@ const PrItem = ({ mode }: Props) => {
 									aria-label="Split selected items"
 									tabIndex={0}
 								>
-									<Split className="mr-1 h-4 w-4" />
+									<Split />
 									Split Selected
 								</Button>
 							</TooltipTrigger>
