@@ -1,10 +1,15 @@
+import { formType } from '@/constants/enums';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
-import { formType } from '@/types/form_type';
 
 export const fetchAllVendors = async (
 	token: string,
 	tenantId: string,
-	params: { search?: string; status?: string; page?: string, sort?: string } = {}
+	params: {
+		search?: string;
+		status?: string;
+		page?: string;
+		sort?: string;
+	} = {}
 ) => {
 	try {
 		const query = new URLSearchParams();

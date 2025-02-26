@@ -2,10 +2,10 @@
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import VendorDetails from '../../components/VendorDetails';
-import { fetchVendor } from '../../actions/vendor';
 import { useAuth } from '@/app/context/AuthContext';
-import { formType } from '@/types/form_type';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
+import { fetchVendor } from '@/app/(front-end)/services/vendor';
+import { formType } from '@/constants/enums';
 
 const VendorIDPage = () => {
 	const { id } = useParams() as { id: string };
