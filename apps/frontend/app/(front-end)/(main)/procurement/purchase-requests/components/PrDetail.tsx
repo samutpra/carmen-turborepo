@@ -10,20 +10,75 @@ import { Form } from '@/components/ui/form';
 import { formType } from '@/constants/enums';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import PrHeader from './PrHeader';
+import { Button } from '@/components/ui/button';
+import { FileDown, Pencil, Printer, Save, Upload, X } from 'lucide-react';
+import { print_text } from '@/paraglide/messages';
+import { export_text } from '@/paraglide/messages';
 
-const purchaseRequestSchema = z.object({
-	id: z.string().optional(),
-	type: z.string().min(1, { message: 'Type is required' }),
-	description: z.string().min(1, { message: 'Description is required' }),
-	requestor: z.string().min(1, { message: 'Requestor is required' }),
-	department: z.string().min(1, { message: 'Department is required' }),
-	date: z.string().optional(),
-	status: z.string().optional(),
-	amount: z.coerce
-		.number()
-		.min(0, { message: 'Amount must be a positive number' }),
-	currentStage: z.string().optional(),
+const requestorSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	department: z.string(),
 });
+
+const purchaseRequestSchema = z
+	.object({
+		id: z.string().optional(),
+		refNumber: z.string().optional(),
+		type: z.string().min(1, { message: 'Type is required' }),
+		description: z.string().min(1, { message: 'Description is required' }),
+		requestor: z.union([
+			z.string().min(1, { message: 'Requestor is required' }),
+			requestorSchema,
+		]),
+		requestorId: z.string().optional(),
+		department: z.string().min(1, { message: 'Department is required' }),
+		date: z.union([z.string(), z.date()]).optional(),
+		status: z.string().optional(),
+		workflowStatus: z.string().optional(),
+		location: z.string().optional(),
+		jobCode: z.string().optional(),
+		estimatedTotal: z.number().optional(),
+		vendor: z.string().optional(),
+		vendorId: z.union([z.string(), z.number()]).optional(),
+		deliveryDate: z.union([z.string(), z.date()]).optional(),
+		currency: z.string().optional(),
+		baseCurrencyCode: z.string().optional(),
+		baseSubTotalPrice: z.number().optional(),
+		subTotalPrice: z.number().optional(),
+		baseNetAmount: z.number().optional(),
+		netAmount: z.number().optional(),
+		baseDiscAmount: z.number().optional(),
+		discountAmount: z.number().optional(),
+		baseTaxAmount: z.number().optional(),
+		taxAmount: z.number().optional(),
+		baseTotalAmount: z.number().optional(),
+
+		// Original fields
+		amount: z.coerce
+			.number()
+			.min(0, { message: 'Amount must be a positive number' })
+			.optional(),
+		currentStage: z.string().optional(),
+
+		// API compatibility fields
+		totalAmount: z.coerce
+			.number()
+			.min(0, { message: 'Amount must be a positive number' })
+			.optional(),
+		currentWorkflowStage: z.string().optional(),
+	})
+	.transform((data) => {
+		// Ensure both old and new field names work
+		return {
+			...data,
+			amount: data.amount || data.totalAmount || 0,
+			totalAmount: data.totalAmount || data.amount || 0,
+			currentStage: data.currentStage || data.currentWorkflowStage || '',
+			currentWorkflowStage:
+				data.currentWorkflowStage || data.currentStage || '',
+		};
+	});
 
 export type PurchaseRequestData = z.infer<typeof purchaseRequestSchema>;
 
@@ -142,20 +197,116 @@ const PrDetail: React.FC<PrDetailProps> = ({
 		}
 	};
 
+	const renderActionButtons = () => {
+		if (isViewMode) {
+			return (
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={handleEditMode}
+					className="ml-auto"
+					aria-label="Edit purchase request"
+				>
+					<Pencil />
+					Edit
+				</Button>
+			);
+		}
+
+		if (isEditMode) {
+			return (
+				<>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={handleCancelEdit}
+						disabled={isSubmitting}
+						aria-label="Cancel editing"
+					>
+						<X />
+						Cancel
+					</Button>
+
+					<Button
+						size="sm"
+						type="submit"
+						disabled={isSubmitting}
+						aria-label={
+							isCreate ? 'Create purchase request' : 'Update purchase request'
+						}
+					>
+						<Save />
+						{isSubmitting ? (
+							<span>{isCreate ? 'Creating...' : 'Updating...'}</span>
+						) : isCreate ? (
+							'Create Purchase Request'
+						) : (
+							'Update Purchase Request'
+						)}
+					</Button>
+				</>
+			);
+		}
+
+		if (isCreate) {
+			return (
+				<Button
+					type="submit"
+					size="sm"
+					disabled={isSubmitting || !(isValid && isDirty)}
+					aria-label="Create purchase request"
+				>
+					<Save />
+					{isSubmitting ? 'Creating...' : 'Create Purchase Request'}
+				</Button>
+			);
+		}
+
+		return null;
+	};
+
 	return (
-		<Card data-id={dataId} className="m-3">
+		<Card data-id={dataId} className="m-3 p-3">
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+					<div className="flex justify-between mb-2">
+						<p className="text-lg font-bold">Purchase Request</p>
+						<div className="flex flex-row gap-2">
+							{renderActionButtons()}
+							<Button
+								variant="outline"
+								size="sm"
+								aria-label="Export purchase request"
+							>
+								<FileDown className="mr-1 h-4 w-4" />
+								{export_text()}
+							</Button>
+
+							<Button
+								variant="outline"
+								size="sm"
+								aria-label="Print purchase request"
+							>
+								<Printer className="mr-1 h-4 w-4" />
+								{print_text()}
+							</Button>
+
+							<Button
+								variant="outline"
+								size="sm"
+								aria-label="Share purchase request"
+							>
+								<Upload className="mr-1 h-4 w-4" />
+								Share
+							</Button>
+						</div>
+					</div>
 					<PrHeader
 						control={form.control}
 						isCreate={isCreate}
 						isViewMode={isViewMode}
 						isReadOnly={isReadOnly}
-						isSubmitting={isSubmitting}
-						handleCancelEdit={handleCancelEdit}
-						isEditMode={isEditMode}
-						handleEditMode={handleEditMode}
-						isFormValid={isValid && isDirty}
 					/>
 				</form>
 			</Form>

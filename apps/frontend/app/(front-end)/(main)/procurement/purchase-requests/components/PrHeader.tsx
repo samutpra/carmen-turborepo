@@ -12,20 +12,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PurchaseRequestData } from './PrDetail';
-import { Button } from '@/components/ui/button';
-import { FileDown, Pencil, Printer, Save, Upload, X } from 'lucide-react';
-import { export_text, print_text } from '@/paraglide/messages';
+import { Card } from '@/components/ui/card';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 
 interface PrHeaderProps {
 	control: Control<PurchaseRequestData>;
 	isCreate: boolean;
 	isViewMode: boolean;
 	isReadOnly: boolean;
-	isEditMode: boolean;
-	handleCancelEdit: () => void;
-	isSubmitting: boolean;
-	handleEditMode: () => void;
-	isFormValid?: boolean;
 }
 
 const PrHeader: React.FC<PrHeaderProps> = ({
@@ -33,118 +33,12 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 	isCreate,
 	isViewMode,
 	isReadOnly,
-	isEditMode,
-	handleCancelEdit,
-	isSubmitting,
-	handleEditMode,
-	isFormValid = true,
 }) => {
-	const renderActionButtons = () => {
-		if (isViewMode) {
-			return (
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={handleEditMode}
-					className="ml-auto"
-					aria-label="Edit purchase request"
-				>
-					<Pencil />
-					Edit
-				</Button>
-			);
-		}
-
-		if (isEditMode) {
-			return (
-				<>
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onClick={handleCancelEdit}
-						disabled={isSubmitting}
-						aria-label="Cancel editing"
-					>
-						<X />
-						Cancel
-					</Button>
-
-					<Button
-						size="sm"
-						type="submit"
-						disabled={isSubmitting}
-						aria-label={
-							isCreate ? 'Create purchase request' : 'Update purchase request'
-						}
-					>
-						<Save />
-						{isSubmitting ? (
-							<span>{isCreate ? 'Creating...' : 'Updating...'}</span>
-						) : isCreate ? (
-							'Create Purchase Request'
-						) : (
-							'Update Purchase Request'
-						)}
-					</Button>
-				</>
-			);
-		}
-
-		if (isCreate) {
-			return (
-				<Button
-					type="submit"
-					size="sm"
-					disabled={isSubmitting || !isFormValid}
-					aria-label="Create purchase request"
-				>
-					<Save />
-					{isSubmitting ? 'Creating...' : 'Create Purchase Request'}
-				</Button>
-			);
-		}
-
-		return null;
-	};
+	// Array of PR types for the dropdown
+	const prTypes = ['General Purchase', 'Market List', 'Asset Purchase'];
 
 	return (
-		<div className="p-3">
-			<div className="flex justify-between">
-				<p className="text-lg font-bold">Purchase Request</p>
-
-				<div className="flex flex-row gap-2">
-					{renderActionButtons()}
-
-					<Button
-						variant="outline"
-						size="sm"
-						aria-label="Export purchase request"
-					>
-						<FileDown className="mr-1 h-4 w-4" />
-						{export_text()}
-					</Button>
-
-					<Button
-						variant="outline"
-						size="sm"
-						aria-label="Print purchase request"
-					>
-						<Printer className="mr-1 h-4 w-4" />
-						{print_text()}
-					</Button>
-
-					<Button
-						variant="outline"
-						size="sm"
-						aria-label="Share purchase request"
-					>
-						<Upload className="mr-1 h-4 w-4" />
-						Share
-					</Button>
-				</div>
-			</div>
-
+		<Card className="p-3">
 			<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
 				{!isCreate && (
 					<FormField
@@ -174,12 +68,31 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 						<FormItem>
 							<FormLabel>Type</FormLabel>
 							<FormControl>
-								<Input
-									{...field}
-									readOnly={isReadOnly}
-									aria-readonly={isReadOnly ? 'true' : 'false'}
-									disabled={isViewMode}
-								/>
+								{isReadOnly ? (
+									<Input
+										{...field}
+										readOnly={isReadOnly}
+										aria-readonly={isReadOnly ? 'true' : 'false'}
+										disabled={isViewMode}
+									/>
+								) : (
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										disabled={isViewMode}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select PR Type" />
+										</SelectTrigger>
+										<SelectContent>
+											{prTypes.map((type) => (
+												<SelectItem key={type} value={type}>
+													{type}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								)}
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -198,6 +111,18 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 									readOnly={isReadOnly}
 									aria-readonly={isReadOnly ? 'true' : 'false'}
 									disabled={isViewMode}
+									value={
+										typeof field.value === 'object'
+											? field.value.name
+											: field.value
+									}
+									onChange={(e) => {
+										if (typeof field.value === 'object') {
+											field.onChange({ ...field.value, name: e.target.value });
+										} else {
+											field.onChange(e.target.value);
+										}
+									}}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -237,6 +162,13 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 										readOnly
 										aria-readonly="true"
 										disabled={isViewMode}
+										value={
+											typeof field.value === 'object' && field.value !== null
+												? field.value instanceof Date
+													? field.value.toLocaleDateString()
+													: String(field.value)
+												: field.value
+										}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -268,7 +200,7 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 
 				<FormField
 					control={control}
-					name="amount"
+					name="totalAmount"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Amount</FormLabel>
@@ -296,7 +228,7 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 				{!isCreate && (
 					<FormField
 						control={control}
-						name="currentStage"
+						name="currentWorkflowStage"
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Current Stage</FormLabel>
@@ -334,7 +266,7 @@ const PrHeader: React.FC<PrHeaderProps> = ({
 					)}
 				/>
 			</div>
-		</div>
+		</Card>
 	);
 };
 
