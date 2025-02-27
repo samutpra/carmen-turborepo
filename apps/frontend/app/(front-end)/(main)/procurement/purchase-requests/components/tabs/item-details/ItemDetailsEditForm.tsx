@@ -18,6 +18,7 @@ import PricingInformation from './PricingInformation';
 import QuantityAndDelivery from './QuantityAndDelivery';
 import VendorInformation from './VendorInformation';
 import BasicInformation from './BasicInformation';
+import { useCurrency } from '@/app/(front-end)/hooks/useCurrency';
 
 interface ItemDetailsFormProps {
 	onSave: (formData: PurchaseRequestItem) => void;
@@ -156,6 +157,10 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 	const { products } = useProduct();
 	const { units } = useUnit();
 	const { vendors } = useVendor();
+	const { currencies } = useCurrency();
+
+
+	console.log('currency', currencies);
 
 	const getProductIdByName = (productName: string): string => {
 		const product = products.find((prod) => prod.name === productName);
@@ -318,7 +323,15 @@ const ItemDetailsEditForm: React.FC<ItemDetailsFormProps> = ({
 
 						<Separator className="my-2" />
 
-						<PricingInformation form={form} mode={mode} />
+						<PricingInformation
+							form={form}
+							mode={mode}
+							currencies={currencies.map(currency => ({
+								id: currency.id || '',
+								code: currency.code,
+								name: currency.name
+							}))}
+						/>
 
 						<Separator className="my-2" />
 					</form>
