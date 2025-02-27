@@ -149,7 +149,7 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
                     value={message}
                     onChange={handleMessageChange}
                     className={cn(
-                        "min-h-20 text-sm focus-visible:ring-1",
+                        "min-h-10 text-sm focus-visible:ring-1",
                         messageError && "border-red-500 focus-visible:ring-red-500"
                     )}
                 />
@@ -212,8 +212,8 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
             )}
 
             {/* Action buttons */}
-            <div className="flex justify-between items-center pt-1">
-                <div className="flex items-center gap-1">
+            <div className="flex justify-between items-center">
+                <div className="flex items-center">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -227,18 +227,18 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-xs h-8 gap-1"
+                                className="text-[10px] gap-1"
                                 disabled={isUploading}
                             >
-                                <Paperclip className="h-4 w-4" />
+                                <Paperclip />
                                 Attach
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
-                            <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                            <DropdownMenuItem className="text-[10px]" onClick={() => fileInputRef.current?.click()}>
                                 Upload files
                             </DropdownMenuItem>
-                            <DropdownMenuItem
+                            <DropdownMenuItem className="text-[10px]"
                                 onClick={() => {
                                     if (fileInputRef.current) {
                                         fileInputRef.current.accept = "image/*";
@@ -255,13 +255,13 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
                 <Button
                     size="sm"
                     className={cn(
-                        "text-xs h-8 gap-1",
+                        "text-[10px] gap-1",
                         isSubmitDisabled && "opacity-50 cursor-not-allowed"
                     )}
                     disabled={isSubmitDisabled}
                     onClick={handleSubmit}
                 >
-                    <Send className="h-4 w-4" />
+                    <Send />
                     Send
                 </Button>
             </div>

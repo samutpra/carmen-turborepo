@@ -54,8 +54,6 @@ export const CommentAttachments = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	console.log('authState', authState?.user?.username);
-
 	const handleToggle = () => {
 		setOpen(!open);
 	};

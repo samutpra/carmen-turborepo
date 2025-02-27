@@ -32,7 +32,7 @@ const Navbar = () => {
 
 	return (
 		<header
-			className="fixed top-0 left-0 right-0 border-b bg-background"
+			className="fixed top-0 left-0 right-0 border-b bg-background z-50"
 			data-id="navbar"
 		>
 			<div className="px-4 py-2 sm:p-[8px]" data-id="navbar-container">
