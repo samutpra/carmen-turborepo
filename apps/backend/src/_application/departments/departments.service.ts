@@ -1,20 +1,20 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils/exceptions";
-import { DepartmentCreateDto, DepartmentUpdateDto } from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import { DepartmentCreateDto, DepartmentUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_department,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma-carmen-client-tenant';
 
 @Injectable()
 export class DepartmentsService {
@@ -46,7 +46,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
     const res: ResponseSingle<tb_department> = {
       data: oneObj,
@@ -100,7 +100,7 @@ export class DepartmentsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Department already exists",
+        message: 'Department already exists',
         id: found.id,
       });
     }
@@ -126,7 +126,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
 
     const updateObj = await this.db_tenant.tb_department.update({
@@ -150,7 +150,7 @@ export class DepartmentsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
 
     await this.db_tenant.tb_department.delete({
