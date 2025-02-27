@@ -5,6 +5,12 @@
 body {
 	color: var(--foreground);
 	background: var(--background);
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+	font-weight: var(--font-weight);
+	line-height: var(--line-height);
+	color: var(--text-color);
+	font-style: var(--font-style);
 	/* font-family: Arial, Helvetica, sans-serif; */
 }
 
@@ -43,6 +49,12 @@ body {
 		--sidebar-accent-foreground: 240 5.9% 10%;
 		--sidebar-border: 220 13% 91%;
 		--sidebar-ring: 217.2 91.2% 59.8%;
+		--font-family: var(--font-geist-sans);
+		--font-size: 16px;
+		--font-weight: 400;
+		--line-height: 1.5;
+		--text-color: #0f172a;
+		--font-style: normal;
 	}
 
 	.dark {

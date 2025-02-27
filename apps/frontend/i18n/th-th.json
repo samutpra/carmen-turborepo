@@ -241,5 +241,6 @@
 	"purchase_request_title": "คำขอสั่งซื้อ",
 	"po_title": "ใบสั่งซื้อ",
 	"grn_title": "ใบรับสินค้า",
-	"sign_in_fail": "ลงชื่อเข้าใช้ล้มเหลว"
+	"sign_in_fail": "ลงชื่อเข้าใช้ล้มเหลว",
+	"system_configuration": "การกำหนดค่าระบบ"
 }
