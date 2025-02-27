@@ -24,7 +24,7 @@ export default function MainLayout({
       <NewSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto pt-16">
+        <main className="flex-1 pt-16">
           {children}
         </main>
       </div>

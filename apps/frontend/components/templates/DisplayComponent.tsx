@@ -74,6 +74,7 @@ export interface DisplayComponentProps<T extends Record<string, FieldValue>> {
 	onSortChange?: (sort: SortQuery) => void;
 	isLoading?: boolean;
 	'data-id'?: string;
+	commentAttachments?: React.ReactNode;
 }
 
 const DisplayComponent = <T extends Record<string, FieldValue>>({
@@ -97,6 +98,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	onSortChange,
 	isLoading = false,
 	'data-id': dataId,
+	commentAttachments,
 }: DisplayComponentProps<T>): React.ReactElement => {
 	const [sortField, setSortField] = useState<string | null>(null);
 	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -189,98 +191,110 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 
 	return (
 		<div data-id={dataId} className="flex flex-col min-h-screen">
-			{/* Mobile */}
-			<div className="block md:hidden">
-				<div className="grid grid-cols-1 gap-4">
-					{isLoading ? (
-						<CardsContainerSkeleton
-							fields={fields.length}
-							cards={5}
-							withAction
-						/>
-					) : (
+			<div className="flex">
+				{/* Main Content */}
+				<div className="flex-1">
+					{/* Mobile */}
+					<div className="block md:hidden">
 						<div className="grid grid-cols-1 gap-4">
-							{items.map((item) => (
-								<Card
-									key={String(item[idField])}
-									className="hover:shadow-md transition-all"
-								>
-									<CardContent className="p-4">
-										<div className="space-y-4">
-											{fields.map((field) => (
-												<div
-													key={String(field.key)}
-													className="flex items-center"
-												>
-													<span className="w-[30%] text-xs font-medium">
-														{field.label}:
-													</span>
-													<div className="w-[70%]">
-														{renderField(field, item)}
-													</div>
-												</div>
-											))}
-										</div>
-									</CardContent>
-									<CardFooter className="flex justify-start gap-2 pt-0 pb-2 px-2">
-										{renderActions(item)}
-									</CardFooter>
-								</Card>
-							))}
-						</div>
-					)}
-				</div>
-			</div>
-
-			{/* Desktop */}
-			<div className="hidden md:block flex-grow transition-all duration-300 ease-in-out mr-0 has-[~_.comment-panel:not(.translate-x-full)]:mr-[400px]">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							{showIndex && <TableHead className="w-10">#</TableHead>}
-							{fields.map((field) => (
-								<TableHead
-									key={String(field.key)}
-									style={{ width: field.width }}
-									className="text-xs cursor-pointer hover:bg-muted/50"
-									onClick={() => handleSort(String(field.key))}
-								>
-									{field.label}
-								</TableHead>
-							))}
-							<TableHead className="text-center">{m.action_text()}</TableHead>
-						</TableRow>
-					</TableHeader>
-					{isLoading ? (
-						<TableBodySkeleton columns={fields.length} rows={10} withAction />
-					) : (
-						<TableBody>
-							{items.map((item, index) => (
-								<TableRow key={String(item[idField])}>
-									{showIndex && <TableCell>{index + 1}</TableCell>}
-									{fields.map((field) => (
-										<TableCell
-											key={String(field.key)}
-											className={`text-${field.align || 'left'} ${field.className || ''
-												}`}
+							{isLoading ? (
+								<CardsContainerSkeleton
+									fields={fields.length}
+									cards={5}
+									withAction
+								/>
+							) : (
+								<div className="grid grid-cols-1 gap-4">
+									{items.map((item) => (
+										<Card
+											key={String(item[idField])}
+											className="hover:shadow-md transition-all"
 										>
-											{renderField(field, item)}
-										</TableCell>
+											<CardContent className="p-4">
+												<div className="space-y-4">
+													{fields.map((field) => (
+														<div
+															key={String(field.key)}
+															className="flex items-center"
+														>
+															<span className="w-[30%] text-xs font-medium">
+																{field.label}:
+															</span>
+															<div className="w-[70%]">
+																{renderField(field, item)}
+															</div>
+														</div>
+													))}
+												</div>
+											</CardContent>
+											<CardFooter className="flex justify-start gap-2 pt-0 pb-2 px-2">
+												{renderActions(item)}
+											</CardFooter>
+										</Card>
 									))}
-									<TableCell className="text-center w-1">
-										{renderActions(item)}
-									</TableCell>
+								</div>
+							)}
+						</div>
+					</div>
+
+					{/* Desktop */}
+					<div className="hidden md:block flex-grow transition-all duration-300 ease-in-out">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									{showIndex && <TableHead className="w-10">#</TableHead>}
+									{fields.map((field) => (
+										<TableHead
+											key={String(field.key)}
+											style={{ width: field.width }}
+											className="text-xs cursor-pointer hover:bg-muted/50"
+											onClick={() => handleSort(String(field.key))}
+										>
+											{field.label}
+										</TableHead>
+									))}
+									<TableHead className="text-center">{m.action_text()}</TableHead>
 								</TableRow>
-							))}
-						</TableBody>
-					)}
-				</Table>
+							</TableHeader>
+							{isLoading ? (
+								<TableBodySkeleton columns={fields.length} rows={10} withAction />
+							) : (
+								<TableBody>
+									{items.map((item, index) => (
+										<TableRow key={String(item[idField])}>
+											{showIndex && <TableCell>{index + 1}</TableCell>}
+											{fields.map((field) => (
+												<TableCell
+													key={String(field.key)}
+													className={`text-${field.align || 'left'} ${field.className || ''
+														}`}
+												>
+													{renderField(field, item)}
+												</TableCell>
+											))}
+											<TableCell className="text-center w-1">
+												{renderActions(item)}
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							)}
+						</Table>
+					</div>
+					<PaginationComponent
+						currentPage={page}
+						totalPages={totalPage}
+						onPageChange={handlePageChange}
+					/>
+				</div>
+
+				{/* Comment Attachments Panel */}
+				{commentAttachments && (
+					<div className="hidden md:block w-[400px] border-l border-border">
+						{commentAttachments}
+					</div>
+				)}
 			</div>
-			<PaginationComponent
-				currentPage={page}
-				totalPages={totalPage}
-				onPageChange={handlePageChange}
-			/>
 		</div>
 	);
 };
