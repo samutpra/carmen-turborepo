@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import {
 	FormField,
 	FormItem,
@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
 import { formType } from '@/constants/enums';
 import {
 	Select,
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/select';
 
 interface PricingInformationProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	form: UseFormReturn<any>;
 	mode: formType;
 	currencies?: { id: string; code: string; name: string }[];
@@ -28,27 +28,19 @@ interface PricingInformationProps {
 const PricingInformation: React.FC<PricingInformationProps> = ({
 	form,
 	mode,
-	currencies = [
-		{ id: 'USD', code: 'USD', name: 'US Dollar' },
-		{ id: 'EUR', code: 'EUR', name: 'Euro' },
-		{ id: 'GBP', code: 'GBP', name: 'British Pound' },
-		{ id: 'JPY', code: 'JPY', name: 'Japanese Yen' },
-		{ id: 'THB', code: 'THB', name: 'Thai Baht' },
-	],
+	currencies,
 }) => {
-	// Calculate net amount when price or quantity changes
-	React.useEffect(() => {
+
+	useEffect(() => {
 		const price = form.watch('price') || 0;
 		const quantity = form.watch('quantityRequested') || 0;
 		const netAmount = price * quantity;
 		form.setValue('netAmount', netAmount);
-
-		// Recalculate total with discounts and taxes
 		calculateTotal();
 	}, [form.watch('price'), form.watch('quantityRequested')]);
 
 	// Calculate discount and tax amounts when rates change
-	React.useEffect(() => {
+	useEffect(() => {
 		calculateTotal();
 	}, [
 		form.watch('netAmount'),
@@ -116,7 +108,7 @@ const PricingInformation: React.FC<PricingInformationProps> = ({
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
-										{currencies.map((currency) => (
+										{(currencies || []).map((currency) => (
 											<SelectItem key={currency.id} value={currency.id}>
 												{currency.code} - {currency.name}
 											</SelectItem>
