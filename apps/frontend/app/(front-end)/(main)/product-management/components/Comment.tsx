@@ -6,8 +6,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import PostAndUploadFile, { FileWithPreview } from './PostAndUploadFile';
 import { File } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toastError } from '@/components/ui-custom/Toast';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { fetchUnitComments } from '@/services/unit';
+import { postComment } from '@/services/comment';
 
 interface UserInfo {
     firstname: string;
@@ -124,7 +125,15 @@ export const Comment = () => {
                 }))
             };
 
+            const payload = {
+                type: "user",
+                message: message
+            }
+            const url = '/api/comment/unit';
+            await postComment(token, tenantId, url, payload);
+            toastSuccess({ message: 'Comment submitted successfully' });
             setComments(prev => [newComment, ...prev]);
+
         } catch (error) {
             toastError({ message: `Error submit ${error}` })
             throw error;
