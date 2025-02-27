@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Post (002)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/v1/good-receive-note
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name" : "002",
+    "ref_no": "A002"
+  }
+}
