@@ -6,7 +6,12 @@ import { deleteUnit, fetchUnits } from '@/app/(front-end)/services/unit';
 import { unit_delete_success } from '@/paraglide/messages.js';
 import { useURL } from '@/hooks/useURL';
 
-export const useUnit = () => {
+export const useUnit = (params?: {
+	search?: string;
+	status?: string;
+	page?: string;
+	sort?: string;
+}) => {
 	const { accessToken, tenant } = useAuth();
 	const token = accessToken || '';
 	const tenantId = tenant?.[0]?.id || '';

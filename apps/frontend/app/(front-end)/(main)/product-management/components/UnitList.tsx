@@ -24,12 +24,7 @@ const UnitList = () => {
 	const [pages, setPages] = useURL('pages');
 	const [sort, setSort] = useURL('sort');
 
-	const { units, isLoading, error, handleSuccess, handleDelete } = useUnit({
-		search,
-		status,
-		page,
-		sort,
-	});
+	const { units, isLoading, error, handleSuccess, handleDelete } = useUnit();
 
 	useEffect(() => {
 		if (!isLoading && units.length > 0) {

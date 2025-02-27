@@ -188,7 +188,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 	};
 
 	return (
-		<div data-id={dataId}>
+		<div data-id={dataId} className="flex flex-col min-h-screen">
 			{/* Mobile */}
 			<div className="block md:hidden">
 				<div className="grid grid-cols-1 gap-4">
@@ -233,7 +233,7 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 			</div>
 
 			{/* Desktop */}
-			<div className="hidden md:block">
+			<div className="hidden md:block flex-grow transition-all duration-300 ease-in-out mr-0 has-[~_.comment-panel:not(.translate-x-full)]:mr-[400px]">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -261,9 +261,8 @@ const DisplayComponent = <T extends Record<string, FieldValue>>({
 									{fields.map((field) => (
 										<TableCell
 											key={String(field.key)}
-											className={`text-${field.align || 'left'} ${
-												field.className || ''
-											}`}
+											className={`text-${field.align || 'left'} ${field.className || ''
+												}`}
 										>
 											{renderField(field, item)}
 										</TableCell>
