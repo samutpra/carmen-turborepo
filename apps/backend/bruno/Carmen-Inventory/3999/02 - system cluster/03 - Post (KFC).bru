@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Post (KFC)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/system-api/v1/clusters
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+     "code": "KFC001",
+     "name": "KFC",
+    "is_active": true
+  }
+}
+
+script:post-response {
+  bru.setEnvVar('cluster_id',res.body.id)
+}
