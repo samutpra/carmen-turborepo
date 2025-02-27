@@ -12,6 +12,7 @@ import { fetchUnitComments } from '@/app/(front-end)/services/unit';
 import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import PostAndUploadFile from './PostAndUploadFile';
 
 interface UserInfo {
 	firstname: string;
@@ -119,7 +120,7 @@ export const CommentAttachments = () => {
 			<Sheet open={open} onOpenChange={setOpen} modal={false}>
 				<SheetContent
 					side="right"
-					className="w-[400px] sm:w-[540px] p-0 border-l border-gray-200 shadow-xl"
+					className="w-full md:w-[400px] sm:w-[540px] p-0 border-l border-gray-200 shadow-xl"
 				>
 					<SheetHeader className="p-4 border-b border-gray-200">
 						<SheetTitle className="text-xl">Comments & Attachments</SheetTitle>
@@ -200,6 +201,10 @@ export const CommentAttachments = () => {
 								))}
 							</div>
 						)}
+
+						<div className="mt-4 border-t border-gray-200 bg-background">
+							<PostAndUploadFile />
+						</div>
 					</div>
 				</SheetContent>
 			</Sheet>
