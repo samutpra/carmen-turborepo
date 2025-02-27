@@ -19,7 +19,7 @@ import {
 	handleSignInException,
 	processLogin,
 	signInAction,
-} from '../action/sign-in';
+} from '@/services/auth';
 import { toastError } from '@/components/ui-custom/Toast';
 import { useAuth } from '@/app/context/AuthContext';
 import {

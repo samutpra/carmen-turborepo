@@ -2,7 +2,6 @@
 import React from 'react';
 import SignIn from './form/SignIn';
 
-
 const AuthList = () => {
 
     return (
