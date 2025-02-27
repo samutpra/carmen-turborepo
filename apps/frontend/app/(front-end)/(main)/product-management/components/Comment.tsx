@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
-import { fetchUnitComments } from '@/app/(front-end)/services/unit';
 import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +7,7 @@ import PostAndUploadFile, { FileWithPreview } from './PostAndUploadFile';
 import { File } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toastError } from '@/components/ui-custom/Toast';
+import { fetchUnitComments } from '@/services/unit';
 
 interface UserInfo {
     firstname: string;

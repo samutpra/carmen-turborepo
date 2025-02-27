@@ -2,16 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { UnitCreateModel } from '@/dtos/unit.dto';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { deleteUnit, fetchUnits } from '@/app/(front-end)/services/unit';
 import { unit_delete_success } from '@/paraglide/messages.js';
 import { useURL } from '@/hooks/useURL';
+import { deleteUnit, fetchUnits } from '@/services/unit';
 
-export const useUnit = (params?: {
-	search?: string;
-	status?: string;
-	page?: string;
-	sort?: string;
-}) => {
+export const useUnit = () => {
 	const { accessToken, tenant } = useAuth();
 	const token = accessToken || '';
 	const tenantId = tenant?.[0]?.id || '';

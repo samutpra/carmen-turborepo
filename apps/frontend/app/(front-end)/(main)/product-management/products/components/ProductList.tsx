@@ -10,9 +10,9 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import ProductDisplay from './ProductDisplay';
 import SortComponent from '@/components/ui-custom/SortComponent';
-import { useProduct } from '@/app/(front-end)/hooks/useProduct';
 import { productFields, sortProductFields } from '@/constants/fields';
 import { statusProductOptions } from '@/constants/status';
+import { useProduct } from '@/hooks/useProduct';
 
 export const PRODUCT_STATUS_COLORS: Record<string, string> = {
 	active:
@@ -35,9 +35,8 @@ export const productStatusBadge = (status?: string) => {
 
 	return (
 		<span
-			className={`px-2 py-1 rounded-full text-xs ${
-				PRODUCT_STATUS_COLORS[status] || 'bg-gray-400 text-white'
-			}`}
+			className={`px-2 py-1 rounded-full text-xs ${PRODUCT_STATUS_COLORS[status] || 'bg-gray-400 text-white'
+				}`}
 		>
 			{status.charAt(0).toUpperCase() + status.slice(1)}
 		</span>

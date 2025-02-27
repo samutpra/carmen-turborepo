@@ -5,7 +5,7 @@ import { LocationCreateModel } from '@/dtos/location.dto';
 import { useURL } from '@/hooks/useURL';
 import { SortQuery } from '@/lib/util/uiConfig';
 import { store_location, fail_del_store } from '@/paraglide/messages';
-import { deleteStoreLocation, fetchStoreLocations } from '../services/location';
+import { deleteStoreLocation, fetchStoreLocations } from '@/services/location';
 
 export const useLocation = () => {
 	const { accessToken, tenantId } = useAuth();

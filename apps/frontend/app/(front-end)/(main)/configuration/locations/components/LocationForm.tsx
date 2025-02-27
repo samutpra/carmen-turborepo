@@ -37,7 +37,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formType } from '@/constants/enums';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { useRouter } from '@/lib/i18n';
-import { submitStoreLocation } from '@/app/(front-end)/services/location';
+import { submitStoreLocation } from '@/services/location';
 
 type Props = {
 	defaultValues?: Partial<
@@ -66,25 +66,25 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 	const [originalValues, setOriginalValues] = useState<LocationState>(
 		defaultValues
 			? {
-					id: defaultValues.id || '',
-					name: defaultValues.name || '',
-					description: defaultValues.description || '',
-					is_active: defaultValues.is_active ?? true,
-					location_type:
-						(defaultValues.location_type as enum_location_type) ||
-						enum_location_type.inventory,
-					delivery_point: defaultValues.delivery_point || { id: '', name: '' },
-					users: defaultValues.users || { active: [], inactive: [] },
-				}
+				id: defaultValues.id || '',
+				name: defaultValues.name || '',
+				description: defaultValues.description || '',
+				is_active: defaultValues.is_active ?? true,
+				location_type:
+					(defaultValues.location_type as enum_location_type) ||
+					enum_location_type.inventory,
+				delivery_point: defaultValues.delivery_point || { id: '', name: '' },
+				users: defaultValues.users || { active: [], inactive: [] },
+			}
 			: {
-					id: '',
-					name: '',
-					description: '',
-					is_active: true,
-					location_type: enum_location_type.inventory,
-					delivery_point: { id: '', name: '' },
-					users: { active: [], inactive: [] },
-				}
+				id: '',
+				name: '',
+				description: '',
+				is_active: true,
+				location_type: enum_location_type.inventory,
+				delivery_point: { id: '', name: '' },
+				users: { active: [], inactive: [] },
+			}
 	);
 
 	const [selectedUsersToDelete, setSelectedUsersToDelete] = useState<string[]>(
@@ -123,28 +123,28 @@ const LocationForm = ({ defaultValues, type }: Props) => {
 		setOriginalValues(
 			defaultValues
 				? {
-						id: defaultValues.id || '',
-						name: defaultValues.name || '',
-						description: defaultValues.description || '',
-						is_active: defaultValues.is_active ?? true,
-						location_type:
-							(defaultValues.location_type as enum_location_type) ||
-							enum_location_type.inventory,
-						delivery_point: defaultValues.delivery_point || {
-							id: '',
-							name: '',
-						},
-						users: defaultValues.users || { active: [], inactive: [] },
-					}
-				: {
+					id: defaultValues.id || '',
+					name: defaultValues.name || '',
+					description: defaultValues.description || '',
+					is_active: defaultValues.is_active ?? true,
+					location_type:
+						(defaultValues.location_type as enum_location_type) ||
+						enum_location_type.inventory,
+					delivery_point: defaultValues.delivery_point || {
 						id: '',
 						name: '',
-						description: '',
-						is_active: true,
-						location_type: enum_location_type.inventory,
-						delivery_point: { id: '', name: '' },
-						users: { active: [], inactive: [] },
-					}
+					},
+					users: defaultValues.users || { active: [], inactive: [] },
+				}
+				: {
+					id: '',
+					name: '',
+					description: '',
+					is_active: true,
+					location_type: enum_location_type.inventory,
+					delivery_point: { id: '', name: '' },
+					users: { active: [], inactive: [] },
+				}
 		);
 	};
 

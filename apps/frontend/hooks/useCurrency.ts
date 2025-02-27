@@ -13,7 +13,7 @@ import {
     fail_to_text,
     session_expire
 } from '@/paraglide/messages.js';
-import { deleteCurrency, fetchCurrencies, fetchExchangeRates, findChangedRates, prepareCurrentRates } from '../services/currency';
+import { deleteCurrency, fetchCurrencies, fetchExchangeRates, findChangedRates, prepareCurrentRates } from '@/services/currency';
 
 export const useCurrency = () => {
     const { accessToken, tenantId } = useAuth();

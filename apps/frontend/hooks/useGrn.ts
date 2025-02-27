@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { GoodsReceiveNote } from '@/lib/types';
-import { fetchGoodsReceivedNotes } from '../services/good-received-note';
+import { fetchGoodsReceivedNotes } from '@/services/good-received-note';
 
 export const useGrn = () => {
 	const [grnData, setGrnData] = useState<GoodsReceiveNote[]>([]);

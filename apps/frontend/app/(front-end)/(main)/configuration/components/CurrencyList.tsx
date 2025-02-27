@@ -3,7 +3,6 @@ import React from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
 import CurrencyDialog from './CurrencyDialog';
-
 import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import { statusOptions } from '@/lib/statusOptions';
@@ -27,7 +26,7 @@ import {
 	symbol_label,
 } from '@/paraglide/messages.js';
 import RefreshTokenComponents from './RefreshTokenComponents';
-import { useCurrency } from '@/app/(front-end)/hooks/useCurrency';
+import { useCurrency } from '@/hooks/useCurrency';
 
 enum CurrencyField {
 	Code = 'code',

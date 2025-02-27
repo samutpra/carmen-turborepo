@@ -28,7 +28,7 @@ import SkeltonVendorDetail from '@/components/ui-custom/Loading/SkeltonVendorDet
 import * as m from '@/paraglide/messages.js';
 import { VendorCreateModel, VendorCreateSchema } from '@/dtos/vendor.dto';
 import { formType } from '@/constants/enums';
-import { handleDelete, handleSubmit } from '@/app/(front-end)/services/vendor';
+import { handleDelete, handleSubmit } from '@/services/vendor';
 interface Props {
 	vendor: VendorCreateModel | null;
 	mode: formType;

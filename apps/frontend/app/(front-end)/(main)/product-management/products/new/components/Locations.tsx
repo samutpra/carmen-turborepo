@@ -6,7 +6,6 @@ import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { Control, useFieldArray } from 'react-hook-form';
 import { ProductFormType } from '@/dtos/product.dto';
 import { LocationCreateModel } from '@/dtos/location.dto';
-import { fetchLocationList } from '../../actions/product';
 import {
 	Select,
 	SelectContent,
@@ -24,6 +23,7 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { fetchLocationList } from '@/services/products';
 
 interface LocationsProps {
 	control: Control<ProductFormType>;

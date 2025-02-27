@@ -8,7 +8,7 @@ import LocationList from './LocationList';
 import LocationActions from './LocationActions';
 import { locationSortFields } from '@/constants/fields';
 import LocationFilter from './LocationFilter';
-import { useLocation } from '@/app/(front-end)/hooks/useLocation';
+import { useLocation } from '@/hooks/useLocation';
 
 const LocationComponents = () => {
 	const {

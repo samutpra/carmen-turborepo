@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PurchaseOrderType } from '@/lib/types';
-import { fetchPurchaseOrders } from '../services/purchase-order';
+import { fetchPurchaseOrders } from '@/services/purchase-order';
 
 export const usePOderData = () => {
 	const [poData, setPoData] = useState<PurchaseOrderType[]>([]);

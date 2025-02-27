@@ -3,7 +3,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useURL } from '@/hooks/useURL';
 import { toastError } from '@/components/ui-custom/Toast';
 import { ProductCreateModel } from '@/dtos/product.dto';
-import { fetchProducts } from '../services/product';
+import { fetchProducts } from '@/services/products';
 
 export const useProduct = () => {
 	const { accessToken, tenantId } = useAuth();

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import VendorDetails from '../../components/VendorDetails';
 import { useAuth } from '@/app/context/AuthContext';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
-import { fetchVendor } from '@/app/(front-end)/services/vendor';
+import { fetchVendor } from '@/services/vendor';
 import { formType } from '@/constants/enums';
 
 const VendorIDPage = () => {

@@ -8,7 +8,7 @@ import PrActions from './PrActions';
 import PrFilter from './PrFilter';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { purchase_request_title } from '@/paraglide/messages.js';
-import { usePr } from '@/app/(front-end)/hooks/usePr';
+import { usePr } from '@/hooks/usePr';
 
 const PurchaseRequestList = () => {
 	const { prList, setPrList, isLoading, error } = usePr();

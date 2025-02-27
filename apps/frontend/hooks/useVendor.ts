@@ -4,7 +4,7 @@ import { useURL } from '@/hooks/useURL';
 import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { SortDirection } from '@/lib/util/uiConfig';
 import { VendorFields } from '@/constants/enums';
-import { fetchAllVendors } from '../services/vendor';
+import { fetchAllVendors } from '@/services/vendor';
 
 export type SortQuery = `${VendorFields}:${SortDirection}` | '';
 

@@ -12,10 +12,10 @@ import UnitFilter from './UnitFilter';
 import { unit } from '@/paraglide/messages.js';
 import UnitAction from './UnitAction';
 import { formType } from '@/constants/enums';
-import { useUnit } from '@/app/(front-end)/hooks/useUnit';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { Comment } from './Comment';
+import { useUnit } from '@/hooks/useUnit';
 
 const UnitList = () => {
 	const [statusOpen, setStatusOpen] = useState(false);

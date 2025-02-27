@@ -9,7 +9,7 @@ import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import PoData from './PoData';
 import { poSortFields } from '@/constants/fields';
 import { po_title } from '@/paraglide/messages.js';
-import { usePOderData } from '@/app/(front-end)/hooks/usePo';
+import { usePOderData } from '@/hooks/usePo';
 
 const PurchaseOrdersList = () => {
 	const { poData, setPoData, isLoading, error } = usePOderData();

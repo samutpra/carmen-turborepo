@@ -30,7 +30,8 @@ import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import * as m from '@/paraglide/messages.js';
 import { UnitCreateModel, UnitCreateSchema } from '@/dtos/unit.dto';
 import { formType } from '@/constants/enums';
-import { submitUnit } from '@/app/(front-end)/services/unit';
+import { submitUnit } from '@/services/unit';
+
 interface UnitDialogProps {
 	mode: formType;
 	defaultValues?: UnitCreateModel;

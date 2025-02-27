@@ -41,7 +41,7 @@ import {
 	SystemCurrencyCreateModel,
 	SystemCurrencyCreateSchema,
 } from '@/dtos/currency.dto';
-import { fetchSystemCurrencies } from '@/app/(front-end)/services/currency';
+import { fetchSystemCurrencies } from '@/services/currency';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {

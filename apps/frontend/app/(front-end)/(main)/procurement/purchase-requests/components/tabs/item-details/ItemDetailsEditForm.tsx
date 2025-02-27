@@ -6,10 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import { PurchaseRequestItem } from '@/lib/types';
 import { Edit, X } from 'lucide-react';
 import { formType } from '@/constants/enums';
-import { useLocation } from '@/app/(front-end)/hooks/useLocation';
-import { useProduct } from '@/app/(front-end)/hooks/useProduct';
-import { useUnit } from '@/app/(front-end)/hooks/useUnit';
-import { useVendor } from '@/app/(front-end)/hooks/useVendor';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -18,7 +14,11 @@ import PricingInformation from './PricingInformation';
 import QuantityAndDelivery from './QuantityAndDelivery';
 import VendorInformation from './VendorInformation';
 import BasicInformation from './BasicInformation';
-import { useCurrency } from '@/app/(front-end)/hooks/useCurrency';
+import { useLocation } from '@/hooks/useLocation';
+import { useUnit } from '@/hooks/useUnit';
+import { useVendor } from '@/hooks/useVendor';
+import { useProduct } from '@/hooks/useProduct';
+import { useCurrency } from '@/hooks/useCurrency';
 
 interface ItemDetailsFormProps {
 	onSave: (formData: PurchaseRequestItem) => void;

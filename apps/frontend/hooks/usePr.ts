@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PrType } from '@/lib/types';
-import { fetchPrList } from '../services/purchase-request';
+import { fetchPrList } from '@/services/purchase-request';
 
 export const usePr = () => {
 	const [prList, setPrList] = useState<PrType[]>([]);

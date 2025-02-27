@@ -9,7 +9,7 @@ import { GRNFilters } from './GRNFilters';
 import { goodsReceiveNoteFields } from '@/constants/fields';
 import { grn_title } from '@/paraglide/messages.js';
 import GrnActions from './GrnActions';
-import { useGrn } from '@/app/(front-end)/hooks/useGrn';
+import { useGrn } from '@/hooks/useGrn';
 
 const GoodsReceiveNoteList = () => {
 	const { grnData, setGrnData, isLoading, error } = useGrn();

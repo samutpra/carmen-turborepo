@@ -7,7 +7,7 @@ import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import VendorFilter from './VendorFilter';
 import VendorAction from './VendorAction';
 import { vendors_title } from '@/paraglide/messages.js';
-import { useVendor } from '@/app/(front-end)/hooks/useVendor';
+import { useVendor } from '@/hooks/useVendor';
 
 const VendorList = () => {
 	const {

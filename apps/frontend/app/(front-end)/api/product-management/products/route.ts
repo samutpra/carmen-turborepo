@@ -1,12 +1,9 @@
-import { fetchData } from '@/app/(front-end)/services/client';
-import {
-	fetchProductCategory,
-	fetchProductSubcategory,
-} from '@/app/(front-end)/services/products';
-import { fetchProductItemGroup } from '@/app/(front-end)/services/products';
+
 import { API_URL } from '@/lib/util/api';
 import { extractRequest } from '@/lib/util/auth';
 import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
+import { fetchData } from '@/services/client';
+import { fetchProductCategory, fetchProductItemGroup, fetchProductSubcategory } from '@/services/products';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
