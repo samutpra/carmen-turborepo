@@ -14,6 +14,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import PostAndUploadFile, { FileWithPreview } from './PostAndUploadFile';
 import { File } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { toastError } from '@/components/ui-custom/Toast';
 
 interface UserInfo {
 	firstname: string;
@@ -34,7 +36,7 @@ interface UnitComment {
 	message: string;
 	created_at: string;
 	updated_at: string;
-	email: string;
+	full_name: string;
 	userInfo?: UserInfo[];
 	attachments: CommentAttachment[];
 }
@@ -45,12 +47,14 @@ const sheetStateEvent = new CustomEvent('sheetStateChange', {
 });
 
 export const CommentAttachments = () => {
-	const { accessToken, tenantId } = useAuth();
+	const { accessToken, tenantId, authState } = useAuth();
 	const token = accessToken || '';
 	const [open, setOpen] = useState(false);
 	const [comments, setComments] = useState<UnitComment[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	console.log('authState', authState?.user?.username);
 
 	const handleToggle = () => {
 		setOpen(!open);
@@ -61,7 +65,7 @@ export const CommentAttachments = () => {
 			const { firstname, lastname, middlename } = comment.userInfo[0];
 			return `${firstname} ${middlename ? middlename + ' ' : ''}${lastname}`.trim();
 		}
-		return comment.email || 'Unknown User';
+		return comment.full_name || 'Unknown User';
 	};
 
 	const getInitial = (comment: UnitComment): string => {
@@ -69,7 +73,7 @@ export const CommentAttachments = () => {
 			const { firstname } = comment.userInfo[0];
 			return firstname.charAt(0).toUpperCase();
 		}
-		return comment.email?.charAt(0).toUpperCase() || 'U';
+		return comment.full_name?.charAt(0).toUpperCase() || 'U';
 	};
 
 	const getProfilePic = (comment: UnitComment): string | undefined => {
@@ -134,18 +138,17 @@ export const CommentAttachments = () => {
 				message,
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString(),
-				email: 'current.user@example.com',
+				full_name: authState?.user?.username || '',
 				attachments: files.map(file => ({
 					name: file.name,
 					size: file.size,
-					type: file.type,
-					preview: file.preview
+					type: file.type
 				}))
 			};
 
 			setComments(prev => [newComment, ...prev]);
 		} catch (error) {
-			console.error('Error submitting comment:', error);
+			toastError({ message: `Error submit ${error}` })
 			throw error;
 		}
 	};
@@ -170,18 +173,17 @@ export const CommentAttachments = () => {
 			>
 				Comment & Attachments
 			</Button>
-
 			<Sheet open={open} onOpenChange={setOpen} modal={false}>
 				<SheetContent
 					side="right"
-					className="w-full md:w-[400px] sm:w-[540px] p-0 border-l border-gray-200 shadow-xl"
+					className="w-[400px] p-0 border-l border-gray-200 shadow-xl flex flex-col h-full data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right"
 				>
 					<SheetHeader className="p-4 border-b border-gray-200">
 						<SheetTitle className="text-xl">Comments & Attachments</SheetTitle>
 						<SheetClose className="absolute right-4 top-4" />
 					</SheetHeader>
 
-					<div className="p-4">
+					<ScrollArea className="flex-1 p-4">
 						{loading ? (
 							<div className="flex items-center space-x-4">
 								<Skeleton className="h-12 w-12 rounded-full" />
@@ -199,7 +201,7 @@ export const CommentAttachments = () => {
 								No comments found
 							</p>
 						) : (
-							<div className="space-y-4">
+							<div className="space-y-4 pb-4">
 								{comments.map((comment) => (
 									<div
 										key={comment.id}
@@ -220,39 +222,38 @@ export const CommentAttachments = () => {
 											</Avatar>
 											<div className="flex-1">
 												<div className="flex justify-between items-start">
-													<p className="font-medium text-xs">
+													<p className="text-xs">
 														{getFullName(comment)}
 													</p>
 												</div>
-												<p className="text-xs mt-1">{comment.message}</p>
+												<p className="text-base font-medium mt-1">{comment.message}</p>
 											</div>
 										</div>
 										{comment.attachments && comment.attachments.length > 0 && (
 											<div className="mt-2 pt-2 border-t border-gray-200 ml-11">
 												<p className="text-xs font-medium mb-1">Attachments:</p>
-												<div className="flex flex-wrap gap-2">
+												<div className="flex flex-col gap-1">
 													{comment.attachments.map((attachment, index) => (
 														<div
 															key={index}
-															className="flex items-center gap-2 p-2 rounded bg-white border border-gray-200"
+															className="flex items-center gap-2"
 														>
-															{attachment.type?.startsWith('image/') && attachment.preview ? (
-																<div className="h-8 w-8 rounded overflow-hidden bg-gray-100">
-																	<img
-																		src={attachment.preview}
-																		alt={attachment.name}
-																		className="h-full w-full object-cover"
-																	/>
-																</div>
-															) : (
-																<div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100">
-																	{getFileIcon(attachment.type)}
-																</div>
-															)}
-															<div className="flex-1 min-w-0">
-																<p className="text-xs font-medium truncate">{attachment.name}</p>
-																<p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+															<div className="h-4 w-4 flex items-center justify-center">
+																{getFileIcon(attachment.type)}
 															</div>
+															<a
+																href="#"
+																className="text-xs text-blue-600 hover:underline truncate"
+																onClick={(e) => {
+																	e.preventDefault();
+																	// Add your file download/view logic here
+																}}
+															>
+																{attachment.name}
+																<span className="text-gray-500 ml-1">
+																	({formatFileSize(attachment.size)})
+																</span>
+															</a>
 														</div>
 													))}
 												</div>
@@ -262,10 +263,10 @@ export const CommentAttachments = () => {
 								))}
 							</div>
 						)}
+					</ScrollArea>
 
-						<div className="mt-4 border-t border-gray-200 bg-background">
-							<PostAndUploadFile onSubmit={handleSubmitComment} />
-						</div>
+					<div className="border-t border-gray-200 bg-background p-4 mt-auto">
+						<PostAndUploadFile onSubmit={handleSubmitComment} />
 					</div>
 				</SheetContent>
 			</Sheet>

@@ -70,19 +70,15 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
         if (!e.target.files?.length) return;
 
         const newFiles = Array.from(e.target.files).map(file => {
-            // Create a new object that explicitly copies all needed properties
             const fileWithPreview = {
-                // Explicitly copy File properties
                 name: file.name,
                 size: file.size,
                 type: file.type,
                 lastModified: file.lastModified,
-                // Add required File methods
                 slice: file.slice.bind(file),
                 stream: file.stream.bind(file),
                 text: file.text.bind(file),
                 arrayBuffer: file.arrayBuffer.bind(file),
-                // Add our custom properties
                 id: Math.random().toString(36).substring(2, 11),
                 preview: file.type.startsWith('image/')
                     ? URL.createObjectURL(file)
@@ -112,8 +108,6 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
 
         try {
             await onSubmit(message, files);
-
-            // Clear form
             setMessage('');
             setFiles([]);
             setMessageError('');
@@ -128,13 +122,7 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
 
     const getFileIcon = (fileName: string | undefined) => {
         if (!fileName) return <File className="h-4 w-4 text-gray-500" />;
-
-        console.log('fileName:', fileName);
-
         const extension = fileName.split('.').pop()?.toLowerCase();
-
-        console.log('extension:', extension);
-
 
         switch (extension) {
             case 'pdf':
@@ -176,10 +164,10 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
                     {files.map(file => (
                         <div
                             key={file.id}
-                            className="flex items-center gap-2 p-2 rounded-md bg-gray-50 border border-gray-200"
+                            className="flex items-center gap-2 p-2 rounded-md bg-background border "
                         >
                             {file.preview ? (
-                                <div className="h-8 w-8 rounded overflow-hidden bg-gray-100">
+                                <div className="h-8 w-8 rounded overflow-hidden bg-background">
                                     <img
                                         src={file.preview}
                                         alt={file.name}
@@ -187,7 +175,7 @@ const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
                                     />
                                 </div>
                             ) : (
-                                <div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100">
+                                <div className="h-8 w-8 rounded flex items-center justify-center bg-background">
                                     {getFileIcon(file.name)}
                                 </div>
                             )}
