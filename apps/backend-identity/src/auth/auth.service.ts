@@ -27,7 +27,19 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
 
-    return data;
+    const user_obj = await this.prisma.tb_user.create({
+      data: {
+        id: data.user.id,
+        email: data.user.email,
+        username: data.user.email,
+        is_active: true,
+        consent: data.user.user_metadata.consent,
+        created_at: data.user.created_at,
+        updated_at: data.user.updated_at,
+      },
+    });
+
+    return user_obj;
   }
 
   async login(loginDto: { email: string; password: string }) {

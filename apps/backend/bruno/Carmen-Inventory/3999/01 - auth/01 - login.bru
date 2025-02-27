@@ -5,11 +5,19 @@ meta {
 }
 
 get {
-  url: {{host}}/api-system/auth/login
+  url: {{host}}/api/v1/auth/login
   body: json
   auth: none
 }
 
 body:json {
   {"email":"test@carmensoftware.com", "password":"123456"}
+}
+
+script:post-response {
+  if(res.status == 200){
+    bru.setEnvVar('access_token',res.body.session.access_token)
+  } else {
+    bru.setEnvVar('access_token',null)
+  }
 }
