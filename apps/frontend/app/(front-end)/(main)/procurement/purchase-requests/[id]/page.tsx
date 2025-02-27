@@ -18,6 +18,8 @@ interface PurchaseRequestData {
 	status: string;
 	amount: number;
 	currentStage: string;
+	totalAmount: number;
+	currentWorkflowStage: string;
 }
 
 const PurchaseRequestIdPage = () => {
@@ -45,7 +47,11 @@ const PurchaseRequestIdPage = () => {
 				const result = await response.json();
 
 				if (result.data) {
-					setPrData(result.data);
+					setPrData({
+						...result.data,
+						totalAmount: result.data.amount,
+						currentWorkflowStage: result.data.currentStage
+					});
 				} else {
 					throw new Error('No data returned from API');
 				}

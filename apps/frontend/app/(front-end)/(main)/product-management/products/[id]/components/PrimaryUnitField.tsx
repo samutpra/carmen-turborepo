@@ -1,7 +1,7 @@
+import { fetchUnitList } from '@/app/(front-end)/services/unit';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import React, { useEffect, useState } from 'react';
-import { fetchUnitList } from '../../../actions/unit';
 
 interface Props {
     unitName: string | undefined;

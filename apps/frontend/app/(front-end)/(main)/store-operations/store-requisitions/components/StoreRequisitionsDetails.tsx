@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from 'react'
-import { formType } from '@/types/form_type';
 import { mockRequisition, movements, RequisitionType } from '../data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import JournalEntriesTab from './tabs/JournalEntriesTab';
 import TransactionSummary from './TransactionSummary';
 import ItemsTab from './tabs/ItemsTab';
+import { formType } from '@/constants/enums';
 
 interface Props {
     storeRequisition: RequisitionType[] | null;

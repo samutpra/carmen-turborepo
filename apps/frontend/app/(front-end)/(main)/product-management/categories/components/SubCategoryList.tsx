@@ -18,10 +18,10 @@ import {
 import { Pencil, Trash } from 'lucide-react';
 import SubCatDialog from './SubCatDialog';
 import { useAuth } from '@/app/context/AuthContext';
-import { formType } from '@/types/form_type';
 import { deleteSubCategory } from '../actions/sub_category';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { ProductSubCategoryCreateModel } from '@/dtos/product-sub-category.dto';
+import { formType } from '@/constants/enums';
 
 interface Props {
 	data: ProductSubCategoryCreateModel[];

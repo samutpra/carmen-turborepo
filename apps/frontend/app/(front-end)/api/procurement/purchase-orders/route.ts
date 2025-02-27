@@ -2,6 +2,9 @@ import { formatDateCustom } from '@/lib/formatDate';
 import { NextResponse } from 'next/server';
 import { Mock_purchaseOrders } from '../mock_data';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export const GET = async () => {
 	try {
 		// Validate that Mock_purchaseOrders exists and is an array
