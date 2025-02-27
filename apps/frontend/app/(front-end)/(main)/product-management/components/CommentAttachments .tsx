@@ -12,13 +12,21 @@ import { fetchUnitComments } from '@/app/(front-end)/services/unit';
 import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import PostAndUploadFile from './PostAndUploadFile';
+import PostAndUploadFile, { FileWithPreview } from './PostAndUploadFile';
+import { File } from 'lucide-react';
 
 interface UserInfo {
 	firstname: string;
 	lastname: string;
 	middlename?: string;
 	profilePic?: string;
+}
+
+interface CommentAttachment {
+	name: string;
+	size: number;
+	type: string;
+	preview?: string;
 }
 
 interface UnitComment {
@@ -28,8 +36,7 @@ interface UnitComment {
 	updated_at: string;
 	email: string;
 	userInfo?: UserInfo[];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	attachments: any[];
+	attachments: CommentAttachment[];
 }
 
 const sheetStateEvent = new CustomEvent('sheetStateChange', {
@@ -81,6 +88,30 @@ export const CommentAttachments = () => {
 		}
 	};
 
+	const getFileIcon = (type: string | undefined) => {
+		if (!type) return <File className="h-4 w-4 text-gray-500" />;
+
+		if (type.includes('pdf')) {
+			return <File className="h-4 w-4 text-red-500" />;
+		}
+		if (type.includes('word') || type.includes('doc')) {
+			return <File className="h-4 w-4 text-blue-500" />;
+		}
+		if (type.includes('sheet') || type.includes('excel') || type.includes('xls')) {
+			return <File className="h-4 w-4 text-green-500" />;
+		}
+
+		return <File className="h-4 w-4 text-gray-500" />;
+	};
+
+	const formatFileSize = (bytes: number): string => {
+		if (bytes === 0) return '0 Bytes';
+		const k = 1024;
+		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+	};
+
 	const handleFetchComments = async () => {
 		if (!open) return;
 
@@ -93,6 +124,29 @@ export const CommentAttachments = () => {
 			setError(err instanceof Error ? err.message : 'Failed to fetch comments');
 		} finally {
 			setLoading(false);
+		}
+	};
+
+	const handleSubmitComment = async (message: string, files: FileWithPreview[]) => {
+		try {
+			const newComment: UnitComment = {
+				id: Math.random().toString(36).substring(2),
+				message,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+				email: 'current.user@example.com',
+				attachments: files.map(file => ({
+					name: file.name,
+					size: file.size,
+					type: file.type,
+					preview: file.preview
+				}))
+			};
+
+			setComments(prev => [newComment, ...prev]);
+		} catch (error) {
+			console.error('Error submitting comment:', error);
+			throw error;
 		}
 	};
 
@@ -180,18 +234,25 @@ export const CommentAttachments = () => {
 													{comment.attachments.map((attachment, index) => (
 														<div
 															key={index}
-															className="text-xs text-blue-600 underline"
+															className="flex items-center gap-2 p-2 rounded bg-white border border-gray-200"
 														>
-															{Object.entries(attachment).map(([value]) => (
-																<p
-																	key={Math.random()}
-																	className="cursor-pointer"
-																>
-																	{typeof value === 'object'
-																		? JSON.stringify(value)
-																		: String(value)}
-																</p>
-															))}
+															{attachment.type?.startsWith('image/') && attachment.preview ? (
+																<div className="h-8 w-8 rounded overflow-hidden bg-gray-100">
+																	<img
+																		src={attachment.preview}
+																		alt={attachment.name}
+																		className="h-full w-full object-cover"
+																	/>
+																</div>
+															) : (
+																<div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100">
+																	{getFileIcon(attachment.type)}
+																</div>
+															)}
+															<div className="flex-1 min-w-0">
+																<p className="text-xs font-medium truncate">{attachment.name}</p>
+																<p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+															</div>
 														</div>
 													))}
 												</div>
@@ -203,7 +264,7 @@ export const CommentAttachments = () => {
 						)}
 
 						<div className="mt-4 border-t border-gray-200 bg-background">
-							<PostAndUploadFile />
+							<PostAndUploadFile onSubmit={handleSubmitComment} />
 						</div>
 					</div>
 				</SheetContent>

@@ -12,13 +12,44 @@ import {
 import { Paperclip, X, Send, File } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface FileWithPreview extends File {
+export interface FileWithPreview {
     id: string;
     preview?: string;
+    name: string;
+    size: number;
+    type: string;
+    lastModified: number;
+    slice: (start?: number, end?: number, contentType?: string) => Blob;
+    stream: () => ReadableStream<Uint8Array>;
+    text: () => Promise<string>;
+    arrayBuffer: () => Promise<ArrayBuffer>;
 }
 
-const PostAndUploadFile = () => {
+const formatFileSize = (bytes: number | undefined): string => {
+    if (bytes === undefined || bytes === null) return 'Size unknown';
+    if (bytes === 0) return '0 Bytes';
+
+    try {
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        if (isNaN(bytes) || !isFinite(bytes)) return 'Size unknown';
+
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+    } catch (error) {
+        console.error('Error formatting file size:', error);
+        return 'Size unknown';
+    }
+};
+
+interface PostAndUploadFileProps {
+    onSubmit: (message: string, files: FileWithPreview[]) => Promise<void>;
+}
+
+const PostAndUploadFile: React.FC<PostAndUploadFileProps> = ({ onSubmit }) => {
     const [message, setMessage] = useState('');
+    const [messageError, setMessageError] = useState('');
     const [files, setFiles] = useState<FileWithPreview[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -26,25 +57,43 @@ const PostAndUploadFile = () => {
     // const { accessToken, tenantId } = useAuth();
 
     const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setMessage(e.target.value);
+        const value = e.target.value;
+        setMessage(value);
+
+        // Clear error when user starts typing
+        if (messageError) {
+            setMessageError('');
+        }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.length) return;
 
-        console.log('e.target.files', e.target.files);
+        const newFiles = Array.from(e.target.files).map(file => {
+            // Create a new object that explicitly copies all needed properties
+            const fileWithPreview = {
+                // Explicitly copy File properties
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified,
+                // Add required File methods
+                slice: file.slice.bind(file),
+                stream: file.stream.bind(file),
+                text: file.text.bind(file),
+                arrayBuffer: file.arrayBuffer.bind(file),
+                // Add our custom properties
+                id: Math.random().toString(36).substring(2, 11),
+                preview: file.type.startsWith('image/')
+                    ? URL.createObjectURL(file)
+                    : undefined
+            };
 
-        const newFiles = Array.from(e.target.files).map(file => ({
-            ...file,
-            id: Math.random().toString(36).substring(2, 11),
-            preview: file.type.startsWith('image/')
-                ? URL.createObjectURL(file)
-                : undefined
-        }));
+            return fileWithPreview;
+        });
 
         setFiles(prev => [...prev, ...newFiles]);
 
-        // Reset the input value so the same file can be selected again if needed
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -54,49 +103,26 @@ const PostAndUploadFile = () => {
         setFiles(files.filter(file => file.id !== id));
     };
 
+    const isSubmitDisabled = !message.trim() || isUploading;
+
     const handleSubmit = async () => {
-        if (!message.trim() && !files.length) return;
+        if (isSubmitDisabled) return;
 
         setIsUploading(true);
 
-        // Mock progress for demonstration
-        const timer = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(timer);
-                    return 100;
-                }
-                return prev + 10;
-            });
-        }, 200);
-
         try {
-            // Here you would implement the actual submission logic
-            // e.g. using FormData to send both message and files
+            await onSubmit(message, files);
 
-            // Example:
-            // const formData = new FormData();
-            // formData.append('message', message);
-            // files.forEach(file => formData.append('files', file));
-            // await fetch('your-api-endpoint', {
-            //   method: 'POST',
-            //   headers: { Authorization: `Bearer ${accessToken}` },
-            //   body: formData
-            // });
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Clear form after successful submission
+            // Clear form
             setMessage('');
             setFiles([]);
+            setMessageError('');
 
         } catch (error) {
             console.error('Error submitting comment:', error);
         } finally {
-            clearInterval(timer);
-            setUploadProgress(0);
             setIsUploading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -128,14 +154,21 @@ const PostAndUploadFile = () => {
     };
 
     return (
-        <div className="w-full space-y-2">
-            {/* Message input */}
-            <Textarea
-                placeholder="Write a comment..."
-                value={message}
-                onChange={handleMessageChange}
-                className="min-h-20 text-sm focus-visible:ring-1"
-            />
+        <div className="w-full space-y-4">
+            <div className="space-y-1">
+                <Textarea
+                    placeholder="Write a comment..."
+                    value={message}
+                    onChange={handleMessageChange}
+                    className={cn(
+                        "min-h-20 text-sm focus-visible:ring-1",
+                        messageError && "border-red-500 focus-visible:ring-red-500"
+                    )}
+                />
+                {messageError && (
+                    <p className="text-xs text-red-500">{messageError}</p>
+                )}
+            </div>
 
             {/* File attachments preview */}
             {files.length > 0 && (
@@ -149,7 +182,7 @@ const PostAndUploadFile = () => {
                                 <div className="h-8 w-8 rounded overflow-hidden bg-gray-100">
                                     <img
                                         src={file.preview}
-                                        alt="Preview"
+                                        alt={file.name}
                                         className="h-full w-full object-cover"
                                     />
                                 </div>
@@ -162,26 +195,7 @@ const PostAndUploadFile = () => {
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium truncate">{file.name}</p>
                                 <p className="text-xs text-gray-500">
-                                    {(() => {
-                                        // Log the file for debugging
-                                        console.log('File object:', file);
-
-                                        // Check if size exists and is a number
-                                        if (file && typeof file.size === 'number') {
-                                            const sizeInKB = file.size / 1024;
-
-                                            // Format based on size
-                                            if (sizeInKB < 1024) {
-                                                return `${Math.round(sizeInKB)} KB`;
-                                            } else {
-                                                const sizeInMB = sizeInKB / 1024;
-                                                return `${sizeInMB.toFixed(2)} MB`;
-                                            }
-                                        }
-
-                                        // Fallback for when size isn't available
-                                        return 'Size unknown';
-                                    })()}
+                                    {formatFileSize(file.size)}
                                 </p>
                             </div>
 
@@ -226,6 +240,7 @@ const PostAndUploadFile = () => {
                                 variant="outline"
                                 size="sm"
                                 className="text-xs h-8 gap-1"
+                                disabled={isUploading}
                             >
                                 <Paperclip className="h-4 w-4" />
                                 Attach
@@ -253,9 +268,9 @@ const PostAndUploadFile = () => {
                     size="sm"
                     className={cn(
                         "text-xs h-8 gap-1",
-                        (!message.trim() && !files.length) && "opacity-70"
+                        isSubmitDisabled && "opacity-50 cursor-not-allowed"
                     )}
-                    disabled={(!message.trim() && !files.length) || isUploading}
+                    disabled={isSubmitDisabled}
                     onClick={handleSubmit}
                 >
                     <Send className="h-4 w-4" />
