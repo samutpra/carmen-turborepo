@@ -44,6 +44,7 @@ import { LocationsUserModule } from "./_system/locations-user/locations-user.mod
 import { UserLocationModule } from "./_application/users/user-location/user-location.module";
 import { UnitCommentModule } from "./_application/unit-comment/unit-comment.module";
 import { User_BusinessUnitModule } from "./_application/users/user-business-unit/user-business-unit.module";
+import { RunningCodeModule } from "./_application/config/running-code.module";
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { User_BusinessUnitModule } from "./_application/users/user-business-unit
     UserLocationModule,
     UnitCommentModule,
     User_BusinessUnitModule,
+    RunningCodeModule,
   ],
   controllers: [AppController],
   providers: [

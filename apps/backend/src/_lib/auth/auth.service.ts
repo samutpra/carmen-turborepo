@@ -414,6 +414,17 @@ export class AuthService {
           });
         });
 
+      const userInfo = await this.db_System.tb_user_profile.findFirst({
+        where: {
+          user_id: findUser.id,
+        },
+        select: {
+          firstname: true,
+          middlename: true,
+          lastname: true,
+        },
+      });
+
       const payload_refresh = {
         ...user,
         is_refresh: true,
@@ -426,6 +437,7 @@ export class AuthService {
         refresh_token: this.jwtService.sign(payload_refresh, {
           expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
         }),
+        userInfo: userInfo,
         tenant: userBusinessUnit,
       };
 
