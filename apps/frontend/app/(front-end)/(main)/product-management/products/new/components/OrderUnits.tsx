@@ -121,16 +121,46 @@ const OrderUnits = ({ control, selectedUnit }: OrderUnitsProps) => {
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead className="w-1/5">Unit</TableHead>
-								<TableHead className="w-1/5">Unit Quantity</TableHead>
-								<TableHead className="w-1/5">Use Unit</TableHead>
-								<TableHead className="w-1/5">Use Unit Quantity</TableHead>
-								<TableHead className="w-[50px]"></TableHead>
+								<TableHead colSpan={3} className="text-center border-r">From</TableHead>
+								<TableHead colSpan={2} className="text-center">To</TableHead>
+								<TableHead rowSpan={2} className="align-middle"></TableHead>
+							</TableRow>
+							<TableRow>
+								<TableHead>Unit</TableHead>
+								<TableHead>Quantity</TableHead>
+								<TableHead></TableHead>
+								<TableHead>Use Unit Quantity</TableHead>
+								<TableHead>Use Unit</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
 							{fields.map((field, index) => (
 								<TableRow key={field.id}>
+
+									<TableCell>
+										<Form.FormField
+											control={control}
+											name={`orderUnits.add.${index}.unit_quantity`}
+											render={({ field }) => (
+												<Form.FormItem>
+													<Form.FormControl>
+														<Input
+															type="number"
+															step="any"
+															value={field.value}
+															onChange={(e) => {
+																const value = e.target.value === '' ? '' : Number(e.target.value);
+																field.onChange(value);
+															}}
+															onBlur={field.onBlur}
+															className="w-full"
+															readOnly={true}
+														/>
+													</Form.FormControl>
+												</Form.FormItem>
+											)}
+										/>
+									</TableCell>
 									<TableCell>
 										<Form.FormField
 											control={control}
@@ -160,10 +190,13 @@ const OrderUnits = ({ control, selectedUnit }: OrderUnitsProps) => {
 											)}
 										/>
 									</TableCell>
+									<TableCell className="text-center w-[5px]">
+										=
+									</TableCell>
 									<TableCell>
 										<Form.FormField
 											control={control}
-											name={`orderUnits.add.${index}.unit_quantity`}
+											name={`orderUnits.add.${index}.to_unit_quantity`}
 											render={({ field }) => (
 												<Form.FormItem>
 													<Form.FormControl>
@@ -177,7 +210,6 @@ const OrderUnits = ({ control, selectedUnit }: OrderUnitsProps) => {
 															}}
 															onBlur={field.onBlur}
 															className="w-full"
-															readOnly={true}
 														/>
 													</Form.FormControl>
 												</Form.FormItem>
@@ -214,29 +246,7 @@ const OrderUnits = ({ control, selectedUnit }: OrderUnitsProps) => {
 											)}
 										/>
 									</TableCell>
-									<TableCell>
-										<Form.FormField
-											control={control}
-											name={`orderUnits.add.${index}.to_unit_quantity`}
-											render={({ field }) => (
-												<Form.FormItem>
-													<Form.FormControl>
-														<Input
-															type="number"
-															step="any"
-															value={field.value}
-															onChange={(e) => {
-																const value = e.target.value === '' ? '' : Number(e.target.value);
-																field.onChange(value);
-															}}
-															onBlur={field.onBlur}
-															className="w-full"
-														/>
-													</Form.FormControl>
-												</Form.FormItem>
-											)}
-										/>
-									</TableCell>
+
 									<TableCell>
 										<Button
 											type="button"

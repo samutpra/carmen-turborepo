@@ -158,12 +158,12 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
         <div className={`relative ${className}`}>
             <DropdownMenu onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild disabled={readOnly}>
-                    <Button className="w-[220px] justify-between" variant={'outline'} size={'sm'} disabled={readOnly}>
+                    <Button className="w-full justify-between" variant={'outline'} size={'sm'} disabled={readOnly}>
                         {displayValue(value) || placeholder}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[220px]">
+                <DropdownMenuContent>
                     <div className="px-2 py-2 sticky top-0 bg-white border-b z-10">
                         <div className="relative">
                             <Input
@@ -174,7 +174,6 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
                                 autoComplete="off"
                                 // Prevent closing dropdown when clicking input
                                 onClick={(e) => e.stopPropagation()}
-                                readOnly={readOnly}
                                 disabled={readOnly}
                             />
                             <Search className="h-4 w-4 text-muted-foreground absolute left-2.5 top-1/2 transform -translate-y-1/2" />
