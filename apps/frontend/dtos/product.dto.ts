@@ -403,7 +403,6 @@ export const productFormSchema = z.object({
 					unit_quantity: z.number(),
 					to_unit_id: z.string(),
 					to_unit_quantity: z.number(),
-					description: z.string(),
 				})
 			),
 		})

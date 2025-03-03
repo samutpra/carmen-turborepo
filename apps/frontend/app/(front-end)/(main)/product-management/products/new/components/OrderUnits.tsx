@@ -126,11 +126,11 @@ const OrderUnits = ({ control, selectedUnit }: OrderUnitsProps) => {
 								<TableHead rowSpan={2} className="align-middle"></TableHead>
 							</TableRow>
 							<TableRow>
-								<TableHead>Unit</TableHead>
 								<TableHead>Quantity</TableHead>
+								<TableHead>Unit</TableHead>
 								<TableHead></TableHead>
-								<TableHead>Use Unit Quantity</TableHead>
-								<TableHead>Use Unit</TableHead>
+								<TableHead> Quantity</TableHead>
+								<TableHead>Unit</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
