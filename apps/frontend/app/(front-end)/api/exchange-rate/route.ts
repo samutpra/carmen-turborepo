@@ -1,5 +1,6 @@
 import { API_URL } from '@/lib/util/api';
-import { NextResponse } from 'next/server';
+import { extractRequest } from '@/lib/util/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 const API_KEY = process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY;
 
@@ -38,17 +39,14 @@ export async function GET() {
 	}
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
 
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Token or tenant ID is missing from the headers' },
-				{ status: 400 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
+
 		const body = await request.json();
 		const { currency_id, rate } = body;
 		const api_url = `${API_URL}/v1/exchangerate`;
@@ -63,7 +61,7 @@ export async function POST(request: Request) {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(payload),

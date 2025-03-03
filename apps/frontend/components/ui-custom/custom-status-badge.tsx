@@ -1,71 +1,97 @@
-import React from 'react';
+import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Status } from '@/lib/types';
+import { cn } from "@/lib/utils";
+
+export enum BadgeStatus {
+  Open = "Open",
+  Closed = "Closed",
+  Draft = "Draft",
+  Sent = "Sent",
+  Committed = "Committed",
+  Saved = "Saved",
+  Voided = "Voided",
+  Approved = "Approved",
+  Rejected = "Rejected",
+  Pending = "Pending",
+  InProgress = "InProgress",
+  Completed = "Completed",
+  Cancelled = "Cancelled",
+  OnHold = "OnHold",
+  Delayed = "Delayed",
+  Partial = "Partial",
+  Submitted = "Submitted",
+  Accepted = "Accepted",
+  SendBack = "SendBack",
+  Review = "Review",
+  Deleted = "Deleted",
+  Received = "Received",
+  Active = "Active",
+  Inactive = "Inactive",
+  BelowMin = "below-min",
+  Reorder = "reorder",
+  OverMax = "over-max",
+  Normal = "normal",
+  Posted = "Posted",
+  IN = "IN",
+  OUT = "OUT"
+}
+
+const statusStyles: Record<string, { bg: string, text: string }> = {
+  // Success states
+  Approved: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+  Completed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+  Active: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+  Accepted: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+  Posted: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+
+  // Primary states (using corporate blue)
+  Open: { bg: 'bg-primary/20 dark:bg-primary/30', text: 'text-primary dark:text-primary-foreground' },
+  InProgress: { bg: 'bg-primary/20 dark:bg-primary/30', text: 'text-primary dark:text-primary-foreground' },
+  Submitted: { bg: 'bg-primary/20 dark:bg-primary/30', text: 'text-primary dark:text-primary-foreground' },
+  Sent: { bg: 'bg-primary/20 dark:bg-primary/30', text: 'text-primary dark:text-primary-foreground' },
+
+  // Warning states
+  Pending: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-800 dark:text-yellow-300' },
+  OnHold: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-800 dark:text-yellow-300' },
+  Review: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-800 dark:text-yellow-300' },
+  Draft: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-800 dark:text-yellow-300' },
+
+  // Danger states
+  Rejected: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-300' },
+  Cancelled: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-300' },
+  Deleted: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-300' },
+  Voided: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-300' },
+
+  // Neutral states
+  Closed: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-800 dark:text-gray-300' },
+  Inactive: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-800 dark:text-gray-300' },
+
+  // Special states
+  Partial: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-800 dark:text-orange-300' },
+  BelowMin: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-300' },
+  OverMax: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-300' },
+  Normal: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-300' },
+};
 
 interface StatusBadgeProps {
-  status: Status;
+  status: string;
   className?: string;
 }
 
-interface CustomStatusBadgeProps extends StatusBadgeProps {
-  children: React.ReactNode;
-}
-
-interface StatusColor {
-  key: Status;
-  color: string;
-}
-
-const statusColors: StatusColor[] = [
-  { key: Status.Open, color: "bg-emerald-300 text-emerald-800 hover:bg-emerald-600 hover:text-emerald-100" },
-  { key: Status.Closed, color: "bg-slate-300 text-slate-800 hover:bg-slate-500 hover:text-slate-100" },
-  { key: Status.Draft, color: "bg-amber-200 text-amber-800 hover:bg-amber-400 hover:text-amber-100" },
-  { key: Status.Sent, color: "bg-sky-300 text-sky-800 hover:bg-sky-500 hover:text-sky-100" },
-  { key: Status.Committed, color: "bg-violet-300 text-violet-800 hover:bg-violet-500 hover:text-violet-100" },
-  { key: Status.Saved, color: "bg-teal-300 text-teal-800 hover:bg-teal-500 hover:text-teal-100" },
-  { key: Status.Voided, color: "bg-rose-300 text-rose-800 hover:bg-rose-500 hover:text-rose-100" },
-  { key: Status.Approved, color: "bg-green-300 text-green-800 hover:bg-green-500 hover:text-green-100" },
-  { key: Status.Rejected, color: "bg-red-300 text-red-800 hover:bg-red-500 hover:text-red-100" },
-  { key: Status.Pending, color: "bg-yellow-200 text-yellow-800 hover:bg-yellow-400 hover:text-yellow-100" },
-  { key: Status.InProgress, color: "bg-blue-300 text-blue-800 hover:bg-blue-500 hover:text-blue-100" },
-  { key: Status.Completed, color: "bg-lime-300 text-lime-800 hover:bg-lime-500 hover:text-lime-100" },
-  { key: Status.Cancelled, color: "bg-pink-300 text-pink-800 hover:bg-pink-500 hover:text-pink-100" },
-  { key: Status.OnHold, color: "bg-orange-200 text-orange-800 hover:bg-orange-400 hover:text-orange-100" },
-  { key: Status.Delayed, color: "bg-amber-300 text-amber-800 hover:bg-amber-400 hover:text-amber-100" },
-  { key: Status.Partial, color: "bg-yellow-300 text-yellow-800 hover:bg-yellow-400 hover:text-yellow-100" },
-  { key: Status.Submitted, color: "bg-cyan-300 text-cyan-800 hover:bg-cyan-500 hover:text-cyan-100" },
-  { key: Status.Accepted, color: "bg-emerald-300 text-emerald-800 hover:bg-emerald-600 hover:text-emerald-100" },
-  { key: Status.SendBack, color: "bg-rose-300 text-rose-800 hover:bg-rose-500 hover:text-rose-100" },
-  { key: Status.Review, color: "bg-amber-200 text-amber-800 hover:bg-amber-400 hover:text-amber-100" },
-  { key: Status.Deleted, color: "bg-rose-300 text-rose-800 hover:bg-rose-500 hover:text-rose-100" },
-  { key: Status.Received, color: "bg-emerald-300 text-emerald-800 hover:bg-emerald-600 hover:text-emerald-100" }
-];
-
-const getStatusColor = (status: Status): string => {
-  return statusColors.find(color => color.key === status)?.color || "bg-gray-300 text-gray-800";
-};
-
-const CustomStatusBadge: React.FC<CustomStatusBadgeProps> = ({
-  children,
-  status,
-  className = "",
-}) => {
-  const colorClass = getStatusColor(status);
+export default function StatusBadge({ status, className }: StatusBadgeProps) {
+  const style = statusStyles[status] || statusStyles['Normal'];
 
   return (
-    <Badge className={`${colorClass} rounded-full ${className}`}>
-      {children}
+    <Badge
+      variant="secondary"
+      className={cn(
+        "px-2 py-1 font-medium rounded-full",
+        style.bg,
+        style.text,
+        className
+      )}
+    >
+      {status}
     </Badge>
   );
-};
-
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
-  return (
-    <CustomStatusBadge status={status} className={className}>
-      {status}
-    </CustomStatusBadge>
-  );
-};
-
-export default StatusBadge;
-export { CustomStatusBadge };
+}

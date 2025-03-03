@@ -13,7 +13,7 @@ import ItemGroupList from './ItemGroupList';
 import ItemGroupDialog from './ItemGroupDialog';
 import SkeltonCategory from '@/components/ui-custom/Loading/SkeltonCategory';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import {
 	deleteCategory,
 	fetchCategoryList,

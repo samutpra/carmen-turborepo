@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from 'react'
-import { formType } from '@/types/form_type'
 import { useParams } from 'next/navigation'
 import { requisitions, RequisitionType } from '../data'
 import StoreRequisitionsDetails from '../components/StoreRequisitionsDetails'
+import { formType } from '@/constants/enums';
 
 const StoreRequisitionsIdPage = () => {
     const { refNo } = useParams() as { refNo: string }

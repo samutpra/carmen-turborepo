@@ -14,12 +14,16 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { useUnit } from '@/hooks/useUnit';
+import { SearchableDropdown } from '@/components/ui/searchable-dropdown';
 
 interface OrderUnitsProps {
 	control: Control<ProductFormType>;
 }
 
 const OrderUnits = ({ control }: OrderUnitsProps) => {
+	const { units } = useUnit();
+
 	const { fields, append, remove } = useFieldArray({
 		name: 'orderUnits.add',
 		control: control,
@@ -30,9 +34,7 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 			unit_id: '',
 			unit_quantity: 1,
 			to_unit_id: '',
-			to_quantity: 0,
 			to_unit_quantity: 0,
-			description: '',
 		});
 	};
 
@@ -54,12 +56,10 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>Unit ID</TableHead>
+							<TableHead>Unit</TableHead>
 							<TableHead>Unit Quantity</TableHead>
-							<TableHead>To Unit ID</TableHead>
-							<TableHead>To Quantity</TableHead>
-							<TableHead>To Unit Quantity</TableHead>
-							<TableHead>Description</TableHead>
+							<TableHead>Use Unit</TableHead>
+							<TableHead>Use Unit Quantity</TableHead>
 							<TableHead className="w-[50px]"></TableHead>
 						</TableRow>
 					</TableHeader>
@@ -73,7 +73,22 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 										render={({ field }) => (
 											<Form.FormItem>
 												<Form.FormControl>
-													<Input {...field} className="w-full" />
+													<SearchableDropdown
+														data={units}
+														value={units.find(unit => unit.id === field.value) || null}
+														onChange={(selectedUnit) => {
+															field.onChange(selectedUnit.id || '');
+														}}
+														displayValue={(unit) => unit?.name || ''}
+														getItemText={(unit) => unit.name}
+														getItemId={(unit) => unit.id || ''}
+														searchFields={['name', 'description']}
+														placeholder="Select a unit"
+														searchPlaceholder="Search units..."
+														noResultsText="No matching units found"
+														noDataText="No units available"
+														className="w-full"
+													/>
 												</Form.FormControl>
 											</Form.FormItem>
 										)}
@@ -86,7 +101,18 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 										render={({ field }) => (
 											<Form.FormItem>
 												<Form.FormControl>
-													<Input type="number" {...field} className="w-full" />
+													<Input
+														type="number"
+														step="any"
+														value={field.value}
+														onChange={(e) => {
+															const value = e.target.value === '' ? '' : Number(e.target.value);
+															field.onChange(value);
+														}}
+														onBlur={field.onBlur}
+														className="w-full"
+														readOnly={true}
+													/>
 												</Form.FormControl>
 											</Form.FormItem>
 										)}
@@ -99,25 +125,28 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 										render={({ field }) => (
 											<Form.FormItem>
 												<Form.FormControl>
-													<Input {...field} className="w-full" />
+													<SearchableDropdown
+														data={units}
+														value={units.find(unit => unit.id === field.value) || null}
+														onChange={(selectedUnit) => {
+															field.onChange(selectedUnit.id || '');
+														}}
+														displayValue={(unit) => unit?.name || ''}
+														getItemText={(unit) => unit.name}
+														getItemId={(unit) => unit.id || ''}
+														searchFields={['name', 'description']}
+														placeholder="Select a use unit"
+														searchPlaceholder="Search units..."
+														noResultsText="No matching units found"
+														noDataText="No units available"
+														className="w-full"
+													/>
 												</Form.FormControl>
 											</Form.FormItem>
 										)}
 									/>
 								</TableCell>
-								<TableCell>
-									<Form.FormField
-										control={control}
-										name={`orderUnits.add.${index}.to_quantity`}
-										render={({ field }) => (
-											<Form.FormItem>
-												<Form.FormControl>
-													<Input type="number" {...field} className="w-full" />
-												</Form.FormControl>
-											</Form.FormItem>
-										)}
-									/>
-								</TableCell>
+
 								<TableCell>
 									<Form.FormField
 										control={control}
@@ -125,20 +154,17 @@ const OrderUnits = ({ control }: OrderUnitsProps) => {
 										render={({ field }) => (
 											<Form.FormItem>
 												<Form.FormControl>
-													<Input type="number" {...field} className="w-full" />
-												</Form.FormControl>
-											</Form.FormItem>
-										)}
-									/>
-								</TableCell>
-								<TableCell>
-									<Form.FormField
-										control={control}
-										name={`orderUnits.add.${index}.description`}
-										render={({ field }) => (
-											<Form.FormItem>
-												<Form.FormControl>
-													<Input {...field} className="w-full" />
+													<Input
+														type="number"
+														step="any"
+														value={field.value}
+														onChange={(e) => {
+															const value = e.target.value === '' ? '' : Number(e.target.value);
+															field.onChange(value);
+														}}
+														onBlur={field.onBlur}
+														className="w-full"
+													/>
 												</Form.FormControl>
 											</Form.FormItem>
 										)}

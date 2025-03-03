@@ -12,10 +12,10 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Pencil, Save, Trash } from 'lucide-react';
-import { fetchItemGroup } from '../../../actions/item_group';
-import { getProductGroup } from '../../../actions/product';
 import { Skeleton } from '@/components/ui/skeleton';
 import PrimaryUnitField from './PrimaryUnitField';
+import { fetchItemGroup } from '@/services/item_group';
+import { getProductGroup } from '@/services/products';
 
 interface ProductInfo {
 	price?: string;

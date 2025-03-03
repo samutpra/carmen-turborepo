@@ -26,14 +26,14 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/app/context/AuthContext';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { submitDeliveryPoint } from '../actions/delivery_point';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import * as m from '@/paraglide/messages.js';
 import {
 	DeliveryPointCreateModel,
 	DeliveryPointCreateSchema,
 } from '@/dtos/delivery-point.dto';
+import { submitDeliveryPoint } from '@/services/delivery_point';
 
 export interface DeliveryPointDialogProps {
 	mode: formType;
@@ -87,9 +87,8 @@ export const DeliveryPointDialog: React.FC<DeliveryPointDialogProps> = ({
 			setOpen(false);
 			form.reset();
 			toastSuccess({
-				message: `${m.delivery_point()} ${
-					mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
-				} ${m.successfully()}`,
+				message: `${m.delivery_point()} ${mode === formType.ADD ? `${m.create_txt()}` : `${m.edit_txt()}`
+					} ${m.successfully()}`,
 			});
 		} catch (err) {
 			console.error(`Error ${mode}ing delivery point:`, err);

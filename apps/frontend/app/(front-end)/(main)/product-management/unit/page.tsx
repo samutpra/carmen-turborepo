@@ -5,4 +5,4 @@ const UnitListPage = () => {
 	return <UnitList data-id="unit-list-page" />;
 };
 
-export default UnitListPage
+export default UnitListPage;

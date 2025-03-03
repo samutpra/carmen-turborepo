@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { PayloadRecoverPasswordType, RecoverPasswordSchema, RecoverPasswordType } from '@/lib/types';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
-import { submitForgotPassword } from '../actions/actions';
+import { submitForgotPassword } from '@/services/auth';
 
 interface Props {
     token: string;

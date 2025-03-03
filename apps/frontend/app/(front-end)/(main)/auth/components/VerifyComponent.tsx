@@ -11,7 +11,7 @@ import { CustomButton } from '@/components/ui-custom/CustomButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useRouter } from '@/lib/i18n';
-import { submitSignup } from '../actions/actions';
+import { submitSignup } from '@/services/auth';
 
 interface Props {
     token: string;

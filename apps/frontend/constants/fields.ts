@@ -1,16 +1,19 @@
+import { enum_location_type, LocationCreateModel } from '@/dtos/location.dto';
+import { UnitCreateModel } from '@/dtos/unit.dto';
+import { VendorCreateModel } from '@/dtos/vendor.dto';
 import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
-
-export enum GOOD_RECIEIVE_NOTE_FIELDS {
-	DATE = 'date',
-	REF = 'ref',
-	DESCRIPTION = 'description',
-	VENDOR = 'vendor',
-	INVOICE_NUMBER = 'invoiceNumber',
-	INVOICE_DATE = 'invoiceDate',
-	TOTAL_AMOUNT = 'totalAmount',
-	STATUS = 'status',
-}
+import * as m from '@/paraglide/messages.js';
+import {
+	GOOD_RECIEIVE_NOTE_FIELDS,
+	LocationField,
+	PoField,
+	PrField,
+	ProductField,
+	UnitField,
+	VendorFields,
+} from './enums';
+import { ProductCreateModel } from '@/dtos/product.dto';
 
 export const grnSortFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DATE, label: 'Date' },
@@ -27,18 +30,6 @@ export const goodsReceiveNoteFields: FieldConfig<GoodsReceiveNote>[] = [
 	{ key: GOOD_RECIEIVE_NOTE_FIELDS.DESCRIPTION, label: 'Description' },
 ];
 
-const enum PrField {
-	Id = 'id',
-	Type = 'type',
-	Description = 'description',
-	Requestor = 'requestor',
-	Department = 'department',
-	Date = 'date',
-	Status = 'status',
-	Amount = 'amount',
-	CurrentStage = 'currentStage',
-}
-
 export const prSortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Type, label: 'Type' },
 	{ key: PrField.Requestor, label: 'Requestor' },
@@ -48,37 +39,6 @@ export const prSortFields: FieldConfig<PrType>[] = [
 	{ key: PrField.Amount, label: 'Amount', type: 'amount' },
 	{ key: PrField.CurrentStage, label: 'Current Stage' },
 ];
-export const enum PoField {
-	Id = 'poId',
-	Number = 'number',
-	VendorId = 'vendorId',
-	VendorName = 'vendorName',
-	OrderDate = 'orderDate',
-	DeliveryDate = 'deliveryDate',
-	Status = 'status',
-	CurrencyCode = 'currencyCode',
-	BaseCurrencyCode = 'baseCurrencyCode',
-	ExchangeRate = 'exchangeRate',
-	Notes = 'notes',
-	CreatedBy = 'createdBy',
-	ApprovedBy = 'approvedBy',
-	ApprovalDate = 'approvalDate',
-	Email = 'email',
-	Buyer = 'buyer',
-	CreditTerms = 'creditTerms',
-	Description = 'description',
-	Remarks = 'remarks',
-	BaseSubTotalPrice = 'baseSubTotalPrice',
-	SubTotalPrice = 'subTotalPrice',
-	BaseNetAmount = 'baseNetAmount',
-	NetAmount = 'netAmount',
-	BaseDiscAmount = 'baseDiscAmount',
-	DiscountAmount = 'discountAmount',
-	BaseTaxAmount = 'baseTaxAmount',
-	TaxAmount = 'taxAmount',
-	BaseTotalAmount = 'baseTotalAmount',
-	TotalAmount = 'totalAmount',
-}
 
 export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
 	{ key: PoField.Number, label: 'Number' },
@@ -91,4 +51,94 @@ export const poSortFields: FieldConfig<PurchaseOrderType>[] = [
 	{ key: PoField.ExchangeRate, label: 'Exchange Rate', type: 'decimal' },
 	{ key: PoField.BaseCurrencyCode, label: 'Base Currency' },
 	{ key: PoField.ApprovalDate, label: 'Approval Date', type: 'date' },
+];
+
+export const unitSortFields: FieldConfig<UnitCreateModel>[] = [
+	{
+		key: UnitField.Name,
+		label: `${m.unit_name_label()}`,
+		className: 'w-24',
+	},
+];
+
+export const unitFields: FieldConfig<UnitCreateModel>[] = [
+	...unitSortFields,
+	{
+		key: UnitField.Status,
+		label: `${m.status_text()}`,
+		type: 'badge',
+		className: 'w-24',
+	},
+	{
+		key: UnitField.Description,
+		label: `${m.unit_des_label()}`,
+	},
+];
+
+export const vendorSortFields: FieldConfig<VendorCreateModel>[] = [
+	{
+		key: VendorFields.Name,
+		label: m.vendor_name_label(),
+	},
+	{
+		key: VendorFields.Description,
+		label: m.description(),
+	},
+	{
+		key: VendorFields.IsActive,
+		label: m.status_text(),
+	},
+];
+
+export const locationSortFields: FieldConfig<LocationCreateModel>[] = [
+	{
+		key: LocationField.Name,
+		label: m.store_location_name_label(),
+		className: 'w-24',
+	},
+	{
+		key: LocationField.Description,
+		label: m.description(),
+		className: 'w-40',
+	},
+	{
+		key: LocationField.LocationType,
+		label: m.location_type_label(),
+		className: 'w-10',
+	},
+	{
+		key: LocationField.isActive,
+		label: m.status_text(),
+		type: 'badge',
+		className: 'w-10',
+	},
+];
+
+export const locationField = [
+	{ label: 'Inventory', value: enum_location_type.inventory },
+	{ label: 'Direct', value: enum_location_type.direct },
+	{ label: 'Consignment', value: enum_location_type.consignment },
+];
+
+export const sortProductFields: FieldConfig<ProductCreateModel>[] = [
+	{ key: ProductField.NAME as keyof ProductCreateModel, label: 'Name' },
+	{ key: ProductField.CODE as keyof ProductCreateModel, label: 'Code' },
+];
+
+export const productFields: FieldConfig<ProductCreateModel>[] = [
+	...sortProductFields,
+	{
+		key: ProductField.DESCRIPTION as keyof ProductCreateModel,
+		label: 'Description',
+	},
+	{ key: ProductField.CATEGORY as keyof ProductCreateModel, label: 'Category' },
+	{
+		key: ProductField.SUBCATEGORY as keyof ProductCreateModel,
+		label: 'Subcategory',
+	},
+	{
+		key: ProductField.ITEM_GROUP as keyof ProductCreateModel,
+		label: 'Item Group',
+	},
+	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
 ];

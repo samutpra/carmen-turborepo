@@ -1,11 +1,11 @@
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
-		if (!token) {
+		const { token, tenantId } = extractRequest(request);
+		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
 				{ status: 400 }
@@ -23,7 +23,7 @@ export const GET = async (request: NextRequest) => {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		};
@@ -54,8 +54,7 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
 		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Token or tenant ID is missing from the headers' },
@@ -68,7 +67,7 @@ export const POST = async (request: NextRequest) => {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({

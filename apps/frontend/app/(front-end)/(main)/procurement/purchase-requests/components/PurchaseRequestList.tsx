@@ -6,9 +6,9 @@ import PurchaseDisplay from './PurchaseDisplay';
 import { prSortFields } from '@/constants/fields';
 import PrActions from './PrActions';
 import PrFilter from './PrFilter';
-import { usePr } from '../../hooks/usePr';
 import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import { purchase_request_title } from '@/paraglide/messages.js';
+import { usePr } from '@/hooks/usePr';
 
 const PurchaseRequestList = () => {
 	const { prList, setPrList, isLoading, error } = usePr();

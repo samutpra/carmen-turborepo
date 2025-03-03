@@ -26,7 +26,7 @@ interface Filter {
 }
 
 interface FilterBuilderProps {
-  fields: { value: string, label: string }[]
+  fields: { value: string; label: string }[];
   onFilterChange: (filters: Filter[]) => void
 }
 

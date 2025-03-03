@@ -1,0 +1,413 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Project Carmen_Inventory {
+  database_type: 'PostgreSQL'
+  Note: 'Carmen Inventory Platform'
+}
+
+TABLE tb_currency_iso {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  iso_code varchar(3) [not null, unique]
+  name varchar(255) [not null]
+  symbol varchar(10) [not null]
+}
+
+TABLE tb_user {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  username varchar(255) [unique, not null]
+  email varchar(255) [not null]
+
+  is_active bool [default: false]
+  is_consent bool [default: false]
+  consent timestamptz [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    username [name: "user_username_idx"]
+    email [name: "user_email_idx"]
+  }
+}
+
+TABLE tb_password {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [not null, ref: > tb_user.id]
+  hash text [not null]
+  is_active bool [default: false]
+  expired_on timestamptz [not null, default: `now() + '90 day'::interval`]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    user_id [name: 'password_user_idx']
+  }
+}
+
+Enum enum_token_type {
+  access_token
+  refresh_token
+}
+
+Table tb_user_login_session {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  token text [not null, unique]
+  token_type enum_token_type [not null, default: 'access_token']
+  user_id uuid [not null, ref: > tb_user.id]
+  expired_on timestamptz [not null, default: `now() + '1 day'::interval`]
+}
+
+TABLE tb_user_profile {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: - tb_user.id]
+
+  firstname varchar(100) [not null, default: '']
+  middlename varchar(100) [default: '']
+  lastname varchar(100) [default: '']
+
+  bio json [null, default: '{}']
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    user_id [name: "userprofile_user_idx"]
+   (firstname, lastname) [name: "userprofile_firstname_lastname_idx"]
+  }
+}
+
+TABLE tb_cluster {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  code varchar(30) [not null, unique]
+  name text [not null, unique]
+  is_active bool [default: true]
+
+  info json [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    code [unique, name: "cluster_code_u"]
+    name [unique, name: "cluster_name_u"]
+  }
+}
+
+TABLE tb_business_unit {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  cluster_id uuid [not null, ref: > tb_cluster.id]
+
+  code varchar(30) [not null]
+  name text [not null]
+  description text
+
+  is_hq bool [default: true]
+  is_active bool [default: true]
+
+  db_connection text [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    cluster_id [name: "businessunit_cluster_idx"]
+    code [name: "businessunit_code_idx"]
+    (cluster_id, code) [unique, name: "businessunit_cluster_code_u"]
+  }
+}
+
+TABLE tb_cluster_user {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > tb_user.id]
+  cluster_id uuid [not null, ref: > tb_cluster.id]
+
+  is_active bool [default: true]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (user_id, cluster_id) [unique, name: "user_cluster_u"]
+  }
+}
+
+Enum enum_user_business_unit_role {
+  admin
+  user
+}
+
+TABLE tb_user_tb_business_unit {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > tb_user.id]
+  business_unit_id uuid [ref: > tb_business_unit.id]
+  role enum_user_business_unit_role [not null, default: 'user']
+  is_default bool [default: false]
+
+  is_active bool [default: true]
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (user_id, business_unit_id) [unique, name: "user_businessunit_user_business_unit_u"]
+  }
+}
+
+
+TABLE tb_module {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  name        varchar   [not null, unique]
+  description text
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    name [name: "module_name_u"]
+  }
+}
+
+TABLE tb_business_unit_tb_module {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  business_unit_id uuid [not null, ref: > tb_business_unit.id]
+  module_id uuid [not null, ref: > tb_module.id]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (business_unit_id, module_id) [name: "businessunit_module_business_unit_module_u"]
+  }
+}
+
+Enum enum_subscription_status {
+  active
+  inactive
+  expired
+}
+
+TABLE tb_subscription {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  cluster_id uuid [not null, ref: > tb_cluster.id]
+
+  subscription_number varchar [not null]
+  start_date timestamptz [not null]
+  end_date timestamptz [not null]
+
+  status enum_subscription_status [not null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (cluster_id, subscription_number) [unique, name: "subscription_cluster_subscription_number_u"]
+  }
+}
+
+TABLE tb_subscription_detail {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  subscription_id uuid [not null, ref: > tb_subscription.id]
+  business_unit_id uuid [not null, ref: > tb_business_unit.id]
+  module_id uuid [not null, ref: > tb_module.id]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (subscription_id, business_unit_id, module_id) [unique, name: "subscriptiondetail_subscription_business_unit_module_u"]
+  }
+}
+
+TABLE tb_application_role {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  business_unit_id uuid [not null, ref: > tb_business_unit.id]
+  name        varchar   [not null, unique]
+  description text
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    name [name: "tb_application_role_name_idx"]
+    (business_unit_id, name) [unique, name: "applicationrole_business_unit_name_u"]
+  }
+}
+
+
+TABLE tb_user_tb_application_role {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id   uuid [not null, ref: > tb_user.id]
+  application_role_id   uuid [not null, ref: > tb_application_role.id]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  Indexes {
+    (user_id, application_role_id) [unique, name: "user_applicationrole_user_application_role_u"]
+  }
+}
+
+TABLE tb_permission {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  group varchar [not null]
+  name varchar   [ not null]
+  description text
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (group,name) [unique, name: "permission_group_name_u"]
+  }
+}
+
+TABLE tb_application_role_tb_permission {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  application_role_id       uuid [not null, ref: > tb_application_role.id]
+  permission_id uuid [not null, ref: > tb_permission.id]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  Indexes {
+    (application_role_id, permission_id) [unique, name: "applicationrole_permission_application_role_permission_u"]
+  }
+}
+
+
+TABLE tb_message_format {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+
+  name varchar [not null, unique]
+
+  message text
+
+  is_email bool [not null, default: false]
+  is_sms bool [default: false]
+  is_in_app bool [default: true]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    name [name: "messageformat_name_u"]
+  }
+}
+
+TABLE tb_notification {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  user_id uuid [not null, ref: > tb_user.id]
+  message text
+  is_read bool [default: false]
+  is_sent bool [default: false]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+  }
+}
+
+TABLE tb_reports {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  name varchar [not null]
+  description text
+
+  is_active bool [default: true]
+  is_public bool [default: false]
+  is_system bool [default: false]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+}
+
+TABLE tb_report_info {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  report_id uuid [not null, ref: > tb_reports.id]
+
+  file_name varchar [not null]
+  file_type varchar [not null]
+  file_data text [not null]
+
+  info json [null]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+}
+
+TABLE tb_report_tb_business_unit {
+  id uuid [not null, pk, default: `gen_random_uuid()`]
+  report_id uuid [not null, ref: > tb_reports.id]
+  business_unit_id uuid [not null, ref: > tb_business_unit.id]
+
+  report_name varchar [not null]
+  report_description text
+
+  is_active bool [default: true]
+
+  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
+  created_by_id uuid [ref: > tb_user.id]
+
+  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
+  updated_by_id uuid [ref: > tb_user.id]
+
+  indexes {
+    (report_id, business_unit_id) [unique, name: "report_business_unit_report_business_unit_u"]
+  }
+}

@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 
 export const DELETE = async (
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Token or tenant ID is missing from the headers' },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 		const URL = `${API_URL}/v1/delivery-point/${params.id}`;
 		const response = await fetch(URL, {
@@ -49,21 +47,19 @@ export const PATCH = async (
 	{ params }: { params: { id: string } }
 ) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Token or tenant ID is missing from the headers' },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
+
 		const data = await request.json();
 		const URL = `${API_URL}/v1/delivery-point/${params.id}`;
 		const options = {
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({

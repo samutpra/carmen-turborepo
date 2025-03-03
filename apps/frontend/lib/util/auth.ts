@@ -15,6 +15,11 @@ interface TokenResponse {
 	refresh_token: string;
 }
 
+interface TokenExtract {
+	token?: string;
+	tenantId: string | null;
+}
+
 /**
  * ตรวจสอบว่า token หมดอายุหรือยัง
  */
@@ -119,7 +124,8 @@ export const fetchWithToken = async (
 	}
 };
 
-export const extractToken = (request: NextRequest): string | null => {
+export const extractRequest = (request: NextRequest): TokenExtract => {
 	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-	return token || null;
+	const tenantId = request.headers.get('x-tenant-id');	
+	return { token, tenantId };
 };

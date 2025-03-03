@@ -2,7 +2,6 @@ import { DeliveryPointCreateModel } from '@/dtos/delivery-point.dto';
 import { enum_location_type, UserLocationModel } from '@/dtos/location.dto';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Control } from 'react-hook-form';
-import { fetchListDP } from '../../actions/delivery_point';
 import { Card } from '@/components/ui/card';
 import {
 	FormControl,
@@ -31,12 +30,13 @@ import {
 	status_text,
 } from '@/paraglide/messages';
 import { Textarea } from '@/components/ui/textarea';
-import { locationField } from '@/lib/util/fields';
 import DeliveryPointSelect from '../../components/DeliveryPointSelect ';
 import { Button } from '@/components/ui/button';
 import { Pen, Save, X } from 'lucide-react';
 import { Badge } from '@/components/ui-custom/is-active-badge';
 import { Switch } from '@/components/ui/switch';
+import { locationField } from '@/constants/fields';
+import { fetchListDP } from '@/services/delivery_point';
 
 interface LocationFormState {
 	id: string;
@@ -84,9 +84,9 @@ const LocationsInfo = ({
 		useState<DeliveryPointCreateModel | null>(
 			defaultValues?.delivery_point
 				? {
-						id: defaultValues.delivery_point.id,
-						name: defaultValues.delivery_point.name,
-					}
+					id: defaultValues.delivery_point.id,
+					name: defaultValues.delivery_point.name,
+				}
 				: null
 		);
 

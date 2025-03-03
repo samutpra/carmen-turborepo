@@ -1,10 +1,10 @@
-import React from 'react'
-import VendorDetails from '../../components/VendorDetails'
-import { formType } from '@/types/form_type'
+import React from 'react';
+import VendorDetails from '../../components/VendorDetails';
+import { formType } from '@/constants/enums';
 const NewVendorPage = () => {
 	return (
 		<VendorDetails vendor={null} mode={formType.ADD} data-id="vendor-details" />
 	);
 };
 
-export default NewVendorPage
+export default NewVendorPage;

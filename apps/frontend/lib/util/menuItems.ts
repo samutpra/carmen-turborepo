@@ -383,6 +383,12 @@ export const menuItems = [
 				enabled: true,
 			},
 			{
+				name: `${m.system_configuration()}`,
+				path: '/system-administration/config',
+				visible: true,
+				enabled: true,
+			},
+			{
 				name: `${m.location_management()}`,
 				path: '/system-administration/location-management',
 				visible: true,

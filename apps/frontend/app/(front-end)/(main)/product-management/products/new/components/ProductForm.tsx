@@ -10,7 +10,6 @@ import BasicInformation from './BasicInformation';
 import Attributes from './Attributes';
 import Locations from './Locations';
 import OrderUnits from './OrderUnits';
-import CountUnits from './CountUnits';
 import { Save } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { PD_STATUS } from '@/lib/util/status';
@@ -38,7 +37,6 @@ export default function ProductForm() {
 			locations: { add: [] },
 			orderUnits: { add: [] },
 			recipeUnits: { add: [] },
-			countUnits: { add: [] },
 		},
 	});
 
@@ -65,9 +63,8 @@ export default function ProductForm() {
 					tenantId={tenantId}
 				/>
 				<Attributes control={form.control} />
-				<Locations control={form.control} token={token} tenantId={tenantId} />
+				<Locations control={form.control} />
 				<OrderUnits control={form.control} />
-				<CountUnits control={form.control} />
 			</form>
 		</Form.Form>
 	);

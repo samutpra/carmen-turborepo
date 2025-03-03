@@ -1,22 +1,10 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@/app/context/AuthContext';
+import React from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import CurrencyDialog from './CurrencyDialog';
-import RefreshToken from '@/components/RefreshToken';
-import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import {
-	deleteCurrency,
-	fetchCurrencies,
-	fetchExchangeRates,
-	findChangedRates,
-	prepareCurrentRates,
-} from '../actions/currency';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
-import { useURL } from '@/hooks/useURL';
 import { statusOptions } from '@/lib/statusOptions';
 import { FileDown, Printer } from 'lucide-react';
 import SortDropDown from '@/components/ui-custom/SortDropDown';
@@ -28,20 +16,17 @@ import ErrorCard from '@/components/ui-custom/error/ErrorCard';
 import {
 	code_label,
 	currency,
-	currency_delete_success,
 	currency_name,
-	error_del_text,
 	export_text,
-	fail_del_currency,
-	fail_to_text,
 	print_text,
 	rate_label,
 	refresh_exchange_rate,
 	Search,
-	session_expire,
 	status_text,
 	symbol_label,
 } from '@/paraglide/messages.js';
+import RefreshTokenComponents from './RefreshTokenComponents';
+import { useCurrency } from '@/hooks/useCurrency';
 
 enum CurrencyField {
 	Code = 'code',
@@ -74,135 +59,31 @@ const currenciesFiltered: FieldConfig<CurrencyCreateModel>[] = [
 ];
 
 const CurrencyList = () => {
-	const { accessToken, tenantId } = useAuth();
-	const token = accessToken || '';
-	const [currencies, setCurrencies] = useState<CurrencyCreateModel[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [statusOpen, setStatusOpen] = useState(false);
-	const [search, setSearch] = useURL('search');
-	const [status, setStatus] = useURL('status');
-	const [page, setPage] = useURL('page');
-	const [pages, setPages] = useURL('pages');
-	const [showRefreshToken, setShowRefreshToken] = useState(false);
+	const {
+		currencies,
+		isLoading,
+		error,
+		search,
+		setSearch,
+		status,
+		setStatus,
+		statusOpen,
+		setStatusOpen,
+		page,
+		totalPages,
+		setPage,
+		showRefreshToken,
+		handleSuccess,
+		handleDelete,
+		refreshExchangeRate,
+		setCurrencies
+	} = useCurrency();
 
-	const fetchData = async () => {
-		try {
-			setIsLoading(true);
-			const data = await fetchCurrencies(token, tenantId, {
-				search,
-				status,
-				page,
-			});
-			setCurrencies(data.data);
-			setPage(data.pagination.page);
-			setPages(data.pagination.pages);
-			setShowRefreshToken(false);
-		} catch (err) {
-			if (err instanceof Error && err.message === 'Unauthorized') {
-				toastError({
-					message: 'Your session has expired. Please login again.',
-				});
-				setShowRefreshToken(true);
-				setCurrencies([]);
-			} else {
-				setError(err instanceof Error ? err.message : 'An error occurred');
-				toastError({ message: `${fail_to_text()} ${currency()}` });
-			}
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchData();
-	}, [token, tenantId, search, status]);
-
-	const handleSuccess = useCallback(
-		(value: CurrencyCreateModel | CurrencyCreateModel[]) => {
-			setCurrencies((prev) => {
-				const values = Array.isArray(value) ? value : [value];
-				const mapValues = new Map(prev.map((u) => [u.id, u]));
-				values.forEach((v) => {
-					mapValues.set(v.id, v);
-				});
-				return Array.from(mapValues.values());
-			});
-		},
-		[setCurrencies]
-	);
-
-	const handleDelete = useCallback(
-		async (id: string) => {
-			try {
-				const res = await deleteCurrency(id, token, tenantId);
-				if (res) {
-					setCurrencies((prev) => prev.filter((p) => p.id !== id));
-					toastSuccess({ message: `${currency_delete_success()}` });
-				}
-			} catch (error) {
-				if (error instanceof Error) {
-					if (error.message === 'Unauthorized') {
-						toastError({ message: `${session_expire()}` });
-					} else {
-						toastError({
-							message: `${fail_del_currency()}: ${error.message}`,
-						});
-					}
-				} else {
-					toastError({ message: `${error_del_text()} ${currency()}.` });
-				}
-			}
-		},
-		[token, tenantId, deleteCurrency]
-	);
-
-	const onRefreshExchangeRate = async () => {
-		try {
-			const currentRates = prepareCurrentRates(currencies);
-			const apiData = await fetchExchangeRates(token, tenantId);
-			const changedRates = findChangedRates(apiData, currentRates);
-
-			if (changedRates.length === 0) {
-				console.log('No exchange rate changes detected');
-			} else {
-				console.log('Changed rates payload:', changedRates);
-			}
-		} catch (error) {
-			console.error('Error refreshing exchange rates:', error);
-			toastError({
-				message:
-					error instanceof Error
-						? error.message
-						: 'Failed to refresh exchange rates',
-			});
-		}
-	};
-
-	if (showRefreshToken) {
-		return (
-			<Card
-				className="border-destructive w-full md:w-1/2"
-				data-id="currency-refresh-token-card"
-			>
-				<CardContent className="pt-6" data-id="currency-refresh-token-content">
-					<div
-						className="flex flex-col items-center gap-4"
-						data-id="currency-refresh-token-container"
-					>
-						<p className="text-destructive">{session_expire()}</p>
-						<RefreshToken />
-					</div>
-				</CardContent>
-			</Card>
-		);
-	}
+	if (showRefreshToken) return <RefreshTokenComponents />
 
 	if (error) {
 		return <ErrorCard message={error} data-id="currency-error-card" />;
 	}
-
-	const title = `${currency()}`;
 
 	const actionButtons = (
 		<div
@@ -213,7 +94,7 @@ const CurrencyList = () => {
 				variant={'outline'}
 				size={'sm'}
 				data-id="currency-refresh-exchange-rate-button"
-				onClick={onRefreshExchangeRate}
+				onClick={refreshExchangeRate}
 			>
 				{refresh_exchange_rate()}
 			</Button>
@@ -272,7 +153,7 @@ const CurrencyList = () => {
 			onSuccess={handleSuccess}
 			onDelete={handleDelete}
 			page={+page}
-			totalPage={+pages}
+			totalPage={totalPages}
 			setPage={setPage}
 			data-id="currency-display-component"
 			isLoading={isLoading}
@@ -281,7 +162,7 @@ const CurrencyList = () => {
 
 	return (
 		<DataDisplayTemplate
-			title={title}
+			title={currency()}
 			actionButtons={actionButtons}
 			filters={filter}
 			content={content}

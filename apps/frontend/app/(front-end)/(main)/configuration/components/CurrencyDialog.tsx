@@ -24,7 +24,7 @@ import {
 } from '@/components/ui-custom/dialog/dialog';
 import PaginationComponent from '@/components/PaginationComponent';
 import * as m from '@/paraglide/messages.js';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import SearchForm from '@/components/ui-custom/SearchForm';
 import {
 	DropdownMenu,
@@ -35,13 +35,13 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SORT_OPTIONS, sortFields, toggleSort } from '@/lib/util/currency';
-import { fetchSystemCurrencies } from '../actions/currency';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';
 import {
 	CurrencyCreateModel,
 	SystemCurrencyCreateModel,
 	SystemCurrencyCreateSchema,
 } from '@/dtos/currency.dto';
+import { fetchSystemCurrencies } from '@/services/currency';
 
 // Helper function to validate SORT_OPTIONS
 interface CurrencyDialogProps {
@@ -130,10 +130,10 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 		defaultValues:
 			mode === formType.EDIT && defaultValues
 				? {
-						...defaultValues,
-						iso_code: defaultValues.code,
-						exchange_rate: defaultValues.exchange_rate ?? 0,
-					}
+					...defaultValues,
+					iso_code: defaultValues.code,
+					exchange_rate: defaultValues.exchange_rate ?? 0,
+				}
 				: defaultCurrencyValues,
 	});
 
@@ -275,9 +275,8 @@ const CurrencyDialog: React.FC<CurrencyDialogProps> = ({
 										<DropdownMenuItem
 											key={key}
 											data-id={`sort-item-${key}`}
-											className={`flex justify-between items-center ${
-												sort.startsWith(key) ? 'font-bold text-blue-500' : ''
-											}`}
+											className={`flex justify-between items-center ${sort.startsWith(key) ? 'font-bold text-blue-500' : ''
+												}`}
 											onClick={() => handleSortChange(key)}
 											aria-selected={sort.startsWith(key)}
 										>

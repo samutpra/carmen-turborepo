@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 
 const apiUrl =
 	process.env.CURRENCY_API_URL || 'http://localhost:4000/api/v1/currencies';
@@ -43,17 +44,6 @@ interface CurrencyApiResponse {
 interface CurrencyPayload {
 	list: TransformedCurrencyData[];
 }
-
-const validateAuth = (request: NextRequest) => {
-	const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-	const tenantId = request.headers.get('x-tenant-id');
-
-	if (!token || !tenantId) {
-		throw new ApiError(401, 'Authorization token or x-tenant-id is missing');
-	}
-
-	return { token, tenantId };
-};
 
 const transformCurrencyData = (
 	data: CurrencyResponse,
@@ -177,7 +167,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const { token, tenantId } = validateAuth(request);
+		const { token, tenantId } = extractRequest(request);
 		const body = await request.json();
 		const currencyCodes = body.data;
 
@@ -194,8 +184,8 @@ export async function POST(request: NextRequest) {
 
 		const currencyData = await fetchCurrencyData(
 			request.nextUrl.origin,
-			token,
-			tenantId
+			token || '',
+			tenantId || ''
 		);
 
 		const transformedCurrencies = transformCurrencyData(
@@ -215,8 +205,8 @@ export async function POST(request: NextRequest) {
 
 		const result = await postCurrencyData(
 			transformedCurrencies,
-			token,
-			tenantId
+			token || '',
+			tenantId || ''
 		);
 
 		if (result.success) {

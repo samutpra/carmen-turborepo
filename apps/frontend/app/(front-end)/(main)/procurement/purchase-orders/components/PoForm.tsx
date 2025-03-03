@@ -1,5 +1,5 @@
 // import { PurchaseOrderType } from '@/lib/types';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import React from 'react';
 
 interface PoFormProps {

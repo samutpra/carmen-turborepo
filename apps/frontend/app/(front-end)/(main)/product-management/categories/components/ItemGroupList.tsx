@@ -18,7 +18,7 @@ import { Pencil, Trash } from 'lucide-react';
 import ItemGroupDialog from './ItemGroupDialog';
 import { useAuth } from '@/app/context/AuthContext';
 import { cn } from '@/lib/utils';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import { deleteItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';

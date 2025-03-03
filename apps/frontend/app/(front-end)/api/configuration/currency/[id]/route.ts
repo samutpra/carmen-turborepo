@@ -1,14 +1,13 @@
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
-
 
 export async function PATCH(
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
 
 		if (!token || !tenantId) {
 			return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -61,8 +60,8 @@ export async function DELETE(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
 			return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 		}
@@ -101,4 +100,4 @@ export async function DELETE(
 			{ status: 500 }
 		);
 	}
-} 
+}

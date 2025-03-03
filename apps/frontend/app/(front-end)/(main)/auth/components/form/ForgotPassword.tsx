@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-custom/FormCustom';
 import { InputCustom } from '@/components/ui-custom/InputCustom';
-import { sendRecoverPasswordEmail } from '../../actions/actions';
+import { sendRecoverPasswordEmail } from '@/services/auth';
 import SendEmailSuccess from '../SendEmailSucess';
 
 interface Props {

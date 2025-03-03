@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { handleDelete, handleSubmit } from '../actions/vendor';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -25,10 +24,11 @@ import AddressesSection from './sections/AddressesSection';
 import ContactsSection from './sections/ContactsSection';
 import CertificationsSection from './sections/CertificationsSection';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
-import { formType } from '@/types/form_type';
 import SkeltonVendorDetail from '@/components/ui-custom/Loading/SkeltonVendorDetail';
 import * as m from '@/paraglide/messages.js';
 import { VendorCreateModel, VendorCreateSchema } from '@/dtos/vendor.dto';
+import { formType } from '@/constants/enums';
+import { handleDelete, handleSubmit } from '@/services/vendor';
 interface Props {
 	vendor: VendorCreateModel | null;
 	mode: formType;

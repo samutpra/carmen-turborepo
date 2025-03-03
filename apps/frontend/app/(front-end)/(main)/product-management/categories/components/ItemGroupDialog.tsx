@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 import { submitItemGroup } from '../actions/item_group';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
 import { LoaderButton } from '@/components/ui-custom/button/LoaderButton';

@@ -1,6 +1,6 @@
 import React from 'react';
 import PoForm from '../components/PoForm';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 const NewPoPage = () => {
 	return <PoForm mode={formType.ADD} />;

@@ -1,5 +1,5 @@
 import { ProductItemGroupCreateModel } from '@/dtos/product-item-group.dto';
-import { formType } from '@/types/form_type';
+import { formType } from '@/constants/enums';
 
 export const fetchItemGroup = async (token: string, tenantId: string) => {
 	try {

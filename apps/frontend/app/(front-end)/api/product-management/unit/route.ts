@@ -1,12 +1,11 @@
 import { UnitCreateSchema } from '@/dtos/unit.dto';
 import { API_URL } from '@/lib/util/api';
-import { extractToken } from '@/lib/util/auth';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
 	try {
-		const token = extractToken(request);
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
 
 		if (!token) {
 			return NextResponse.json(

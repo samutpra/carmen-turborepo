@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -6,12 +7,11 @@ export async function GET(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
-		if (!token) {
-			return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-		}
+		const { token, tenantId } = extractRequest(request);
 
+		if (!token || !tenantId) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
 		const URL = `${API_URL}/v1/locations/${params.id}`;
 
 		const response = await fetch(URL, {
@@ -19,7 +19,7 @@ export async function GET(
 			headers: {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json',
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 			},
 		});
 
@@ -57,10 +57,10 @@ export async function PATCH(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
-			return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
 		const data = await request.json();
@@ -72,7 +72,7 @@ export async function PATCH(
 			headers: {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json',
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 			},
 			body: JSON.stringify(data),
 		});
@@ -110,11 +110,10 @@ export async function DELETE(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
 
 		if (!token || !tenantId) {
-			return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
 		const URL = `${API_URL}/v1/locations/${params.id}`;
@@ -122,7 +121,7 @@ export async function DELETE(
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		});

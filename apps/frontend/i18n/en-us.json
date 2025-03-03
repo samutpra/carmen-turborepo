@@ -241,5 +241,7 @@
 	"pr_title": "'Purchase Requests",
 	"purchase_request_title": "Purchase Requests",
 	"po_title": "Purchase Orders",
-	"grn_title": "Goods Receive Note"
+	"grn_title": "Goods Receive Note",
+	"sign_in_fail": "Sign in failed",
+	"system_configuration": "System Configuration"
 }

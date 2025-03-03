@@ -19,6 +19,8 @@ import {
 	status_discontinued,
 	status_inactive,
 } from '@/paraglide/messages';
+import { SearchableDropdown } from '@/components/ui/searchable-dropdown';
+import { useUnit } from '@/hooks/useUnit';
 
 interface BasicInformationProps {
 	control: Control<ProductFormType>;
@@ -36,6 +38,8 @@ const statusOptions = [
 ];
 
 const BasicInformation = ({ control }: BasicInformationProps) => {
+	const { units } = useUnit();
+
 	return (
 		<Card>
 			<CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -100,10 +104,21 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 						<Form.FormItem>
 							<Form.FormLabel>Inventory Unit</Form.FormLabel>
 							<Form.FormControl>
-								<Input
-									{...field}
-									value={String(field.value || '')}
-									placeholder="Enter primary unit ID"
+								<SearchableDropdown
+									data={units}
+									value={units.find(unit => unit.id === field.value) || null}
+									onChange={(selectedUnit) => {
+										field.onChange(selectedUnit?.id || '');
+									}}
+									displayValue={(unit) => unit?.name || ''}
+									getItemText={(unit) => unit.name}
+									getItemId={(unit) => unit.id || ''}
+									searchFields={['name', 'description']}
+									placeholder="Select an inventory unit"
+									searchPlaceholder="Search units..."
+									noResultsText="No matching units found"
+									noDataText="No units available"
+									className="w-full"
 								/>
 							</Form.FormControl>
 							<Form.FormMessage />
@@ -137,9 +152,14 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormLabel>Price</Form.FormLabel>
 							<Form.FormControl>
 								<Input
-									{...field}
 									type="number"
-									value={String(field.value || '')}
+									step="any"
+									value={field.value === undefined ? '' : field.value}
+									onChange={(e) => {
+										const value = e.target.value === '' ? undefined : Number(e.target.value);
+										field.onChange(value);
+									}}
+									onBlur={field.onBlur}
 									placeholder="Enter price"
 								/>
 							</Form.FormControl>
@@ -181,9 +201,14 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormLabel>Tax Rate</Form.FormLabel>
 							<Form.FormControl>
 								<Input
-									{...field}
 									type="number"
-									value={String(field.value || '')}
+									step="any"
+									value={field.value === undefined ? '' : field.value}
+									onChange={(e) => {
+										const value = e.target.value === '' ? undefined : Number(e.target.value);
+										field.onChange(value);
+									}}
+									onBlur={field.onBlur}
 									placeholder="Enter tax rate"
 								/>
 							</Form.FormControl>
@@ -191,8 +216,6 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 						</Form.FormItem>
 					)}
 				/>
-
-
 
 				<Form.FormField
 					control={control}
@@ -202,9 +225,14 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormLabel>Price Deviation Limit</Form.FormLabel>
 							<Form.FormControl>
 								<Input
-									{...field}
 									type="number"
-									value={String(field.value || '')}
+									step="any"
+									value={field.value === undefined ? '' : field.value}
+									onChange={(e) => {
+										const value = e.target.value === '' ? undefined : Number(e.target.value);
+										field.onChange(value);
+									}}
+									onBlur={field.onBlur}
 									placeholder="Enter price deviation limit"
 								/>
 							</Form.FormControl>

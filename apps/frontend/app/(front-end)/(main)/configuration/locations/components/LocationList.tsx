@@ -26,10 +26,9 @@ import { Link } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { CardsContainerSkeleton } from '@/components/ui-custom/Loading/CardsContainerSkeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Eye, Trash } from 'lucide-react';
-import SortButton from '@/components/SortButton';
-import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
+import { Eye, Trash } from 'lucide-react';
 import PaginationComponent from '@/components/PaginationComponent';
+import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 
 interface Props {
 	locations: LocationCreateModel[];
@@ -134,22 +133,6 @@ const LocationList = ({
 				role="region"
 				aria-label="Product list mobile view"
 			>
-				<div className="flex items-center gap-2 mb-4 overflow-x-auto">
-					{fields.map((field) => (
-						<Button
-							key={field.key as string}
-							variant="outline"
-							size="sm"
-							onClick={() => handleSort(String(field.key))}
-							aria-label={`Sort by ${field.label}`}
-						>
-							{field.label}
-							{sortField === field.key &&
-								(sortDirection === 'asc' ? <ChevronUp /> : <ChevronDown />)}
-						</Button>
-					))}
-				</div>
-
 				{isLoading ? (
 					<CardsContainerSkeleton fields={fields.length} cards={5} withAction />
 				) : (
@@ -165,8 +148,16 @@ const LocationList = ({
 											key={field.key as string}
 											className="grid grid-cols-10 gap-4"
 										>
-											<span className="text-sm text-muted-foreground col-span-3">
+											<span
+												className="text-sm text-muted-foreground col-span-3 cursor-pointer"
+												onClick={() => handleSort(String(field.key))}
+											>
 												{field.label}
+												{sortField === field.key && (
+													<span className="ml-1">
+														{sortDirection === 'asc' ? '↑' : '↓'}
+													</span>
+												)}
 											</span>
 											<span className="text-sm font-medium col-span-7">
 												{renderFieldValue(field, location)}
@@ -211,17 +202,19 @@ const LocationList = ({
 							{fields.map((field) => (
 								<TableHead
 									key={field.key as string}
-									className={`text-xs ${field.className || ''}`}
+									className={`text-xs cursor-pointer select-none ${field.className || ''}`}
 									style={{ width: field.width }}
 									align={field.align}
+									onClick={() => handleSort(String(field.key))}
 								>
-									<SortButton
-										field={String(field.key)}
-										label={field.label}
-										isActive={sortField === field.key}
-										direction={sortDirection}
-										onSort={handleSort}
-									/>
+									<div className="flex items-center gap-1">
+										{field.label}
+										{sortField === field.key && (
+											<span className="ml-1">
+												{sortDirection === 'asc' ? '↑' : '↓'}
+											</span>
+										)}
+									</div>
 								</TableHead>
 							))}
 							<TableHead className="text-right">{action_text()}</TableHead>

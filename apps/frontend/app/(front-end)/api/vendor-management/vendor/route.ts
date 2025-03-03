@@ -1,20 +1,19 @@
 import { VendorCreateSchema } from '@/dtos/vendor.dto';
 import { API_URL } from '@/lib/util/api';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Unauthorized access - Invalid or expired token' },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
 		const searchParams = request.nextUrl.searchParams;
 		const queryString = searchParams.toString();
+
 		const apiUrl = queryString
 			? `${API_URL}/v1/vendor?${queryString}`
 			: `${API_URL}/v1/vendor`;
@@ -23,18 +22,13 @@ export const GET = async (request: NextRequest) => {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
-				'x-tenant-id': tenantId || '',
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		};
 
 		const response = await fetch(apiUrl, options);
-		if (response.status === 401) {
-			return NextResponse.json(
-				{ error: 'Unauthorized access - Invalid or expired token' },
-				{ status: 401 }
-			);
-		}
+
 		if (!response.ok) {
 			throw new Error(
 				`Failed to fetch units: ${response.status} ${response.statusText}`
@@ -54,14 +48,12 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
-			return NextResponse.json(
-				{ error: 'Unauthorized access - Invalid or expired token' },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
+
 		const body = await request.json();
 		const result = VendorCreateSchema.safeParse(body);
 
