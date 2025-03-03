@@ -14,7 +14,6 @@ type Unit = {
 	created_by_id?: string | null;
 	updated_at?: string;
 	updated_by_id?: string | null;
-	index?: number; // Add index property to track position
 };
 
 const PlayPage = () => {
@@ -38,8 +37,7 @@ const PlayPage = () => {
 				...sourceUnit,
 				id: `${index}`,
 				name: `${sourceUnit.name} ${index + 1}`,
-				description: `${sourceUnit.description || 'Description'} ${index + 1}`,
-				index: index + 1 // Store 1-based index for display
+				description: `${sourceUnit.description || 'Description'} ${index + 1}`
 			};
 		});
 
@@ -60,8 +58,8 @@ const PlayPage = () => {
 					data={largeDataset}
 					value={selectedLargeUnit}
 					onChange={setSelectedLargeUnit}
-					displayValue={(unit) => unit ? `${unit.index} - ${unit.name}` : ''}
-					getItemText={(unit) => `${unit.index} - ${unit.name} - ${unit.description || 'No description'}`}
+					displayValue={(unit) => unit ? `${unit.name}` : ''}
+					getItemText={(unit) => `${unit.name} - ${unit.description || 'No description'}`}
 					getItemId={(unit) => unit.id || ''}
 					searchFields={['name', 'description']}
 					placeholder="Select with infinite scroll"
@@ -71,13 +69,11 @@ const PlayPage = () => {
 				/>
 			</div>
 
-
 			{/* Status display for debugging */}
 			{selectedLargeUnit && (
 				<div className="max-w-sm mt-8 p-4 bg-gray-100 rounded-md">
 					<h3 className="font-medium mb-2">Selected Item:</h3>
 					<div>
-						<div><span className="font-semibold">Index:</span> {selectedLargeUnit.index}</div>
 						<div><span className="font-semibold">ID:</span> {selectedLargeUnit.id}</div>
 						<div><span className="font-semibold">Name:</span> {selectedLargeUnit.name}</div>
 						<div><span className="font-semibold">Description:</span> {selectedLargeUnit.description}</div>

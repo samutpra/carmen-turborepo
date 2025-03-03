@@ -390,9 +390,7 @@ export const productFormSchema = z.object({
 					unit_id: z.string(),
 					unit_quantity: z.number(),
 					to_unit_id: z.string(),
-					to_quantity: z.number().optional(),
 					to_unit_quantity: z.number().optional(),
-					description: z.string(),
 				})
 			),
 		})

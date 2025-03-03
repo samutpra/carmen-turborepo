@@ -156,12 +156,12 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
         <div className={`relative ${className}`}>
             <DropdownMenu onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button className="w-full justify-between">
+                    <Button className="w-[220px] justify-between" variant={'outline'} size={'sm'}>
                         {displayValue(value) || placeholder}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full min-w-[240px]">
+                <DropdownMenuContent className="w-[220px]">
                     <div className="px-2 py-2 sticky top-0 bg-white border-b z-10">
                         <div className="relative">
                             <Input
