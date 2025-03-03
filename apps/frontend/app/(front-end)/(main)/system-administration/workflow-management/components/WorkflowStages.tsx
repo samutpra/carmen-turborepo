@@ -13,11 +13,10 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pencil, Save, X, UserPlus, Trash2, Filter } from 'lucide-react';
-import { Stage } from '../types/workflow';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '../data/mockUser';
-import { enum_available_actions } from '@/dtos/workflow.dto';
+import { enum_available_actions, Stage } from '@/dtos/workflow.dto';
 
 interface WorkflowStagesProps {
 	stages: Stage[];
@@ -31,7 +30,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 	onSave,
 }) => {
 	const [stages, setStages] = useState<Stage[]>(initialStages);
-	const [selectedStageId, setSelectedStageId] = useState<number | null>(null);
+	const [selectedStageName, setSelectedStageName] = useState<string | null>(
+		null
+	);
 	const [isStageEditing, setIsStageEditing] = useState(false);
 	const [userFilter, setUserFilter] = useState<
 		'all' | 'assigned' | 'unassigned'
@@ -47,19 +48,21 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 		}
 	}, [parentIsEditing]);
 
-	const selectedStage = stages.find((stage) => stage.id === selectedStageId);
+	const selectedStage = stages.find(
+		(stage) => stage.name === selectedStageName
+	);
 
-	const handleStageSelect = (stageId: number) => {
-		setSelectedStageId(stageId);
+	const handleStageSelect = (stageName: string) => {
+		setSelectedStageName(stageName);
 	};
 
 	const handleDeleteStage = () => {
 		if (!selectedStage) return;
 		const updatedStages = stages.filter(
-			(stage) => stage.id !== selectedStage.id
+			(stage) => stage.name !== selectedStage.name
 		);
 		setStages(updatedStages);
-		setSelectedStageId(null);
+		setSelectedStageName(null);
 		onSave(updatedStages);
 	};
 
@@ -67,7 +70,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
-			if (stage.id === selectedStage.id) {
+			if (stage.name === selectedStage.name) {
 				return { ...stage, [e.target.name]: e.target.value };
 			}
 			return stage;
@@ -79,7 +82,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
-			if (stage.id === selectedStage.id) {
+			if (stage.name === selectedStage.name) {
 				return { ...stage, [field]: value };
 			}
 			return stage;
@@ -89,13 +92,21 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 	const handleActionToggle = (action: enum_available_actions) => {
 		if (!selectedStage) return;
-
 		const updatedStages = stages.map((stage) => {
-			if (stage.id === selectedStage.id) {
-				const updatedActions = stage.availableActions.includes(action)
-					? stage.availableActions.filter((a) => a !== action)
-					: [...stage.availableActions, action];
-				return { ...stage, availableActions: updatedActions };
+			if (stage.name === selectedStage.name) {
+				const updatedActions = { ...stage.available_actions };
+
+				if (updatedActions[action]) {
+					updatedActions[action] = {
+						...updatedActions[action],
+						is_active: !updatedActions[action].is_active,
+					};
+				}
+
+				return {
+					...stage,
+					available_actions: updatedActions,
+				};
 			}
 			return stage;
 		});
@@ -111,30 +122,30 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
-			if (stage.id === selectedStage.id) {
-				const isUserAssigned = stage.assignedUsers.some(
+			if (stage.name === selectedStage.name) {
+				const isUserAssigned = stage.assigned_users.some(
 					(u) => u.id === user.id
 				);
 				const updatedUsers = isUserAssigned
-					? stage.assignedUsers.filter((u) => u.id !== user.id)
-					: [...stage.assignedUsers, user];
-				return { ...stage, assignedUsers: updatedUsers };
+					? stage.assigned_users.filter((u) => u.id !== user.id)
+					: [...stage.assigned_users, user];
+				return { ...stage, assigned_users: updatedUsers };
 			}
 			return stage;
 		});
 		setStages(updatedStages);
 	};
 
-	const handleHideFieldToggle = (field: 'pricePerUnit' | 'totalPrice') => {
+	const handleHideFieldToggle = (field: 'price_per_unit' | 'total_price') => {
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
-			if (stage.id === selectedStage.id) {
+			if (stage.name === selectedStage.name) {
 				return {
 					...stage,
-					hideFields: {
-						...stage.hideFields,
-						[field]: !stage.hideFields[field],
+					hide_fields: {
+						...stage.hide_fields,
+						[field]: !stage.hide_fields[field],
 					},
 				};
 			}
@@ -145,20 +156,52 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 	const handleAddStage = () => {
 		const newStage: Stage = {
-			id: stages.length + 1,
 			name: `Stage ${stages.length + 1}`,
 			description: '',
 			sla: '24',
-			slaUnit: 'hours',
-			availableActions: [enum_available_actions.submit],
-			hideFields: {
-				pricePerUnit: false,
-				totalPrice: false,
+			sla_unit: 'hours',
+			available_actions: {
+				submit: {
+					is_active: false,
+					recipients: {
+						requestor: false,
+						current_approve: false,
+						next_step: false,
+					},
+				},
+				approve: {
+					is_active: false,
+					recipients: {
+						requestor: false,
+						current_approve: false,
+						next_step: false,
+					},
+				},
+				reject: {
+					is_active: false,
+					recipients: {
+						requestor: false,
+						current_approve: false,
+						next_step: false,
+					},
+				},
+				sendback: {
+					is_active: false,
+					recipients: {
+						requestor: false,
+						current_approve: false,
+						next_step: false,
+					},
+				},
 			},
-			assignedUsers: [],
+			hide_fields: {
+				price_per_unit: false,
+				total_price: false,
+			},
+			assigned_users: [],
 		};
 		setStages([...stages, newStage]);
-		setSelectedStageId(newStage.id);
+		setSelectedStageName(newStage.name);
 		setIsStageEditing(true);
 	};
 
@@ -174,7 +217,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 	const filteredUsers = users.filter((user) => {
 		const isAssigned =
-			selectedStage?.assignedUsers.some((u) => u.id === user.id) ?? false;
+			selectedStage?.assigned_users.some((u) => u.id === user.id) ?? false;
 		switch (userFilter) {
 			case 'assigned':
 				return isAssigned;
@@ -203,13 +246,13 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 						<ul className="space-y-2">
 							{stages.map((stage) => (
 								<li
-									key={stage.id}
+									key={stage.name}
 									className={`p-2 rounded-md cursor-pointer ${
-										selectedStageId === stage.id
+										selectedStageName === stage.name
 											? 'bg-secondary'
 											: 'hover:bg-secondary/50'
 									}`}
-									onClick={() => handleStageSelect(stage.id)}
+									onClick={() => handleStageSelect(stage.name)}
 								>
 									{stage.name}
 								</li>
@@ -305,11 +348,11 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												/>
 											</div>
 											<div>
-												<Label htmlFor="slaUnit">SLA Unit</Label>
+												<Label htmlFor="sla_unit">SLA Unit</Label>
 												<Select
-													value={selectedStage.slaUnit}
+													value={selectedStage.sla_unit}
 													onValueChange={(value) =>
-														handleSelectChange('slaUnit', value)
+														handleSelectChange('sla_unit', value)
 													}
 													disabled={!isStageEditing}
 												>
@@ -336,7 +379,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													<Button
 														key={action}
 														variant={
-															selectedStage.availableActions.includes(action)
+															selectedStage.available_actions[
+																enum_available_actions[action]
+															]?.is_active
 																? 'default'
 																: 'outline'
 														}
@@ -364,9 +409,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													</Label>
 													<Switch
 														id="hide-price-per-unit"
-														checked={selectedStage.hideFields.pricePerUnit}
+														checked={selectedStage.hide_fields.price_per_unit}
 														onCheckedChange={() =>
-															handleHideFieldToggle('pricePerUnit')
+															handleHideFieldToggle('price_per_unit')
 														}
 														disabled={!isStageEditing}
 													/>
@@ -380,9 +425,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													</Label>
 													<Switch
 														id="hide-total-price"
-														checked={selectedStage.hideFields.totalPrice}
+														checked={selectedStage.hide_fields.total_price}
 														onCheckedChange={() =>
-															handleHideFieldToggle('totalPrice')
+															handleHideFieldToggle('total_price')
 														}
 														disabled={!isStageEditing}
 													/>
@@ -395,9 +440,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 								<TabsContent value="notifications">
 									<div className="space-y-6">
 										<div className="grid gap-6">
-											{selectedStage.availableActions.includes(
-												enum_available_actions.submit
-											) && (
+											{selectedStage.available_actions.submit.is_active && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Submit Notification</CardTitle>
@@ -418,9 +461,8 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																		Requestor
 																	</Label>
 																</div>
-																{selectedStage.availableActions.includes(
-																	enum_available_actions.approve
-																) && (
+																{selectedStage.available_actions.approve
+																	.is_active && (
 																	<div className="flex items-center space-x-2">
 																		<Switch
 																			id="submit-next-approver"
@@ -453,9 +495,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes(
-												enum_available_actions.approve
-											) && (
+											{selectedStage.available_actions.approve.is_active && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Approve Notification</CardTitle>
@@ -488,9 +528,8 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																		Current Approver
 																	</Label>
 																</div>
-																{selectedStage.availableActions.includes(
-																	enum_available_actions.approve
-																) && (
+																{selectedStage.available_actions.approve
+																	.is_active && (
 																	<div className="flex items-center space-x-2">
 																		<Switch
 																			id="approve-next-approver"
@@ -523,9 +562,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes(
-												enum_available_actions.reject
-											) && (
+											{selectedStage.available_actions.reject.is_active && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Reject Notification</CardTitle>
@@ -577,9 +614,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes(
-												enum_available_actions.send_back
-											) && (
+											{selectedStage.available_actions.sendback.is_active && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Send Back Notification</CardTitle>
@@ -724,7 +759,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 											<CardContent className="p-6">
 												<div className="flex justify-between items-center mb-4">
 													<span className="font-semibold">
-														Total Users: {selectedStage.assignedUsers.length} /{' '}
+														Total Users: {selectedStage.assigned_users.length} /{' '}
 														{users.length}
 													</span>
 													<Button variant="outline" size="sm">
@@ -734,9 +769,10 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 												<div className="space-y-4">
 													{filteredUsers.map((user) => {
-														const isAssigned = selectedStage.assignedUsers.some(
-															(u) => u.id === user.id
-														);
+														const isAssigned =
+															selectedStage.assigned_users.some(
+																(u) => u.id === user.id
+															);
 														return (
 															<Card
 																key={user.id}

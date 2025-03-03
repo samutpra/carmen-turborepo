@@ -157,7 +157,7 @@ const WorkflowList = () => {
 	const fetchList = async () => {
 		try {
 			setIsLoading(true);
-			const data = await fetchWorkflowList(token, {
+			const data = await fetchWorkflowList(token, tenantId, {
 				search,
 				status,
 				page,
@@ -189,7 +189,6 @@ const WorkflowList = () => {
 
 	useEffect(() => {
 		if (!sort) return;
-
 		const [field, direction] = sort.split(':');
 		setSortField(field);
 		setSortDirection((direction as SortDirection) || 'asc');

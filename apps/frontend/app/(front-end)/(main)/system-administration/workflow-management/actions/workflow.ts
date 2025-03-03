@@ -1,10 +1,17 @@
-export const fetchWorkflow = async (token: string, wfId: string) => {
+import { WfFormType } from '@/dtos/workflow.dto';
+
+export const fetchWorkflow = async (
+	token: string,
+	tenantId: string,
+	wfId: string
+) => {
 	try {
 		const url = `/api/system-administration/workflow/${wfId}`;
 		const options = {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		};
@@ -23,6 +30,7 @@ export const fetchWorkflow = async (token: string, wfId: string) => {
 
 export const fetchWorkflowList = async (
 	token: string,
+	tenantId: string,
 	params: {
 		search?: string;
 		status?: string;
@@ -64,6 +72,7 @@ export const fetchWorkflowList = async (
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
 				'Content-Type': 'application/json',
 			},
 		};
@@ -82,11 +91,47 @@ export const fetchWorkflowList = async (
 	}
 };
 
-export const deleteWorkflow = async (id: string, token: string) => {
-	const response = await fetch(`/system-administration/workflow/${id}`, {
+export const createWorkflow = async (
+	values: WfFormType,
+	token: string,
+	tenantId: string
+): Promise<WfFormType | null> => {
+	try {
+		const response = await fetch(`/api/system-administration/workflow/`, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(values),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to create workflow`);
+		}
+
+		const result = await response.json();
+		if (result.error) {
+			throw new Error(result.error);
+		}
+		return result;
+	} catch (error) {
+		console.error('Error submitting vendor:', error);
+		return null;
+	}
+};
+
+export const deleteWorkflow = async (
+	token: string,
+	tenantId: string,
+	id: string
+) => {
+	const response = await fetch(`/api/system-administration/workflow/${id}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `Bearer ${token}`,
+			'x-tenant-id': tenantId,
 		},
 	});
 

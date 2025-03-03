@@ -22,8 +22,6 @@ interface WorkflowGeneralProps {
 }
 
 const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
-	console.log(control);
-
 	return (
 		<Card>
 			<CardHeader className="px-6 py-4">

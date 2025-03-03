@@ -6,44 +6,50 @@ import WorkflowGeneral from './WorkflowGeneral';
 import WorkflowStages from './WorkflowStages';
 import WorkflowRouting from './WorkflowRouting';
 import WorkflowProducts from './WorkflowProducts';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Workflow } from '../types/workflow';
+import { deleteWorkflow } from '../actions/workflow';
+import { useAuth } from '@/app/context/AuthContext';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { useRouter } from '@/lib/i18n';
+import { Workflow } from '@/dtos/workflow.dto';
 
 interface WorkflowDetailProps {
-	wfId: string | undefined;
-	wfData: Workflow | undefined;
+	wfData: Workflow;
 }
 
-const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfId, wfData }) => {
+const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData }) => {
+	const { accessToken, tenantId } = useAuth();
+	const token = accessToken || '';
+	const router = useRouter();
 	const [isEditing, setIsEditing] = useState(false);
-
-	if (!wfData) {
-		return (
-			<Alert variant="destructive">
-				<AlertCircle className="h-4 w-4" />
-				<AlertTitle>Error</AlertTitle>
-				<AlertDescription>
-					Workflow not found. Please check the provided workflow ID: {wfId}
-				</AlertDescription>
-			</Alert>
-		);
-	}
 
 	const handleEditToggle = () => {
 		setIsEditing(!isEditing);
 	};
 
-	const handleSave = (updatedWorkflow: Workflow) => {
+	const handleSave = (updatedWorkflow: Workflow | undefined) => {
 		console.log(updatedWorkflow);
-
 		//setWorkflow(updatedWorkflow);
 		setIsEditing(false);
 	};
 
-	const stageNames = wfData.data.stages.map((stage) => stage.name);
+	const handleDelete = async (id: string) => {
+		try {
+			const response = await deleteWorkflow(token, tenantId, id);
+			if (response.ok) {
+				toastSuccess({ message: 'Successfully' });
+				router.back();
+			}
+		} catch (error) {
+			console.error('Error deleting category:', error);
+			toastError({ message: 'Failed to delete' });
+		}
+		setIsEditing(false);
+	};
+
+	const stageNames = wfData?.data.stages?.map((stage) => stage.name) || [];
 
 	return (
 		<div className="container mx-auto py-6">
@@ -56,6 +62,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfId, wfData }) => {
 				workflow={wfData}
 				isEditing={isEditing}
 				onEditToggle={handleEditToggle}
+				onDelete={handleDelete}
 				onSave={handleSave}
 			/>
 			<Tabs defaultValue="general">

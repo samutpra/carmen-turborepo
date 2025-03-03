@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Pencil, Plus, Save, X, Trash2 } from 'lucide-react';
-import { RoutingRule, OperatorType, ActionType } from '../types/workflow';
+import { RoutingRule, OperatorType, ActionType } from '@/dtos/workflow.dto';
 
 interface WorkflowRoutingProps {
 	rules: RoutingRule[];
@@ -88,7 +88,7 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 	const handleActionChange = (
 		field:
 			| keyof RoutingRule['action']
-			| keyof RoutingRule['action']['parameters'],
+			| keyof RoutingRule['action']['target_stage'],
 		value: string
 	) => {
 		if (!selectedRule || !isRuleEditing) return;
@@ -100,7 +100,7 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 						...rule,
 						action: {
 							type: value as ActionType,
-							parameters: { targetStage: '' },
+							target_stage: '',
 						},
 					};
 				} else {
@@ -108,7 +108,7 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 						...rule,
 						action: {
 							...rule.action,
-							parameters: { ...rule.action.parameters, [field]: value },
+							target_stage: value,
 						},
 					};
 				}
@@ -140,9 +140,9 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 			id: Math.max(0, ...rules.map((r) => r.id)) + 1,
 			name: '',
 			description: '',
-			triggerStage: stages[0] || '',
+			trigger_stage: stages[0] || '',
 			condition: { field: '', operator: 'eq', value: '' },
-			action: { type: 'NEXT_STAGE', parameters: { targetStage: '' } },
+			action: { type: 'NEXT_STAGE', target_stage: '' },
 		};
 		const updatedRules = [...rules, newRule];
 		setRules(updatedRules);
@@ -246,7 +246,7 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 							<div>
 								<Label htmlFor="triggerStage">Trigger Stage</Label>
 								<Select
-									value={selectedRule.triggerStage}
+									value={selectedRule.trigger_stage}
 									onValueChange={(value) =>
 										handleInputChange({
 											target: { id: 'triggerStage', value },
@@ -330,9 +330,9 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 										</SelectContent>
 									</Select>
 									<Select
-										value={selectedRule.action.parameters.targetStage}
+										value={selectedRule.action.target_stage}
 										onValueChange={(value) =>
-											handleActionChange('targetStage', value)
+											handleActionChange('target_stage', value)
 										}
 										disabled={!isRuleEditing}
 									>

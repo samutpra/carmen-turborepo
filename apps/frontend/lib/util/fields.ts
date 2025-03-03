@@ -1,5 +1,5 @@
 import { enum_location_type } from '@/dtos/location.dto';
-import { enum_workflow_type } from '@/dtos/workflow.dto';
+import { enum_sla_unit, enum_workflow_type } from '@/dtos/workflow.dto';
 
 export const locationField = [
 	{ label: 'Inventory', value: enum_location_type.inventory },
@@ -11,4 +11,10 @@ export const workflowTypeField = [
 	{ label: 'Purchase Request', value: enum_workflow_type.purchase_request },
 	{ label: 'Purchase Order', value: enum_workflow_type.purchase_order },
 	{ label: 'Store Requisition', value: enum_workflow_type.store_requisition },
+];
+
+export const slaUnitField = [
+	{ label: 'Minutes', value: enum_sla_unit.minutes },
+	{ label: 'Hours', value: enum_sla_unit.hours },
+	{ label: 'Days', value: enum_sla_unit.days },
 ];

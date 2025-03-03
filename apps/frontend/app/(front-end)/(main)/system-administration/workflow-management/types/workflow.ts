@@ -49,7 +49,7 @@ export interface RoutingCondition {
 export interface RoutingAction {
 	type: ActionType;
 	parameters: {
-		targetStage: string;
+		target_stage: string;
 	};
 }
 

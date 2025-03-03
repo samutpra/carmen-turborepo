@@ -9,12 +9,13 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Pencil, Copy, Trash2, Save, X } from 'lucide-react';
-import { Workflow } from '../types/workflow';
+import { Workflow } from '@/dtos/workflow.dto';
 
 interface WorkflowHeaderProps {
 	workflow: Workflow;
 	isEditing: boolean;
 	onEditToggle: () => void;
+	onDelete: (id: string) => void;
 	onSave?: (workflow: Workflow) => void;
 }
 
@@ -22,6 +23,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 	workflow,
 	isEditing,
 	onEditToggle,
+	onDelete,
 	onSave,
 }: WorkflowHeaderProps) => {
 	return (
@@ -53,7 +55,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 								<Copy className="mr-2 h-4 w-4" />
 								Duplicate
 							</Button>
-							<Button variant="outline">
+							<Button variant="outline" onClick={() => onDelete(workflow.id)}>
 								<Trash2 className="mr-2 h-4 w-4" />
 								Delete
 							</Button>

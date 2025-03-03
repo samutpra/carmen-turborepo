@@ -9,7 +9,7 @@ const notification_templates: Template[] = [
 		description: 'Template for when a request is submitted',
 		subjectLine: 'New Purchase Request: {{request.number}}',
 		content:
-			'Dear {{approver.name}},\n\nA new purchase request ({{request.number}}) has been submitted by {{requester.name}} from {{requester.department}} and requires your attention.\n\nRequest Details:\nAmount: {{request.amount}}\nDate: {{request.date}}\n\nPlease review and take necessary action.\n\nBest regards,\n{{system.companyName}}',
+			'Dear {{approver.name}},\n\nA new purchase request ({{request.number}}) has been submitted by {{requestor.name}} from {{requestor.department}} and requires your attention.\n\nRequest Details:\nAmount: {{request.amount}}\nDate: {{request.date}}\n\nPlease review and take necessary action.\n\nBest regards,\n{{system.companyName}}',
 	},
 	{
 		id: 2,
@@ -18,7 +18,7 @@ const notification_templates: Template[] = [
 		description: 'Template for when a request is approved',
 		subjectLine: 'Purchase Request Approved: {{request.number}}',
 		content:
-			'Dear {{requester.name}},\n\nYour purchase request ({{request.number}}) has been approved by {{approver.name}}.\n\nThe request will now proceed to the next stage: {{workflow.nextStage}}.\n\nBest regards,\n{{system.companyName}}',
+			'Dear {{requestor.name}},\n\nYour purchase request ({{request.number}}) has been approved by {{approver.name}}.\n\nThe request will now proceed to the next stage: {{workflow.nextStage}}.\n\nBest regards,\n{{system.companyName}}',
 	},
 	{
 		id: 3,
@@ -27,7 +27,7 @@ const notification_templates: Template[] = [
 		description: 'Template for when a request is rejected',
 		subjectLine: 'Purchase Request Rejected: {{request.number}}',
 		content:
-			'Dear {{requester.name}},\n\nYour purchase request ({{request.number}}) has been rejected by {{approver.name}}.\n\nPlease review the request and make necessary adjustments.\n\nBest regards,\n{{system.companyName}}',
+			'Dear {{requestor.name}},\n\nYour purchase request ({{request.number}}) has been rejected by {{approver.name}}.\n\nPlease review the request and make necessary adjustments.\n\nBest regards,\n{{system.companyName}}',
 	},
 	{
 		id: 4,
@@ -163,7 +163,7 @@ export const sampleWorkflows: Workflow[] = [
 					condition: { field: 'amount', operator: 'lte', value: '10000' },
 					action: {
 						type: 'SKIP_STAGE',
-						parameters: { targetStage: 'Completed' },
+						parameters: { target_stage: 'Completed' },
 					},
 				},
 				{
@@ -175,7 +175,7 @@ export const sampleWorkflows: Workflow[] = [
 					condition: { field: 'amount', operator: 'gt', value: '10000' },
 					action: {
 						type: 'NEXT_STAGE',
-						parameters: { targetStage: 'Final Approval' },
+						parameters: { target_stage: 'Final Approval' },
 					},
 				},
 			],
@@ -302,7 +302,7 @@ export const sampleWorkflows: Workflow[] = [
 					condition: { field: 'amount', operator: 'lte', value: '5000' },
 					action: {
 						type: 'SKIP_STAGE',
-						parameters: { targetStage: 'Completed' },
+						parameters: { target_stage: 'Completed' },
 					},
 				},
 			],

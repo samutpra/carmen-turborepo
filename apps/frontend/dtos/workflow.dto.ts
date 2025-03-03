@@ -10,7 +10,13 @@ export enum enum_available_actions {
 	submit = 'submit',
 	approve = 'approve',
 	reject = 'reject',
-	send_back = 'send_back',
+	sendback = 'sendback',
+}
+
+export enum enum_sla_unit {
+	minutes = 'minutes',
+	hours = 'hours',
+	days = 'days',
 }
 
 export type OperatorType = 'eq' | 'lt' | 'gt' | 'lte' | 'gte';
@@ -23,8 +29,6 @@ export type NotificationEventTrigger =
 	| 'onSendBack'
 	| 'onSLA';
 
-export type AvailableActions = 'submit' | 'approve' | 'reject' | 'send_back';
-
 export type PageMode = 'add' | 'edit' | 'view';
 
 export interface Product {
@@ -36,18 +40,35 @@ export interface Product {
 	itemGroup?: string;
 }
 
+export interface Recipient {
+	requestor: boolean;
+	current_approve?: boolean;
+	next_step?: boolean;
+}
+
+export interface ActionConfig {
+	is_active: boolean;
+	recipients: Recipient;
+}
+
+export interface AvailableActions {
+	submit: ActionConfig;
+	approve: ActionConfig;
+	reject: ActionConfig;
+	sendback: ActionConfig;
+}
+
 export interface Stage {
-	id: number;
 	name: string;
 	description: string;
 	sla: string;
-	slaUnit: string;
-	availableActions: AvailableActions[];
-	hideFields: {
-		pricePerUnit: boolean;
-		totalPrice: boolean;
+	sla_unit: string;
+	available_actions: AvailableActions;
+	hide_fields: {
+		price_per_unit: boolean;
+		total_price: boolean;
 	};
-	assignedUsers: {
+	assigned_users: {
 		id: number;
 		name: string;
 		department: string;
@@ -63,16 +84,14 @@ export interface RoutingCondition {
 
 export interface RoutingAction {
 	type: ActionType;
-	parameters: {
-		targetStage: string;
-	};
+	target_stage: string;
 }
 
 export interface RoutingRule {
 	id: number;
 	name: string;
 	description: string;
-	triggerStage: string;
+	trigger_stage: string;
 	condition: RoutingCondition;
 	action: RoutingAction;
 }
@@ -80,7 +99,7 @@ export interface RoutingRule {
 export interface WorkflowNotification {
 	id: number;
 	event?: string;
-	eventTrigger?: NotificationEventTrigger;
+	event_trigger?: NotificationEventTrigger;
 	description?: string;
 	recipients?: string[];
 	channels?: NotificationChannel[];
@@ -89,9 +108,9 @@ export interface WorkflowNotification {
 export interface Template {
 	id: number;
 	name: string;
-	eventTrigger: NotificationEventTrigger;
+	event_trigger: NotificationEventTrigger;
 	description?: string;
-	subjectLine: string;
+	subject_line: string;
 	content: string;
 }
 
@@ -114,6 +133,7 @@ export interface Workflow {
 }
 
 export const wfFormSchema = z.object({
+	id: z.string().uuid().optional(),
 	name: z.string().min(1).max(50),
 	workflow_type: z.enum([
 		enum_workflow_type.purchase_request,
@@ -125,23 +145,78 @@ export const wfFormSchema = z.object({
 			document_reference_pattern: z.string(),
 			stages: z.array(
 				z.object({
-					name: z.string(),
+					name: z.string().min(1).max(50),
 					description: z.string(),
 					sla: z.string(),
-					slaUnit: z.string(),
-					availableActions: z.array(z.string()),
-					hideFields: z.object({
-						pricePerUnit: z.boolean(),
-						totalPrice: z.boolean(),
+					sla_unit: z.enum([
+						enum_sla_unit.minutes,
+						enum_sla_unit.hours,
+						enum_sla_unit.days,
+					]),
+					available_actions: z.object({
+						submit: z.object({
+							is_active: z.boolean(),
+							recipients: z.object({
+								requestor: z.boolean(),
+								current_approve: z.boolean(),
+								next_step: z.boolean(),
+							}),
+						}),
+						approve: z.object({
+							is_active: z.boolean(),
+							recipients: z.object({
+								requestor: z.boolean(),
+								current_approve: z.boolean(),
+								next_step: z.boolean(),
+							}),
+						}),
+						reject: z.object({
+							is_active: z.boolean(),
+							recipients: z.object({
+								requestor: z.boolean(),
+								current_approve: z.boolean(),
+								next_step: z.boolean(),
+							}),
+						}),
+						sendback: z.object({
+							is_active: z.boolean(),
+							recipients: z.object({
+								requestor: z.boolean(),
+								current_approve: z.boolean(),
+								next_step: z.boolean(),
+							}),
+						}),
 					}),
-					assignedUsers: z.object({
-						name: z.string(),
-						department: z.string(),
-						location: z.string(),
+					hide_fields: z.object({
+						price_per_unit: z.boolean(),
+						total_price: z.boolean(),
+					}),
+					assigned_users: z.array(
+						z.object({
+							id: z.number(),
+							name: z.string(),
+							department: z.string(),
+							location: z.string(),
+						})
+					),
+				})
+			),
+			routing_rules: z.array(
+				z.object({
+					name: z.string(),
+					description: z.string(),
+					triggerStage: z.string(),
+					condition: z.object({
+						field: z.string(),
+						operator: z.enum(['eq', 'lt', 'gt', 'lte', 'gte']),
+						value: z.string(),
+					}),
+					action: z.object({
+						type: z.enum(['SKIP_STAGE', 'NEXT_STAGE']),
+						target_stage: z.string(),
 					}),
 				})
 			),
-			routing_rules: z.array(z.object({})),
 			notifications: z.array(z.object({})),
 			notification_templates: z.array(z.object({})),
 			products: z.array(z.object({})),

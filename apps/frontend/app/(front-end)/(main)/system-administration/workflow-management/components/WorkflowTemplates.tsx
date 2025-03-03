@@ -16,12 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Template } from '../types/workflow';
-
-interface WorkflowTemplatesProps {
-	templates: Template[];
-	isEditing: boolean;
-	onSave: (templates: Template[]) => void;
-}
+import { sampleWorkflows } from '../data/mockData';
 
 // Define variable groups and their items
 const templateVariables = {
@@ -33,9 +28,9 @@ const templateVariables = {
 		{ label: 'Total Amount', value: '{{request.amount}}' },
 	],
 	'User Information': [
-		{ label: 'Requester Name', value: '{{requester.name}}' },
-		{ label: 'Requester Department', value: '{{requester.department}}' },
-		{ label: 'Requester Email', value: '{{requester.email}}' },
+		{ label: 'Requester Name', value: '{{requestor.name}}' },
+		{ label: 'Requester Department', value: '{{requestor.department}}' },
+		{ label: 'Requester Email', value: '{{requestor.email}}' },
 		{ label: 'Approver Name', value: '{{approver.name}}' },
 		{ label: 'Approver Email', value: '{{approver.email}}' },
 	],
@@ -54,12 +49,10 @@ const templateVariables = {
 	],
 };
 
-export function WorkflowTemplates({
-	templates: initialTemplates = [],
-	isEditing: parentIsEditing,
-	onSave,
-}: WorkflowTemplatesProps) {
-	const [templates, setTemplates] = useState<Template[]>(initialTemplates);
+const initialTemplates = sampleWorkflows[0]?.data.notification_templates || [];
+
+export function WorkflowTemplates() {
+	const [templates, setTemplates] = useState<Template[]>([]);
 	const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
 		null
 	);
@@ -68,12 +61,6 @@ export function WorkflowTemplates({
 	useEffect(() => {
 		setTemplates(initialTemplates);
 	}, [initialTemplates]);
-
-	useEffect(() => {
-		if (!parentIsEditing) {
-			setIsTemplateEditing(false);
-		}
-	}, [parentIsEditing]);
 
 	const selectedTemplate = templates.find(
 		(template) => template.id === selectedTemplateId
@@ -119,7 +106,7 @@ export function WorkflowTemplates({
 	};
 
 	const handleSaveTemplate = () => {
-		onSave(templates);
+		console.log(templates);
 		setIsTemplateEditing(false);
 	};
 
@@ -159,7 +146,9 @@ export function WorkflowTemplates({
 		);
 		setTemplates(updatedTemplates);
 		setSelectedTemplateId(null);
-		onSave(updatedTemplates);
+		console.log(updatedTemplates);
+
+		//onSave(updatedTemplates);
 	};
 
 	return (
@@ -184,18 +173,17 @@ export function WorkflowTemplates({
 							</li>
 						))}
 					</ul>
-					{parentIsEditing && (
-						<Button className="w-full mt-4" onClick={handleAddTemplate}>
-							<Plus className="mr-2 h-4 w-4" /> Add Template
-						</Button>
-					)}
+
+					<Button className="w-full mt-4" onClick={handleAddTemplate}>
+						<Plus className="mr-2 h-4 w-4" /> Add Template
+					</Button>
 				</CardContent>
 			</Card>
 
 			<Card className="col-span-2">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle>Template Details</CardTitle>
-					{selectedTemplate && parentIsEditing && !isTemplateEditing && (
+					{selectedTemplate && !isTemplateEditing && (
 						<div className="flex space-x-2">
 							<Button
 								variant="outline"

@@ -4,7 +4,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WorkflowList from './components/WorkflowList';
 import { WorkflowTemplates } from './components/WorkflowTemplates';
-import { sampleWorkflows } from './data/mockData';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -20,10 +19,6 @@ function WorkflowConfigurationContent() {
 	const searchParams = useSearchParams();
 	const defaultTab = searchParams.get('tab') || 'workflow';
 
-	// Get notification templates from the first workflow as initial templates
-	const initialTemplates =
-		sampleWorkflows[0]?.data.notification_templates || [];
-
 	return (
 		<div className="container mx-auto py-6 space-y-6">
 			<h1 className="text-3xl font-bold tracking-tight">Workflow Management</h1>
@@ -36,11 +31,7 @@ function WorkflowConfigurationContent() {
 					<WorkflowList />
 				</TabsContent>
 				<TabsContent value="templates">
-					<WorkflowTemplates
-						templates={initialTemplates}
-						isEditing={true}
-						onSave={(templates) => console.log('Templates saved:', templates)}
-					/>
+					<WorkflowTemplates />
 				</TabsContent>
 			</Tabs>
 		</div>
