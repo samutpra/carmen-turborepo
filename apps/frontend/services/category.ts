@@ -35,6 +35,7 @@ export const fetchCategoryList = async (token: string, tenantId: string) => {
 export const submitCategory = async (
 	values: ProductCategoryCreateModel,
 	token: string,
+	tenantId: string,
 	mode: formType,
 	id: string
 ) => {
@@ -51,6 +52,7 @@ export const submitCategory = async (
 			headers: {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json',
+				'x-tenant-id': tenantId,
 			},
 			body: JSON.stringify(values),
 		};

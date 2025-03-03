@@ -127,7 +127,7 @@ const ProductOrganizer = () => {
             ) : (
                 <div className="space-y-1 text-sm mt-3">
                     {treeData.map((category) => (
-                        <Category key={category.id} category={category} />
+                        <Category key={category.id} category={category} token={token} setCategorys={setCategorys} tenantId={tenantId} />
                     ))}
                 </div>
             )}
