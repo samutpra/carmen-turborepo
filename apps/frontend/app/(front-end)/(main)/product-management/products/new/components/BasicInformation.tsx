@@ -11,7 +11,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Control } from 'react-hook-form';
+import { Control, useWatch } from 'react-hook-form';
 import { ProductFormType } from '@/dtos/product.dto';
 import { PRODUCT_STATUS_FILTER } from '@/lib/util/status';
 import {
@@ -26,6 +26,8 @@ interface BasicInformationProps {
 	control: Control<ProductFormType>;
 	token: string;
 	tenantId: string;
+	selectedUnit: { id: string; name: string } | null;
+	setSelectedUnit: React.Dispatch<React.SetStateAction<{ id: string; name: string } | null>>;
 }
 
 const statusOptions = [
@@ -37,30 +39,30 @@ const statusOptions = [
 	},
 ];
 
-const BasicInformation = ({ control }: BasicInformationProps) => {
+const BasicInformation = ({ control, selectedUnit, setSelectedUnit }: BasicInformationProps) => {
 	const { units } = useUnit();
+
+	// Watch field values to know when they change
+	const watchedValues = useWatch({
+		control,
+		name: ['primary_unit_id', 'tax_type', 'product_status_type'],
+	});
+
+	// Handle immediate effects when a field is selected
+	const handleValueChange = (
+		fieldName: 'primary_unit_id' | 'tax_type' | 'product_status_type',
+		value: string
+	) => {
+		// Apply immediate effects based on selected values
+		if (fieldName === 'tax_type' && value === 'non_vat') {
+			// If tax_type is set to non_vat, automatically set tax_rate to 0
+			control._formValues.tax_rate = 0;
+		}
+	};
 
 	return (
 		<Card>
-			<CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				{/* <Form.FormField
-					control={control}
-					name="code"
-					render={({ field }) => (
-						<Form.FormItem>
-							<Form.FormLabel>Product Code</Form.FormLabel>
-							<Form.FormControl>
-								<Input
-									{...field}
-									value={String(field.value || '')}
-									placeholder="Enter product code"
-								/>
-							</Form.FormControl>
-							<Form.FormMessage />
-						</Form.FormItem>
-					)}
-				/> */}
-
+			<CardContent className="grid grid-cols-1 sm:grid-cols-4 gap-6">
 				<Form.FormField
 					control={control}
 					name="name"
@@ -106,9 +108,15 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormControl>
 								<SearchableDropdown
 									data={units}
-									value={units.find(unit => unit.id === field.value) || null}
+									value={selectedUnit}
 									onChange={(selectedUnit) => {
 										field.onChange(selectedUnit?.id || '');
+										if (selectedUnit?.id) {
+											handleValueChange('primary_unit_id', selectedUnit.id);
+											setSelectedUnit({ id: selectedUnit.id, name: selectedUnit.name });
+										} else {
+											setSelectedUnit(null);
+										}
 									}}
 									displayValue={(unit) => unit?.name || ''}
 									getItemText={(unit) => unit.name}
@@ -176,7 +184,10 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormLabel>Tax Type</Form.FormLabel>
 							<Form.FormControl>
 								<Select
-									onValueChange={field.onChange}
+									onValueChange={(value) => {
+										field.onChange(value);
+										handleValueChange('tax_type', value);
+									}}
 									defaultValue={String(field.value || '')}
 								>
 									<SelectTrigger>
@@ -196,25 +207,40 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 				<Form.FormField
 					control={control}
 					name="tax_rate"
-					render={({ field }) => (
-						<Form.FormItem>
-							<Form.FormLabel>Tax Rate</Form.FormLabel>
-							<Form.FormControl>
-								<Input
-									type="number"
-									step="any"
-									value={field.value === undefined ? '' : field.value}
-									onChange={(e) => {
-										const value = e.target.value === '' ? undefined : Number(e.target.value);
-										field.onChange(value);
-									}}
-									onBlur={field.onBlur}
-									placeholder="Enter tax rate"
-								/>
-							</Form.FormControl>
-							<Form.FormMessage />
-						</Form.FormItem>
-					)}
+					render={({ field }) => {
+						// Make the tax rate field readonly if tax_type is non_vat
+						const taxType = watchedValues[1];
+						const isNonVat = taxType === 'non_vat';
+
+						return (
+							<Form.FormItem>
+								<Form.FormLabel>Tax Rate</Form.FormLabel>
+								<Form.FormControl>
+									<Input
+										type="number"
+										step="any"
+										value={isNonVat ? 0 : (field.value === undefined ? '' : field.value)}
+										onChange={(e) => {
+											if (!isNonVat) {
+												const value = e.target.value === '' ? undefined : Number(e.target.value);
+												field.onChange(value);
+											}
+										}}
+										onBlur={field.onBlur}
+										placeholder="Enter tax rate"
+										readOnly={isNonVat}
+										className={isNonVat ? "bg-muted" : ""}
+									/>
+								</Form.FormControl>
+								{isNonVat && (
+									<Form.FormDescription className="text-xs text-muted-foreground mt-1">
+										Tax rate is fixed at 0 for Non-VAT items
+									</Form.FormDescription>
+								)}
+								<Form.FormMessage />
+							</Form.FormItem>
+						);
+					}}
 				/>
 
 				<Form.FormField
@@ -249,7 +275,10 @@ const BasicInformation = ({ control }: BasicInformationProps) => {
 							<Form.FormLabel>Status</Form.FormLabel>
 							<Form.FormControl>
 								<Select
-									onValueChange={field.onChange}
+									onValueChange={(value) => {
+										field.onChange(value);
+										handleValueChange('product_status_type', value);
+									}}
 									defaultValue={String(field.value || '')}
 								>
 									<SelectTrigger>

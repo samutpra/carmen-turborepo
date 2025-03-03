@@ -48,6 +48,7 @@ export type SearchableDropdownProps<T extends Record<string, unknown>> = {
     noDataText?: string;
     itemsPerBatch?: number;
     className?: string;
+    readOnly?: boolean;
 };
 
 export function SearchableDropdown<T extends Record<string, unknown>>({
@@ -64,6 +65,7 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
     noDataText = "No items available",
     itemsPerBatch = 10,
     className = "",
+    readOnly = false,
 }: SearchableDropdownProps<T>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
@@ -155,8 +157,8 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
     return (
         <div className={`relative ${className}`}>
             <DropdownMenu onOpenChange={setIsOpen}>
-                <DropdownMenuTrigger asChild>
-                    <Button className="w-[220px] justify-between" variant={'outline'} size={'sm'}>
+                <DropdownMenuTrigger asChild disabled={readOnly}>
+                    <Button className="w-[220px] justify-between" variant={'outline'} size={'sm'} disabled={readOnly}>
                         {displayValue(value) || placeholder}
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
@@ -172,6 +174,8 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
                                 autoComplete="off"
                                 // Prevent closing dropdown when clicking input
                                 onClick={(e) => e.stopPropagation()}
+                                readOnly={readOnly}
+                                disabled={readOnly}
                             />
                             <Search className="h-4 w-4 text-muted-foreground absolute left-2.5 top-1/2 transform -translate-y-1/2" />
                         </div>

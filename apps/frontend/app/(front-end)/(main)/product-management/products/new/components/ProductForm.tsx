@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Form from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -13,15 +13,20 @@ import OrderUnits from './OrderUnits';
 import { Save } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { PD_STATUS } from '@/lib/util/status';
+import { save_text } from '@/paraglide/messages';
+import { useUnit } from '@/hooks/useUnit';
 
 export default function ProductForm() {
 	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
+	const { units } = useUnit();
+
+	// Add state to store selected unit from BasicInformation
+	const [selectedUnit, setSelectedUnit] = useState<{ id: string; name: string } | null>(null);
 
 	const form = useForm<ProductFormType>({
 		resolver: zodResolver(productFormSchema),
 		defaultValues: {
-			code: '',
 			name: '',
 			local_name: '',
 			description: '',
@@ -40,31 +45,95 @@ export default function ProductForm() {
 		},
 	});
 
+	// Watch for changes to primary_unit_id and update selectedUnit accordingly
+	useEffect(() => {
+		const subscription = form.watch((value, { name }) => {
+			if (name === 'primary_unit_id' && value.primary_unit_id) {
+				const unitId = value.primary_unit_id as string;
+				const unit = units.find(u => u.id === unitId);
+				if (unit) {
+					setSelectedUnit({
+						id: unit.id ?? '',
+						name: unit.name ?? ''
+					});
+				}
+			}
+		});
+
+		return () => subscription.unsubscribe();
+	}, [form, units]);
+
+	// เพิ่ม event listener สำหรับอัพเดท orderUnits
+	useEffect(() => {
+		const handleUpdateOrderUnit = (e: CustomEvent) => {
+			const { index, item } = e.detail;
+			// อัพเดทค่า orderUnits ตามที่ได้รับมาจาก OrderUnits component
+			const currentOrderUnits = form.getValues('orderUnits.add') || [];
+			if (currentOrderUnits[index]) {
+				// ตรวจสอบว่าค่าเปลี่ยนแปลงจริงหรือไม่ก่อนทำการอัพเดท
+				const currentToUnitId = currentOrderUnits[index].to_unit_id;
+				if (currentToUnitId !== item.to_unit_id) {
+					currentOrderUnits[index].to_unit_id = item.to_unit_id;
+					form.setValue('orderUnits.add', currentOrderUnits, {
+						shouldDirty: true,
+						shouldTouch: true,
+						shouldValidate: true
+					});
+				}
+			}
+		};
+
+		// เพิ่ม event listener
+		window.addEventListener('update-order-unit', handleUpdateOrderUnit as EventListener);
+
+		// ลบ event listener เมื่อ component unmount
+		return () => {
+			window.removeEventListener('update-order-unit', handleUpdateOrderUnit as EventListener);
+		};
+	}, [form]);
+
 	const onSubmit = (data: ProductFormType) => {
 		console.log('Form submitted with data:', data);
 	};
 
 	return (
-		<Form.Form {...form}>
+		<Form.Form {...form} data-id="product-form">
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 container mx-auto p-6"
+				className="container mx-auto p-6 space-y-4"
+				data-id="product-form"
 			>
-				<div className="flex items-center justify-between">
-					<h1 className="font-semibold">Products Infomation</h1>
-					<Button type="submit" size={'sm'} variant={'ghost'}>
-						<Save /> Save
+				<div className="flex items-center justify-between" data-id="product-form-header">
+					<h1 className="font-semibold" data-id="product-form-title">Products Infomation</h1>
+					<Button type="submit" size={'sm'} variant={'default'} data-id="product-form-save-button">
+						<Save /> {save_text()}
 					</Button>
 				</div>
 
-				<BasicInformation
-					control={form.control}
-					token={token}
-					tenantId={tenantId}
-				/>
-				<Attributes control={form.control} />
-				<Locations control={form.control} />
-				<OrderUnits control={form.control} />
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-12">
+					<div className="col-span-full">
+						<BasicInformation
+							control={form.control}
+							token={token}
+							tenantId={tenantId}
+							data-id="product-form-basic-information"
+							selectedUnit={selectedUnit}
+							setSelectedUnit={setSelectedUnit}
+						/>
+					</div>
+
+					<div className="md:col-span-6 col-span-full">
+						<Attributes control={form.control} data-id="product-form-attributes" />
+					</div>
+
+					<div className="md:col-span-6 col-span-full">
+						<Locations control={form.control} data-id="product-form-locations" />
+					</div>
+
+					<div className="col-span-full">
+						<OrderUnits control={form.control} data-id="product-form-order-units" selectedUnit={selectedUnit} />
+					</div>
+				</div>
 			</form>
 		</Form.Form>
 	);
