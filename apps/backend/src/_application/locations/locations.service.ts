@@ -61,8 +61,6 @@ export class LocationsService {
       await this.prismaClientManager.getTenantDB(business_unit_id);
     this.db_system = this.prismaClientManager.getSystemDB();
 
-    console.log(business_unit_id, "business_unit_id");
-
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {

@@ -1,0 +1,24 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/config/running-code/77523ae4-c7d4-4d08-ba83-9078c42d3b88
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "PR"
+  //   "config": {
+  //     "A": "PR",
+  //     "B": "now('yyyyMMdd')",
+  //     "C": "##",
+  //     "D": "running(5,'0')",
+  //     "format": "{A}{B}{C}{D}"
+  //   }
+  }
+}
