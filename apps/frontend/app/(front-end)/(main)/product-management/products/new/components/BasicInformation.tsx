@@ -62,7 +62,7 @@ const BasicInformation = ({ control, selectedUnit, setSelectedUnit }: BasicInfor
 
 	return (
 		<Card>
-			<CardContent className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+			<CardContent className="grid grid-cols-1 sm:grid-cols-4 gap-4">
 				<Form.FormField
 					control={control}
 					name="name"

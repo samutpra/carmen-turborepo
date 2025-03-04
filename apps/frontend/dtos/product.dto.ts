@@ -407,7 +407,6 @@ export const productFormSchema = z.object({
 			),
 		})
 		.optional(),
-
 	countUnits: z
 		.object({
 			add: z.array(
@@ -416,7 +415,18 @@ export const productFormSchema = z.object({
 					unit_quantity: z.number(),
 					to_unit_id: z.string(),
 					to_unit_quantity: z.number(),
-					description: z.string(),
+				})
+			),
+		})
+		.optional(),
+	ingredientsUnits: z
+		.object({
+			add: z.array(
+				z.object({
+					unit_id: z.string(),
+					unit_quantity: z.number(),
+					to_unit_id: z.string(),
+					to_unit_quantity: z.number(),
 				})
 			),
 		})

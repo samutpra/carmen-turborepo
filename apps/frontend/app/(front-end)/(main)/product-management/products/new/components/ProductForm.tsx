@@ -15,7 +15,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { PD_STATUS } from '@/lib/util/status';
 import { save_text } from '@/paraglide/messages';
 import { useUnit } from '@/hooks/useUnit';
-
+import IngredientsUnits from './IngredientsUnits';
 export default function ProductForm() {
 	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
@@ -41,7 +41,7 @@ export default function ProductForm() {
 			info: [{ attribute: [] }],
 			locations: { add: [] },
 			orderUnits: { add: [] },
-			recipeUnits: { add: [] },
+			ingredientsUnits: { add: [] },
 		},
 	});
 
@@ -100,7 +100,7 @@ export default function ProductForm() {
 		<Form.Form {...form} data-id="product-form">
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="container mx-auto p-6 space-y-4"
+				className="container mx-auto p-4 space-y-4"
 				data-id="product-form"
 			>
 				<div className="flex items-center justify-between" data-id="product-form-header">
@@ -130,8 +130,11 @@ export default function ProductForm() {
 						<Locations control={form.control} data-id="product-form-locations" />
 					</div>
 
-					<div className="col-span-full">
+					<div className="md:col-span-6 col-span-full">
 						<OrderUnits control={form.control} data-id="product-form-order-units" selectedUnit={selectedUnit} />
+					</div>
+					<div className="md:col-span-6 col-span-full">
+						<IngredientsUnits control={form.control} data-id="product-form-ingredients-units" selectedUnit={selectedUnit} />
 					</div>
 				</div>
 			</form>

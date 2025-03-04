@@ -33,7 +33,6 @@ const CountUnits = ({ control }: CountUnitsProps) => {
 		append({
 			unit_id: '',
 			unit_quantity: 1,
-			description: '',
 			to_unit_id: '',
 			to_unit_quantity: 1,
 		});
@@ -61,7 +60,6 @@ const CountUnits = ({ control }: CountUnitsProps) => {
 							<TableHead>Unit Quantity</TableHead>
 							<TableHead>To Unit</TableHead>
 							<TableHead>To Unit Quantity</TableHead>
-							<TableHead>Description</TableHead>
 							<TableHead className="w-[50px]"></TableHead>
 						</TableRow>
 					</TableHeader>
@@ -165,19 +163,6 @@ const CountUnits = ({ control }: CountUnitsProps) => {
 														onBlur={field.onBlur}
 														className="w-full"
 													/>
-												</Form.FormControl>
-											</Form.FormItem>
-										)}
-									/>
-								</TableCell>
-								<TableCell>
-									<Form.FormField
-										control={control}
-										name={`countUnits.add.${index}.description`}
-										render={({ field }) => (
-											<Form.FormItem>
-												<Form.FormControl>
-													<Input {...field} className="w-full" />
 												</Form.FormControl>
 											</Form.FormItem>
 										)}
