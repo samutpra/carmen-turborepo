@@ -1,5 +1,10 @@
-import { enum_available_actions } from '@/dtos/workflow.dto';
-import { RoutingRule, Template, Workflow, Product } from '../types/workflow';
+import {
+	enum_available_actions,
+	RoutingRule,
+	Template,
+	Workflow,
+	Product,
+} from '../types/workflow';
 
 const notification_templates: Template[] = [
 	{
@@ -55,7 +60,6 @@ export const sampleWorkflows: Workflow[] = [
 		workflow_type: 'purchase_request',
 		data: {
 			document_reference_pattern: 'GP-{YYYY}-{00000}',
-
 			stages: [
 				{
 					id: 1,
@@ -80,7 +84,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,
@@ -97,7 +101,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,
@@ -114,7 +118,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,
@@ -131,7 +135,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,
@@ -253,7 +257,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,
@@ -270,7 +274,7 @@ export const sampleWorkflows: Workflow[] = [
 					availableActions: [
 						enum_available_actions.approve,
 						enum_available_actions.reject,
-						enum_available_actions.send_back,
+						enum_available_actions.sendback,
 					],
 					hideFields: {
 						pricePerUnit: false,

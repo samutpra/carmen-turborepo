@@ -1,4 +1,5 @@
-import { WfFormType } from '@/dtos/workflow.dto';
+import { formType } from '@/constants/enums';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
 
 export const fetchWorkflow = async (
 	token: string,
@@ -16,6 +17,7 @@ export const fetchWorkflow = async (
 			},
 		};
 		const response = await fetch(url, options);
+
 		if (!response.ok) {
 			throw new Error('Failed to fetch workflow');
 		}
@@ -40,26 +42,17 @@ export const fetchWorkflowList = async (
 	} = {}
 ) => {
 	try {
-		if (!token) {
-			throw new Error('Access token is required');
-		}
-
 		const query = new URLSearchParams();
-
 		if (params.search) {
 			query.append('search', params.search);
 		}
 
 		if (params.status) {
-			query.append('filter[is_active:bool]', params.status);
+			query.append('status', params.status);
 		}
 
 		if (params.page) {
 			query.append('page', params.page);
-		}
-
-		if (params.perpage) {
-			query.append('perpage', params.perpage);
 		}
 
 		if (params.sort) {
@@ -84,6 +77,7 @@ export const fetchWorkflowList = async (
 		}
 
 		const result = await response.json();
+
 		return result;
 	} catch (error) {
 		console.error('Error fetching workflows:', error);
@@ -92,10 +86,10 @@ export const fetchWorkflowList = async (
 };
 
 export const createWorkflow = async (
-	values: WfFormType,
+	values: WorkflowCreateModel,
 	token: string,
 	tenantId: string
-): Promise<WfFormType | null> => {
+): Promise<WorkflowCreateModel | null> => {
 	try {
 		const response = await fetch(`/api/system-administration/workflow/`, {
 			method: 'POST',
@@ -117,7 +111,45 @@ export const createWorkflow = async (
 		}
 		return result;
 	} catch (error) {
-		console.error('Error submitting vendor:', error);
+		console.error('Error submitting workflows:', error);
+		return null;
+	}
+};
+
+export const handleSubmit = async (
+	values: WorkflowCreateModel,
+	token: string,
+	tenantId: string,
+	mode: formType
+): Promise<WorkflowCreateModel | null> => {
+	try {
+		const url = values?.id
+			? `/api/system-administration/workflow/${values.id}`
+			: '/api/system-administration/workflow';
+
+		const method = mode === formType.ADD ? 'POST' : 'PATCH';
+		const response = await fetch(url, {
+			method,
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(values),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to ${mode} workflow`);
+		}
+
+		const result = await response.json();
+
+		if (result.error) {
+			throw new Error(result.error);
+		}
+		return result;
+	} catch (error) {
+		console.error('Error submitting workflow:', error);
 		return null;
 	}
 };

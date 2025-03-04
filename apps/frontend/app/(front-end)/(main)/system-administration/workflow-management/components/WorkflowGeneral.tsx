@@ -13,7 +13,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Workflow } from '@/dtos/workflow.dto';
-import { workflowTypeField } from '@/lib/util/fields';
+import { workflowTypeField } from '@/constants/fields';
 
 interface WorkflowGeneralProps {
 	workflow: Workflow;

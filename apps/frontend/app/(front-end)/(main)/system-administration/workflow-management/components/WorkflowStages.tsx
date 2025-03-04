@@ -16,7 +16,8 @@ import { Pencil, Save, X, UserPlus, Trash2, Filter } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '../data/mockUser';
-import { enum_available_actions, Stage } from '@/dtos/workflow.dto';
+import { Stage } from '@/dtos/workflow.dto';
+import { enum_available_actions } from '@/constants/enums';
 
 interface WorkflowStagesProps {
 	stages: Stage[];

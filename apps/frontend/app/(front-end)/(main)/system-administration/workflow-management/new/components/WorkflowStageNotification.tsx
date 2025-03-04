@@ -12,28 +12,35 @@ import {
 import * as Form from '@/components/ui/form';
 import { Control, ControllerRenderProps } from 'react-hook-form';
 import { Switch } from '@/components/ui/switch';
-import { Stage, WfFormType } from '@/dtos/workflow.dto';
+import { Stage, WorkflowCreateModel } from '@/dtos/workflow.dto';
 
 interface WorkflowStageNotificationProps {
 	selectedStage: Stage;
 	index: number;
-	control: Control<WfFormType>;
+	control: Control<WorkflowCreateModel>;
+	isEditing: boolean;
 }
 
 const WorkflowStageNotification = ({
 	selectedStage,
 	index,
 	control,
+	isEditing,
 }: WorkflowStageNotificationProps) => {
 	const FieldForm = ({
 		value,
 		onChange,
 		label,
-	}: ControllerRenderProps & { label: string }) => (
+		disabled,
+	}: ControllerRenderProps & { label: string; disabled: boolean }) => (
 		<Form.FormItem>
 			<div className="flex items-center space-x-2">
 				<Form.FormControl>
-					<Switch checked={value} onCheckedChange={onChange} />
+					<Switch
+						checked={value}
+						onCheckedChange={onChange}
+						disabled={disabled}
+					/>
 				</Form.FormControl>
 				<Form.FormLabel>{label}</Form.FormLabel>
 			</div>
@@ -58,7 +65,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.submit.recipients.requestor`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Requester" />
+												<FieldForm
+													{...field}
+													label="Requester"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -68,7 +79,11 @@ const WorkflowStageNotification = ({
 												control={control}
 												name={`data.stages.${index}.available_actions.submit.recipients.next_step`}
 												render={({ field }) => (
-													<FieldForm {...field} label="Next Stage Approver" />
+													<FieldForm
+														{...field}
+														label="Next Stage Approver"
+														disabled={!isEditing}
+													/>
 												)}
 											/>
 										</div>
@@ -77,7 +92,7 @@ const WorkflowStageNotification = ({
 							</div>
 							<div>
 								<Label>Template</Label>
-								<Select>
+								<Select disabled={!isEditing}>
 									<SelectTrigger>
 										<SelectValue placeholder="Select template" />
 									</SelectTrigger>
@@ -104,7 +119,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.approve.recipients.requestor`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Requestor" />
+												<FieldForm
+													{...field}
+													label="Requestor"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -113,7 +132,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.approve.recipients.current_approve`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Current Approver" />
+												<FieldForm
+													{...field}
+													label="Current Approver"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -123,7 +146,11 @@ const WorkflowStageNotification = ({
 												control={control}
 												name={`data.stages.${index}.available_actions.approve.recipients.next_step`}
 												render={({ field }) => (
-													<FieldForm {...field} label="Next Stage Approver" />
+													<FieldForm
+														{...field}
+														label="Next Stage Approver"
+														disabled={!isEditing}
+													/>
 												)}
 											/>
 										</div>
@@ -132,7 +159,7 @@ const WorkflowStageNotification = ({
 							</div>
 							<div>
 								<Label>Template</Label>
-								<Select>
+								<Select disabled={!isEditing}>
 									<SelectTrigger>
 										<SelectValue placeholder="Select template" />
 									</SelectTrigger>
@@ -159,7 +186,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.reject.recipients.requestor`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Requestor" />
+												<FieldForm
+													{...field}
+													label="Requestor"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -168,7 +199,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.reject.recipients.next_step`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Previous Stage Approver" />
+												<FieldForm
+													{...field}
+													label="Previous Stage Approver"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -176,7 +211,7 @@ const WorkflowStageNotification = ({
 							</div>
 							<div>
 								<Label>Template</Label>
-								<Select>
+								<Select disabled={!isEditing}>
 									<SelectTrigger>
 										<SelectValue placeholder="Select template" />
 									</SelectTrigger>
@@ -203,7 +238,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.sendback.recipients.requestor`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Requestor" />
+												<FieldForm
+													{...field}
+													label="Requestor"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -212,7 +251,11 @@ const WorkflowStageNotification = ({
 											control={control}
 											name={`data.stages.${index}.available_actions.sendback.recipients.next_step`}
 											render={({ field }) => (
-												<FieldForm {...field} label="Previous Stage Approver" />
+												<FieldForm
+													{...field}
+													label="Previous Stage Approver"
+													disabled={!isEditing}
+												/>
 											)}
 										/>
 									</div>
@@ -220,7 +263,7 @@ const WorkflowStageNotification = ({
 							</div>
 							<div>
 								<Label>Template</Label>
-								<Select>
+								<Select disabled={!isEditing}>
 									<SelectTrigger>
 										<SelectValue placeholder="Select template" />
 									</SelectTrigger>
@@ -242,13 +285,13 @@ const WorkflowStageNotification = ({
 							<Label>Recipients</Label>
 							<div className="grid gap-2 mt-2">
 								<div className="flex items-center space-x-2">
-									<Switch id="sla-requestor" />
+									<Switch id="sla-requestor" disabled={!isEditing} />
 									<Label htmlFor="sla-requestor" className="cursor-pointer">
 										Requestor
 									</Label>
 								</div>
 								<div className="flex items-center space-x-2">
-									<Switch id="sla-current-approver" />
+									<Switch id="sla-current-approver" disabled={!isEditing} />
 									<Label
 										htmlFor="sla-current-approver"
 										className="cursor-pointer"
@@ -260,7 +303,7 @@ const WorkflowStageNotification = ({
 						</div>
 						<div>
 							<Label>Template</Label>
-							<Select>
+							<Select disabled={!isEditing}>
 								<SelectTrigger>
 									<SelectValue placeholder="Select template" />
 								</SelectTrigger>

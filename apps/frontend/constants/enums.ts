@@ -79,7 +79,6 @@ export const enum PoField {
 	TotalAmount = 'totalAmount',
 }
 
-
 export const enum ProductField {
 	NAME = 'name',
 	CODE = 'code',
@@ -88,4 +87,23 @@ export const enum ProductField {
 	SUBCATEGORY = 'sub_category_name',
 	ITEM_GROUP = 'item_group_name',
 	STATUS = 'product_status_type',
+}
+
+export enum enum_workflow_type {
+	purchase_request = 'purchase_request',
+	purchase_order = 'purchase_order',
+	store_requisition = 'store_requisition',
+}
+
+export enum enum_available_actions {
+	submit = 'submit',
+	approve = 'approve',
+	reject = 'reject',
+	sendback = 'sendback',
+}
+
+export enum enum_sla_unit {
+	minutes = 'minutes',
+	hours = 'hours',
+	days = 'days',
 }

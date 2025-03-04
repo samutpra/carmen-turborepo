@@ -14,24 +14,22 @@ import {
 import * as Form from '@/components/ui/form';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, X, UserPlus, Trash2, Filter } from 'lucide-react';
+import { UserPlus, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { users } from '../../data/mockUser';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-	enum_available_actions,
-	enum_sla_unit,
-	WfFormType,
-} from '@/dtos/workflow.dto';
-import { slaUnitField } from '@/lib/util/fields';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
 import WorkflowStageNotification from './WorkflowStageNotification';
+import { enum_available_actions, enum_sla_unit } from '@/constants/enums';
+import { slaUnitField } from '@/constants/fields';
 
 interface WorkflowStageProps {
-	form: UseFormReturn<WfFormType>;
-	control: Control<WfFormType>;
+	form: UseFormReturn<WorkflowCreateModel>;
+	control: Control<WorkflowCreateModel>;
+	isEditing: boolean;
 }
 
-const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
+const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 	const { fields, append, remove } = useFieldArray({
 		name: 'data.stages',
 		control: control,
@@ -49,7 +47,6 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 		.data?.stages.find((stage) => stage.name === selectedStageName);
 
 	const handleStageSelect = (stageName: string) => {
-		console.log(stageName);
 		setSelectedStageName(stageName);
 	};
 
@@ -61,7 +58,9 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 		//onSave(updatedStages);
 	};
 
-	const handleAddStage = () => {
+	const handleAddStage = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+
 		append({
 			name: `Stage ${stages.length + 1}`,
 			description: '',
@@ -107,17 +106,8 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 			},
 			assigned_users: [],
 		});
+
 		setSelectedStageName(`Stage ${stages.length + 1}`);
-	};
-
-	const handleSaveStage = () => {
-		console.log(stages);
-		//onSave(stages);
-	};
-
-	const handleCancelStage = () => {
-		//form.resetField('data.stages');
-		form.setValue('data.stages', [...stages]);
 	};
 
 	const handleActionToggle = (action: enum_available_actions) => {
@@ -209,10 +199,11 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 								</li>
 							))}
 						</ul>
-
-						<Button className="w-full mt-4" onClick={handleAddStage}>
-							<UserPlus className="mr-2 h-4 w-4" /> Add Stage
-						</Button>
+						{isEditing && (
+							<Button className="w-full mt-4" onClick={handleAddStage}>
+								<UserPlus className="mr-2 h-4 w-4" /> Add Stage
+							</Button>
+						)}
 					</CardContent>
 				</Card>
 
@@ -220,7 +211,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 					<CardHeader className="flex flex-row items-center justify-between">
 						<CardTitle>Stage Details</CardTitle>
 
-						{selectedStage && (
+						{selectedStage && isEditing && (
 							<div className="flex space-x-2">
 								{selectedStage.name !== 'Request Creation' &&
 									selectedStage.name !== 'Completed' && (
@@ -233,14 +224,6 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 											Delete Stage
 										</Button>
 									)}
-								<Button variant="ghost" size="sm" onClick={handleCancelStage}>
-									<X className="h-4 w-4 mr-2" />
-									Cancel
-								</Button>
-								<Button size="sm" onClick={handleSaveStage}>
-									<Save className="h-4 w-4 mr-2" />
-									Save Changes
-								</Button>
 							</div>
 						)}
 					</CardHeader>
@@ -269,6 +252,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																	<Input
 																		{...field}
 																		placeholder="Enter Stage Name"
+																		disabled={!isEditing}
 																	/>
 																</Form.FormControl>
 															</Form.FormItem>
@@ -284,6 +268,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																	<Input
 																		{...field}
 																		placeholder="Enter Description"
+																		disabled={!isEditing}
 																	/>
 																</Form.FormControl>
 															</Form.FormItem>
@@ -297,7 +282,11 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																<Form.FormItem>
 																	<Form.FormLabel>SLA</Form.FormLabel>
 																	<Form.FormControl>
-																		<Input {...field} placeholder="Enter SLA" />
+																		<Input
+																			{...field}
+																			placeholder="Enter SLA"
+																			disabled={!isEditing}
+																		/>
 																	</Form.FormControl>
 																</Form.FormItem>
 															)}
@@ -311,6 +300,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																	<Select
 																		onValueChange={field.onChange}
 																		defaultValue={field.value}
+																		disabled={!isEditing}
 																	>
 																		<Form.FormControl>
 																			<SelectTrigger id="sla_unit">
@@ -358,6 +348,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																			enum_available_actions[action]
 																		)
 																	}
+																	disabled={!isEditing}
 																>
 																	{action}
 																</Button>
@@ -380,6 +371,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																			<Switch
 																				checked={field.value}
 																				onCheckedChange={field.onChange}
+																				disabled={!isEditing}
 																			/>
 																		</Form.FormControl>
 																	</div>
@@ -398,6 +390,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																			<Switch
 																				checked={field.value}
 																				onCheckedChange={field.onChange}
+																				disabled={!isEditing}
 																			/>
 																		</Form.FormControl>
 																	</div>
@@ -420,6 +413,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 													selectedStage={selectedStage}
 													index={index}
 													control={control}
+													isEditing={isEditing}
 												/>
 											)}
 										</div>
@@ -442,12 +436,14 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 												className="flex-grow"
 												placeholder="Search users..."
 												onChange={(e) => console.log('Search:', e.target.value)}
+												disabled={!isEditing}
 											/>
 											<Select
 												value={userFilter}
 												onValueChange={(
 													value: 'all' | 'assigned' | 'unassigned'
 												) => setUserFilter(value)}
+												disabled={!isEditing}
 											>
 												<SelectTrigger className="w-[180px]">
 													<SelectValue placeholder="Filter by status" />
@@ -458,10 +454,6 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 													<SelectItem value="unassigned">Unassigned</SelectItem>
 												</SelectContent>
 											</Select>
-											<Button variant="outline">
-												<Filter className="w-4 h-4 mr-2" />
-												Filter
-											</Button>
 										</div>
 
 										<Card>
@@ -471,9 +463,6 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 														Total Users: {selectedStage.assigned_users.length} /{' '}
 														{users.length}
 													</span>
-													<Button variant="outline" size="sm">
-														Bulk Actions
-													</Button>
 												</div>
 
 												<div className="space-y-4">
@@ -511,6 +500,7 @@ const WorkflowStages = ({ form, control }: WorkflowStageProps) => {
 																		variant={isAssigned ? 'default' : 'outline'}
 																		size="sm"
 																		onClick={() => handleAssignUser(user)}
+																		disabled={!isEditing}
 																	>
 																		{isAssigned ? 'Assigned' : 'Assign'}
 																	</Button>

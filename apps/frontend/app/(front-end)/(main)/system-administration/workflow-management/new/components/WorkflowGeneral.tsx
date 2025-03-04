@@ -14,14 +14,15 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { WfFormType } from '@/dtos/workflow.dto';
-import { workflowTypeField } from '@/lib/util/fields';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
+import { workflowTypeField } from '@/constants/fields';
 
 interface WorkflowGeneralProps {
-	control: Control<WfFormType>;
+	control: Control<WorkflowCreateModel>;
+	isEditing: boolean;
 }
 
-const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
+const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
 	return (
 		<Card>
 			<CardHeader className="px-6 py-4">
@@ -39,6 +40,7 @@ const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
 									{...field}
 									value={String(field.value || '')}
 									placeholder="Enter workflow name"
+									disabled={!isEditing}
 								/>
 							</Form.FormControl>
 							<Form.FormMessage />
@@ -56,6 +58,7 @@ const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
 								<Select
 									onValueChange={field.onChange}
 									defaultValue={field.value}
+									disabled={!isEditing}
 								>
 									<Form.FormControl>
 										<SelectTrigger id="workflow_type">
@@ -91,6 +94,7 @@ const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
 										<Switch
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											disabled={!isEditing}
 										/>
 									</Form.FormControl>
 									<Label className="text-sm text-muted-foreground">
@@ -115,6 +119,7 @@ const WorkflowGeneral = ({ control }: WorkflowGeneralProps) => {
 										{...field}
 										value={String(field.value || '')}
 										placeholder="Enter description"
+										disabled={!isEditing}
 									/>
 								</Form.FormControl>
 								<Form.FormMessage />

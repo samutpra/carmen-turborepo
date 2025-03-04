@@ -5,6 +5,8 @@ import { GoodsReceiveNote, PrType, PurchaseOrderType } from '@/lib/types';
 import { FieldConfig } from '@/lib/util/uiConfig';
 import * as m from '@/paraglide/messages.js';
 import {
+	enum_sla_unit,
+	enum_workflow_type,
 	GOOD_RECIEIVE_NOTE_FIELDS,
 	LocationField,
 	PoField,
@@ -141,4 +143,18 @@ export const productFields: FieldConfig<ProductCreateModel>[] = [
 		label: 'Item Group',
 	},
 	{ key: ProductField.STATUS as keyof ProductCreateModel, label: 'Status' },
+];
+
+// export const workflowFields: FieldConfig<WorkflowCreateModel>[] = [];
+
+export const workflowTypeField = [
+	{ label: 'Purchase Request', value: enum_workflow_type.purchase_request },
+	{ label: 'Purchase Order', value: enum_workflow_type.purchase_order },
+	{ label: 'Store Requisition', value: enum_workflow_type.store_requisition },
+];
+
+export const slaUnitField = [
+	{ label: 'Minutes', value: enum_sla_unit.minutes },
+	{ label: 'Hours', value: enum_sla_unit.hours },
+	{ label: 'Days', value: enum_sla_unit.days },
 ];

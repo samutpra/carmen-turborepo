@@ -1,37 +1,36 @@
 import { API_URL } from '@/lib/util/api';
 import { NextRequest, NextResponse } from 'next/server';
-import { extractToken } from '@/lib/util/auth';
-
-const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+import { extractRequest } from '@/lib/util/auth';
+import { fetchData } from '@/services/client';
+import { wfFormSchema } from '@/dtos/workflow.dto';
 
 export async function GET(
 	request: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = extractToken(request);
-		if (!token) {
+		const { token, tenantId } = extractRequest(request);
+
+		if (!token || !tenantId) {
 			return NextResponse.json(
-				{ error: 'Token is missing from the headers' },
-				{ status: 400 }
+				{ error: 'Unauthorized access - Invalid or expired token' },
+				{ status: 401 }
 			);
 		}
 
 		const url = `${API_URL}/v1/workflows/${params.id}`;
 
-		const options = {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'x-tenant-id': `${tenantId}`,
-			},
-		};
+		try {
+			const wfResponse = await fetchData(url, token, tenantId);
 
-		const response = await fetch(url, options);
-
-		const data = await response.json();
-
-		return NextResponse.json(data);
+			return NextResponse.json(wfResponse);
+		} catch (error) {
+			console.error('Fetch error:', error);
+			return NextResponse.json(
+				{ error: 'Failed to fetch data from API' },
+				{ status: 500 }
+			);
+		}
 	} catch (error) {
 		return NextResponse.json(
 			{
@@ -49,8 +48,6 @@ export async function DELETE(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
 		const { id } = params;
 
 		if (!id) {
@@ -59,6 +56,8 @@ export async function DELETE(
 				{ status: 400 }
 			);
 		}
+
+		const { token, tenantId } = extractRequest(request);
 
 		if (!token || !tenantId) {
 			return NextResponse.json(
@@ -101,3 +100,65 @@ export async function DELETE(
 		);
 	}
 }
+
+export const PATCH = async (
+	request: NextRequest,
+	{ params }: { params: { id: string } }
+) => {
+	try {
+		const { token, tenantId } = extractRequest(request);
+
+		if (!token || !tenantId) {
+			return NextResponse.json(
+				{ error: 'Unauthorized access - Invalid or expired token' },
+				{ status: 401 }
+			);
+		}
+		const body = await request.json();
+		const result = wfFormSchema.safeParse(body);
+		if (!result.success) {
+			return NextResponse.json(
+				{
+					error: 'Validation failed',
+					details: result.error.issues,
+				},
+				{ status: 400 }
+			);
+		}
+		const validatedData = result.data;
+
+		const url = `${API_URL}/v1/workflows/${params.id}`;
+
+		const options = {
+			method: 'PATCH',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'x-tenant-id': tenantId || '',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(validatedData),
+		};
+
+		const response = await fetch(url, options);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => null);
+			throw new Error(
+				`Failed to update workflow: ${response.status} ${response.statusText}`,
+				{ cause: errorData }
+			);
+		}
+
+		const data = await response.json();
+
+		return NextResponse.json({ id: data.id }, { status: 200 });
+	} catch (error) {
+		console.error('Unexpected error:', error);
+		return NextResponse.json(
+			{
+				message: 'Unexpected Internal Server Error',
+				error: String(error),
+			},
+			{ status: 500 }
+		);
+	}
+};

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Form from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
@@ -11,24 +11,19 @@ import WorkflowProducts from '../../components/WorkflowProducts';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import {
-	WfFormType,
-	Workflow,
-	enum_sla_unit,
-	enum_workflow_type,
-	wfFormSchema,
-} from '@/dtos/workflow.dto';
+import { WorkflowCreateModel, wfFormSchema } from '@/dtos/workflow.dto';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createWorkflow } from '../../actions/workflow';
+import { createWorkflow } from '@/services/workflow';
 import { useAuth } from '@/app/context/AuthContext';
 import { toastSuccess } from '@/components/ui-custom/Toast';
 import { useRouter } from '@/lib/i18n';
+import { enum_sla_unit, enum_workflow_type } from '@/constants/enums';
 
 const WorkflowForm = () => {
 	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
 	const router = useRouter();
-	const form = useForm<WfFormType>({
+	const form = useForm<WorkflowCreateModel>({
 		resolver: zodResolver(wfFormSchema),
 		defaultValues: {
 			name: '',
@@ -135,33 +130,13 @@ const WorkflowForm = () => {
 			description: '',
 			is_active: true,
 		},
-	});
-
-	const [initForm, setInitForm] = useState<Workflow>({
-		id: '0',
-		name: '',
-		workflow_type: enum_workflow_type.purchase_request,
-		data: {
-			document_reference_pattern: '',
-			stages: [],
-			routing_rules: [],
-			notifications: [],
-			notification_templates: [],
-			products: [],
-		},
-		description: '',
-		is_active: true,
+		mode: 'onSubmit',
 	});
 
 	const stageNames =
 		form.getValues('data')?.stages?.map((stage) => stage?.name) || [];
 
-	const handleSave = (updatedWorkflow: Workflow) => {
-		console.log(updatedWorkflow);
-		setInitForm(updatedWorkflow);
-	};
-
-	const onSubmit = async (data: WfFormType) => {
+	const onSubmit = async (data: WorkflowCreateModel) => {
 		console.log('Form submitted with data:', data);
 		const result = await createWorkflow(data, token, tenantId);
 		if (result) {
@@ -169,7 +144,6 @@ const WorkflowForm = () => {
 			toastSuccess({
 				message: 'Workflow created successfully',
 			});
-
 			router.replace(`/system-administration/workflow-management/${result.id}`);
 		}
 	};
@@ -183,7 +157,7 @@ const WorkflowForm = () => {
 			</Button>
 
 			<Form.Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)}>
+				<form>
 					{/* Header */}
 					<Card>
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 py-4">
@@ -203,7 +177,11 @@ const WorkflowForm = () => {
 									Cancel
 								</Button>
 
-								<Button type="submit" variant="default">
+								<Button
+									type="submit"
+									variant="default"
+									onClick={form.handleSubmit(onSubmit)}
+								>
 									<Save className="mr-2 h-4 w-4" />
 									Save Changes
 								</Button>
@@ -223,27 +201,33 @@ const WorkflowForm = () => {
 							<TabsTrigger value="products">Products</TabsTrigger>
 						</TabsList>
 						<TabsContent value="general">
-							<WorkflowGeneral control={form.control} />
+							<WorkflowGeneral control={form.control} isEditing={true} />
 						</TabsContent>
 						<TabsContent value="stages">
-							<WorkflowStages form={form} control={form.control} />
+							<WorkflowStages
+								form={form}
+								control={form.control}
+								isEditing={true}
+							/>
 						</TabsContent>
 						<TabsContent value="routing">
 							<WorkflowRouting
 								form={form}
 								control={form.control}
 								stagesName={stageNames}
+								isEditing={true}
 							/>
 						</TabsContent>
 						<TabsContent value="products">
 							<WorkflowProducts
-								products={initForm.data.products || []}
+								products={form.getValues('data')?.products || []}
 								isEditing={true}
-								onSave={(products) =>
-									handleSave({
-										...initForm,
-										data: { ...initForm.data, products },
-									})
+								onSave={
+									(products) => console.log(products)
+									// handleSave({
+									// 	...initForm,
+									// 	data: { ...initForm.data, products },
+									// })
 								}
 							/>
 						</TabsContent>

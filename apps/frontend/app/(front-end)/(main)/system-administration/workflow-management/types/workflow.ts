@@ -12,6 +12,13 @@ export type AvailableActions = 'submit' | 'approve' | 'reject' | 'send_back';
 
 export type PageMode = 'add' | 'edit' | 'view';
 
+export enum enum_available_actions {
+	submit = 'submit',
+	approve = 'approve',
+	reject = 'reject',
+	sendback = 'send_back',
+}
+
 export interface Product {
 	id: number;
 	name: string;

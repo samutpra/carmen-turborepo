@@ -1,11 +1,11 @@
 import { wfFormSchema } from '@/dtos/workflow.dto';
 import { API_URL } from '@/lib/util/api';
-import { extractToken } from '@/lib/util/auth';
+import { extractRequest } from '@/lib/util/auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchData } from '@/services/client';
 
 export async function GET(request: NextRequest) {
-	const token = extractToken(request);
-	const tenantId = request.headers.get('x-tenant-id');
+	const { token, tenantId } = extractRequest(request);
 
 	if (!token || !tenantId) {
 		return NextResponse.json(
@@ -17,29 +17,15 @@ export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const search = searchParams.get('search') || '';
 
-	const options = {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'x-tenant-id': tenantId || '',
-		},
-	};
-
 	const url = `${API_URL}/v1/workflows?search=${search}`;
 
 	try {
-		const response = await fetch(url, options);
+		const wfResponse = await fetchData(url, token, tenantId);
 
-		if (!response.ok) {
-			return NextResponse.json(
-				{ error: `Failed to fetch data: ${response.statusText}` },
-				{ status: response.status }
-			);
-		}
-
-		const data = await response.json();
-
-		return NextResponse.json(data);
+		return NextResponse.json({
+			data: wfResponse.data,
+			pagination: wfResponse.pagination,
+		});
 	} catch (error) {
 		console.error('Fetch error:', error);
 		return NextResponse.json(
@@ -49,16 +35,17 @@ export async function GET(request: NextRequest) {
 	}
 }
 
-export const POST = async (request: NextRequest) => {
+export async function POST(request: NextRequest) {
 	try {
-		const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-		const tenantId = request.headers.get('x-tenant-id');
+		const { token, tenantId } = extractRequest(request);
+
 		if (!token || !tenantId) {
 			return NextResponse.json(
 				{ error: 'Unauthorized access - Invalid or expired token' },
 				{ status: 401 }
 			);
 		}
+
 		const body = await request.json();
 		const result = wfFormSchema.safeParse(body);
 
@@ -101,4 +88,4 @@ export const POST = async (request: NextRequest) => {
 			{ status: 500 }
 		);
 	}
-};
+}

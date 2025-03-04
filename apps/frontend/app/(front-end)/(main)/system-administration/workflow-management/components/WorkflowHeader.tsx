@@ -9,45 +9,80 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Pencil, Copy, Trash2, Save, X } from 'lucide-react';
-import { Workflow } from '@/dtos/workflow.dto';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
+import { formType } from '@/constants/enums';
+import { UseFormReturn } from 'react-hook-form';
 
 interface WorkflowHeaderProps {
-	workflow: Workflow;
+	form: UseFormReturn<WorkflowCreateModel>;
+	mode: formType;
 	isEditing: boolean;
-	onEditToggle: () => void;
-	onDelete: (id: string) => void;
-	onSave?: (workflow: Workflow) => void;
+	onEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	onCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+	onSubmit: (wf: WorkflowCreateModel) => void;
 }
 
 const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
-	workflow,
+	form,
+	mode,
 	isEditing,
-	onEditToggle,
+	onEdit,
+	onCancelEdit,
 	onDelete,
-	onSave,
+	onSubmit,
 }: WorkflowHeaderProps) => {
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 py-4">
-				<div>
-					<div className="flex items-center space-x-2">
-						<CardTitle className="text-2xl font-bold">
-							{workflow.name}
-						</CardTitle>
-						{workflow.is_active && (
-							<Badge variant={workflow.is_active ? 'default' : 'secondary'}>
-								{workflow.is_active ? 'Active' : 'Inactive'}
-							</Badge>
+				{mode === formType.EDIT ? (
+					<div>
+						{isEditing ? (
+							<>
+								<div className="flex items-center space-x-2">
+									<CardTitle className="text-2xl font-bold">
+										Edit Workflow
+									</CardTitle>
+								</div>
+								<CardDescription>ID: {form.getValues('id')}</CardDescription>
+							</>
+						) : (
+							<>
+								<div className="flex items-center space-x-2">
+									<CardTitle className="text-2xl font-bold">
+										{form.getValues('name')}
+									</CardTitle>
+									{form.getValues('is_active') && (
+										<Badge
+											variant={
+												form.getValues('is_active') ? 'default' : 'secondary'
+											}
+										>
+											{form.getValues('is_active') ? 'Active' : 'Inactive'}
+										</Badge>
+									)}
+								</div>
+								<CardDescription>
+									ID: {form.getValues('id')} | Type:{' '}
+									{form.getValues('workflow_type')}
+								</CardDescription>
+							</>
 						)}
 					</div>
-					<CardDescription>
-						ID: {workflow.id} | Type: {workflow.workflow_type}
-					</CardDescription>
-				</div>
+				) : (
+					<div>
+						<div className="flex items-center space-x-2">
+							<CardTitle className="text-2xl font-bold">
+								Create Workflow
+							</CardTitle>
+						</div>
+					</div>
+				)}
+
 				<div className="flex space-x-2">
 					{!isEditing ? (
 						<>
-							<Button variant="default" onClick={onEditToggle}>
+							<Button variant="default" onClick={onEdit}>
 								<Pencil className="mr-2 h-4 w-4" />
 								Edit
 							</Button>
@@ -55,18 +90,25 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 								<Copy className="mr-2 h-4 w-4" />
 								Duplicate
 							</Button>
-							<Button variant="outline" onClick={() => onDelete(workflow.id)}>
+							<Button
+								variant="outline"
+								onClick={(e) => onDelete(e, form.getValues('id') ?? '')}
+							>
 								<Trash2 className="mr-2 h-4 w-4" />
 								Delete
 							</Button>
 						</>
 					) : (
 						<>
-							<Button variant="ghost" onClick={onEditToggle}>
+							<Button variant="ghost" onClick={onCancelEdit}>
 								<X className="mr-2 h-4 w-4" />
 								Cancel
 							</Button>
-							<Button variant="default" onClick={() => onSave?.(workflow)}>
+							<Button
+								type="submit"
+								variant="default"
+								onClick={form.handleSubmit(onSubmit)}
+							>
 								<Save className="mr-2 h-4 w-4" />
 								Save Changes
 							</Button>
@@ -75,7 +117,9 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 				</div>
 			</CardHeader>
 			<CardContent className="px-6 py-4">
-				<p className="text-sm text-muted-foreground">{workflow.description}</p>
+				<p className="text-sm text-muted-foreground">
+					{form.getValues('description')}
+				</p>
 			</CardContent>
 		</Card>
 	);

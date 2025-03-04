@@ -14,19 +14,21 @@ import {
 import * as Form from '@/components/ui/form';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Save, X, Trash2 } from 'lucide-react';
-import { WfFormType } from '@/dtos/workflow.dto';
+import { Plus, Trash2 } from 'lucide-react';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
 
 interface WorkflowRoutingProps {
-	form: UseFormReturn<WfFormType>;
-	control: Control<WfFormType>;
+	form: UseFormReturn<WorkflowCreateModel>;
+	control: Control<WorkflowCreateModel>;
 	stagesName: string[];
+	isEditing: boolean;
 }
 
 const WorkflowRouting = ({
 	form,
 	control,
 	stagesName,
+	isEditing,
 }: WorkflowRoutingProps) => {
 	const { fields, append, remove } = useFieldArray({
 		name: 'data.routing_rules',
@@ -40,16 +42,9 @@ const WorkflowRouting = ({
 		setSelectedRuleName(ruleName);
 	};
 
-	const handleSaveRule = () => {
-		console.log(rules);
-		//onSave(rules);
-	};
+	const handleAddRule = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
 
-	const handleCancelRule = () => {
-		form.setValue('data.routing_rules', [...rules]);
-	};
-
-	const handleAddRule = () => {
 		append({
 			name: `rule ${rules.length + 1}`,
 			description: '',
@@ -90,10 +85,11 @@ const WorkflowRouting = ({
 							</li>
 						))}
 					</ul>
-
-					<Button className="w-full mt-4" onClick={handleAddRule}>
-						<Plus className="mr-2 h-4 w-4" /> Add Rule
-					</Button>
+					{isEditing && (
+						<Button className="w-full mt-4" onClick={handleAddRule}>
+							<Plus className="mr-2 h-4 w-4" /> Add Rule
+						</Button>
+					)}
 				</CardContent>
 			</Card>
 
@@ -101,7 +97,7 @@ const WorkflowRouting = ({
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle>Rule Details</CardTitle>
 
-					{selectedRule && (
+					{selectedRule && isEditing && (
 						<div className="flex space-x-2">
 							{rules.length > 1 && (
 								<Button
@@ -113,14 +109,6 @@ const WorkflowRouting = ({
 									Delete Rule
 								</Button>
 							)}
-							<Button variant="ghost" size="sm" onClick={handleCancelRule}>
-								<X className="h-4 w-4 mr-2" />
-								Cancel
-							</Button>
-							<Button size="sm" onClick={handleSaveRule}>
-								<Save className="h-4 w-4 mr-2" />
-								Save Changes
-							</Button>
 						</div>
 					)}
 				</CardHeader>
@@ -138,7 +126,11 @@ const WorkflowRouting = ({
 													<Form.FormItem>
 														<Form.FormLabel>Rule Name</Form.FormLabel>
 														<Form.FormControl>
-															<Input {...field} placeholder="Enter rule name" />
+															<Input
+																{...field}
+																placeholder="Enter rule name"
+																disabled={!isEditing}
+															/>
 														</Form.FormControl>
 														<Form.FormMessage />
 													</Form.FormItem>
@@ -154,6 +146,7 @@ const WorkflowRouting = ({
 															<Textarea
 																{...field}
 																placeholder="Enter rule description"
+																disabled={!isEditing}
 															/>
 														</Form.FormControl>
 														<Form.FormMessage />
@@ -169,6 +162,7 @@ const WorkflowRouting = ({
 														<Select
 															onValueChange={field.onChange}
 															defaultValue={field.value}
+															disabled={!isEditing}
 														>
 															<Form.FormControl>
 																<SelectTrigger id="triggerStage">
@@ -198,6 +192,7 @@ const WorkflowRouting = ({
 																<Select
 																	onValueChange={field.onChange}
 																	defaultValue={field.value}
+																	disabled={!isEditing}
 																>
 																	<Form.FormControl>
 																		<SelectTrigger>
@@ -228,6 +223,7 @@ const WorkflowRouting = ({
 																<Select
 																	onValueChange={field.onChange}
 																	defaultValue={field.value}
+																	disabled={!isEditing}
 																>
 																	<Form.FormControl>
 																		<SelectTrigger>
@@ -260,7 +256,11 @@ const WorkflowRouting = ({
 														render={({ field }) => (
 															<Form.FormItem>
 																<Form.FormControl>
-																	<Input {...field} placeholder="Enter value" />
+																	<Input
+																		{...field}
+																		placeholder="Enter value"
+																		disabled={!isEditing}
+																	/>
 																</Form.FormControl>
 																<Form.FormMessage />
 															</Form.FormItem>
@@ -279,6 +279,7 @@ const WorkflowRouting = ({
 																<Select
 																	onValueChange={field.onChange}
 																	defaultValue={field.value}
+																	disabled={!isEditing}
 																>
 																	<Form.FormControl>
 																		<SelectTrigger>
@@ -303,7 +304,10 @@ const WorkflowRouting = ({
 														name={`data.routing_rules.${index}.action.target_stage`}
 														render={({ field }) => (
 															<Form.FormItem>
-																<Select onValueChange={field.onChange}>
+																<Select
+																	onValueChange={field.onChange}
+																	disabled={!isEditing}
+																>
 																	<Form.FormControl>
 																		<SelectTrigger>
 																			<SelectValue placeholder="Select target stage" />

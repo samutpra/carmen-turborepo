@@ -1,23 +1,5 @@
+import { enum_sla_unit, enum_workflow_type } from '@/constants/enums';
 import { z } from 'zod';
-
-export enum enum_workflow_type {
-	purchase_request = 'purchase_request',
-	purchase_order = 'purchase_order',
-	store_requisition = 'store_requisition',
-}
-
-export enum enum_available_actions {
-	submit = 'submit',
-	approve = 'approve',
-	reject = 'reject',
-	sendback = 'sendback',
-}
-
-export enum enum_sla_unit {
-	minutes = 'minutes',
-	hours = 'hours',
-	days = 'days',
-}
 
 export type OperatorType = 'eq' | 'lt' | 'gt' | 'lte' | 'gte';
 export type ActionType = 'SKIP_STAGE' | 'NEXT_STAGE';
@@ -219,11 +201,21 @@ export const wfFormSchema = z.object({
 			),
 			notifications: z.array(z.object({})),
 			notification_templates: z.array(z.object({})),
-			products: z.array(z.object({})),
+			products: z.array(
+				z.object({
+					id: z.number(),
+					name: z.string(),
+					code: z.string(),
+					category: z.string(),
+					subCategory: z.string(),
+					itemGroup: z.string(),
+					isAssigned: z.boolean(),
+				})
+			),
 		})
 		.optional(),
 	description: z.string(),
 	is_active: z.boolean(),
 });
 
-export type WfFormType = z.infer<typeof wfFormSchema>;
+export type WorkflowCreateModel = z.infer<typeof wfFormSchema>;

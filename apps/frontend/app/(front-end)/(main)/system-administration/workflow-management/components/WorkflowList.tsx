@@ -12,21 +12,9 @@ import {
 
 import Link from 'next/link';
 import { Eye, PlusCircle } from 'lucide-react';
-import { useAuth } from '@/app/context/AuthContext';
-import { useURL } from '@/hooks/useURL';
-import { fetchWorkflowList } from '../actions/workflow';
-import { toastError } from '@/components/ui-custom/Toast';
 import { statusOptions } from '@/lib/statusOptions';
-import {
-	Search,
-	status_text,
-	workflow,
-	session_expire,
-	fail_to_text,
-} from '@/paraglide/messages.js';
-import { Card, CardContent } from '@/components/ui/card';
-import RefreshToken from '@/components/RefreshToken';
-import ErrorCard from '@/components/ui-custom/error/ErrorCard';
+import { Search, status_text, workflow } from '@/paraglide/messages.js';
+
 import SearchForm from '@/components/ui-custom/SearchForm';
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import { FieldConfig, SortDirection } from '@/lib/util/uiConfig';
@@ -37,6 +25,7 @@ import * as m from '@/paraglide/messages.js';
 import { TableBodySkeleton } from '@/components/ui-custom/Loading/TableBodySkeleton';
 import { Badge } from '@/components/ui-custom/is-active-badge';
 import PaginationComponent from '@/components/PaginationComponent';
+import { useWorkflow } from '@/hooks/useWorkflow';
 
 interface WorkflowListProps {
 	id: string;
@@ -139,56 +128,28 @@ const renderFieldValue = (
 };
 
 const WorkflowList = () => {
-	const { accessToken, tenantId } = useAuth();
-	const token = accessToken || '';
-	const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [statusOpen, setStatusOpen] = useState(false);
-	const [search, setSearch] = useURL('search');
-	const [status, setStatus] = useURL('status');
-	const [page, setPage] = useURL('page');
-	const [pages, setPages] = useURL('pages');
-	const [sort, setSort] = useURL('sort');
-	const [showRefreshToken, setShowRefreshToken] = useState(false);
+	const {
+		workflows,
+		isLoading,
+		statusOpen,
+		setStatusOpen,
+		search,
+		setSearch,
+		status,
+		setStatus,
+		page,
+		pages,
+		sort,
+		handlePageChange,
+		handleSortChange,
+	} = useWorkflow();
+
 	const [sortField, setSortField] = useState<string | null>(null);
 	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-	const fetchList = async () => {
-		try {
-			setIsLoading(true);
-			const data = await fetchWorkflowList(token, tenantId, {
-				search,
-				status,
-				page,
-			});
-
-			setWorkflows(data.data);
-			setPage(data.pagination.page.toString());
-			setPages(data.pagination.pages.toString());
-			setShowRefreshToken(false);
-		} catch (err) {
-			if (err instanceof Error && err.message === 'Unauthorized') {
-				toastError({
-					message: 'Your session has expired. Please login again.',
-				});
-				setShowRefreshToken(true);
-				setWorkflows([]);
-			} else {
-				setError(err instanceof Error ? err.message : 'An error occurred');
-				toastError({ message: `${fail_to_text()}` });
-			}
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchList();
-	}, [token, search, status]);
-
 	useEffect(() => {
 		if (!sort) return;
+
 		const [field, direction] = sort.split(':');
 		setSortField(field);
 		setSortDirection((direction as SortDirection) || 'asc');
@@ -200,37 +161,12 @@ const WorkflowList = () => {
 
 		setSortField(field);
 		setSortDirection(newDirection);
-		setSort(`${field}:${newDirection}`);
+		handleSortChange(`${field}:${newDirection}`);
 	};
 
-	const handlePageChange = (newPage: number) => {
-		const numericTotalPages = Number(pages);
-		if (newPage < 1 || newPage > numericTotalPages) return;
-		setPage(newPage.toString());
-	};
-
-	if (showRefreshToken) {
-		return (
-			<Card
-				className="border-destructive w-full md:w-1/2"
-				data-id="currency-refresh-token-card"
-			>
-				<CardContent className="pt-6" data-id="currency-refresh-token-content">
-					<div
-						className="flex flex-col items-center gap-4"
-						data-id="currency-refresh-token-container"
-					>
-						<p className="text-destructive">{session_expire()}</p>
-						<RefreshToken />
-					</div>
-				</CardContent>
-			</Card>
-		);
-	}
-
-	if (error) {
-		return <ErrorCard message={error} data-id="workflow-error-card" />;
-	}
+	// if (error) {
+	// 	return <ErrorCard message={error} data-id="workflow-error-card" />;
+	// }
 
 	const actionButtons = (
 		<div className="flex items-center gap-2">
@@ -266,7 +202,7 @@ const WorkflowList = () => {
 				<SortComponent
 					fieldConfigs={sortFields}
 					sort={sort}
-					setSort={setSort}
+					setSort={handleSortChange}
 					data-id="workflow-list-sort-dropdown"
 				/>
 			</div>
@@ -302,36 +238,37 @@ const WorkflowList = () => {
 					<TableBodySkeleton columns={fields.length} withAction />
 				) : (
 					<TableBody>
-						{workflows.map((w, index) => (
-							<TableRow key={w.id}>
-								<TableCell className="font-medium text-xs">
-									{index + 1}
-								</TableCell>
-								{fields.map((field) => (
-									<TableCell
-										key={field.key as string}
-										className={`text-xs ${field.className || ''}`}
-										align={field.align}
-									>
-										{renderFieldValue(field, w)}
+						{workflows &&
+							workflows.map((w, index) => (
+								<TableRow key={w.id}>
+									<TableCell className="font-medium text-xs">
+										{index + 1}
 									</TableCell>
-								))}
-								<TableCell className="text-right">
-									<Button
-										asChild
-										variant="ghost"
-										size="sm"
-										aria-label={`View workflow ${w.id} details`}
-									>
-										<Link
-											href={`/system-administration/workflow-management/${w.id}`}
+									{fields.map((field) => (
+										<TableCell
+											key={field.key as string}
+											className={`text-xs ${field.className || ''}`}
+											align={field.align}
 										>
-											<Eye className="h-4 w-4" />
-										</Link>
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
+											{renderFieldValue(field, w)}
+										</TableCell>
+									))}
+									<TableCell className="text-right">
+										<Button
+											asChild
+											variant="ghost"
+											size="sm"
+											aria-label={`View workflow ${w.id} details`}
+										>
+											<Link
+												href={`/system-administration/workflow-management/${w.id}`}
+											>
+												<Eye className="h-4 w-4" />
+											</Link>
+										</Button>
+									</TableCell>
+								</TableRow>
+							))}
 					</TableBody>
 				)}
 			</Table>
