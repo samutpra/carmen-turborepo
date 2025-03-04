@@ -134,7 +134,7 @@ export const mockClusters: BusinessUnitCluster[] = [
     }
 ]
 
-export const mockBusinessUnits: BusinessUnitType[] = [
+export const mockBusinessUnits = [
     {
         id: "BU-1234",
         name: "Grand Hotel Downtown",
@@ -277,4 +277,40 @@ export const mockBusinessUnits: BusinessUnitType[] = [
         updatedAt: "2024-03-15T08:15:00Z"
     }
 ]
+
+// Merged Data Exports
+export interface MergedClusterData extends Omit<BusinessUnitCluster, 'businessUnits'> {
+    businessUnits: BusinessUnitType[];
+}
+
+export const mergedClusters = mockClusters.map((cluster) => {
+    const clusterBusinessUnits = mockBusinessUnits.filter(
+        (bu) => bu.clusterId === cluster.id
+    );
+
+    return {
+        ...cluster,
+        businessUnits: clusterBusinessUnits,
+    };
+});
+
+export const businessUnitsWithClusters = mockBusinessUnits.map((bu) => {
+    const cluster = mockClusters.find((c) => c.id === bu.clusterId);
+    if (!cluster) throw new Error(`Cluster not found for business unit ${bu.id}`);
+
+    return {
+        ...bu,
+        cluster,
+    };
+});
+
+// Helper function to get a single merged cluster
+export const findMergedClusterById = (clusterId: string) => {
+    return mergedClusters.find((cluster) => cluster.id === clusterId);
+};
+
+// Helper function to get a single business unit with cluster
+export const findBusinessUnitWithCluster = (businessUnitId: string) => {
+    return businessUnitsWithClusters.find((bu) => bu.id === businessUnitId);
+};
 

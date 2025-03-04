@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { mockClusters } from "../mock-data";
+import { getBusinessUnitsWithClusters } from "@/utils/data-merge";
 
 export const dynamic = 'force-dynamic'
 export async function GET() {
-    return NextResponse.json(mockClusters);
+    const clusters = await getBusinessUnitsWithClusters();
+    return NextResponse.json(clusters);
 }   

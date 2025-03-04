@@ -1,30 +1,33 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchBusinessUnitsWithClusterData } from '@/services/cluster/business-unit-with-cluster';
+import { fetchClusters } from '@/services/cluster/cluster-list';
+import { BusinessUnitType } from '@/types/main';
 import { Building2, Eye, FolderTree, Globe, Users } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react'
 
 const ClusterCard = async () => {
-    const businessUnits = await fetchBusinessUnitsWithClusterData();
+    const clusters = await fetchClusters();
 
-    const displayBusinessUnits = businessUnits.map((businessUnit) => (
-        <Card key={businessUnit.id}>
+    console.log('clusters aaaa', clusters);
+
+    const displayClusters = clusters.map((cluster: BusinessUnitType) => (
+        <Card key={cluster.id}>
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="space-y-1">
                         <CardTitle className="flex items-center gap-2">
                             <FolderTree className="h-5 w-5 text-muted-foreground" />
-                            {businessUnit.name}
+                            {cluster.name}
                         </CardTitle>
                         <div className="flex items-center gap-2">
                             <Globe className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">{businessUnit?.clusterDetails?.region}</span>
-                            <Badge variant="outline">{businessUnit.status}</Badge>
+                            <span className="text-sm text-muted-foreground">{cluster?.cluster?.region}</span>
+                            <Badge variant="outline">{cluster.status}</Badge>
                         </div>
                     </div>
-                    <Link href={`/admin/clusters/${businessUnit.id}/business-units`}>
+                    <Link href={`/admin/clusters/${cluster.cluster.id}`}>
                         <Button variant="outline" size="sm">
                             <Eye className="h-4 w-4" />
                         </Button>
@@ -40,11 +43,11 @@ const ClusterCard = async () => {
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">Teams</span>
-                            <span>{businessUnit.details.teams}</span>
+                            <span>{cluster.details.teams}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">Total Rooms</span>
-                            <span>{businessUnit.details.rooms}</span>
+                            <span>{cluster.details.rooms}</span>
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -54,18 +57,18 @@ const ClusterCard = async () => {
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">Total Members</span>
-                            <span>{businessUnit.details.members}</span>
+                            <span>{cluster.details.members}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">Avg per Unit</span>
-                            <span>{Math.round(businessUnit.details.members / businessUnits.length)}</span>
+                            <span>{Math.round(cluster.details.members / cluster.details.teams)}</span>
                         </div>
                     </div>
                 </div>
             </CardContent>
         </Card>
     ))
-    return displayBusinessUnits;
+    return displayClusters;
 }
 
 export default ClusterCard;

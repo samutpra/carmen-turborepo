@@ -85,6 +85,7 @@ export interface BusinessUnitType {
     status: 'active' | 'inactive'
     createdAt: string
     updatedAt: string
+    cluster: BusinessUnitCluster
 }
 
 export interface BusinessUnitCluster {
