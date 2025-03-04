@@ -3,6 +3,7 @@ import DashboardStatus from './DashboardStatus';
 import ReportsOverview from './ReportsOverview';
 import HotelsOverview from './HotelsOverview';
 import Cluster from './Cluster';
+import RecentActivity from './RecentActivity';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -27,6 +28,7 @@ const Dashboard = async () => {
                 </div>
                 <div className='space-y-6'>
                     <Cluster />
+                    <RecentActivity />
                 </div>
             </div>
         </div>

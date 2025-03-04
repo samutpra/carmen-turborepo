@@ -35,25 +35,76 @@ export const reportOverview = {
 
 
 export const clusterOverview = [
-    { name: "APAC", businessUnits: 12, status: "Active" }, // Asia-Pacific
-    { name: "أوروبا والشرق الأوسط وأفريقيا (EMEA)", businessUnits: 7, status: "Active" }, // Europe, Middle East, Africa
-    { name: "Américas", businessUnits: 9, status: "Active" }, // Americas
-    { name: "DACH (Deutschland, Österreich, Schweiz)", businessUnits: 6, status: "Active" }, // Germany, Austria, Switzerland
-    { name: "Nordiska länderna", businessUnits: 4, status: "Active" }, // Nordics
-    { name: "Benelux (België, Nederland, Luxembourg)", businessUnits: 5, status: "Active" }, // Belgium, Netherlands, Luxembourg
-    { name: "France", businessUnits: 8, status: "Active" }, // France
-    { name: "Iberia (España y Portugal)", businessUnits: 7, status: "Active" }, // Spain & Portugal
-    { name: "Italia", businessUnits: 6, status: "Active" }, // Italy
-    { name: "Regno Unito e Irlanda", businessUnits: 9, status: "Active" }, // UK & Ireland
-    { name: "Europa de Est", businessUnits: 5, status: "Active" }, // Eastern Europe
-    { name: "الشرق الأوسط", businessUnits: 6, status: "Active" }, // Middle East
-    { name: "दक्षिण एशिया", businessUnits: 10, status: "Active" }, // South Asia
-    { name: "เอเชียตะวันออกเฉียงใต้", businessUnits: 11, status: "Active" }, // Southeast Asia
-    { name: "大中华区", businessUnits: 14, status: "Active" }, // Greater China
-    { name: "日本", businessUnits: 5, status: "Active" }, // Japan
-    { name: "대한민국", businessUnits: 5, status: "Active" }, // Korea
-    { name: "Brasil", businessUnits: 6, status: "Active" }, // Brazil
-    { name: "México y América Central", businessUnits: 7, status: "Active" }, // Mexico & Central America
-    { name: "Canada (Canada)", businessUnits: 4, status: "Active" }, // Canada
+    { name: "APAC", businessUnits: 12, status: "Active" },
+    { name: "أوروبا والشرق الأوسط وأفريقيا (EMEA)", businessUnits: 7, status: "Active" },
+    { name: "Américas", businessUnits: 9, status: "Active" },
+    { name: "DACH (Deutschland, Österreich, Schweiz)", businessUnits: 6, status: "Active" },
+    { name: "Nordiska länderna", businessUnits: 4, status: "Active" },
+    { name: "Benelux (België, Nederland, Luxembourg)", businessUnits: 5, status: "Active" },
+    { name: "France", businessUnits: 8, status: "Active" },
+    { name: "Iberia (España y Portugal)", businessUnits: 7, status: "Active" },
+    { name: "Italia", businessUnits: 6, status: "Active" },
+    { name: "Regno Unito e Irlanda", businessUnits: 9, status: "Active" },
+    { name: "Europa de Est", businessUnits: 5, status: "Active" },
+    { name: "الشرق الأوسط", businessUnits: 6, status: "Active" },
+    { name: "दक्षिण एशिया", businessUnits: 10, status: "Active" },
+    { name: "เอเชียตะวันออกเฉียงใต้", businessUnits: 11, status: "Active" },
+    { name: "大中华区", businessUnits: 14, status: "Active" },
+    { name: "日本", businessUnits: 5, status: "Active" },
+    { name: "대한민국", businessUnits: 5, status: "Active" },
+    { name: "Brasil", businessUnits: 6, status: "Active" },
+    { name: "México y América Central", businessUnits: 7, status: "Active" },
+    { name: "Canada (Canada)", businessUnits: 4, status: "Active" },
+];
+
+export const recentActivity = [
+    {
+        title: "New Report",
+        description: "Generated this month",
+        cluster: "APAC",
+        create_at: "2025-03-04",
+    },
+    {
+        title: "System Update",
+        description: "Scheduled maintenance completed",
+        cluster: "EMEA",
+        create_at: "2025-03-03",
+    },
+    {
+        title: "User Access Granted",
+        description: "New user added to the system",
+        cluster: "AMER",
+        create_at: "2025-03-02",
+    },
+    {
+        title: "Policy Change",
+        description: "Updated security policies",
+        cluster: "APAC",
+        create_at: "2025-03-01",
+    },
+    {
+        title: "Bug Fix",
+        description: "Resolved login issue",
+        cluster: "EMEA",
+        create_at: "2025-02-28",
+    },
+    {
+        title: "Data Backup",
+        description: "Completed weekly data backup",
+        cluster: "APAC",
+        create_at: "2025-02-27",
+    },
+    {
+        title: "Server Migration",
+        description: "Transferred to a new data center",
+        cluster: "AMER",
+        create_at: "2025-02-26",
+    },
+    {
+        title: "Incident Report",
+        description: "Identified and mitigated network issue",
+        cluster: "EMEA",
+        create_at: "2025-02-25",
+    },
 ];
 

@@ -10,3 +10,11 @@ export interface ClusterType {
     businessUnits: number;
     status: string;
 }
+
+export interface RecentActivityType {
+    title: string;
+    description: string;
+    cluster: string;
+    create_at: string;
+}
+
