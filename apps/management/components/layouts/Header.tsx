@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { SwitchTheme } from "../SwitchTheme"
 // import { UserNav } from "@/components/shared/UserNav"
 // import { ModeToggle } from "@/components/ui/mode-toggle"
 
@@ -13,7 +14,7 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <nav className="flex items-center space-x-2">
-            <p>dark mode</p>
+            <SwitchTheme />
             <p>Auth</p>
           </nav>
         </div>
