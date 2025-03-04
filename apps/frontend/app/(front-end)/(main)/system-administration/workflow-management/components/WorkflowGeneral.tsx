@@ -1,5 +1,7 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import * as Form from '@/components/ui/form';
+import { Control } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,120 +14,119 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Workflow } from '@/dtos/workflow.dto';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
 import { workflowTypeField } from '@/constants/fields';
 
 interface WorkflowGeneralProps {
-	workflow: Workflow;
+	control: Control<WorkflowCreateModel>;
 	isEditing: boolean;
-	onSave: (updatedWorkflow: Workflow) => void;
 }
 
-const WorkflowGeneral: React.FC<WorkflowGeneralProps> = ({
-	workflow,
-	isEditing,
-	onSave,
-}) => {
-	const [editedWorkflow, setEditedWorkflow] = useState({ ...workflow });
-
-	// Reset form when workflow prop changes or edit mode is disabled
-	useEffect(() => {
-		setEditedWorkflow(workflow);
-	}, [workflow, isEditing]);
-
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		const updatedWorkflow = {
-			...workflow,
-			...editedWorkflow,
-			[e.target.id]: e.target.value,
-		};
-		setEditedWorkflow(updatedWorkflow);
-		onSave(updatedWorkflow);
-	};
-
-	const handleSelectChange = (value: string) => {
-		const updatedWorkflow = {
-			...editedWorkflow,
-			type: value,
-		};
-		setEditedWorkflow(updatedWorkflow);
-		onSave(updatedWorkflow);
-	};
-
-	const handleStatusChange = (checked: boolean) => {
-		const updatedWorkflow = {
-			...editedWorkflow,
-			status: checked ? 'Active' : 'Inactive',
-		};
-		setEditedWorkflow(updatedWorkflow);
-		onSave(updatedWorkflow);
-	};
-
+const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
 	return (
 		<Card>
 			<CardHeader className="px-6 py-4">
 				<CardTitle>General Information</CardTitle>
 			</CardHeader>
 			<CardContent className="px-6 py-4">
-				<form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
-					<div>
-						<Label htmlFor="name">Workflow Name</Label>
-						<Input
-							id="name"
-							value={editedWorkflow.name}
-							onChange={handleInputChange}
-							disabled={!isEditing}
-						/>
-					</div>
-					<div>
-						<Label htmlFor="type">Type</Label>
-						<Select
-							value={editedWorkflow.workflow_type}
-							onValueChange={handleSelectChange}
-							disabled={!isEditing}
-						>
-							<SelectTrigger id="workflow_type">
-								<SelectValue placeholder="Select Workflow Type" />
-							</SelectTrigger>
-							<SelectContent>
-								{workflowTypeField.map(({ label, value }) => (
-									<SelectItem
-										key={value}
-										value={value}
-										className="cursor-pointer"
-									>
-										{label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-					<div>
-						<Label htmlFor="status">Status</Label>
-						<div className="flex items-center space-x-2">
-							<Switch
-								id="status"
-								checked={editedWorkflow.is_active}
-								onCheckedChange={handleStatusChange}
-								disabled={!isEditing}
-							/>
-							<Label htmlFor="status" className="text-sm text-muted-foreground">
-								{editedWorkflow.is_active ? 'Active' : 'Inactive'}
-							</Label>
-						</div>
-					</div>
-					<div>
-						<Label htmlFor="description">Description</Label>
-						<Textarea
-							id="description"
-							value={editedWorkflow.description}
-							onChange={handleInputChange}
-							disabled={!isEditing}
-						/>
-					</div>
-				</form>
+				<Form.FormField
+					control={control}
+					name="name"
+					render={({ field }) => (
+						<Form.FormItem>
+							<Form.FormLabel>Workflow Name</Form.FormLabel>
+							<Form.FormControl>
+								<Input
+									{...field}
+									value={String(field.value || '')}
+									placeholder="Enter workflow name"
+									disabled={!isEditing}
+								/>
+							</Form.FormControl>
+							<Form.FormMessage />
+						</Form.FormItem>
+					)}
+				/>
+
+				<div>
+					<Form.FormField
+						control={control}
+						name="workflow_type"
+						render={({ field }) => (
+							<Form.FormItem>
+								<Form.FormLabel>Type</Form.FormLabel>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+									disabled={!isEditing}
+								>
+									<Form.FormControl>
+										<SelectTrigger id="workflow_type">
+											<SelectValue placeholder="Select Workflow Type" />
+										</SelectTrigger>
+									</Form.FormControl>
+									<SelectContent>
+										{workflowTypeField.map(({ label, value }) => (
+											<SelectItem
+												key={value}
+												value={value}
+												className="cursor-pointer"
+											>
+												{label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<Form.FormMessage />
+							</Form.FormItem>
+						)}
+					/>
+				</div>
+				<div>
+					<Form.FormField
+						control={control}
+						name="is_active"
+						render={({ field }) => (
+							<Form.FormItem>
+								<Form.FormLabel>Status</Form.FormLabel>
+								<div className="flex items-center space-x-2">
+									<Form.FormControl>
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											disabled={!isEditing}
+										/>
+									</Form.FormControl>
+									<Label className="text-sm text-muted-foreground">
+										{field.value ? 'Active' : 'Inactive'}
+									</Label>
+								</div>
+								<Form.FormMessage />
+							</Form.FormItem>
+						)}
+					/>
+					{/* <div className="flex items-center space-x-2"></div> */}
+				</div>
+				<div>
+					<Form.FormField
+						control={control}
+						name="description"
+						render={({ field }) => (
+							<Form.FormItem>
+								<Form.FormLabel>Description</Form.FormLabel>
+								<Form.FormControl>
+									<Textarea
+										{...field}
+										value={String(field.value || '')}
+										placeholder="Enter description"
+										disabled={!isEditing}
+									/>
+								</Form.FormControl>
+								<Form.FormMessage />
+							</Form.FormItem>
+						)}
+					/>
+				</div>
 			</CardContent>
 		</Card>
 	);

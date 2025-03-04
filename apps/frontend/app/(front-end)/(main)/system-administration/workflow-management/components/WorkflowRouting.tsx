@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,151 +11,56 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import * as Form from '@/components/ui/form';
+import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
-import { Pencil, Plus, Save, X, Trash2 } from 'lucide-react';
-import { RoutingRule, OperatorType, ActionType } from '@/dtos/workflow.dto';
+import { Plus, Trash2 } from 'lucide-react';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
 
 interface WorkflowRoutingProps {
-	rules: RoutingRule[];
-	stages: string[];
+	form: UseFormReturn<WorkflowCreateModel>;
+	control: Control<WorkflowCreateModel>;
+	stagesName: string[];
 	isEditing: boolean;
-	onSave: (rules: RoutingRule[]) => void;
 }
 
-const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
-	rules: initialRules = [],
-	stages,
-	isEditing: parentIsEditing,
-	onSave,
-}) => {
-	const [rules, setRules] = useState<RoutingRule[]>(initialRules);
-	const [selectedRuleId, setSelectedRuleId] = useState<number | null>(null);
-	const [isRuleEditing, setIsRuleEditing] = useState(false);
+const WorkflowRouting = ({
+	form,
+	control,
+	stagesName,
+	isEditing,
+}: WorkflowRoutingProps) => {
+	const { fields, append, remove } = useFieldArray({
+		name: 'data.routing_rules',
+		control: control,
+	});
+	const rules = form.getValues().data?.routing_rules || [];
+	const [selectedRuleName, setSelectedRuleName] = useState<string | null>(null);
+	const selectedRule = rules.find((rule) => rule.name === selectedRuleName);
 
-	useEffect(() => {
-		setRules(initialRules);
-	}, [initialRules]);
-
-	useEffect(() => {
-		if (!parentIsEditing) {
-			setIsRuleEditing(false);
-			setSelectedRuleId(null);
-		}
-	}, [parentIsEditing]);
-
-	const selectedRule = rules.find((rule) => rule.id === selectedRuleId);
-
-	const handleRuleSelect = (ruleId: number) => {
-		if (isRuleEditing) return;
-		setSelectedRuleId(ruleId);
+	const handleRuleSelect = (ruleName: string) => {
+		setSelectedRuleName(ruleName);
 	};
 
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		if (!selectedRule || !isRuleEditing) return;
+	const handleAddRule = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
 
-		const updatedRules = rules.map((rule) => {
-			if (rule.id === selectedRule.id) {
-				return { ...rule, [e.target.id]: e.target.value };
-			}
-			return rule;
-		});
-		setRules(updatedRules);
-	};
-
-	const handleConditionChange = (
-		field: keyof RoutingRule['condition'],
-		value: string
-	) => {
-		if (!selectedRule || !isRuleEditing) return;
-
-		const updatedRules = rules.map((rule) => {
-			if (rule.id === selectedRule.id) {
-				return {
-					...rule,
-					condition: {
-						...rule.condition,
-						[field]: field === 'operator' ? (value as OperatorType) : value,
-					},
-				};
-			}
-			return rule;
-		});
-		setRules(updatedRules);
-	};
-
-	const handleActionChange = (
-		field:
-			| keyof RoutingRule['action']
-			| keyof RoutingRule['action']['target_stage'],
-		value: string
-	) => {
-		if (!selectedRule || !isRuleEditing) return;
-
-		const updatedRules = rules.map((rule) => {
-			if (rule.id === selectedRule.id) {
-				if (field === 'type') {
-					return {
-						...rule,
-						action: {
-							type: value as ActionType,
-							target_stage: '',
-						},
-					};
-				} else {
-					return {
-						...rule,
-						action: {
-							...rule.action,
-							target_stage: value,
-						},
-					};
-				}
-			}
-			return rule;
-		});
-		setRules(updatedRules);
-	};
-
-	const handleSaveRule = () => {
-		onSave(rules);
-		setIsRuleEditing(false);
-	};
-
-	const handleCancelRule = () => {
-		const updatedRules = rules.map((rule) => {
-			if (rule.id === selectedRuleId) {
-				const initialRule = initialRules.find((r) => r.id === selectedRuleId);
-				return initialRule || rule;
-			}
-			return rule;
-		});
-		setRules(updatedRules);
-		setIsRuleEditing(false);
-	};
-
-	const handleAddRule = () => {
-		const newRule: RoutingRule = {
-			id: Math.max(0, ...rules.map((r) => r.id)) + 1,
-			name: '',
+		append({
+			name: `rule ${rules.length + 1}`,
 			description: '',
-			trigger_stage: stages[0] || '',
+			triggerStage: stagesName[0] || '',
 			condition: { field: '', operator: 'eq', value: '' },
 			action: { type: 'NEXT_STAGE', target_stage: '' },
-		};
-		const updatedRules = [...rules, newRule];
-		setRules(updatedRules);
-		setSelectedRuleId(newRule.id);
-		setIsRuleEditing(true);
+		});
+
+		setSelectedRuleName(`rule ${rules.length + 1}`);
 	};
 
-	const handleDeleteRule = () => {
-		if (!selectedRule) return;
-		const updatedRules = rules.filter((rule) => rule.id !== selectedRule.id);
-		setRules(updatedRules);
-		setSelectedRuleId(null);
-		onSave(updatedRules);
+	const handleDeleteRule = (ruleName: string) => {
+		const index = form
+			.getValues()
+			.data?.routing_rules.findIndex((rule) => rule.name === ruleName);
+		remove(index);
 	};
 
 	return (
@@ -168,19 +73,19 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 					<ul className="space-y-2">
 						{rules.map((rule) => (
 							<li
-								key={rule.id}
+								key={rule.name}
 								className={`p-2 rounded-md cursor-pointer ${
-									selectedRuleId === rule.id
+									selectedRuleName === rule.name
 										? 'bg-secondary'
 										: 'hover:bg-secondary/50'
 								}`}
-								onClick={() => handleRuleSelect(rule.id)}
+								onClick={() => handleRuleSelect(rule.name)}
 							>
 								{rule.name || 'Unnamed Rule'}
 							</li>
 						))}
 					</ul>
-					{parentIsEditing && (
+					{isEditing && (
 						<Button className="w-full mt-4" onClick={handleAddRule}>
 							<Plus className="mr-2 h-4 w-4" /> Add Rule
 						</Button>
@@ -191,165 +96,242 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 			<Card className="col-span-2">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle>Rule Details</CardTitle>
-					{selectedRule && parentIsEditing && !isRuleEditing && (
+
+					{selectedRule && isEditing && (
 						<div className="flex space-x-2">
-							<Button variant="outline" size="sm" onClick={handleDeleteRule}>
-								<Trash2 className="h-4 w-4 mr-2" />
-								Delete Rule
-							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => setIsRuleEditing(true)}
-							>
-								<Pencil className="h-4 w-4 mr-2" />
-								Edit Rule
-							</Button>
-						</div>
-					)}
-					{selectedRule && isRuleEditing && (
-						<div className="flex space-x-2">
-							<Button variant="ghost" size="sm" onClick={handleCancelRule}>
-								<X className="h-4 w-4 mr-2" />
-								Cancel
-							</Button>
-							<Button size="sm" onClick={handleSaveRule}>
-								<Save className="h-4 w-4 mr-2" />
-								Save Changes
-							</Button>
+							{rules.length > 1 && (
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => handleDeleteRule(selectedRuleName || '')}
+								>
+									<Trash2 className="h-4 w-4 mr-2" />
+									Delete Rule
+								</Button>
+							)}
 						</div>
 					)}
 				</CardHeader>
 				<CardContent>
 					{selectedRule ? (
-						<form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-							<div>
-								<Label htmlFor="name">Rule Name</Label>
-								<Input
-									id="name"
-									value={selectedRule.name}
-									onChange={handleInputChange}
-									placeholder="Enter rule name"
-									disabled={!isRuleEditing}
-								/>
-							</div>
-							<div>
-								<Label htmlFor="description">Description</Label>
-								<Textarea
-									id="description"
-									value={selectedRule.description}
-									onChange={handleInputChange}
-									placeholder="Enter rule description"
-									disabled={!isRuleEditing}
-								/>
-							</div>
-							<div>
-								<Label htmlFor="triggerStage">Trigger Stage</Label>
-								<Select
-									value={selectedRule.trigger_stage}
-									onValueChange={(value) =>
-										handleInputChange({
-											target: { id: 'triggerStage', value },
-										} as never)
-									}
-									disabled={!isRuleEditing}
-								>
-									<SelectTrigger id="triggerStage">
-										<SelectValue placeholder="Select trigger stage" />
-									</SelectTrigger>
-									<SelectContent>
-										{stages.map((stage) => (
-											<SelectItem key={stage} value={stage}>
-												{stage}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-							<div>
-								<Label>Condition</Label>
-								<div className="flex flex-col space-y-2 mt-2">
-									<Select
-										value={selectedRule.condition.field}
-										onValueChange={(value) =>
-											handleConditionChange('field', value)
-										}
-										disabled={!isRuleEditing}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select field" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="amount">Amount</SelectItem>
-											<SelectItem value="department">Department</SelectItem>
-											<SelectItem value="category">Category</SelectItem>
-										</SelectContent>
-									</Select>
-									<Select
-										value={selectedRule.condition.operator}
-										onValueChange={(value) =>
-											handleConditionChange('operator', value)
-										}
-										disabled={!isRuleEditing}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select operator" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="eq">Equals</SelectItem>
-											<SelectItem value="gt">Greater than</SelectItem>
-											<SelectItem value="lt">Less than</SelectItem>
-											<SelectItem value="gte">Greater than or equal</SelectItem>
-											<SelectItem value="lte">Less than or equal</SelectItem>
-										</SelectContent>
-									</Select>
-									<Input
-										placeholder="Enter value"
-										value={selectedRule.condition.value}
-										onChange={(e) =>
-											handleConditionChange('value', e.target.value)
-										}
-										disabled={!isRuleEditing}
-									/>
+						<div className="space-y-4">
+							{fields.map((field, index) => (
+								<div key={field.id}>
+									{field.name === selectedRuleName && (
+										<>
+											<Form.FormField
+												control={control}
+												name={`data.routing_rules.${index}.name`}
+												render={({ field }) => (
+													<Form.FormItem>
+														<Form.FormLabel>Rule Name</Form.FormLabel>
+														<Form.FormControl>
+															<Input
+																{...field}
+																placeholder="Enter rule name"
+																disabled={!isEditing}
+															/>
+														</Form.FormControl>
+														<Form.FormMessage />
+													</Form.FormItem>
+												)}
+											/>
+											<Form.FormField
+												control={control}
+												name={`data.routing_rules.${index}.description`}
+												render={({ field }) => (
+													<Form.FormItem>
+														<Form.FormLabel>Description</Form.FormLabel>
+														<Form.FormControl>
+															<Textarea
+																{...field}
+																placeholder="Enter rule description"
+																disabled={!isEditing}
+															/>
+														</Form.FormControl>
+														<Form.FormMessage />
+													</Form.FormItem>
+												)}
+											/>
+											<Form.FormField
+												control={control}
+												name={`data.routing_rules.${index}.triggerStage`}
+												render={({ field }) => (
+													<Form.FormItem>
+														<Form.FormLabel>Trigger Stage</Form.FormLabel>
+														<Select
+															onValueChange={field.onChange}
+															defaultValue={field.value}
+															disabled={!isEditing}
+														>
+															<Form.FormControl>
+																<SelectTrigger id="triggerStage">
+																	<SelectValue placeholder="Select Trigger Stage" />
+																</SelectTrigger>
+															</Form.FormControl>
+															<SelectContent>
+																{stagesName.map((stage) => (
+																	<SelectItem key={stage} value={stage}>
+																		{stage}
+																	</SelectItem>
+																))}
+															</SelectContent>
+														</Select>
+														<Form.FormMessage />
+													</Form.FormItem>
+												)}
+											/>
+											<div>
+												<Label>Condition</Label>
+												<div className="flex flex-col space-y-2 mt-2">
+													<Form.FormField
+														control={control}
+														name={`data.routing_rules.${index}.condition.field`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Select
+																	onValueChange={field.onChange}
+																	defaultValue={field.value}
+																	disabled={!isEditing}
+																>
+																	<Form.FormControl>
+																		<SelectTrigger>
+																			<SelectValue placeholder="Select field" />
+																		</SelectTrigger>
+																	</Form.FormControl>
+																	<SelectContent>
+																		<SelectItem value="amount">
+																			Amount
+																		</SelectItem>
+																		<SelectItem value="department">
+																			Department
+																		</SelectItem>
+																		<SelectItem value="category">
+																			Category
+																		</SelectItem>
+																	</SelectContent>
+																</Select>
+																<Form.FormMessage />
+															</Form.FormItem>
+														)}
+													/>
+													<Form.FormField
+														control={control}
+														name={`data.routing_rules.${index}.condition.operator`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Select
+																	onValueChange={field.onChange}
+																	defaultValue={field.value}
+																	disabled={!isEditing}
+																>
+																	<Form.FormControl>
+																		<SelectTrigger>
+																			<SelectValue placeholder="Select operator" />
+																		</SelectTrigger>
+																	</Form.FormControl>
+																	<SelectContent>
+																		<SelectItem value="eq">Equals</SelectItem>
+																		<SelectItem value="gt">
+																			Greater than
+																		</SelectItem>
+																		<SelectItem value="lt">
+																			Less than
+																		</SelectItem>
+																		<SelectItem value="gte">
+																			Greater than or equal
+																		</SelectItem>
+																		<SelectItem value="lte">
+																			Less than or equal
+																		</SelectItem>
+																	</SelectContent>
+																</Select>
+																<Form.FormMessage />
+															</Form.FormItem>
+														)}
+													/>
+													<Form.FormField
+														control={control}
+														name={`data.routing_rules.${index}.condition.value`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Form.FormControl>
+																	<Input
+																		{...field}
+																		placeholder="Enter value"
+																		disabled={!isEditing}
+																	/>
+																</Form.FormControl>
+																<Form.FormMessage />
+															</Form.FormItem>
+														)}
+													/>
+												</div>
+											</div>
+											<div>
+												<Label>Action</Label>
+												<div className="space-y-2 mt-2">
+													<Form.FormField
+														control={control}
+														name={`data.routing_rules.${index}.action.type`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Select
+																	onValueChange={field.onChange}
+																	defaultValue={field.value}
+																	disabled={!isEditing}
+																>
+																	<Form.FormControl>
+																		<SelectTrigger>
+																			<SelectValue placeholder="Select type" />
+																		</SelectTrigger>
+																	</Form.FormControl>
+																	<SelectContent>
+																		<SelectItem value="SKIP_STAGE">
+																			Skip Stage
+																		</SelectItem>
+																		<SelectItem value="NEXT_STAGE">
+																			Next Stage
+																		</SelectItem>
+																	</SelectContent>
+																</Select>
+																<Form.FormMessage />
+															</Form.FormItem>
+														)}
+													/>
+													<Form.FormField
+														control={control}
+														name={`data.routing_rules.${index}.action.target_stage`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Select
+																	onValueChange={field.onChange}
+																	disabled={!isEditing}
+																>
+																	<Form.FormControl>
+																		<SelectTrigger>
+																			<SelectValue placeholder="Select target stage" />
+																		</SelectTrigger>
+																	</Form.FormControl>
+																	<SelectContent>
+																		{stagesName.map((stage) => (
+																			<SelectItem key={stage} value={stage}>
+																				{stage}
+																			</SelectItem>
+																		))}
+																	</SelectContent>
+																</Select>
+																<Form.FormMessage />
+															</Form.FormItem>
+														)}
+													/>
+												</div>
+											</div>
+										</>
+									)}
 								</div>
-							</div>
-							<div>
-								<Label>Action</Label>
-								<div className="space-y-2 mt-2">
-									<Select
-										value={selectedRule.action.type}
-										onValueChange={(value) => handleActionChange('type', value)}
-										disabled={!isRuleEditing}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select action type" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="SKIP_STAGE">Skip Stage</SelectItem>
-											<SelectItem value="NEXT_STAGE">Next Stage</SelectItem>
-										</SelectContent>
-									</Select>
-									<Select
-										value={selectedRule.action.target_stage}
-										onValueChange={(value) =>
-											handleActionChange('target_stage', value)
-										}
-										disabled={!isRuleEditing}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select target stage" />
-										</SelectTrigger>
-										<SelectContent>
-											{stages.map((stage) => (
-												<SelectItem key={stage} value={stage}>
-													{stage}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-						</form>
+							))}
+						</div>
 					) : (
 						<p className="text-muted-foreground">
 							Select a rule to view or edit details

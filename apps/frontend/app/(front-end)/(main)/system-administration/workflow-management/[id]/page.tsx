@@ -14,6 +14,7 @@ const WorkflowDetailPage = ({ params }: { params: { id: string } }) => {
 	const [wfData, setWfdata] = useState<WorkflowCreateModel | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isRefresh, setRefresh] = useState(false);
+
 	const fetchById = async () => {
 		if (!params.id || !token) return;
 		try {

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,156 +11,61 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import * as Form from '@/components/ui/form';
+import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Pencil, Save, X, UserPlus, Trash2, Filter } from 'lucide-react';
+import { UserPlus, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { users } from '../data/mockUser';
-import { Stage } from '@/dtos/workflow.dto';
-import { enum_available_actions } from '@/constants/enums';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { WorkflowCreateModel } from '@/dtos/workflow.dto';
+import WorkflowStageNotification from './WorkflowStageNotification';
+import { enum_available_actions, enum_sla_unit } from '@/constants/enums';
+import { slaUnitField } from '@/constants/fields';
 
-interface WorkflowStagesProps {
-	stages: Stage[];
+interface WorkflowStageProps {
+	form: UseFormReturn<WorkflowCreateModel>;
+	control: Control<WorkflowCreateModel>;
 	isEditing: boolean;
-	onSave: (stages: Stage[]) => void;
 }
 
-const WorkflowStages: React.FC<WorkflowStagesProps> = ({
-	stages: initialStages,
-	isEditing: parentIsEditing,
-	onSave,
-}) => {
-	const [stages, setStages] = useState<Stage[]>(initialStages);
+const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
+	const { fields, append, remove } = useFieldArray({
+		name: 'data.stages',
+		control: control,
+	});
+	const stages = form.getValues().data?.stages || [];
 	const [selectedStageName, setSelectedStageName] = useState<string | null>(
 		null
 	);
-	const [isStageEditing, setIsStageEditing] = useState(false);
 	const [userFilter, setUserFilter] = useState<
 		'all' | 'assigned' | 'unassigned'
 	>('all');
 
-	useEffect(() => {
-		setStages(initialStages);
-	}, [initialStages]);
-
-	useEffect(() => {
-		if (!parentIsEditing) {
-			setIsStageEditing(false);
-		}
-	}, [parentIsEditing]);
-
-	const selectedStage = stages.find(
-		(stage) => stage.name === selectedStageName
-	);
+	const selectedStage = form
+		.getValues()
+		.data?.stages.find((stage) => stage.name === selectedStageName);
 
 	const handleStageSelect = (stageName: string) => {
 		setSelectedStageName(stageName);
 	};
 
-	const handleDeleteStage = () => {
-		if (!selectedStage) return;
-		const updatedStages = stages.filter(
-			(stage) => stage.name !== selectedStage.name
-		);
-		setStages(updatedStages);
-		setSelectedStageName(null);
-		onSave(updatedStages);
+	const handleDeleteStage = (stageName: string) => {
+		const index = form
+			.getValues()
+			.data?.stages.findIndex((stage) => stage.name === stageName);
+		remove(index);
+		//onSave(updatedStages);
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!selectedStage) return;
+	const handleAddStage = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
 
-		const updatedStages = stages.map((stage) => {
-			if (stage.name === selectedStage.name) {
-				return { ...stage, [e.target.name]: e.target.value };
-			}
-			return stage;
-		});
-		setStages(updatedStages);
-	};
-
-	const handleSelectChange = (field: string, value: string) => {
-		if (!selectedStage) return;
-
-		const updatedStages = stages.map((stage) => {
-			if (stage.name === selectedStage.name) {
-				return { ...stage, [field]: value };
-			}
-			return stage;
-		});
-		setStages(updatedStages);
-	};
-
-	const handleActionToggle = (action: enum_available_actions) => {
-		if (!selectedStage) return;
-		const updatedStages = stages.map((stage) => {
-			if (stage.name === selectedStage.name) {
-				const updatedActions = { ...stage.available_actions };
-
-				if (updatedActions[action]) {
-					updatedActions[action] = {
-						...updatedActions[action],
-						is_active: !updatedActions[action].is_active,
-					};
-				}
-
-				return {
-					...stage,
-					available_actions: updatedActions,
-				};
-			}
-			return stage;
-		});
-		setStages(updatedStages);
-	};
-
-	const handleAssignUser = (user: {
-		id: number;
-		name: string;
-		department: string;
-		location: string;
-	}) => {
-		if (!selectedStage) return;
-
-		const updatedStages = stages.map((stage) => {
-			if (stage.name === selectedStage.name) {
-				const isUserAssigned = stage.assigned_users.some(
-					(u) => u.id === user.id
-				);
-				const updatedUsers = isUserAssigned
-					? stage.assigned_users.filter((u) => u.id !== user.id)
-					: [...stage.assigned_users, user];
-				return { ...stage, assigned_users: updatedUsers };
-			}
-			return stage;
-		});
-		setStages(updatedStages);
-	};
-
-	const handleHideFieldToggle = (field: 'price_per_unit' | 'total_price') => {
-		if (!selectedStage) return;
-
-		const updatedStages = stages.map((stage) => {
-			if (stage.name === selectedStage.name) {
-				return {
-					...stage,
-					hide_fields: {
-						...stage.hide_fields,
-						[field]: !stage.hide_fields[field],
-					},
-				};
-			}
-			return stage;
-		});
-		setStages(updatedStages);
-	};
-
-	const handleAddStage = () => {
-		const newStage: Stage = {
+		append({
 			name: `Stage ${stages.length + 1}`,
 			description: '',
 			sla: '24',
-			sla_unit: 'hours',
+			sla_unit: enum_sla_unit.hours,
 			available_actions: {
 				submit: {
 					is_active: false,
@@ -200,20 +105,55 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 				total_price: false,
 			},
 			assigned_users: [],
-		};
-		setStages([...stages, newStage]);
-		setSelectedStageName(newStage.name);
-		setIsStageEditing(true);
+		});
+
+		setSelectedStageName(`Stage ${stages.length + 1}`);
 	};
 
-	const handleSaveStage = () => {
-		onSave(stages);
-		setIsStageEditing(false);
+	const handleActionToggle = (action: enum_available_actions) => {
+		if (!selectedStage) return;
+		const updatedStages = stages.map((stage) => {
+			if (stage.name === selectedStage.name) {
+				const updatedActions = { ...stage.available_actions };
+
+				if (updatedActions[action]) {
+					updatedActions[action] = {
+						...updatedActions[action],
+						is_active: !updatedActions[action].is_active,
+					};
+				}
+
+				return {
+					...stage,
+					available_actions: updatedActions,
+				};
+			}
+			return stage;
+		});
+		form.setValue('data.stages', updatedStages);
 	};
 
-	const handleCancelStage = () => {
-		setStages(initialStages);
-		setIsStageEditing(false);
+	const handleAssignUser = (user: {
+		id: number;
+		name: string;
+		department: string;
+		location: string;
+	}) => {
+		if (!selectedStage) return;
+
+		const updatedStages = stages.map((stage) => {
+			if (stage.name === selectedStage.name) {
+				const isUserAssigned = stage.assigned_users.some(
+					(u) => u.id === user.id
+				);
+				const updatedUsers = isUserAssigned
+					? stage.assigned_users.filter((u) => u.id !== user.id)
+					: [...stage.assigned_users, user];
+				return { ...stage, assignedUsers: updatedUsers };
+			}
+			return stage;
+		});
+		form.setValue('data.stages', updatedStages);
 	};
 
 	const filteredUsers = users.filter((user) => {
@@ -259,7 +199,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 								</li>
 							))}
 						</ul>
-						{parentIsEditing && (
+						{isEditing && (
 							<Button className="w-full mt-4" onClick={handleAddStage}>
 								<UserPlus className="mr-2 h-4 w-4" /> Add Stage
 							</Button>
@@ -270,32 +210,20 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 				<Card className="col-span-2">
 					<CardHeader className="flex flex-row items-center justify-between">
 						<CardTitle>Stage Details</CardTitle>
-						{selectedStage && parentIsEditing && !isStageEditing && (
+
+						{selectedStage && isEditing && (
 							<div className="flex space-x-2">
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => setIsStageEditing(true)}
-								>
-									<Pencil className="h-4 w-4 mr-2" />
-									Edit Stage
-								</Button>
-								<Button variant="outline" size="sm" onClick={handleDeleteStage}>
-									<Trash2 className="h-4 w-4 mr-2" />
-									Delete Stage
-								</Button>
-							</div>
-						)}
-						{selectedStage && isStageEditing && (
-							<div className="flex space-x-2">
-								<Button variant="ghost" size="sm" onClick={handleCancelStage}>
-									<X className="h-4 w-4 mr-2" />
-									Cancel
-								</Button>
-								<Button size="sm" onClick={handleSaveStage}>
-									<Save className="h-4 w-4 mr-2" />
-									Save Changes
-								</Button>
+								{selectedStage.name !== 'Request Creation' &&
+									selectedStage.name !== 'Completed' && (
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() => handleDeleteStage(selectedStageName || '')}
+										>
+											<Trash2 className="h-4 w-4 mr-2" />
+											Delete Stage
+										</Button>
+									)}
 							</div>
 						)}
 					</CardHeader>
@@ -309,413 +237,187 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 										Assigned Users
 									</TabsTrigger>
 								</TabsList>
-
 								<TabsContent value="general">
-									<form
-										className="space-y-4"
-										onSubmit={(e) => e.preventDefault()}
-									>
-										<div>
-											<Label htmlFor="name">Stage Name</Label>
-											<Input
-												id="name"
-												name="name"
-												value={selectedStage.name}
-												onChange={handleInputChange}
-												disabled={!isStageEditing}
-											/>
-										</div>
-
-										<div>
-											<Label htmlFor="description">Description</Label>
-											<Input
-												id="description"
-												name="description"
-												value={selectedStage.description}
-												onChange={handleInputChange}
-												disabled={!isStageEditing}
-											/>
-										</div>
-
-										<div className="grid grid-cols-2 gap-4">
-											<div>
-												<Label htmlFor="sla">SLA</Label>
-												<Input
-													id="sla"
-													name="sla"
-													value={selectedStage.sla}
-													onChange={handleInputChange}
-													disabled={!isStageEditing}
-												/>
-											</div>
-											<div>
-												<Label htmlFor="sla_unit">SLA Unit</Label>
-												<Select
-													value={selectedStage.sla_unit}
-													onValueChange={(value) =>
-														handleSelectChange('sla_unit', value)
-													}
-													disabled={!isStageEditing}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Select unit" />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="minutes">Minutes</SelectItem>
-														<SelectItem value="hours">Hours</SelectItem>
-														<SelectItem value="days">Days</SelectItem>
-													</SelectContent>
-												</Select>
-											</div>
-										</div>
-
-										<div>
-											<Label>Available Actions</Label>
-											<div className="flex flex-wrap gap-2 mt-2">
-												{(
-													Object.keys(enum_available_actions) as Array<
-														keyof typeof enum_available_actions
-													>
-												).map((action) => (
-													<Button
-														key={action}
-														variant={
-															selectedStage.available_actions[
-																enum_available_actions[action]
-															]?.is_active
-																? 'default'
-																: 'outline'
-														}
-														size="sm"
-														onClick={() =>
-															handleActionToggle(enum_available_actions[action])
-														}
-														disabled={!isStageEditing}
-													>
-														{action}
-													</Button>
-												))}
-											</div>
-										</div>
-
-										<div>
-											<Label>Hidden Fields</Label>
-											<div className="space-y-3 mt-2">
-												<div className="flex items-center justify-between">
-													<Label
-														htmlFor="hide-price-per-unit"
-														className="cursor-pointer"
-													>
-														Price Per Unit
-													</Label>
-													<Switch
-														id="hide-price-per-unit"
-														checked={selectedStage.hide_fields.price_per_unit}
-														onCheckedChange={() =>
-															handleHideFieldToggle('price_per_unit')
-														}
-														disabled={!isStageEditing}
+									{fields.map((field, index) => (
+										<div key={field.id}>
+											{field.name === selectedStageName && (
+												<>
+													<Form.FormField
+														control={control}
+														name={`data.stages.${index}.name`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Form.FormLabel>Stage Name</Form.FormLabel>
+																<Form.FormControl>
+																	<Input
+																		{...field}
+																		placeholder="Enter Stage Name"
+																		disabled={!isEditing}
+																	/>
+																</Form.FormControl>
+															</Form.FormItem>
+														)}
 													/>
-												</div>
-												<div className="flex items-center justify-between">
-													<Label
-														htmlFor="hide-total-price"
-														className="cursor-pointer"
-													>
-														Total Price
-													</Label>
-													<Switch
-														id="hide-total-price"
-														checked={selectedStage.hide_fields.total_price}
-														onCheckedChange={() =>
-															handleHideFieldToggle('total_price')
-														}
-														disabled={!isStageEditing}
+													<Form.FormField
+														control={control}
+														name={`data.stages.${index}.description`}
+														render={({ field }) => (
+															<Form.FormItem>
+																<Form.FormLabel>Description</Form.FormLabel>
+																<Form.FormControl>
+																	<Input
+																		{...field}
+																		placeholder="Enter Description"
+																		disabled={!isEditing}
+																	/>
+																</Form.FormControl>
+															</Form.FormItem>
+														)}
 													/>
-												</div>
-											</div>
+													<div className="grid grid-cols-2 gap-4">
+														<Form.FormField
+															control={control}
+															name={`data.stages.${index}.sla`}
+															render={({ field }) => (
+																<Form.FormItem>
+																	<Form.FormLabel>SLA</Form.FormLabel>
+																	<Form.FormControl>
+																		<Input
+																			{...field}
+																			placeholder="Enter SLA"
+																			disabled={!isEditing}
+																		/>
+																	</Form.FormControl>
+																</Form.FormItem>
+															)}
+														/>
+														<Form.FormField
+															control={control}
+															name={`data.stages.${index}.sla_unit`}
+															render={({ field }) => (
+																<Form.FormItem>
+																	<Form.FormLabel>SLA Unit</Form.FormLabel>
+																	<Select
+																		onValueChange={field.onChange}
+																		defaultValue={field.value}
+																		disabled={!isEditing}
+																	>
+																		<Form.FormControl>
+																			<SelectTrigger id="sla_unit">
+																				<SelectValue placeholder="Select SLA Unit" />
+																			</SelectTrigger>
+																		</Form.FormControl>
+																		<SelectContent>
+																			{slaUnitField.map(({ label, value }) => (
+																				<SelectItem
+																					key={value}
+																					value={value}
+																					className="cursor-pointer"
+																				>
+																					{label}
+																				</SelectItem>
+																			))}
+																		</SelectContent>
+																	</Select>
+																	<Form.FormMessage />
+																</Form.FormItem>
+															)}
+														/>
+													</div>
+
+													<div>
+														<Label>Available Actions</Label>
+														<div className="flex flex-wrap gap-2 mt-2">
+															{(
+																Object.keys(enum_available_actions) as Array<
+																	keyof typeof enum_available_actions
+																>
+															).map((action) => (
+																<Button
+																	key={action}
+																	variant={
+																		selectedStage.available_actions[
+																			enum_available_actions[action]
+																		]?.is_active
+																			? 'default'
+																			: 'outline'
+																	}
+																	size="sm"
+																	onClick={() =>
+																		handleActionToggle(
+																			enum_available_actions[action]
+																		)
+																	}
+																	disabled={!isEditing}
+																>
+																	{action}
+																</Button>
+															))}
+														</div>
+													</div>
+
+													<div className="space-y-3 mt-2">
+														<Label>Hidden Fields</Label>
+														<Form.FormField
+															control={control}
+															name={`data.stages.${index}.hide_fields.price_per_unit`}
+															render={({ field }) => (
+																<Form.FormItem>
+																	<div className="flex items-center justify-between">
+																		<Form.FormLabel>
+																			Price Per Unit
+																		</Form.FormLabel>
+																		<Form.FormControl>
+																			<Switch
+																				checked={field.value}
+																				onCheckedChange={field.onChange}
+																				disabled={!isEditing}
+																			/>
+																		</Form.FormControl>
+																	</div>
+																	<Form.FormMessage />
+																</Form.FormItem>
+															)}
+														/>
+														<Form.FormField
+															control={control}
+															name={`data.stages.${index}.hide_fields.total_price`}
+															render={({ field }) => (
+																<Form.FormItem>
+																	<div className="flex items-center justify-between">
+																		<Form.FormLabel>Total Price</Form.FormLabel>
+																		<Form.FormControl>
+																			<Switch
+																				checked={field.value}
+																				onCheckedChange={field.onChange}
+																				disabled={!isEditing}
+																			/>
+																		</Form.FormControl>
+																	</div>
+																	<Form.FormMessage />
+																</Form.FormItem>
+															)}
+														/>
+													</div>
+												</>
+											)}
 										</div>
-									</form>
+									))}
 								</TabsContent>
 
 								<TabsContent value="notifications">
-									<div className="space-y-6">
-										<div className="grid gap-6">
-											{selectedStage.available_actions.submit.is_active && (
-												<Card>
-													<CardHeader>
-														<CardTitle>Submit Notification</CardTitle>
-													</CardHeader>
-													<CardContent className="space-y-4">
-														<div>
-															<Label>Recipients</Label>
-															<div className="grid gap-2 mt-2">
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="submit-requestor"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="submit-requestor"
-																		className="cursor-pointer"
-																	>
-																		Requestor
-																	</Label>
-																</div>
-																{selectedStage.available_actions.approve
-																	.is_active && (
-																	<div className="flex items-center space-x-2">
-																		<Switch
-																			id="submit-next-approver"
-																			disabled={!isStageEditing}
-																		/>
-																		<Label
-																			htmlFor="submit-next-approver"
-																			className="cursor-pointer"
-																		>
-																			Next Stage Approver
-																		</Label>
-																	</div>
-																)}
-															</div>
-														</div>
-														<div>
-															<Label>Template</Label>
-															<Select disabled={!isStageEditing}>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select template" />
-																</SelectTrigger>
-																<SelectContent>
-																	<SelectItem value="1">
-																		Request Submitted
-																	</SelectItem>
-																</SelectContent>
-															</Select>
-														</div>
-													</CardContent>
-												</Card>
+									{fields.map((field, index) => (
+										<div key={field.id}>
+											{field.name === selectedStageName && (
+												<WorkflowStageNotification
+													selectedStage={selectedStage}
+													index={index}
+													control={control}
+													isEditing={isEditing}
+												/>
 											)}
-
-											{selectedStage.available_actions.approve.is_active && (
-												<Card>
-													<CardHeader>
-														<CardTitle>Approve Notification</CardTitle>
-													</CardHeader>
-													<CardContent className="space-y-4">
-														<div>
-															<Label>Recipients</Label>
-															<div className="grid gap-2 mt-2">
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="approve-requestor"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="approve-requestor"
-																		className="cursor-pointer"
-																	>
-																		Requestor
-																	</Label>
-																</div>
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="approve-current-approver"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="approve-current-approver"
-																		className="cursor-pointer"
-																	>
-																		Current Approver
-																	</Label>
-																</div>
-																{selectedStage.available_actions.approve
-																	.is_active && (
-																	<div className="flex items-center space-x-2">
-																		<Switch
-																			id="approve-next-approver"
-																			disabled={!isStageEditing}
-																		/>
-																		<Label
-																			htmlFor="approve-next-approver"
-																			className="cursor-pointer"
-																		>
-																			Next Stage Approver
-																		</Label>
-																	</div>
-																)}
-															</div>
-														</div>
-														<div>
-															<Label>Template</Label>
-															<Select disabled={!isStageEditing}>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select template" />
-																</SelectTrigger>
-																<SelectContent>
-																	<SelectItem value="2">
-																		Request Approved
-																	</SelectItem>
-																</SelectContent>
-															</Select>
-														</div>
-													</CardContent>
-												</Card>
-											)}
-
-											{selectedStage.available_actions.reject.is_active && (
-												<Card>
-													<CardHeader>
-														<CardTitle>Reject Notification</CardTitle>
-													</CardHeader>
-													<CardContent className="space-y-4">
-														<div>
-															<Label>Recipients</Label>
-															<div className="grid gap-2 mt-2">
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="reject-requestor"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="reject-requestor"
-																		className="cursor-pointer"
-																	>
-																		Requestor
-																	</Label>
-																</div>
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="reject-previous-approvers"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="reject-previous-approvers"
-																		className="cursor-pointer"
-																	>
-																		Previous Stage Approvers
-																	</Label>
-																</div>
-															</div>
-														</div>
-														<div>
-															<Label>Template</Label>
-															<Select disabled={!isStageEditing}>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select template" />
-																</SelectTrigger>
-																<SelectContent>
-																	<SelectItem value="3">
-																		Request Rejected
-																	</SelectItem>
-																</SelectContent>
-															</Select>
-														</div>
-													</CardContent>
-												</Card>
-											)}
-
-											{selectedStage.available_actions.sendback.is_active && (
-												<Card>
-													<CardHeader>
-														<CardTitle>Send Back Notification</CardTitle>
-													</CardHeader>
-													<CardContent className="space-y-4">
-														<div>
-															<Label>Recipients</Label>
-															<div className="grid gap-2 mt-2">
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="sendback-requestor"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="sendback-requestor"
-																		className="cursor-pointer"
-																	>
-																		Requestor
-																	</Label>
-																</div>
-																<div className="flex items-center space-x-2">
-																	<Switch
-																		id="sendback-previous-approver"
-																		disabled={!isStageEditing}
-																	/>
-																	<Label
-																		htmlFor="sendback-previous-approver"
-																		className="cursor-pointer"
-																	>
-																		Previous Stage Approver
-																	</Label>
-																</div>
-															</div>
-														</div>
-														<div>
-															<Label>Template</Label>
-															<Select disabled={!isStageEditing}>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select template" />
-																</SelectTrigger>
-																<SelectContent>
-																	<SelectItem value="4">
-																		Request Sent Back
-																	</SelectItem>
-																</SelectContent>
-															</Select>
-														</div>
-													</CardContent>
-												</Card>
-											)}
-
-											<Card>
-												<CardHeader>
-													<CardTitle>SLA Warning Notification</CardTitle>
-												</CardHeader>
-												<CardContent className="space-y-4">
-													<div>
-														<Label>Recipients</Label>
-														<div className="grid gap-2 mt-2">
-															<div className="flex items-center space-x-2">
-																<Switch
-																	id="sla-requestor"
-																	disabled={!isStageEditing}
-																/>
-																<Label
-																	htmlFor="sla-requestor"
-																	className="cursor-pointer"
-																>
-																	Requestor
-																</Label>
-															</div>
-															<div className="flex items-center space-x-2">
-																<Switch
-																	id="sla-current-approver"
-																	disabled={!isStageEditing}
-																/>
-																<Label
-																	htmlFor="sla-current-approver"
-																	className="cursor-pointer"
-																>
-																	Current Approver
-																</Label>
-															</div>
-														</div>
-													</div>
-													<div>
-														<Label>Template</Label>
-														<Select disabled={!isStageEditing}>
-															<SelectTrigger>
-																<SelectValue placeholder="Select template" />
-															</SelectTrigger>
-															<SelectContent>
-																<SelectItem value="5">SLA Warning</SelectItem>
-															</SelectContent>
-														</Select>
-													</div>
-												</CardContent>
-											</Card>
 										</div>
-									</div>
+									))}
 								</TabsContent>
 
 								<TabsContent value="assigned-users">
@@ -734,12 +436,14 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												className="flex-grow"
 												placeholder="Search users..."
 												onChange={(e) => console.log('Search:', e.target.value)}
+												disabled={!isEditing}
 											/>
 											<Select
 												value={userFilter}
 												onValueChange={(
 													value: 'all' | 'assigned' | 'unassigned'
 												) => setUserFilter(value)}
+												disabled={!isEditing}
 											>
 												<SelectTrigger className="w-[180px]">
 													<SelectValue placeholder="Filter by status" />
@@ -750,10 +454,6 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													<SelectItem value="unassigned">Unassigned</SelectItem>
 												</SelectContent>
 											</Select>
-											<Button variant="outline">
-												<Filter className="w-4 h-4 mr-2" />
-												Filter
-											</Button>
 										</div>
 
 										<Card>
@@ -763,9 +463,6 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 														Total Users: {selectedStage.assigned_users.length} /{' '}
 														{users.length}
 													</span>
-													<Button variant="outline" size="sm">
-														Bulk Actions
-													</Button>
 												</div>
 
 												<div className="space-y-4">
@@ -803,7 +500,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																		variant={isAssigned ? 'default' : 'outline'}
 																		size="sm"
 																		onClick={() => handleAssignUser(user)}
-																		disabled={!isStageEditing}
+																		disabled={!isEditing}
 																	>
 																		{isAssigned ? 'Assigned' : 'Assign'}
 																	</Button>

@@ -5,9 +5,9 @@ import * as Form from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WorkflowHeader from './WorkflowHeader';
-import WorkflowGeneral from '../new/components/WorkflowGeneral';
-import WorkflowStages from '../new/components/WorkflowStages';
-import WorkflowRouting from '../new/components/WorkflowRouting';
+import WorkflowGeneral from './WorkflowGeneral';
+import WorkflowStages from './WorkflowStages';
+import WorkflowRouting from './WorkflowRouting';
 import WorkflowProducts from './WorkflowProducts';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,9 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
 	const { accessToken, tenantId } = useAuth();
 	const token = accessToken || '';
 	const router = useRouter();
-	const [isEditing, setIsEditing] = useState(false);
+	const [isEditing, setIsEditing] = useState(
+		mode === formType.EDIT ? false : true
+	);
 
 	const form = useForm<WorkflowCreateModel>({
 		resolver: zodResolver(wfFormSchema),
@@ -156,7 +158,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
 				...wfData,
 			});
 		}
-	}, [isRefresh]);
+	}, [isRefresh, wfData, form]);
 
 	const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
@@ -214,6 +216,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
 					router.replace(
 						`/system-administration/workflow-management/${result.id}`
 					);
+					setRefresh(true);
 					setIsEditing(true);
 				} else {
 					setRefresh(true);
