@@ -95,3 +95,20 @@ export interface BusinessUnitCluster {
     region: string
     status: 'active' | 'inactive'
 }
+
+export interface UserType {
+    id: string
+    name: string
+    email: string
+    status: 'active' | 'inactive'
+    lastActive: string
+    platformRole?: 'admin' | 'support' | 'finance'
+}
+
+export interface BusinessUnitUserRoleType {
+    userId: string
+    businessUnitId: string
+    roles: string[]  // Multiple roles from supply chain system
+    lastUpdated: string
+    updatedBy: string  // Supply chain system identifier
+}
