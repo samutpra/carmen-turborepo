@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum enum_product_status_type {
-  active = "active",
-  inactive = "inactive",
-  discontinued = "discontinued",
+  active = 'active',
+  inactive = 'inactive',
+  discontinued = 'discontinued',
 }
 
 export const product_location_item_schema = z.object({
@@ -99,19 +99,19 @@ export class Product_Unit_remove_item implements ProductUnitRemoveModel {
 
 export const ProductCreateSchema = z.object({
   id: z.string().uuid().optional(),
-  code: z.string().min(1, "code must be at least 1 character"),
-  name: z.string().min(1, "name must be at least 1 character"),
+  code: z.string().min(1, 'code must be at least 1 character'),
+  name: z.string().min(1, 'name must be at least 1 character'),
   local_name: z.string().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
-  primary_unit_id: z.string().uuid(),
+  inventory_unit_id: z.string().uuid(),
   product_status_type: z.enum(
     Object.values(enum_product_status_type) as [string, ...string[]],
   ),
   product_item_group_id: z
     .string()
     .uuid()
-    .min(1, "item group must be at least 1 character"),
+    .min(1, 'item group must be at least 1 character'),
   price: z.number().optional(),
   tax_type: z.string().optional(),
   tax_rate: z.number().optional(),
@@ -123,8 +123,8 @@ export const ProductCreateSchema = z.object({
 export type ProductCreateModel = z.infer<typeof ProductCreateSchema>;
 
 export enum enum_tax_type {
-  none = "none",
-  vat = "vat",
+  none = 'none',
+  vat = 'vat',
 }
 
 export class ProductCreateDto implements ProductCreateModel {
@@ -136,7 +136,7 @@ export class ProductCreateDto implements ProductCreateModel {
   product_item_group_id!: string;
   description?: string | null;
   is_active?: boolean | null;
-  primary_unit_id!: string;
+  inventory_unit_id!: string;
   price?: number;
   tax_type?: enum_tax_type;
   tax_rate?: number;
@@ -149,29 +149,26 @@ export class ProductCreateDto implements ProductCreateModel {
   orderUnits?: {
     add?: Product_Unit_item[];
   };
-  recipeUnits?: {
-    add?: Product_Unit_item[];
-  };
-  countUnits?: {
+  ingredientUnits?: {
     add?: Product_Unit_item[];
   };
 }
 
 export const ProductUpdateSchema = z.object({
   id: z.string().uuid(),
-  code: z.string().min(1, "code must be at least 1 character").optional(),
-  name: z.string().min(1, "name must be at least 1 character").optional(),
+  code: z.string().min(1, 'code must be at least 1 character').optional(),
+  name: z.string().min(1, 'name must be at least 1 character').optional(),
   local_name: z.string().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
-  primary_unit_id: z.string().uuid().optional(),
+  inventory_unit_id: z.string().uuid().optional(),
   product_status_type: z
     .enum(Object.values(enum_product_status_type) as [string, ...string[]])
     .optional(),
   product_item_group_id: z
     .string()
     .uuid()
-    .min(1, "item group must be at least 1 character")
+    .min(1, 'item group must be at least 1 character')
     .optional(),
   price: z.number().optional(),
   tax_type: z.string().optional(),
@@ -192,7 +189,7 @@ export class ProductUpdateDto implements ProductUpdateModel {
   product_item_group_id?: string;
   description?: string | null;
   is_active?: boolean | null;
-  primary_unit_id?: string;
+  inventory_unit_id?: string;
   price?: number;
   tax_type?: enum_tax_type;
   tax_rate?: number;
@@ -209,12 +206,7 @@ export class ProductUpdateDto implements ProductUpdateModel {
     update?: Product_Unit_update_item[];
     remove?: Product_Unit_remove_item[];
   };
-  recipeUnits?: {
-    add?: Product_Unit_item[];
-    update?: Product_Unit_update_item[];
-    remove?: Product_Unit_remove_item[];
-  };
-  countUnits?: {
+  ingredientUnits?: {
     add?: Product_Unit_item[];
     update?: Product_Unit_update_item[];
     remove?: Product_Unit_remove_item[];

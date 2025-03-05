@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { RunningCodeController } from "./running-code.controller";
-import { RunningCodeService } from "./running-code.service";
+import { Module } from '@nestjs/common';
+import { RunningCodeController } from './running-code.controller';
+import { RunningCodeService } from './running-code.service';
 
 @Module({
   controllers: [RunningCodeController],

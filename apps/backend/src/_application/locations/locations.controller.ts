@@ -1,11 +1,11 @@
-import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
-import QueryParams, { QueryAdvance } from "lib/types";
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import {
   enum_location_type,
   LocationCreateDto,
   LocationUpdateDto,
-} from "shared-dtos";
-import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
+} from 'shared-dtos';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
 
 import {
   Body,
@@ -20,23 +20,23 @@ import {
   Query,
   Req,
   UseGuards,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from "@nestjs/swagger";
+} from '@nestjs/swagger';
 
-import { LocationsService } from "./locations.service";
+import { LocationsService } from './locations.service';
 
-@Controller("api/v1/locations")
-@ApiTags("locations")
+@Controller('api/v1/locations')
+@ApiTags('locations')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class LocationsController {
@@ -44,14 +44,14 @@ export class LocationsController {
 
   private readonly logger = new Logger(LocationsController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.locationsService.findOne(req, id);
   }
@@ -60,17 +60,17 @@ export class LocationsController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     const defaultSearchFields: string[] = [
-      "name",
-      "description",
+      'name',
+      'description',
       // "location_type",
     ];
 
@@ -102,26 +102,26 @@ export class LocationsController {
   @Post()
   @ApiBody({
     type: LocationCreateDto,
-    description: "LocationCreateDto",
+    description: 'LocationCreateDto',
   })
   async create(@Body() createDto: any, @Req() req: Request) {
     this.logger.debug({ createDto: createDto });
     return this.locationsService.create(req, createDto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: LocationUpdateDto,
-    description: "LocationUpdateDto",
+    description: 'LocationUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateDto: any,
     @Req() req: Request,
   ) {
@@ -131,14 +131,14 @@ export class LocationsController {
     return this.locationsService.update(req, id, updatedto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.locationsService.delete(req, id);
   }

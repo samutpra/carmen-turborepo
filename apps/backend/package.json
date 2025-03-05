@@ -112,8 +112,5 @@
     "moduleNameMapper": {
       "^@app/(.*)$": "<rootDir>/$1"
     }
-  },
-  "prisma": {
-    "seed": "tsx prisma/schema/seed.ts"
   }
 }

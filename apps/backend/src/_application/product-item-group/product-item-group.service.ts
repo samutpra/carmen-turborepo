@@ -1,23 +1,23 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils/exceptions";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
 import {
   ProductItemGroupCreateDto,
   ProductItemGroupUpdateDto,
-} from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+} from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_product_item_group,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma/client';
 
 @Injectable()
 export class ProductItemGroupService {
@@ -52,7 +52,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
     const res: ResponseSingle<tb_product_item_group> = {
       data: oneObj,
@@ -108,7 +108,7 @@ export class ProductItemGroupService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "productItemGroup already exists",
+        message: 'productItemGroup already exists',
         id: found.id,
       });
     }
@@ -135,7 +135,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
 
     const updateObj = await this.db_tenant.tb_product_item_group.update({
@@ -159,7 +159,7 @@ export class ProductItemGroupService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
 
     await this.db_tenant.tb_product_item_group.delete({
@@ -206,7 +206,7 @@ export class ProductItemGroupService {
     });
 
     if (!data) {
-      throw new NotFoundException("productItemGroup not found");
+      throw new NotFoundException('productItemGroup not found');
     }
 
     const res: ResponseSingle<any> = {

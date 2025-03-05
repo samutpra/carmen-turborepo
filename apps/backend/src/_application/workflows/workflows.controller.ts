@@ -10,31 +10,31 @@ import {
   Query,
   Req,
   UseGuards,
-} from "@nestjs/common";
-import { WorkflowsService } from "./workflows.service";
+} from '@nestjs/common';
+import { WorkflowsService } from './workflows.service';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
-import QueryParams, { QueryAdvance } from "lib/types";
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import {
   WorkflowCreateDto,
   workflowDTO,
   workflowUpdateDTO,
   WorkflowUpdateDto,
-} from "shared-dtos/workflows/workflows.dto";
+} from 'shared-dtos/workflows/workflows.dto';
 
-@Controller("api/v1/workflows")
-@ApiTags("workflows")
+@Controller('api/v1/workflows')
+@ApiTags('workflows')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class WorkflowsController {
@@ -42,14 +42,14 @@ export class WorkflowsController {
 
   private readonly logger = new Logger(WorkflowsController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({
       file: WorkflowsController.name,
       function: this.findOne.name,
@@ -62,20 +62,20 @@ export class WorkflowsController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     this.logger.debug({
       file: WorkflowsController.name,
       function: this.findAll.name,
     });
 
-    const defaultSearchFields: string[] = ["name", "description"];
+    const defaultSearchFields: string[] = ['name', 'description'];
 
     this.logger.debug({
       page: page,
@@ -105,7 +105,7 @@ export class WorkflowsController {
   @Post()
   @ApiBody({
     type: workflowDTO,
-    description: "WorkflowCreateDto",
+    description: 'WorkflowCreateDto',
   })
   async create(@Req() req: Request, @Body() body: workflowDTO) {
     this.logger.debug({
@@ -117,20 +117,20 @@ export class WorkflowsController {
     return this.workflowsService.create(req, body);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: workflowUpdateDTO,
-    description: "WorkflowUpdateDto",
+    description: 'WorkflowUpdateDto',
   })
   async update(
     @Req() req: Request,
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() body: workflowUpdateDTO,
   ) {
     this.logger.debug({
@@ -146,14 +146,14 @@ export class WorkflowsController {
     return this.workflowsService.update(req, id, body);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Req() req: Request, @Param("id") id: string) {
+  async delete(@Req() req: Request, @Param('id') id: string) {
     this.logger.debug({
       file: WorkflowsController.name,
       function: this.delete.name,

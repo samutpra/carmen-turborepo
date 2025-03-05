@@ -11,7 +11,7 @@ import {
   PrismaClient as dbTenant,
   tb_good_receive_note,
   tb_inventory_transaction,
-} from '@prisma-carmen-client-tenant';
+} from '@prisma/client';
 import { ResponseSingle, ResponseList, ResponseId } from 'lib/helper/iResponse';
 import QueryParams from 'lib/types';
 import {
@@ -121,7 +121,6 @@ export class GoodReceiveNoteService {
           updated_by_id: user_id,
           updated_at: new Date(),
           inventory_doc_type: 'good_receive_note',
-          name: createDto.name,
         },
       });
 
@@ -132,7 +131,6 @@ export class GoodReceiveNoteService {
           created_at: new Date(),
           updated_by_id: user_id,
           updated_at: new Date(),
-          inventory_transaction_id: inv_transaction.id,
         },
       });
 

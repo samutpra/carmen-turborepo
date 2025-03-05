@@ -1,23 +1,23 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils/exceptions";
-import { LocationCreateDto, LocationUpdateDto } from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
+import { LocationCreateDto, LocationUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   enum_location_type,
   PrismaClient as dbTenant,
   tb_location,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma/client';
 
-import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 @Injectable()
 export class LocationsService {
@@ -59,12 +59,12 @@ export class LocationsService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     const usersActive = await this.db_tenant.tb_user_location
@@ -79,22 +79,24 @@ export class LocationsService {
       .then((res) => {
         return Promise.all(
           res.map(async (item) => {
-            const user = await this.db_system.tb_user.findMany({
-              where: {
-                id: item.user_id,
-              },
-              select: {
-                id: true,
-                email: true,
-                tb_user_profile_tb_user_profile_user_idTotb_user: {
-                  select: {
-                    firstname: true,
-                    lastname: true,
-                    middlename: true,
-                  },
-                },
-              },
-            });
+            // const user = await this.db_system.tb_user.findMany({
+            //   where: {
+            //     id: item.user_id,
+            //   },
+            //   select: {
+            //     id: true,
+            //     email: true,
+            //     tb_user_profile_tb_user_profile_user_idTotb_user: {
+            //       select: {
+            //         firstname: true,
+            //         lastname: true,
+            //         middlename: true,
+            //       },
+            //     },
+            //   },
+            // });
+
+            const user = [{ id: '001', email: 'xxx@xxx.xxx' }];
 
             return {
               id: user[0].id,
@@ -109,7 +111,7 @@ export class LocationsService {
     const userInActive = await this.db_system.tb_user_tb_business_unit
       .findMany({
         where: {
-          business_unit_id: "6ba7b921-9dad-11d1-80b4-00c04fd430c8",
+          business_unit_id: '6ba7b921-9dad-11d1-80b4-00c04fd430c8',
           is_active: true,
           user_id: {
             notIn: usersActive.map((user) => user.id),
@@ -225,7 +227,7 @@ export class LocationsService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
     this.logger.debug(createDto);
 
     if (createDto.user?.add) {
@@ -245,7 +247,7 @@ export class LocationsService {
       if (userNotFound.length > 0) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Add User not found",
+          message: 'Add User not found',
           data: userNotFound,
         });
       }
@@ -260,13 +262,13 @@ export class LocationsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Location already exists",
+        message: 'Location already exists',
         id: found.id,
       });
     }
 
     if (!createDto.location_type) {
-      throw new NotFoundException("Location type not found");
+      throw new NotFoundException('Location type not found');
     }
 
     const location_type =
@@ -317,11 +319,11 @@ export class LocationsService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     if (updateDto.user) {
@@ -342,7 +344,7 @@ export class LocationsService {
         if (userNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add User not found",
+            message: 'Add User not found',
             data: userNotFound,
           });
         }
@@ -366,7 +368,7 @@ export class LocationsService {
         if (userLocationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove User not found",
+            message: 'Remove User not found',
             data: userLocationNotFound,
           });
         }
@@ -387,7 +389,7 @@ export class LocationsService {
         if (userNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove User not found",
+            message: 'Remove User not found',
             data: userNotFound,
           });
         }
@@ -469,7 +471,7 @@ export class LocationsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     await this.db_tenant.tb_user_location.deleteMany({
