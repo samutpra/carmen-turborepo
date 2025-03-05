@@ -1,14 +1,11 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { CreditNoteCreateDto, CreditNoteUpdateDto } from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { CreditNoteCreateDto, CreditNoteUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import { Injectable, Logger, NotFoundException, Request } from "@nestjs/common";
-import {
-  PrismaClient as dbTenant,
-  tb_credit_note,
-} from "@prisma-carmen-client-tenant";
+import { Injectable, Logger, NotFoundException, Request } from '@nestjs/common';
+import { PrismaClient as dbTenant, tb_credit_note } from '@prisma/client';
 
 @Injectable()
 export class CreditNoteService {
@@ -48,7 +45,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Credit Note not found");
+      throw new NotFoundException('Credit Note not found');
     }
 
     const res: ResponseSingle<tb_credit_note> = {
@@ -113,7 +110,7 @@ export class CreditNoteService {
     const createdObj = await this.db_tenant.tb_credit_note.create({
       data: {
         ...createDto,
-        inventory_transaction_id: createDto.inventory_transaction_id,
+        // inventory_transaction_id: createDto.inventory_transaction_id,
         created_by_id: user_id,
         updated_by_id: user_id,
         created_at: new Date(),
@@ -139,7 +136,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Credit Note not found");
+      throw new NotFoundException('Credit Note not found');
     }
 
     const updatedObj = await this.db_tenant.tb_credit_note.update({
@@ -165,7 +162,7 @@ export class CreditNoteService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Credit Note not found");
+      throw new NotFoundException('Credit Note not found');
     }
 
     await this.db_tenant.tb_credit_note.delete({

@@ -1,20 +1,17 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils";
-import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils';
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
-import {
-  PrismaClient as dbTenant,
-  tb_delivery_point,
-} from "@prisma-carmen-client-tenant";
+} from '@nestjs/common';
+import { PrismaClient as dbTenant, tb_delivery_point } from '@prisma/client';
 
 @Injectable()
 export class DeliveryPointService {
@@ -46,7 +43,7 @@ export class DeliveryPointService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("delivery point not found");
+      throw new NotFoundException('delivery point not found');
     }
     const res: ResponseSingle<tb_delivery_point> = {
       data: oneObj,
@@ -102,7 +99,7 @@ export class DeliveryPointService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Delivery point already exists",
+        message: 'Delivery point already exists',
         id: found.id,
       });
     }
@@ -128,7 +125,7 @@ export class DeliveryPointService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Delivery point not found");
+      throw new NotFoundException('Delivery point not found');
     }
 
     const updateObj = await this.db_tenant.tb_delivery_point.update({
@@ -152,7 +149,7 @@ export class DeliveryPointService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Delivery point not found");
+      throw new NotFoundException('Delivery point not found');
     }
 
     await this.db_tenant.tb_delivery_point.delete({

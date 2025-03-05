@@ -10,28 +10,28 @@ import {
   Query,
   Req,
   UseGuards,
-} from "@nestjs/common";
-import { DepartmentUserService } from "./department-user.service";
+} from '@nestjs/common';
+import { DepartmentUserService } from './department-user.service';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
-import QueryParams, { QueryAdvance } from "lib/types";
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
+import QueryParams, { QueryAdvance } from 'lib/types';
 import {
   DepartmentUserCreateDto,
   DepartmentUserUpdateDto,
-} from "shared-dtos/department-user/department-user.dto";
-@Controller("api/v1/department-user")
-@ApiTags("department-user")
+} from 'shared-dtos/department-user/department-user.dto';
+@Controller('api/v1/department-user')
+@ApiTags('department-user')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class DepartmentUserController {
@@ -39,8 +39,8 @@ export class DepartmentUserController {
 
   private readonly logger = new Logger(DepartmentUserController.name);
 
-  @Get(":id")
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  @Get(':id')
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({
       file: DepartmentUserController.name,
       function: this.findOne.name,
@@ -53,19 +53,19 @@ export class DepartmentUserController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     this.logger.debug({
       file: DepartmentUserController.name,
       function: this.findAll.name,
     });
-    const defaultSearchFields: string[] = ["name", "description"];
+    const defaultSearchFields: string[] = ['name', 'description'];
 
     this.logger.debug({
       page: page,
@@ -94,7 +94,7 @@ export class DepartmentUserController {
   @Post()
   @ApiBody({
     type: DepartmentUserCreateDto,
-    description: "DepartmentUserCreateDto",
+    description: 'DepartmentUserCreateDto',
   })
   async create(@Req() req: Request, @Body() body: DepartmentUserCreateDto) {
     this.logger.debug({
@@ -105,19 +105,19 @@ export class DepartmentUserController {
     return this.departmentUserService.create(req, body);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: DepartmentUserUpdateDto,
-    description: "DepartmentUserUpdateDto",
+    description: 'DepartmentUserUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Req() req: Request,
     @Body() body: DepartmentUserUpdateDto,
   ) {
@@ -129,14 +129,14 @@ export class DepartmentUserController {
     return this.departmentUserService.update(req, id, body);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({
       file: DepartmentUserController.name,
       function: this.delete.name,

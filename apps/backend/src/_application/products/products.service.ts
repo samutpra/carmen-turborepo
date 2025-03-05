@@ -1,30 +1,30 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils/exceptions";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
 import {
   enum_product_status_type,
   enum_unit_type,
   ProductCreateDto,
   ProductUpdateDto,
-} from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
-import { ProductUpdateSchema } from "shared-dtos";
-import { NotFoundException } from "lib/utils/exceptions";
+} from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ProductUpdateSchema } from 'shared-dtos';
+import { NotFoundException } from 'lib/utils/exceptions';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   // NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_product,
   tb_location,
   tb_product_location,
   tb_unit_conversion,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
@@ -88,12 +88,12 @@ export class ProductsService {
         OR: [
           {
             tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
           {
             tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
         ],
@@ -108,12 +108,12 @@ export class ProductsService {
         OR: [
           {
             tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
           {
             tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
         ],
@@ -172,11 +172,112 @@ export class ProductsService {
     return res;
   }
 
-  async getCountUnitByProductId(req: Request, id: string, q: QueryParams) {
+  // async getCountUnitByProductId(req: Request, id: string, q: QueryParams) {
+  //   this.logger.debug({
+  //     file: ProductsService.name,
+  //     function: this.getCountUnitByProductId.name,
+  //   });
+  //   const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
+  //   this.db_tenant =
+  //     await this.prismaClientManager.getTenantDB(business_unit_id);
+
+  //   const max = await this.db_tenant.tb_unit_conversion.count({
+  //     where: {
+  //       product_id: id,
+  //       unit_type: enum_unit_type.count_unit,
+  //       is_active: true,
+  //       OR: [
+  //         {
+  //           tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+  //             name: { contains: q.search, mode: 'insensitive' },
+  //           },
+  //         },
+  //         {
+  //           tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+  //             name: { contains: q.search, mode: 'insensitive' },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   });
+
+  //   const query = await this.db_tenant.tb_unit_conversion.findMany({
+  //     where: {
+  //       product_id: id,
+  //       unit_type: enum_unit_type.count_unit,
+  //       is_active: true,
+  //       OR: [
+  //         {
+  //           tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+  //             name: { contains: q.search, mode: 'insensitive' },
+  //           },
+  //         },
+  //         {
+  //           tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+  //             name: { contains: q.search, mode: 'insensitive' },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     select: {
+  //       id: true,
+  //       product_id: true,
+  //       unit_type: true,
+  //       description: true,
+  //       is_default: true,
+  //       tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
+  //         select: {
+  //           id: true,
+  //           name: true,
+  //         },
+  //       },
+  //       from_unit_qty: true,
+  //       tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
+  //         select: {
+  //           id: true,
+  //           name: true,
+  //         },
+  //       },
+  //       to_unit_qty: true,
+  //     },
+  //     skip: (q.page - 1) * q.perpage,
+  //     take: q.perpage,
+  //   });
+
+  //   const countUnits = query.map((item) => ({
+  //     id: item.id,
+  //     product_id: item.product_id,
+  //     unit_type: item.unit_type,
+  //     from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
+  //     from_unit_name:
+  //       item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
+  //     from_unit_qty: Number(item.from_unit_qty),
+  //     to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
+  //     to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
+  //     to_unit_qty: Number(item.to_unit_qty),
+  //     is_default: item.is_default,
+  //   }));
+
+  //   this.logger.debug({ orderUnits: countUnits });
+
+  //   const res: ResponseList<any> = {
+  //     data: countUnits,
+  //     pagination: {
+  //       total: max,
+  //       page: q.page,
+  //       perpage: q.perpage,
+  //       pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
+  //     },
+  //   };
+  //   return res;
+  // }
+
+  async getIngredientUnitByProductId(req: Request, id: string, q: QueryParams) {
     this.logger.debug({
       file: ProductsService.name,
-      function: this.getCountUnitByProductId.name,
+      function: this.getIngredientUnitByProductId.name,
     });
+
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
@@ -184,17 +285,17 @@ export class ProductsService {
     const max = await this.db_tenant.tb_unit_conversion.count({
       where: {
         product_id: id,
-        unit_type: enum_unit_type.count_unit,
+        unit_type: enum_unit_type.ingredient_unit,
         is_active: true,
         OR: [
           {
             tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
           {
             tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
         ],
@@ -204,17 +305,17 @@ export class ProductsService {
     const query = await this.db_tenant.tb_unit_conversion.findMany({
       where: {
         product_id: id,
-        unit_type: enum_unit_type.count_unit,
+        unit_type: enum_unit_type.ingredient_unit,
         is_active: true,
         OR: [
           {
             tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
           {
             tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
+              name: { contains: q.search, mode: 'insensitive' },
             },
           },
         ],
@@ -244,7 +345,7 @@ export class ProductsService {
       take: q.perpage,
     });
 
-    const countUnits = query.map((item) => ({
+    const ingredientUnits = query.map((item) => ({
       id: item.id,
       product_id: item.product_id,
       unit_type: item.unit_type,
@@ -258,111 +359,10 @@ export class ProductsService {
       is_default: item.is_default,
     }));
 
-    this.logger.debug({ orderUnits: countUnits });
+    this.logger.debug({ ingredientUnits: ingredientUnits });
 
     const res: ResponseList<any> = {
-      data: countUnits,
-      pagination: {
-        total: max,
-        page: q.page,
-        perpage: q.perpage,
-        pages: max == 0 ? 1 : Math.ceil(max / q.perpage),
-      },
-    };
-    return res;
-  }
-
-  async getRecipeUnitByProductId(req: Request, id: string, q: QueryParams) {
-    this.logger.debug({
-      file: ProductsService.name,
-      function: this.getRecipeUnitByProductId.name,
-    });
-
-    const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_tenant =
-      await this.prismaClientManager.getTenantDB(business_unit_id);
-
-    const max = await this.db_tenant.tb_unit_conversion.count({
-      where: {
-        product_id: id,
-        unit_type: enum_unit_type.recipe_unit,
-        is_active: true,
-        OR: [
-          {
-            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
-            },
-          },
-          {
-            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
-            },
-          },
-        ],
-      },
-    });
-
-    const query = await this.db_tenant.tb_unit_conversion.findMany({
-      where: {
-        product_id: id,
-        unit_type: enum_unit_type.recipe_unit,
-        is_active: true,
-        OR: [
-          {
-            tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
-            },
-          },
-          {
-            tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-              name: { contains: q.search, mode: "insensitive" },
-            },
-          },
-        ],
-      },
-      select: {
-        id: true,
-        product_id: true,
-        unit_type: true,
-        description: true,
-        is_default: true,
-        tb_unit_tb_unit_conversion_from_unit_idTotb_unit: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        from_unit_qty: true,
-        tb_unit_tb_unit_conversion_to_unit_idTotb_unit: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        to_unit_qty: true,
-      },
-      skip: (q.page - 1) * q.perpage,
-      take: q.perpage,
-    });
-
-    const recipeUnits = query.map((item) => ({
-      id: item.id,
-      product_id: item.product_id,
-      unit_type: item.unit_type,
-      from_unit_id: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.id,
-      from_unit_name:
-        item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit.name,
-      from_unit_qty: Number(item.from_unit_qty),
-      to_unit_id: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.id,
-      to_unit_name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit.name,
-      to_unit_qty: Number(item.to_unit_qty),
-      is_default: item.is_default,
-    }));
-
-    this.logger.debug({ recipeUnits: recipeUnits });
-
-    const res: ResponseList<any> = {
-      data: recipeUnits,
+      data: ingredientUnits,
       pagination: {
         total: max,
         page: q.page,
@@ -402,14 +402,14 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     let product_primary_unit;
-    if (oneObj.primary_unit_id) {
+    if (oneObj.inventory_unit_id) {
       product_primary_unit = await this.db_tenant.tb_unit.findUnique({
         where: {
-          id: oneObj.primary_unit_id,
+          id: oneObj.inventory_unit_id,
         },
       });
     }
@@ -547,21 +547,21 @@ export class ProductsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Product already exists",
+        message: 'Product already exists',
         data: found.id,
       });
     }
 
-    if (createDto.primary_unit_id) {
+    if (createDto.inventory_unit_id) {
       const findUnit = await this.db_tenant.tb_unit.findFirst({
-        where: { id: createDto.primary_unit_id },
+        where: { id: createDto.inventory_unit_id },
       });
 
       if (!findUnit) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Primary Unit not found",
-          data: createDto.primary_unit_id,
+          message: 'Primary Unit not found',
+          data: createDto.inventory_unit_id,
         });
       }
     }
@@ -577,7 +577,7 @@ export class ProductsService {
       if (!findProductItemGroup) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Product Item Group not found",
+          message: 'Product Item Group not found',
           data: createDto.product_item_group_id,
         });
       }
@@ -602,7 +602,7 @@ export class ProductsService {
       if (locationNotFound.length > 0) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Add Location not found",
+          message: 'Add Location not found',
           data: locationNotFound,
         });
       }
@@ -610,8 +610,10 @@ export class ProductsService {
 
     const unitTypes = [
       { type: enum_unit_type.order_unit, units: createDto.orderUnits?.add },
-      { type: enum_unit_type.recipe_unit, units: createDto.recipeUnits?.add },
-      { type: enum_unit_type.count_unit, units: createDto.countUnits?.add },
+      {
+        type: enum_unit_type.ingredient_unit,
+        units: createDto.ingredientUnits?.add,
+      },
     ];
 
     for (const { type, units } of unitTypes) {
@@ -648,7 +650,7 @@ export class ProductsService {
         name: createDto.name,
         local_name: createDto.local_name,
         description: createDto.description,
-        primary_unit_id: createDto.primary_unit_id,
+        inventory_unit_id: createDto.inventory_unit_id,
         product_status_type: createDto.product_status_type,
         created_by_id: user_id,
         created_at: new Date(),
@@ -724,11 +726,11 @@ export class ProductsService {
         });
       }
 
-      if (createDto.recipeUnits?.add) {
-        const product_recipe_unit_obj: any = createDto.recipeUnits.add.map(
-          (unit) => ({
+      if (createDto.ingredientUnits?.add) {
+        const product_ingredient_unit_obj: any =
+          createDto.ingredientUnits.add.map((unit) => ({
             product_id: createObj.id,
-            unit_type: enum_unit_type.recipe_unit,
+            unit_type: enum_unit_type.ingredient_unit,
             from_unit_id: unit.unit_id,
             from_unit_qty: unit.unit_quantity,
             to_unit_id: unit.to_unit_id,
@@ -738,37 +740,12 @@ export class ProductsService {
             created_at: new Date(),
             updated_by_id: user_id,
             updated_at: new Date(),
-          }),
-        );
+          }));
 
-        this.logger.debug(product_recipe_unit_obj);
-
-        await transactionClient.tb_unit_conversion.createMany({
-          data: product_recipe_unit_obj,
-        });
-      }
-
-      if (createDto.countUnits?.add) {
-        const product_count_unit_obj: any = createDto.countUnits.add.map(
-          (unit) => ({
-            product_id: createObj.id,
-            unit_type: enum_unit_type.count_unit,
-            from_unit_id: unit.unit_id,
-            from_unit_qty: unit.unit_quantity,
-            to_unit_id: unit.to_unit_id,
-            to_unit_qty: unit.to_unit_quantity,
-            description: unit.description ?? null,
-            created_by_id: user_id,
-            created_at: new Date(),
-            updated_by_id: user_id,
-            updated_at: new Date(),
-          }),
-        );
-
-        this.logger.debug(product_count_unit_obj);
+        this.logger.debug(product_ingredient_unit_obj);
 
         await transactionClient.tb_unit_conversion.createMany({
-          data: product_count_unit_obj,
+          data: product_ingredient_unit_obj,
         });
       }
 
@@ -791,7 +768,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     if (updateDto.name || updateDto.code) {
@@ -804,22 +781,22 @@ export class ProductsService {
       if (found) {
         throw new DuplicateException({
           statusCode: HttpStatus.CONFLICT,
-          message: "Product already exists",
+          message: 'Product already exists',
           data: found.id,
         });
       }
     }
 
-    if (updateDto.primary_unit_id) {
+    if (updateDto.inventory_unit_id) {
       const findUnit = await this.db_tenant.tb_unit.findFirst({
-        where: { id: updateDto.primary_unit_id },
+        where: { id: updateDto.inventory_unit_id },
       });
 
       if (!findUnit) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Primary Unit not found",
-          data: updateDto.primary_unit_id,
+          message: 'Primary Unit not found',
+          data: updateDto.inventory_unit_id,
         });
       }
     }
@@ -833,7 +810,7 @@ export class ProductsService {
       if (!findProductItemGroup) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: "Product Item Group not found",
+          message: 'Product Item Group not found',
           data: updateDto.product_item_group_id,
         });
       }
@@ -859,7 +836,7 @@ export class ProductsService {
         if (locationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add Location not found",
+            message: 'Add Location not found',
             data: locationNotFound,
           });
         }
@@ -892,7 +869,7 @@ export class ProductsService {
         if (productLocationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Product Location not found",
+            message: 'Update Product Location not found',
             data: productLocationNotFound,
           });
         }
@@ -900,7 +877,7 @@ export class ProductsService {
         if (locationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Location not found",
+            message: 'Update Location not found',
             data: locationNotFound,
           });
         }
@@ -924,7 +901,7 @@ export class ProductsService {
         if (productLocationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove Location not found",
+            message: 'Remove Location not found',
             data: productLocationNotFound,
           });
         }
@@ -959,7 +936,7 @@ export class ProductsService {
         if (orderUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add Order Unit not found",
+            message: 'Add Order Unit not found',
             data: orderUnitNotFound,
           });
         }
@@ -967,7 +944,7 @@ export class ProductsService {
         if (orderToUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add Order To Unit not found",
+            message: 'Add Order To Unit not found',
             data: orderToUnitNotFound,
           });
         }
@@ -1010,7 +987,7 @@ export class ProductsService {
         if (productOrderUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Product Order Unit not found",
+            message: 'Update Product Order Unit not found',
             data: productOrderUnitNotFound,
           });
         }
@@ -1018,7 +995,7 @@ export class ProductsService {
         if (orderUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Order Unit not found",
+            message: 'Update Order Unit not found',
             data: orderUnitNotFound,
           });
         }
@@ -1026,7 +1003,7 @@ export class ProductsService {
         if (orderToUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Order To Unit not found",
+            message: 'Update Order To Unit not found',
             data: orderToUnitNotFound,
           });
         }
@@ -1050,26 +1027,26 @@ export class ProductsService {
         if (productOrderUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove Product Order Unit not found",
+            message: 'Remove Product Order Unit not found',
             data: productOrderUnitNotFound,
           });
         }
       }
     }
 
-    if (updateDto.recipeUnits) {
-      if (updateDto.recipeUnits.add) {
-        let recipeUnitNotFound = [];
-        let recipeToUnitNotFound = [];
+    if (updateDto.ingredientUnits) {
+      if (updateDto.ingredientUnits.add) {
+        let ingredientUnitNotFound = [];
+        let ingredientToUnitNotFound = [];
 
         await Promise.all(
-          updateDto.recipeUnits.add.map(async (unit) => {
+          updateDto.ingredientUnits.add.map(async (unit) => {
             const findUnit = await this.db_tenant.tb_unit.findFirst({
               where: { id: unit.unit_id },
             });
 
             if (!findUnit) {
-              recipeUnitNotFound.push(unit.unit_id);
+              ingredientUnitNotFound.push(unit.unit_id);
             }
 
             const findToUnit = await this.db_tenant.tb_unit.findFirst({
@@ -1077,235 +1054,109 @@ export class ProductsService {
             });
 
             if (!findToUnit) {
-              recipeToUnitNotFound.push(unit.to_unit_id);
+              ingredientToUnitNotFound.push(unit.to_unit_id);
             }
           }),
         );
 
-        if (recipeUnitNotFound.length > 0) {
+        if (ingredientUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add Recipe Unit not found",
-            data: recipeUnitNotFound,
+            message: 'Add Ingredient Unit not found',
+            data: ingredientUnitNotFound,
           });
         }
 
-        if (recipeToUnitNotFound.length > 0) {
+        if (ingredientToUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add Recipe To Unit not found",
-            data: recipeToUnitNotFound,
+            message: 'Add Ingredient To Unit not found',
+            data: ingredientToUnitNotFound,
           });
         }
       }
 
-      if (updateDto.recipeUnits.update) {
-        let productRecipeUnitNotFound = [];
-        let recipeUnitNotFound = [];
-        let recipeToUnitNotFound = [];
+      if (updateDto.ingredientUnits.update) {
+        let productIngredientUnitNotFound = [];
+        let ingredientUnitNotFound = [];
+        let ingredientToUnitNotFound = [];
 
         await Promise.all(
-          updateDto.recipeUnits.update.map(async (unit) => {
-            const findProductRecipeUnit =
+          updateDto.ingredientUnits.update.map(async (unit) => {
+            const findProductIngredientUnit =
               await this.db_tenant.tb_unit_conversion.findFirst({
                 where: { id: unit.product_order_unit_id },
               });
 
-            if (!findProductRecipeUnit) {
-              productRecipeUnitNotFound.push(unit.product_order_unit_id);
+            if (!findProductIngredientUnit) {
+              productIngredientUnitNotFound.push(unit.product_order_unit_id);
             }
 
-            const findRecipeUnit = await this.db_tenant.tb_unit.findFirst({
+            const findIngredientUnit = await this.db_tenant.tb_unit.findFirst({
               where: { id: unit.unit_id },
             });
 
-            if (!findRecipeUnit) {
-              recipeUnitNotFound.push(unit.unit_id);
+            if (!findIngredientUnit) {
+              ingredientUnitNotFound.push(unit.unit_id);
             }
 
-            const findRecipeToUnit = await this.db_tenant.tb_unit.findFirst({
-              where: { id: unit.to_unit_id },
-            });
-
-            if (!findRecipeToUnit) {
-              recipeToUnitNotFound.push(unit.to_unit_id);
-            }
-          }),
-        );
-
-        if (productRecipeUnitNotFound.length > 0) {
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Product Recipe Unit not found",
-            data: productRecipeUnitNotFound,
-          });
-        }
-
-        if (recipeUnitNotFound.length > 0) {
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Recipe Unit not found",
-            data: recipeUnitNotFound,
-          });
-        }
-
-        if (recipeToUnitNotFound.length > 0) {
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Recipe To Unit not found",
-            data: recipeToUnitNotFound,
-          });
-        }
-      }
-
-      if (updateDto.recipeUnits.remove) {
-        let productRecipeUnitNotFound = [];
-        await Promise.all(
-          updateDto.recipeUnits.remove.map(async (unit) => {
-            const findProductRecipeUnit =
-              await this.db_tenant.tb_unit_conversion.findFirst({
-                where: { id: unit.product_order_unit_id },
-              });
-
-            if (!findProductRecipeUnit) {
-              productRecipeUnitNotFound.push(unit.product_order_unit_id);
-            }
-          }),
-        );
-
-        if (productRecipeUnitNotFound.length > 0) {
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove Product Recipe Unit not found",
-            data: productRecipeUnitNotFound,
-          });
-        }
-      }
-    }
-
-    if (updateDto.countUnits) {
-      if (updateDto.countUnits) {
-        if (updateDto.countUnits.add) {
-          let countUnitNotFound = [];
-          let countToUnitNotFound = [];
-
-          await Promise.all(
-            updateDto.countUnits.add.map(async (unit) => {
-              const findUnit = await this.db_tenant.tb_unit.findFirst({
-                where: { id: unit.unit_id },
-              });
-
-              if (!findUnit) {
-                countUnitNotFound.push(unit.unit_id);
-              }
-
-              const findToUnit = await this.db_tenant.tb_unit.findFirst({
+            const findIngredientToUnit = await this.db_tenant.tb_unit.findFirst(
+              {
                 where: { id: unit.to_unit_id },
-              });
+              },
+            );
 
-              if (!findToUnit) {
-                countToUnitNotFound.push(unit.to_unit_id);
-              }
-            }),
-          );
-
-          if (countUnitNotFound.length > 0) {
-            throw new NotFoundException({
-              statusCode: HttpStatus.NOT_FOUND,
-              message: "Add Count Unit not found",
-              data: countUnitNotFound,
-            });
-          }
-
-          if (countToUnitNotFound.length > 0) {
-            throw new NotFoundException({
-              statusCode: HttpStatus.NOT_FOUND,
-              message: "Add Count To Unit not found",
-              data: countToUnitNotFound,
-            });
-          }
-        }
-      }
-
-      if (updateDto.countUnits.update) {
-        let productCountUnitNotFound = [];
-        let countUnitNotFound = [];
-        let countToUnitNotFound = [];
-
-        await Promise.all(
-          updateDto.countUnits.update.map(async (unit) => {
-            const findProductCountUnit =
-              await this.db_tenant.tb_unit_conversion.findFirst({
-                where: { id: unit.product_order_unit_id },
-              });
-
-            if (!findProductCountUnit) {
-              productCountUnitNotFound.push(unit.product_order_unit_id);
-            }
-
-            const findCountUnit = await this.db_tenant.tb_unit.findFirst({
-              where: { id: unit.unit_id },
-            });
-
-            if (!findCountUnit) {
-              countUnitNotFound.push(unit.unit_id);
-            }
-
-            const findCountToUnit = await this.db_tenant.tb_unit.findFirst({
-              where: { id: unit.to_unit_id },
-            });
-
-            if (!findCountToUnit) {
-              countToUnitNotFound.push(unit.to_unit_id);
+            if (!findIngredientToUnit) {
+              ingredientToUnitNotFound.push(unit.to_unit_id);
             }
           }),
         );
 
-        if (productCountUnitNotFound.length > 0) {
+        if (productIngredientUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Product Count Unit not found",
-            data: productCountUnitNotFound,
+            message: 'Update Product Ingredient Unit not found',
+            data: productIngredientUnitNotFound,
           });
         }
 
-        if (countUnitNotFound.length > 0) {
+        if (ingredientUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Count Unit not found",
-            data: countUnitNotFound,
+            message: 'Update Ingredient Unit not found',
+            data: ingredientUnitNotFound,
           });
         }
 
-        if (countToUnitNotFound.length > 0) {
+        if (ingredientToUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Update Count To Unit not found",
-            data: countToUnitNotFound,
+            message: 'Update Ingredient To Unit not found',
+            data: ingredientToUnitNotFound,
           });
         }
       }
 
-      if (updateDto.countUnits.remove) {
-        let productCountUnitNotFound = [];
+      if (updateDto.ingredientUnits.remove) {
+        let productIngredientUnitNotFound = [];
         await Promise.all(
-          updateDto.countUnits.remove.map(async (unit) => {
-            const findProductCountUnit =
+          updateDto.ingredientUnits.remove.map(async (unit) => {
+            const findProductIngredientUnit =
               await this.db_tenant.tb_unit_conversion.findFirst({
                 where: { id: unit.product_order_unit_id },
               });
 
-            if (!findProductCountUnit) {
-              productCountUnitNotFound.push(unit.product_order_unit_id);
+            if (!findProductIngredientUnit) {
+              productIngredientUnitNotFound.push(unit.product_order_unit_id);
             }
           }),
         );
 
-        if (productCountUnitNotFound.length > 0) {
+        if (productIngredientUnitNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Remove Product Count Unit not found",
-            data: productCountUnitNotFound,
+            message: 'Remove Product Ingredient Unit not found',
+            data: productIngredientUnitNotFound,
           });
         }
       }
@@ -1321,8 +1172,8 @@ export class ProductsService {
         name: updateDto.name ?? product_old.name,
         local_name: updateDto.local_name ?? product_old.local_name,
         description: updateDto.description ?? product_old.description,
-        primary_unit_id:
-          updateDto.primary_unit_id ?? product_old.primary_unit_id,
+        inventory_unit_id:
+          updateDto.inventory_unit_id ?? product_old.inventory_unit_id,
         product_status_type:
           updateDto.product_status_type ?? product_old.product_status_type,
         updated_by_id: user_id,
@@ -1491,12 +1342,12 @@ export class ProductsService {
         }
       }
 
-      if (updateDto.recipeUnits) {
-        if (updateDto.recipeUnits.add) {
-          const productRecipeUnitAddObj: any = updateDto.recipeUnits?.add?.map(
-            (unit) => ({
+      if (updateDto.ingredientUnits) {
+        if (updateDto.ingredientUnits.add) {
+          const productIngredientUnitAddObj: any =
+            updateDto.ingredientUnits?.add?.map((unit) => ({
               product_id: id,
-              unit_type: enum_unit_type.recipe_unit,
+              unit_type: enum_unit_type.ingredient_unit,
               from_unit_id: unit.unit_id,
               from_unit_qty: unit.unit_quantity,
               to_unit_id: unit.to_unit_id,
@@ -1506,19 +1357,18 @@ export class ProductsService {
               created_at: new Date(),
               updated_by_id: user_id,
               updated_at: new Date(),
-            }),
-          );
+            }));
 
-          this.logger.warn(productRecipeUnitAddObj);
+          this.logger.warn(productIngredientUnitAddObj);
 
           await transactionClient.tb_unit_conversion.createMany({
-            data: productRecipeUnitAddObj,
+            data: productIngredientUnitAddObj,
           });
         }
 
-        if (updateDto.recipeUnits.update) {
-          const productRecipeUnitUpdateObj: any =
-            updateDto.recipeUnits?.update?.map((unit) => ({
+        if (updateDto.ingredientUnits.update) {
+          const productIngredientUnitUpdateObj: any =
+            updateDto.ingredientUnits?.update?.map((unit) => ({
               id: unit.product_order_unit_id,
               from_unit_id: unit.unit_id,
               from_unit_qty: unit.unit_quantity,
@@ -1529,10 +1379,10 @@ export class ProductsService {
               updated_at: new Date(),
             }));
 
-          this.logger.warn(productRecipeUnitUpdateObj);
+          this.logger.warn(productIngredientUnitUpdateObj);
 
           await Promise.all(
-            productRecipeUnitUpdateObj.map(async (unit) => {
+            productIngredientUnitUpdateObj.map(async (unit) => {
               await transactionClient.tb_unit_conversion.update({
                 where: { id: unit.id },
                 data: unit,
@@ -1541,87 +1391,19 @@ export class ProductsService {
           );
         }
 
-        if (updateDto.recipeUnits.remove) {
-          const productRecipeUnitRemoveObj = updateDto.recipeUnits?.remove?.map(
-            (unit) => ({
+        if (updateDto.ingredientUnits.remove) {
+          const productIngredientUnitRemoveObj =
+            updateDto.ingredientUnits?.remove?.map((unit) => ({
               id: unit.product_order_unit_id,
-            }),
-          );
+            }));
 
-          this.logger.warn(productRecipeUnitRemoveObj);
+          this.logger.warn(productIngredientUnitRemoveObj);
 
           await transactionClient.tb_unit_conversion.deleteMany({
             where: {
               id: {
-                in: productRecipeUnitRemoveObj.map((unit) => unit.id),
+                in: productIngredientUnitRemoveObj.map((unit) => unit.id),
               },
-            },
-          });
-        }
-      }
-
-      if (updateDto.countUnits) {
-        if (updateDto.countUnits.add) {
-          const productCountUnitAddObj: any = updateDto.countUnits?.add?.map(
-            (unit) => ({
-              product_id: id,
-              unit_type: enum_unit_type.count_unit,
-              from_unit_id: unit.unit_id,
-              from_unit_qty: unit.unit_quantity,
-              to_unit_id: unit.to_unit_id,
-              to_unit_qty: unit.to_unit_quantity,
-              description: unit.description,
-              created_by_id: user_id,
-              created_at: new Date(),
-              updated_by_id: user_id,
-              updated_at: new Date(),
-            }),
-          );
-
-          this.logger.warn(productCountUnitAddObj);
-
-          await transactionClient.tb_unit_conversion.createMany({
-            data: productCountUnitAddObj,
-          });
-        }
-
-        if (updateDto.countUnits.update) {
-          const productCountUnitUpdateObj: any =
-            updateDto.countUnits?.update?.map((unit) => ({
-              id: unit.product_order_unit_id,
-              from_unit_id: unit.unit_id,
-              from_unit_qty: unit.unit_quantity,
-              to_unit_id: unit.to_unit_id,
-              to_unit_qty: unit.to_unit_quantity,
-              description: unit.description,
-              updated_by_id: user_id,
-              updated_at: new Date(),
-            }));
-
-          this.logger.warn(productCountUnitUpdateObj);
-
-          await Promise.all(
-            productCountUnitUpdateObj.map(async (unit) => {
-              await transactionClient.tb_unit_conversion.update({
-                where: { id: unit.id },
-                data: unit,
-              });
-            }),
-          );
-        }
-
-        if (updateDto.countUnits.remove) {
-          const productCountUnitRemoveObj = updateDto.countUnits?.remove?.map(
-            (unit) => ({
-              id: unit.product_order_unit_id,
-            }),
-          );
-
-          this.logger.warn(productCountUnitRemoveObj);
-
-          await transactionClient.tb_unit_conversion.deleteMany({
-            where: {
-              id: { in: productCountUnitRemoveObj.map((unit) => unit.id) },
             },
           });
         }
@@ -1647,7 +1429,7 @@ export class ProductsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Product not found");
+      throw new NotFoundException('Product not found');
     }
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {

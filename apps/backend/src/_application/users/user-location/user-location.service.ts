@@ -3,13 +3,13 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
-import { PrismaClientManagerService } from "../../../_lib/prisma-client-manager/prisma-client-manager.service";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClient as dbTenant } from "@prisma-carmen-client-tenant";
-import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
-import { UpdateUserLocationDto } from "shared-dtos/user-location/user-location.dto";
-import { ResponseId } from "lib/helper/iResponse";
+} from '@nestjs/common';
+import { PrismaClientManagerService } from '../../../_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClient as dbTenant } from '@prisma/client';
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
+import { UpdateUserLocationDto } from 'shared-dtos/user-location/user-location.dto';
+import { ResponseId } from 'lib/helper/iResponse';
 
 @Injectable()
 export class UserLocationService {
@@ -24,7 +24,7 @@ export class UserLocationService {
   logger = new Logger(UserLocationService.name);
 
   async getUsersByLocationId(req: Request, location_id: string) {
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
@@ -57,14 +57,14 @@ export class UserLocationService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     const location = await this.db_tenant.tb_location.findUnique({
       where: { id: locationId },
     });
 
     if (!location) {
-      throw new NotFoundException("Location not found");
+      throw new NotFoundException('Location not found');
     }
 
     if (body.users) {
@@ -77,7 +77,7 @@ export class UserLocationService {
         });
 
         if (found.length > 0) {
-          throw new NotFoundException("User location already exists");
+          throw new NotFoundException('User location already exists');
         }
 
         let userNotFound = [];
@@ -96,7 +96,7 @@ export class UserLocationService {
         if (userNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "Add User not found",
+            message: 'Add User not found',
             data: userNotFound,
           });
         }
@@ -119,7 +119,7 @@ export class UserLocationService {
         if (userLocationNotFound.length > 0) {
           throw new NotFoundException({
             statusCode: HttpStatus.NOT_FOUND,
-            message: "User Location not found",
+            message: 'User Location not found',
             data: userLocationNotFound,
           });
         }

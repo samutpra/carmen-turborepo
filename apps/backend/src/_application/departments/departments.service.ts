@@ -11,10 +11,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  PrismaClient as dbTenant,
-  tb_department,
-} from '@prisma-carmen-client-tenant';
+import { PrismaClient as dbTenant, tb_department } from '@prisma/client';
 
 @Injectable()
 export class DepartmentsService {

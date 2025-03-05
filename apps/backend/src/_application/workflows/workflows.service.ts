@@ -3,20 +3,17 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
-import {
-  PrismaClient as dbTenant,
-  tb_workflow,
-} from "@prisma-carmen-client-tenant";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
+} from '@nestjs/common';
+import { PrismaClient as dbTenant, tb_workflow } from '@prisma/client';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
 import {
   WorkflowCreateDto,
   WorkflowUpdateDto,
-} from "shared-dtos/workflows/workflows.dto";
-import { DuplicateException } from "lib/utils";
+} from 'shared-dtos/workflows/workflows.dto';
+import { DuplicateException } from 'lib/utils';
 
 @Injectable()
 export class WorkflowsService {
@@ -63,7 +60,7 @@ export class WorkflowsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Workflow not found");
+      throw new NotFoundException('Workflow not found');
     }
 
     const res: ResponseSingle<tb_workflow> = {
@@ -134,7 +131,7 @@ export class WorkflowsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Workflow already exists",
+        message: 'Workflow already exists',
         data: found.id,
       });
     }
@@ -179,7 +176,7 @@ export class WorkflowsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Workflow not found");
+      throw new NotFoundException('Workflow not found');
     }
 
     const found = await this.db_tenant.tb_workflow.findFirst({
@@ -197,7 +194,7 @@ export class WorkflowsService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Workflow already exists",
+        message: 'Workflow already exists',
         data: found.id,
       });
     }
@@ -243,7 +240,7 @@ export class WorkflowsService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Workflow not found");
+      throw new NotFoundException('Workflow not found');
     }
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {
