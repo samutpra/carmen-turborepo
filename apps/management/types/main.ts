@@ -112,3 +112,15 @@ export interface BusinessUnitUserRoleType {
     lastUpdated: string
     updatedBy: string  // Supply chain system identifier
 }
+
+export interface UserPlatformType {
+    id: string
+    name: string
+    email: string
+    roles: string[]
+    businessUnits: string[]
+    status: 'active' | 'inactive'
+    hotelGroup: string
+    modules: string[]
+    lastActive: string
+}

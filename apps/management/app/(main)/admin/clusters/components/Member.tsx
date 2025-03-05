@@ -9,7 +9,6 @@ import { format } from 'date-fns'
 
 const Member = async () => {
     const members = await fetchMembers()
-    console.log(members)
     return (
         <div className="space-y-6">
 

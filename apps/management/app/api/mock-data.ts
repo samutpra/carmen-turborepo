@@ -1,4 +1,4 @@
-import { BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, UserType } from "@/types/main";
+import { BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, UserPlatformType, UserType } from "@/types/main";
 
 export const statusAdminDashboard = [
     {
@@ -412,3 +412,74 @@ export const mappedUsers = mockUsers.map(user => {
         roles: userRole ? userRole.roles : []
     };
 });
+
+
+export const mockUserPlatform: UserPlatformType[] = [
+    {
+        id: "g3XBVEmN_crP",
+        name: "Sarah Johnson",
+        email: "sarah.johnson@luxurycollection.com",
+        roles: ["manager", "finance", "inventory"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T08:30:00Z",
+        hotelGroup: "Luxury Collection",
+        modules: ["supply-chain", "inventory", "procurement"],
+    },
+    {
+        id: "Z-drA8X3JZJa",
+        name: "Michael Chen",
+        email: "michael.chen@businesshotels.com",
+        roles: ["manager", "procurement"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T09:15:00Z",
+        hotelGroup: "Business Hotels",
+        modules: ["supply-chain", "maintenance"],
+    },
+    {
+        id: "BHpyxRLhp8AP",
+        name: "Maria Garcia",
+        email: "maria.garcia@resortcollection.com",
+        roles: ["manager", "inventory", "spa-manager"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T07:45:00Z",
+        hotelGroup: "Resort Collection",
+        modules: ["supply-chain", "spa-booking", "restaurant"],
+    },
+    {
+        id: "chd2_66jRwpq",
+        name: "John Smith",
+        email: "john.smith@luxurycollection.com",
+        roles: ["inventory", "reports"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T08:00:00Z",
+        hotelGroup: "Luxury Collection",
+        modules: ["supply-chain", "inventory", "reports"],
+    },
+    {
+        id: "eeHp9tAjzRnf",
+        name: "Emily Brown",
+        email: "emily.brown@businesshotels.com",
+        roles: ["procurement", "reports"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T09:30:00Z",
+        hotelGroup: "Business Hotels",
+        modules: ["supply-chain", "procurement", "reports"],
+    },
+    {
+        id: "fZy755555555",
+        name: "David Wilson",
+        email: "david.wilson@resortcollection.com",
+        roles: ["inventory", "restaurant-manager"],
+        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
+        status: "active",
+        lastActive: "2024-03-15T10:00:00Z",
+        hotelGroup: "Resort Collection",
+        modules: ["supply-chain", "inventory", "restaurant"],
+    }
+
+]
