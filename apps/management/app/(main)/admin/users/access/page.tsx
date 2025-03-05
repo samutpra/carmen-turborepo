@@ -1,5 +1,5 @@
 import React from 'react'
-import AccessPlatformComponent from '../components/AccessPlatformComponent'
+import AccessPlatformComponent from '../components/access/AccessPlatformComponent';
 
 const AccessPlatformPage = () => {
     return <AccessPlatformComponent />
