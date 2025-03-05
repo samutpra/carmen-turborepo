@@ -146,4 +146,6 @@ export interface ROLE_TYPE {
     name: string
     scope: string
     permissions: string[]
+    count_users: number
+    last_active: string
 }

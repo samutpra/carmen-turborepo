@@ -500,31 +500,41 @@ export const platformRoles: ROLE_TYPE[] = [
         id: "platform_role_1",
         name: "Super Admin",
         scope: "Platform",
-        permissions: ["manage users", "manage settings", "view reports", "access all clusters"]
+        permissions: ["Manage Users", "Manage Settings", "View Reports", "Access All Clusters"],
+        count_users: 6,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "platform_role_2",
         name: "Platform Manager",
         scope: "Platform",
-        permissions: ["manage roles", "view system logs", "configure security"]
+        permissions: ["Manage Roles", "View System Logs", "Configure Security"],
+        count_users: 8,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "platform_role_3",
         name: "Compliance Officer",
         scope: "Platform",
-        permissions: ["audit security", "review compliance", "approve policies"]
+        permissions: ["Audit Security", "Review Compliance", "Approve Policies"],
+        count_users: 10,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "platform_role_4",
         name: "Technical Support Lead",
         scope: "Platform",
-        permissions: ["view logs", "resolve issues", "manage incidents"]
+        permissions: ["View Logs", "Resolve Issues", "Manage Incidents"],
+        count_users: 18,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "platform_role_5",
         name: "Finance Controller",
         scope: "Platform",
-        permissions: ["view financial reports", "approve transactions", "manage billing"]
+        permissions: ["View Financial Reports", "Approve Transactions", "Manage Billing"],
+        count_users: 12,
+        last_active: "2024-03-15T08:30:00Z"
     }
 ]
 
@@ -534,61 +544,73 @@ export const clusterRoles: ROLE_TYPE[] = [
         name: "Cluster Manager",
         scope: "Cluster",
         permissions: [
-            "manage users",
-            "manage settings",
-            "view reports",
-            "access all clusters"
-        ]
+            "Manage Users",
+            "Manage Settings",
+            "View Reports",
+            "Access All Clusters"
+        ],
+        count_users: 10,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "cluster_role_2",
         name: "Regional Manager",
         scope: "Cluster",
         permissions: [
-            "view cluster performance",
-            "assign staff to hotels",
-            "manage cluster budget"
-        ]
+            "View Cluster Performance",
+            "Assign Staff to Hotels",
+            "Manage Cluster Budget"
+        ],
+        count_users: 11,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "cluster_role_3",
         name: "Sales Manager",
         scope: "Cluster",
         permissions: [
-            "manage sales targets",
-            "create sales reports",
-            "manage customer relations"
-        ]
+            "Manage Sales Targets",
+            "Create Sales Reports",
+            "Manage Customer Relations"
+        ],
+        count_users: 12,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "cluster_role_4",
         name: "Operations Coordinator",
         scope: "Cluster",
         permissions: [
-            "oversee operations",
-            "manage reservations",
-            "coordinate maintenance"
-        ]
+            "Oversee Operations",
+            "Manage Reservations",
+            "Coordinate Maintenance"
+        ],
+        count_users: 18,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "cluster_role_5",
         name: "IT Administrator",
         scope: "Cluster",
         permissions: [
-            "manage network infrastructure",
-            "ensure system security",
-            "support cluster software"
-        ]
+            "Manage Network Infrastructure",
+            "Ensure System Security",
+            "Support Cluster Software"
+        ],
+        count_users: 18,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "cluster_role_6",
         name: "HR Coordinator",
         scope: "Cluster",
         permissions: [
-            "manage recruitment",
-            "administer employee benefits",
-            "monitor employee performance"
-        ]
+            "Manage Recruitment",
+            "Administer Employee Benefits",
+            "Monitor Employee Performance"
+        ],
+        count_users: 5,
+        last_active: "2024-03-15T08:30:00Z"
     }
 ];
 
@@ -598,66 +620,78 @@ export const departmentRoles: ROLE_TYPE[] = [
         name: "Department Head",
         scope: "Department",
         permissions: [
-            "manage department budget",
-            "oversee department operations",
-            "approve department reports",
-            "manage department staff"
-        ]
+            "Manage Department Budget",
+            "Oversee Department Operations",
+            "Approve Department Reports",
+            "Manage Department Staff"
+        ],
+        count_users: 10,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "department_role_2",
         name: "Department Manager",
         scope: "Department",
         permissions: [
-            "assign tasks",
-            "monitor project progress",
-            "manage team meetings",
-            "handle department issues"
-        ]
+            "Assign Tasks",
+            "Monitor Project Progress",
+            "Manage Team Meetings",
+            "Handle Department Issues"
+        ],
+        count_users: 11,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "department_role_3",
         name: "HR Specialist",
         scope: "Department",
         permissions: [
-            "manage employee onboarding",
-            "administer employee records",
-            "assist with recruitment",
-            "resolve employee conflicts"
-        ]
+            "Manage Employee Onboarding",
+            "Administer Employee Records",
+            "Assist with Recruitment",
+            "Resolve Employee Conflicts"
+        ],
+        count_users: 18,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "department_role_4",
         name: "Finance Coordinator",
         scope: "Department",
         permissions: [
-            "manage financial reports",
-            "track department spending",
-            "prepare financial budgets",
-            "approve expenses"
-        ]
+            "Manage Financial Reports",
+            "Track Department Spending",
+            "Prepare Financial Budgets",
+            "Approve Expenses"
+        ],
+        count_users: 18,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "department_role_5",
         name: "IT Support",
         scope: "Department",
         permissions: [
-            "maintain department software",
-            "troubleshoot technical issues",
-            "provide IT support for staff",
-            "manage department hardware"
-        ]
+            "Maintain Department Software",
+            "Troubleshoot Technical Issues",
+            "Provide IT Support for Staff",
+            "Manage Department Hardware"
+        ],
+        count_users: 17,
+        last_active: "2024-03-15T08:30:00Z"
     },
     {
         id: "department_role_6",
         name: "Marketing Manager",
         scope: "Department",
         permissions: [
-            "create marketing campaigns",
-            "monitor campaign performance",
-            "oversee department communications",
-            "manage advertising budget"
-        ]
+            "Create Marketing Campaigns",
+            "Monitor Campaign Performance",
+            "Oversee Department Communications",
+            "Manage Advertising Budget"
+        ],
+        count_users: 17,
+        last_active: "2024-03-15T08:30:00Z"
     }
 ];
 

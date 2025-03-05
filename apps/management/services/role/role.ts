@@ -1,16 +1,43 @@
 import { API_URL } from "@/lib/api-url"
 
 export const fetchClusterRoles = async () => {
-    const response = await fetch(`${API_URL}/api/user/role/cluster`);
+    'use server';
+    const url = `${API_URL}/api/user/role/cluster`;
+    const options = {
+        method: 'GET',
+        cache: 'no-store' as RequestCache
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error('Failed to fetch cluster roles');
+    }
     return response.json();
 }
 
 export const fetchDepartmentRoles = async () => {
-    const response = await fetch(`${API_URL}/api/user/role/department`);
+    'use server';
+    const url = `${API_URL}/api/user/role/department`;
+    const options = {
+        method: 'GET',
+        cache: 'no-store' as RequestCache
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error('Failed to fetch department roles');
+    }
     return response.json();
 }
 
 export const fetchPlatformRoles = async () => {
-    const response = await fetch(`${API_URL}/api/user/role/platform`);
+    'use server';
+    const url = `${API_URL}/api/user/role/platform`;
+    const options = {
+        method: 'GET',
+        cache: 'no-store' as RequestCache
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error('Failed to fetch platform roles');
+    }
     return response.json();
 }
