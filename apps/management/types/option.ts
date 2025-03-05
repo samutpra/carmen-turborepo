@@ -30,3 +30,33 @@ export const MODULE_OPTION = [
     { key: "spa", value: "Spa" },
     { key: "restaurant", value: "Restaurant" },
 ]
+
+export const DEPARTMENT_OPTION = [
+    { key: "kitchen", value: "Kitchen" },
+    { key: "operations", value: "Operations" },
+    { key: "sales", value: "Sales" },
+    { key: "marketing", value: "Marketing" },
+    { key: "hr", value: "HR" },
+    { key: "it", value: "IT" },
+    { key: "security", value: "Security" },
+    { key: "maintenance", value: "Maintenance" },
+    { key: "housekeeping", value: "Housekeeping" },
+    { key: "frontdesk", value: "Front Desk" },
+    { key: "reservations", value: "Reservations" },
+    { key: "events", value: "Events" },
+    { key: "concierge", value: "Concierge" },
+]
+
+export const HOTEL_OPTION = [
+    { key: "the_ritz_carlton", value: "The Ritz-Carlton" },
+    { key: "four_seasons_hotel", value: "Four Seasons Hotel" },
+    { key: "mandarin_oriental", value: "Mandarin Oriental" },
+    { key: "the_peninsula", value: "The Peninsula" },
+    { key: "waldorf_astoria", value: "Waldorf Astoria" },
+    { key: "shangri_la_hotel", value: "Shangri-La Hotel" },
+    { key: "park_hyatt", value: "Park Hyatt" },
+    { key: "st_regis", value: "St. Regis" },
+    { key: "aman_resorts", value: "Aman Resorts" },
+    { key: "bulgari_hotel", value: "Bulgari Hotel" }
+];
+

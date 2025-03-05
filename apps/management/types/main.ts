@@ -138,4 +138,5 @@ export interface UserPlatformType {
     modules: string[]
     department: string
     lastActive: string
+    hotel: string
 }
