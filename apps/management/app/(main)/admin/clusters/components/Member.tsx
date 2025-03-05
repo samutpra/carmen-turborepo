@@ -66,7 +66,7 @@ const Member = async () => {
                                     <TableCell>
                                         {member.roles.map((role: string) => (
                                             <Badge variant="outline" className="capitalize" key={role}>
-                                                {role.replace('_', ' ')}
+                                                {role}
                                             </Badge>
                                         ))}
                                     </TableCell>

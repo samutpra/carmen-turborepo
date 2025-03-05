@@ -122,5 +122,6 @@ export interface UserPlatformType {
     status: 'active' | 'inactive'
     hotelGroup: string
     modules: string[]
+    department: string
     lastActive: string
 }

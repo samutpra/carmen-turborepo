@@ -424,6 +424,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T08:30:00Z",
         hotelGroup: "Luxury Collection",
+        department: "Operations",
         modules: ["supply-chain", "inventory", "procurement"],
     },
     {
@@ -435,6 +436,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T09:15:00Z",
         hotelGroup: "Business Hotels",
+        department: "Operations",
         modules: ["supply-chain", "maintenance"],
     },
     {
@@ -446,6 +448,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T07:45:00Z",
         hotelGroup: "Resort Collection",
+        department: "Operations",
         modules: ["supply-chain", "spa-booking", "restaurant"],
     },
     {
@@ -457,6 +460,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T08:00:00Z",
         hotelGroup: "Luxury Collection",
+        department: "Reports",
         modules: ["supply-chain", "inventory", "reports"],
     },
     {
@@ -468,6 +472,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T09:30:00Z",
         hotelGroup: "Business Hotels",
+        department: "Reports",
         modules: ["supply-chain", "procurement", "reports"],
     },
     {
@@ -479,6 +484,7 @@ export const mockUserPlatform: UserPlatformType[] = [
         status: "active",
         lastActive: "2024-03-15T10:00:00Z",
         hotelGroup: "Resort Collection",
+        department: "Kitchen",
         modules: ["supply-chain", "inventory", "restaurant"],
     }
 
