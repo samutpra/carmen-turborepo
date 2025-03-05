@@ -3,8 +3,8 @@ import React from 'react'
 import { User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RoleOption, StatusOption } from '@/types/option';
-import UserPlatform from './platform/UserPlatform';
+import { ROLE_OPTION, STATUS_OPTION } from '@/types/option';
+import UserPlatform from './UserPlatform';
 
 const UserPlatformComponent = async () => {
     const users = await fetchUserPlatform();
@@ -31,7 +31,7 @@ const UserPlatformComponent = async () => {
                             <SelectValue placeholder='Select Role' />
                         </SelectTrigger>
                         <SelectContent>
-                            {Object.values(RoleOption).map((role) => (
+                            {Object.values(ROLE_OPTION).map((role) => (
                                 <SelectItem key={role} value={role}>{role}</SelectItem>
                             ))}
                         </SelectContent>
@@ -41,8 +41,9 @@ const UserPlatformComponent = async () => {
                             <SelectValue placeholder='Select Status' />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value={StatusOption.ACTIVE}>Active</SelectItem>
-                            <SelectItem value={StatusOption.INACTIVE}>Inactive</SelectItem>
+                            {Object.values(STATUS_OPTION).map((status) => (
+                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>

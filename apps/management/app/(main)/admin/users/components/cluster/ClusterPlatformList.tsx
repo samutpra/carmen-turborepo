@@ -1,19 +1,17 @@
-import React from 'react';
+import React from 'react'
 import { UserPlatformType } from '@/types/main';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-
-interface UserPlatformProps {
-    users: UserPlatformType[];
+interface ClusterPlatformListProps {
+    users: UserPlatformType[]
 }
-
-const UserPlatform = async ({ users }: UserPlatformProps) => {
+const ClusterPlatformList = ({ users }: ClusterPlatformListProps) => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>User Platform</CardTitle>
+                <CardTitle>Cluster Platform</CardTitle>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -21,8 +19,9 @@ const UserPlatform = async ({ users }: UserPlatformProps) => {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Roles</TableHead>
-                            <TableHead>Business Units</TableHead>
+                            <TableHead>Hotel Group</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Module</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Last Active</TableHead>
                         </TableRow>
@@ -32,6 +31,7 @@ const UserPlatform = async ({ users }: UserPlatformProps) => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.hotelGroup}</TableCell>
                                 <TableCell className='space-x-1'>
                                     {user.roles.map((role: string) => (
                                         <Badge variant="outline" className="capitalize" key={role}>
@@ -40,9 +40,9 @@ const UserPlatform = async ({ users }: UserPlatformProps) => {
                                     ))}
                                 </TableCell>
                                 <TableCell className='space-x-1'>
-                                    {user.businessUnits.map((businessUnit: string) => (
-                                        <Badge variant="outline" className="capitalize" key={businessUnit}>
-                                            {businessUnit}
+                                    {user.modules.map((module: string) => (
+                                        <Badge variant="outline" className="capitalize" key={module}>
+                                            {module}
                                         </Badge>
                                     ))}
                                 </TableCell>
@@ -57,4 +57,4 @@ const UserPlatform = async ({ users }: UserPlatformProps) => {
     )
 }
 
-export default UserPlatform;
+export default ClusterPlatformList

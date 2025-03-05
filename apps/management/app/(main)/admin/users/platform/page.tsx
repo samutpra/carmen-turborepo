@@ -1,5 +1,5 @@
 import React from 'react'
-import UserPlatformComponent from '../components/UserPlatformComponent';
+import UserPlatformComponent from '../components/platform/UserPlatformComponent';
 
 const PlatformUsersPage = () => {
     return <UserPlatformComponent />

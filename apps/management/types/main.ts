@@ -1,3 +1,17 @@
+export enum StatusType {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
+export enum RoleType {
+    MANAGER = 'manager',
+    INVENTORY = 'inventory',
+    REPORTS = 'reports',
+    PROCUREMENT = 'procurement',
+    SPA_MANAGER = 'spa-manager',
+    RESTAURANT_MANAGER = 'restaurant-manager',
+}
+
 export interface StatItem {
     icon: string;
     title: string;
