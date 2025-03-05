@@ -149,3 +149,21 @@ export interface ROLE_TYPE {
     count_users: number
     last_active: string
 }
+
+export interface ModuleType {
+    name: string;
+    hotel_groups: string;
+    users: number;
+    usage: number;
+    active_users: number;
+    status: "active" | "Near Limit" | "Exceeded Limit";
+    last_active: string;
+};
+
+export interface AccessControlType {
+    total_users: number;
+    active_modules: number;
+    usage_warning: number;
+    excess_limits: number;
+    modules: ModuleType[];
+};

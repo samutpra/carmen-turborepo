@@ -1,4 +1,4 @@
-import { BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ROLE_TYPE, UserPlatformType, UserType } from "@/types/main";
+import { AccessControlType, BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ROLE_TYPE, UserPlatformType, UserType } from "@/types/main";
 
 export const statusAdminDashboard = [
     {
@@ -696,3 +696,65 @@ export const departmentRoles: ROLE_TYPE[] = [
 ];
 
 
+export const mockAccessControl: AccessControlType = {
+    total_users: 100,
+    active_modules: 10,
+    usage_warning: 3,
+    excess_limits: 2,
+    modules: [
+        {
+            name: "Finance",
+            hotel_groups: "Pan Pacific",
+            users: 20,
+            usage: 15,
+            active_users: 3,
+            status: "active",
+            last_active: "2024-03-15T08:30:00Z"
+        },
+        {
+            name: "Inventory",
+            hotel_groups: "The Ritz-Carlton",
+            users: 15,
+            usage: 10,
+            active_users: 2,
+            status: "Near Limit",
+            last_active: "2024-03-15T08:30:00Z"
+        },
+        {
+            name: "Reports",
+            hotel_groups: "Four Seasons Hotel",
+            users: 10,
+            usage: 8,
+            active_users: 1,
+            status: "Exceeded Limit",
+            last_active: "2024-03-15T08:30:00Z"
+        },
+        {
+            name: "Procurement",
+            hotel_groups: "Mandarin Oriental",
+            users: 20,
+            usage: 8,
+            active_users: 1,
+            status: "Exceeded Limit",
+            last_active: "2024-03-15T08:30:00Z"
+        },
+        {
+            name: "Spa",
+            hotel_groups: "Shangri-La Hotel",
+            users: 10,
+            usage: 2,
+            active_users: 1,
+            status: "Exceeded Limit",
+            last_active: "2024-03-15T08:30:00Z"
+        },
+        {
+            name: "Restaurant",
+            hotel_groups: "Waldorf Astoria",
+            users: 200,
+            usage: 20,
+            active_users: 1,
+            status: "Exceeded Limit",
+            last_active: "2024-03-15T08:30:00Z"
+        }
+    ]
+}
