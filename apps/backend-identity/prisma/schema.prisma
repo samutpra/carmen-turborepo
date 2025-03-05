@@ -1,8 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  output          = "./../node_modules/@prisma/client"
-  previewFeatures = ["relationJoins", "postgresqlExtensions"]
-  //"multiSchema", 
+  previewFeatures = ["postgresqlExtensions", "relationJoins"]
 }
 
 generator markdown {
@@ -12,16 +10,9 @@ generator markdown {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL_SYSTEM")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-}
-
-// TEST USER
-model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
 }
 
 model tb_application_role {
@@ -67,7 +58,7 @@ model tb_business_unit {
   description                                     String?
   is_hq                                           Boolean?                     @default(true)
   is_active                                       Boolean?                     @default(true)
-  db_connection                                   String?                      @db.VarChar(255)
+  db_connection                                   String?
   created_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)
   created_by_id                                   String?                      @db.Uuid
   updated_at                                      DateTime?                    @default(now()) @db.Timestamptz(6)
@@ -80,9 +71,9 @@ model tb_business_unit {
   tb_subscription_detail                          tb_subscription_detail[]
   tb_user_tb_business_unit                        tb_user_tb_business_unit[]
 
-  @@unique([cluster_id, code], map: "businessunit_cluster_code_u")
-  @@index([cluster_id], map: "businessunit_cluster_idx")
-  @@index([code], map: "businessunit_code_idx")
+  @@unique([cluster_id, code], map: "business_unit_cluster_code_u")
+  @@index([cluster_id], map: "business_unit_cluster_idx")
+  @@index([code], map: "business_unit_code_idx")
 }
 
 model tb_business_unit_tb_module {
@@ -116,6 +107,31 @@ model tb_cluster {
   tb_user_tb_cluster_updated_by_idTotb_user tb_user?           @relation("tb_cluster_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_cluster_user                           tb_cluster_user[]
   tb_subscription                           tb_subscription[]
+}
+
+model tb_cluster_user {
+  id                                             String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                                        String?                @db.Uuid
+  cluster_id                                     String                 @db.Uuid
+  is_active                                      Boolean?               @default(true)
+  role                                           enum_cluster_user_role @default(user)
+  created_at                                     DateTime?              @default(now()) @db.Timestamptz(6)
+  created_by_id                                  String?                @db.Uuid
+  updated_at                                     DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_by_id                                  String?                @db.Uuid
+  tb_cluster                                     tb_cluster             @relation(fields: [cluster_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_cluster_user_created_by_idTotb_user tb_user?               @relation("tb_cluster_user_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_cluster_user_updated_by_idTotb_user tb_user?               @relation("tb_cluster_user_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_cluster_user_user_idTotb_user       tb_user?               @relation("tb_cluster_user_user_idTotb_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, cluster_id], map: "user_cluster_u")
+}
+
+model tb_currency_iso {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  iso_code String @unique @db.VarChar(3)
+  name     String @db.VarChar(255)
+  symbol   String @db.VarChar(10)
 }
 
 model tb_message_format {
@@ -153,7 +169,8 @@ model tb_module {
 
 model tb_notification {
   id                                             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                                        String    @db.Uuid
+  from_user_id                                   String    @db.Uuid
+  to_user_id                                     String    @db.Uuid
   message                                        String?
   is_read                                        Boolean?  @default(false)
   is_sent                                        Boolean?  @default(false)
@@ -162,8 +179,9 @@ model tb_notification {
   updated_at                                     DateTime? @default(now()) @db.Timestamptz(6)
   updated_by_id                                  String?   @db.Uuid
   tb_user_tb_notification_created_by_idTotb_user tb_user?  @relation("tb_notification_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_notification_from_user_idTotb_user  tb_user   @relation("tb_notification_from_user_idTotb_user", fields: [from_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_tb_notification_to_user_idTotb_user    tb_user   @relation("tb_notification_to_user_idTotb_user", fields: [to_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_user_tb_notification_updated_by_idTotb_user tb_user?  @relation("tb_notification_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_notification_user_idTotb_user       tb_user   @relation("tb_notification_user_idTotb_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tb_password {
@@ -235,11 +253,12 @@ model tb_subscription_detail {
 
 model tb_user {
   id                                                                                         String                              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username                                                                                   String                              @unique @db.VarChar(30)
-  email                                                                                      String                              @db.VarChar(255)
+  username                                                                                   String                              @unique
+  email                                                                                      String
+  platform_role                                                                              enum_platform_role                  @default(user)
   is_active                                                                                  Boolean?                            @default(false)
   is_consent                                                                                 Boolean?                            @default(false)
-  consent                                                                                    DateTime?                           @db.Timestamptz(6)
+  consent_at                                                                                 DateTime?                           @db.Timestamptz(6)
   created_at                                                                                 DateTime?                           @default(now()) @db.Timestamptz(6)
   created_by_id                                                                              String?                             @db.Uuid
   updated_at                                                                                 DateTime?                           @default(now()) @db.Timestamptz(6)
@@ -262,8 +281,9 @@ model tb_user {
   tb_module_tb_module_created_by_idTotb_user                                                 tb_module[]                         @relation("tb_module_created_by_idTotb_user")
   tb_module_tb_module_updated_by_idTotb_user                                                 tb_module[]                         @relation("tb_module_updated_by_idTotb_user")
   tb_notification_tb_notification_created_by_idTotb_user                                     tb_notification[]                   @relation("tb_notification_created_by_idTotb_user")
+  tb_notification_tb_notification_from_user_idTotb_user                                      tb_notification[]                   @relation("tb_notification_from_user_idTotb_user")
+  tb_notification_tb_notification_to_user_idTotb_user                                        tb_notification[]                   @relation("tb_notification_to_user_idTotb_user")
   tb_notification_tb_notification_updated_by_idTotb_user                                     tb_notification[]                   @relation("tb_notification_updated_by_idTotb_user")
-  tb_notification_tb_notification_user_idTotb_user                                           tb_notification[]                   @relation("tb_notification_user_idTotb_user")
   tb_password_tb_password_created_by_idTotb_user                                             tb_password[]                       @relation("tb_password_created_by_idTotb_user")
   tb_password_tb_password_user_idTotb_user                                                   tb_password[]                       @relation("tb_password_user_idTotb_user")
   tb_permission_tb_permission_created_by_idTotb_user                                         tb_permission[]                     @relation("tb_permission_created_by_idTotb_user")
@@ -289,6 +309,15 @@ model tb_user {
 
   @@index([email], map: "user_email_idx")
   @@index([username], map: "user_username_idx")
+}
+
+model tb_user_login_session {
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String          @unique
+  token_type enum_token_type @default(access_token)
+  user_id    String          @db.Uuid
+  expired_on DateTime        @default(dbgenerated("(now() + '1 day'::interval)")) @db.Timestamptz(6)
+  tb_user    tb_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tb_user_profile {
@@ -345,37 +374,18 @@ model tb_user_tb_business_unit {
   @@unique([user_id, business_unit_id], map: "user_businessunit_user_business_unit_u")
 }
 
-model tb_user_login_session {
-  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  token      String          @unique
-  token_type enum_token_type @default(access_token)
-  user_id    String          @db.Uuid
-  expired_on DateTime        @default(dbgenerated("(now() + '1 day'::interval)")) @db.Timestamptz(6)
-  tb_user    tb_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+enum enum_cluster_user_role {
+  admin
+  user
 }
 
-model tb_currency_iso {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  iso_code String @unique @db.VarChar(3)
-  name     String @db.VarChar(255)
-  symbol   String @db.VarChar(10)
-}
-
-model tb_cluster_user {
-  id                                             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                                        String?    @db.Uuid
-  cluster_id                                     String     @db.Uuid
-  is_active                                      Boolean?   @default(true)
-  created_at                                     DateTime?  @default(now()) @db.Timestamptz(6)
-  created_by_id                                  String?    @db.Uuid
-  updated_at                                     DateTime?  @default(now()) @db.Timestamptz(6)
-  updated_by_id                                  String?    @db.Uuid
-  tb_cluster                                     tb_cluster @relation(fields: [cluster_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_cluster_user_created_by_idTotb_user tb_user?   @relation("tb_cluster_user_created_by_idTotb_user", fields: [created_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_cluster_user_updated_by_idTotb_user tb_user?   @relation("tb_cluster_user_updated_by_idTotb_user", fields: [updated_by_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_tb_cluster_user_user_idTotb_user       tb_user?   @relation("tb_cluster_user_user_idTotb_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([user_id, cluster_id], map: "user_cluster_u")
+enum enum_platform_role {
+  platform_admin
+  support_manager
+  support_staff
+  security_officer
+  integration_developer
+  user
 }
 
 enum enum_subscription_status {

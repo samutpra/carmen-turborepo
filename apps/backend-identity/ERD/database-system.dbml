@@ -1,9 +1,9 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
-Project Carmen_Inventory {
+Project Carmen_Inventory_system {
   database_type: 'PostgreSQL'
-  Note: 'Carmen Inventory Platform'
+  Note: 'Carmen Inventory Project 2024 (SYSTEM)'
 }
 
 TABLE tb_currency_iso {
@@ -13,14 +13,25 @@ TABLE tb_currency_iso {
   symbol varchar(10) [not null]
 }
 
+enum enum_platform_role {
+  platform_admin
+  support_manager
+  support_staff
+  security_officer
+  integration_developer
+  user
+}
+
 TABLE tb_user {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  username varchar(255) [unique, not null]
-  email varchar(255) [not null]
+  username text [unique, not null]
+  email text [not null]
+
+  platform_role enum_platform_role [not null, default: 'user']
 
   is_active bool [default: false]
   is_consent bool [default: false]
-  consent timestamptz [null]
+  consent_at timestamptz [null]
 
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > tb_user.id]
@@ -110,7 +121,7 @@ TABLE tb_business_unit {
 
   code varchar(30) [not null]
   name text [not null]
-  description text
+  description text [null]
 
   is_hq bool [default: true]
   is_active bool [default: true]
@@ -124,10 +135,15 @@ TABLE tb_business_unit {
   updated_by_id uuid [ref: > tb_user.id]
 
   indexes {
-    cluster_id [name: "businessunit_cluster_idx"]
-    code [name: "businessunit_code_idx"]
-    (cluster_id, code) [unique, name: "businessunit_cluster_code_u"]
+    cluster_id [name: "business_unit_cluster_idx"]
+    code [name: "business_unit_code_idx"]
+    (cluster_id, code) [unique, name: "business_unit_cluster_code_u"]
   }
+}
+
+Enum enum_cluster_user_role {
+  admin
+  user
 }
 
 TABLE tb_cluster_user {
@@ -136,6 +152,7 @@ TABLE tb_cluster_user {
   cluster_id uuid [not null, ref: > tb_cluster.id]
 
   is_active bool [default: true]
+  role enum_cluster_user_role [not null, default: 'user']
 
   created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
   created_by_id uuid [ref: > tb_user.id]
@@ -157,6 +174,7 @@ TABLE tb_user_tb_business_unit {
   id uuid [not null, pk, default: `gen_random_uuid()`]
   user_id uuid [ref: > tb_user.id]
   business_unit_id uuid [ref: > tb_business_unit.id]
+
   role enum_user_business_unit_role [not null, default: 'user']
   is_default bool [default: false]
 
@@ -343,7 +361,8 @@ TABLE tb_message_format {
 
 TABLE tb_notification {
   id uuid [not null, pk, default: `gen_random_uuid()`]
-  user_id uuid [not null, ref: > tb_user.id]
+  from_user_id uuid [not null, ref: > tb_user.id]
+  to_user_id uuid [not null, ref: > tb_user.id]
   message text
   is_read bool [default: false]
   is_sent bool [default: false]
@@ -353,61 +372,5 @@ TABLE tb_notification {
 
   updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
   updated_by_id uuid [ref: > tb_user.id]
-
-  indexes {
-  }
 }
 
-TABLE tb_reports {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  name varchar [not null]
-  description text
-
-  is_active bool [default: true]
-  is_public bool [default: false]
-  is_system bool [default: false]
-
-  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > tb_user.id]
-
-  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > tb_user.id]
-}
-
-TABLE tb_report_info {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  report_id uuid [not null, ref: > tb_reports.id]
-
-  file_name varchar [not null]
-  file_type varchar [not null]
-  file_data text [not null]
-
-  info json [null]
-
-  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > tb_user.id]
-
-  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > tb_user.id]
-}
-
-TABLE tb_report_tb_business_unit {
-  id uuid [not null, pk, default: `gen_random_uuid()`]
-  report_id uuid [not null, ref: > tb_reports.id]
-  business_unit_id uuid [not null, ref: > tb_business_unit.id]
-
-  report_name varchar [not null]
-  report_description text
-
-  is_active bool [default: true]
-
-  created_at timestamptz [default: `CURRENT_TIMESTAMP` ]
-  created_by_id uuid [ref: > tb_user.id]
-
-  updated_at timestamptz [null, default: `CURRENT_TIMESTAMP`]
-  updated_by_id uuid [ref: > tb_user.id]
-
-  indexes {
-    (report_id, business_unit_id) [unique, name: "report_business_unit_report_business_unit_u"]
-  }
-}
