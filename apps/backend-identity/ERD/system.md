@@ -6,11 +6,6 @@
 ## default
 ```mermaid
 erDiagram
-"User" {
-  String id PK
-  String name
-  String email UK
-}
 "tb_application_role" {
   String id PK
   String business_unit_id FK
@@ -64,6 +59,23 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
+"tb_cluster_user" {
+  String id PK
+  String user_id FK "nullable"
+  String cluster_id FK
+  Boolean is_active "nullable"
+  enum_cluster_user_role role
+  DateTime created_at "nullable"
+  String created_by_id FK "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id FK "nullable"
+}
+"tb_currency_iso" {
+  String id PK
+  String iso_code UK
+  String name
+  String symbol
+}
 "tb_message_format" {
   String id PK
   String name UK
@@ -87,7 +99,8 @@ erDiagram
 }
 "tb_notification" {
   String id PK
-  String user_id FK
+  String from_user_id FK
+  String to_user_id FK
   String message "nullable"
   Boolean is_read "nullable"
   Boolean is_sent "nullable"
@@ -141,13 +154,21 @@ erDiagram
   String id PK
   String username UK
   String email
+  enum_platform_role platform_role
   Boolean is_active "nullable"
   Boolean is_consent "nullable"
-  DateTime consent "nullable"
+  DateTime consent_at "nullable"
   DateTime created_at "nullable"
   String created_by_id FK "nullable"
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
+}
+"tb_user_login_session" {
+  String id PK
+  String token UK
+  enum_token_type token_type
+  String user_id FK
+  DateTime expired_on
 }
 "tb_user_profile" {
   String id PK
@@ -182,29 +203,6 @@ erDiagram
   DateTime updated_at "nullable"
   String updated_by_id FK "nullable"
 }
-"tb_user_login_session" {
-  String id PK
-  String token UK
-  enum_token_type token_type
-  String user_id FK
-  DateTime expired_on
-}
-"tb_currency_iso" {
-  String id PK
-  String iso_code UK
-  String name
-  String symbol
-}
-"tb_cluster_user" {
-  String id PK
-  String user_id FK "nullable"
-  String cluster_id FK
-  Boolean is_active "nullable"
-  DateTime created_at "nullable"
-  String created_by_id FK "nullable"
-  DateTime updated_at "nullable"
-  String updated_by_id FK "nullable"
-}
 "tb_application_role" }o--|| "tb_business_unit" : tb_business_unit
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_created_by_idTotb_user
 "tb_application_role" }o--o| "tb_user" : tb_user_tb_application_role_updated_by_idTotb_user
@@ -221,13 +219,18 @@ erDiagram
 "tb_business_unit_tb_module" }o--o| "tb_user" : tb_user_tb_business_unit_tb_module_updated_by_idTotb_user
 "tb_cluster" }o--o| "tb_user" : tb_user_tb_cluster_created_by_idTotb_user
 "tb_cluster" }o--o| "tb_user" : tb_user_tb_cluster_updated_by_idTotb_user
+"tb_cluster_user" }o--|| "tb_cluster" : tb_cluster
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_created_by_idTotb_user
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_updated_by_idTotb_user
+"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_user_idTotb_user
 "tb_message_format" }o--o| "tb_user" : tb_user_tb_message_format_created_by_idTotb_user
 "tb_message_format" }o--o| "tb_user" : tb_user_tb_message_format_updated_by_idTotb_user
 "tb_module" }o--o| "tb_user" : tb_user_tb_module_created_by_idTotb_user
 "tb_module" }o--o| "tb_user" : tb_user_tb_module_updated_by_idTotb_user
 "tb_notification" }o--o| "tb_user" : tb_user_tb_notification_created_by_idTotb_user
+"tb_notification" }o--|| "tb_user" : tb_user_tb_notification_from_user_idTotb_user
+"tb_notification" }o--|| "tb_user" : tb_user_tb_notification_to_user_idTotb_user
 "tb_notification" }o--o| "tb_user" : tb_user_tb_notification_updated_by_idTotb_user
-"tb_notification" }o--|| "tb_user" : tb_user_tb_notification_user_idTotb_user
 "tb_password" }o--o| "tb_user" : tb_user_tb_password_created_by_idTotb_user
 "tb_password" }o--|| "tb_user" : tb_user_tb_password_user_idTotb_user
 "tb_permission" }o--o| "tb_user" : tb_user_tb_permission_created_by_idTotb_user
@@ -242,6 +245,7 @@ erDiagram
 "tb_subscription_detail" }o--o| "tb_user" : tb_user_tb_subscription_detail_updated_by_idTotb_user
 "tb_user" }o--o| "tb_user" : tb_user_tb_user_created_by_idTotb_user
 "tb_user" }o--o| "tb_user" : tb_user_tb_user_updated_by_idTotb_user
+"tb_user_login_session" }o--|| "tb_user" : tb_user
 "tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_created_by_idTotb_user
 "tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_updated_by_idTotb_user
 "tb_user_profile" }o--o| "tb_user" : tb_user_tb_user_profile_user_idTotb_user
@@ -253,19 +257,7 @@ erDiagram
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_created_by_idTotb_user
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_updated_by_idTotb_user
 "tb_user_tb_business_unit" }o--o| "tb_user" : tb_user_tb_user_tb_business_unit_user_idTotb_user
-"tb_user_login_session" }o--|| "tb_user" : tb_user
-"tb_cluster_user" }o--|| "tb_cluster" : tb_cluster
-"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_created_by_idTotb_user
-"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_updated_by_idTotb_user
-"tb_cluster_user" }o--o| "tb_user" : tb_user_tb_cluster_user_user_idTotb_user
 ```
-
-### `User`
-
-**Properties**
-  - `id`: 
-  - `name`: 
-  - `email`: 
 
 ### `tb_application_role`
 
@@ -330,6 +322,27 @@ erDiagram
   - `updated_at`: 
   - `updated_by_id`: 
 
+### `tb_cluster_user`
+
+**Properties**
+  - `id`: 
+  - `user_id`: 
+  - `cluster_id`: 
+  - `is_active`: 
+  - `role`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
+
+### `tb_currency_iso`
+
+**Properties**
+  - `id`: 
+  - `iso_code`: 
+  - `name`: 
+  - `symbol`: 
+
 ### `tb_message_format`
 
 **Properties**
@@ -359,7 +372,8 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `user_id`: 
+  - `from_user_id`: 
+  - `to_user_id`: 
   - `message`: 
   - `is_read`: 
   - `is_sent`: 
@@ -423,13 +437,23 @@ erDiagram
   - `id`: 
   - `username`: 
   - `email`: 
+  - `platform_role`: 
   - `is_active`: 
   - `is_consent`: 
-  - `consent`: 
+  - `consent_at`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
   - `updated_by_id`: 
+
+### `tb_user_login_session`
+
+**Properties**
+  - `id`: 
+  - `token`: 
+  - `token_type`: 
+  - `user_id`: 
+  - `expired_on`: 
 
 ### `tb_user_profile`
 
@@ -464,35 +488,6 @@ erDiagram
   - `business_unit_id`: 
   - `role`: 
   - `is_default`: 
-  - `is_active`: 
-  - `created_at`: 
-  - `created_by_id`: 
-  - `updated_at`: 
-  - `updated_by_id`: 
-
-### `tb_user_login_session`
-
-**Properties**
-  - `id`: 
-  - `token`: 
-  - `token_type`: 
-  - `user_id`: 
-  - `expired_on`: 
-
-### `tb_currency_iso`
-
-**Properties**
-  - `id`: 
-  - `iso_code`: 
-  - `name`: 
-  - `symbol`: 
-
-### `tb_cluster_user`
-
-**Properties**
-  - `id`: 
-  - `user_id`: 
-  - `cluster_id`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 

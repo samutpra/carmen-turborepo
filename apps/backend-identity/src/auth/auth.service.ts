@@ -1,10 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { createClient } from '@supabase/supabase-js';
-
+import { SupabaseService } from '../supabase/supabase.service';
 @Injectable()
-export class UserService {
-  constructor(private prisma: PrismaService) {}
+export class AuthService {
+  constructor(
+    private prisma: PrismaService,
+    private supabaseService: SupabaseService,
+  ) {}
+
+  logger = new Logger(AuthService.name);
 
   async createUser(createUserDto: { email: string; password: string }) {
     if (!createUserDto || !createUserDto.email || !createUserDto.password) {
@@ -14,9 +18,13 @@ export class UserService {
       );
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    this.logger.debug({
+      file: AuthService.name,
+      function: this.createUser.name,
+      createUserDto: createUserDto,
+    });
+
+    const supabase = this.supabaseService.SupabaseClient();
 
     const { data, error } = await supabase.auth.signUp({
       email: createUserDto.email,
@@ -24,6 +32,11 @@ export class UserService {
     });
 
     if (error) {
+      this.logger.error({
+        file: AuthService.name,
+        function: this.createUser.name,
+        error: error,
+      });
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
 
@@ -33,7 +46,7 @@ export class UserService {
         email: data.user.email,
         username: data.user.email,
         is_active: true,
-        consent: data.user.user_metadata.consent,
+        consent_at: data.user.user_metadata.consent_at,
         created_at: data.user.created_at,
         updated_at: data.user.updated_at,
       },
@@ -43,9 +56,7 @@ export class UserService {
   }
 
   async login(loginDto: { email: string; password: string }) {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = this.supabaseService.SupabaseClient();
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: loginDto.email,

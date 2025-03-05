@@ -11,11 +11,16 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import QueryParams from 'lib/types';
 import { ClusterCreateDto, ClusterUpdateDto } from 'shared-dtos';
 import { DuplicateException } from 'lib/utils/exceptions';
+import { SupabaseService } from 'src/supabase/supabase.service';
+import { AuthService } from 'src/auth/auth.service';
 import { v4 as uuidv4 } from 'uuid';
-import { createClient } from '@supabase/supabase-js';
 @Injectable()
 export class SystemClusterService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private supabaseService: SupabaseService,
+    private authService: AuthService,
+  ) {}
 
   logger = new Logger(SystemClusterService.name);
 
@@ -57,15 +62,13 @@ export class SystemClusterService {
   }
 
   async create(req: Request, createDto: ClusterCreateDto) {
-    const jwt = req.headers['authorization'].split(' ')[1];
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser(jwt);
+    // const jwt = req.headers['authorization'].split(' ')[1];
+    // const supabase = this.supabaseService.SupabaseClient();
+    // const {
+    //   data: { user },
+    // } = await supabase.auth.getUser(jwt);
 
-    const user_id = user.id;
+    // const current_user_id = user.id;
 
     const found = await this.prisma.tb_cluster.findUnique({
       where: {
@@ -81,18 +84,26 @@ export class SystemClusterService {
       });
     }
 
-    const cluster_obj = {
-      ...createDto,
-      created_by_id: user_id,
-      created_at: new Date(),
-      updated_by_id: user_id,
-      updated_at: new Date(),
-    };
+    // const cluster_obj = {
+    //   ...createDto,
+    //   created_by_id: current_user_id,
+    //   created_at: new Date(),
+    //   updated_by_id: current_user_id,
+    //   updated_at: new Date(),
+    // };
 
-    this.logger.log({ cluster_obj });
+    // this.logger.log({ cluster_obj });
 
-    const createObj = await this.prisma.tb_cluster.create({
-      data: cluster_obj,
+    // const createObj = await this.prisma.tb_cluster.create({
+    //   data: cluster_obj,
+    // });
+
+    const email = createDto.name;
+    const password = uuidv4();
+
+    const createObj = await this.authService.createUser({
+      email: email,
+      password: password,
     });
 
     const res: ResponseId<string> = {
@@ -104,14 +115,12 @@ export class SystemClusterService {
 
   async update(req: Request, id: string, updateDto: ClusterUpdateDto) {
     const jwt = req.headers['authorization'].split(' ')[1];
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = this.supabaseService.SupabaseClient();
     const {
       data: { user },
     } = await supabase.auth.getUser(jwt);
 
-    const user_id = user.id;
+    const current_user_id = user.id;
 
     const oneObj = await this.prisma.tb_cluster.findUnique({
       where: { id },
@@ -137,7 +146,11 @@ export class SystemClusterService {
 
     const updateObj = await this.prisma.tb_cluster.update({
       where: { id },
-      data: { ...updateDto, updated_by_id: user_id, updated_at: new Date() },
+      data: {
+        ...updateDto,
+        updated_by_id: current_user_id,
+        updated_at: new Date(),
+      },
     });
 
     const res: ResponseId<string> = {
@@ -148,8 +161,6 @@ export class SystemClusterService {
   }
 
   async delete(req: Request, id: string) {
-    // const user_id = '123'; //this.extractReqService.extractUserId(req);
-
     const oneObj = await this.prisma.tb_cluster.findUnique({
       where: { id },
     });
