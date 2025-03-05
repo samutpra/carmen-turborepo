@@ -1,4 +1,4 @@
-import { BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, UserPlatformType, UserType } from "@/types/main";
+import { BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ROLE_TYPE, UserPlatformType, UserType } from "@/types/main";
 
 export const statusAdminDashboard = [
     {
@@ -493,5 +493,172 @@ export const mockUserPlatform: UserPlatformType[] = [
         department: "Kitchen",
         modules: ["supply-chain", "inventory", "restaurant"],
     }
-
 ]
+
+export const platformRoles: ROLE_TYPE[] = [
+    {
+        id: "platform_role_1",
+        name: "Super Admin",
+        scope: "Platform",
+        permissions: ["manage users", "manage settings", "view reports", "access all clusters"]
+    },
+    {
+        id: "platform_role_2",
+        name: "Platform Manager",
+        scope: "Platform",
+        permissions: ["manage roles", "view system logs", "configure security"]
+    },
+    {
+        id: "platform_role_3",
+        name: "Compliance Officer",
+        scope: "Platform",
+        permissions: ["audit security", "review compliance", "approve policies"]
+    },
+    {
+        id: "platform_role_4",
+        name: "Technical Support Lead",
+        scope: "Platform",
+        permissions: ["view logs", "resolve issues", "manage incidents"]
+    },
+    {
+        id: "platform_role_5",
+        name: "Finance Controller",
+        scope: "Platform",
+        permissions: ["view financial reports", "approve transactions", "manage billing"]
+    }
+]
+
+export const clusterRoles: ROLE_TYPE[] = [
+    {
+        id: "cluster_role_1",
+        name: "Cluster Manager",
+        scope: "Cluster",
+        permissions: [
+            "manage users",
+            "manage settings",
+            "view reports",
+            "access all clusters"
+        ]
+    },
+    {
+        id: "cluster_role_2",
+        name: "Regional Manager",
+        scope: "Cluster",
+        permissions: [
+            "view cluster performance",
+            "assign staff to hotels",
+            "manage cluster budget"
+        ]
+    },
+    {
+        id: "cluster_role_3",
+        name: "Sales Manager",
+        scope: "Cluster",
+        permissions: [
+            "manage sales targets",
+            "create sales reports",
+            "manage customer relations"
+        ]
+    },
+    {
+        id: "cluster_role_4",
+        name: "Operations Coordinator",
+        scope: "Cluster",
+        permissions: [
+            "oversee operations",
+            "manage reservations",
+            "coordinate maintenance"
+        ]
+    },
+    {
+        id: "cluster_role_5",
+        name: "IT Administrator",
+        scope: "Cluster",
+        permissions: [
+            "manage network infrastructure",
+            "ensure system security",
+            "support cluster software"
+        ]
+    },
+    {
+        id: "cluster_role_6",
+        name: "HR Coordinator",
+        scope: "Cluster",
+        permissions: [
+            "manage recruitment",
+            "administer employee benefits",
+            "monitor employee performance"
+        ]
+    }
+];
+
+export const departmentRoles: ROLE_TYPE[] = [
+    {
+        id: "department_role_1",
+        name: "Department Head",
+        scope: "Department",
+        permissions: [
+            "manage department budget",
+            "oversee department operations",
+            "approve department reports",
+            "manage department staff"
+        ]
+    },
+    {
+        id: "department_role_2",
+        name: "Department Manager",
+        scope: "Department",
+        permissions: [
+            "assign tasks",
+            "monitor project progress",
+            "manage team meetings",
+            "handle department issues"
+        ]
+    },
+    {
+        id: "department_role_3",
+        name: "HR Specialist",
+        scope: "Department",
+        permissions: [
+            "manage employee onboarding",
+            "administer employee records",
+            "assist with recruitment",
+            "resolve employee conflicts"
+        ]
+    },
+    {
+        id: "department_role_4",
+        name: "Finance Coordinator",
+        scope: "Department",
+        permissions: [
+            "manage financial reports",
+            "track department spending",
+            "prepare financial budgets",
+            "approve expenses"
+        ]
+    },
+    {
+        id: "department_role_5",
+        name: "IT Support",
+        scope: "Department",
+        permissions: [
+            "maintain department software",
+            "troubleshoot technical issues",
+            "provide IT support for staff",
+            "manage department hardware"
+        ]
+    },
+    {
+        id: "department_role_6",
+        name: "Marketing Manager",
+        scope: "Department",
+        permissions: [
+            "create marketing campaigns",
+            "monitor campaign performance",
+            "oversee department communications",
+            "manage advertising budget"
+        ]
+    }
+];
+
+

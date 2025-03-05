@@ -140,3 +140,10 @@ export interface UserPlatformType {
     lastActive: string
     hotel: string
 }
+
+export interface ROLE_TYPE {
+    id: string
+    name: string
+    scope: string
+    permissions: string[]
+}
