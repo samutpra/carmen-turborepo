@@ -9,3 +9,9 @@ export enum SUPPORT_TAB {
     TICKETS = 'tickets',
     REPORTS = 'reports',
 }
+
+export enum REPORT_TAB {
+    ASSIGNMENTS = 'assignments',
+    BU_REPORT = 'bu-report',
+    TEMPLATES = 'templates',
+}
