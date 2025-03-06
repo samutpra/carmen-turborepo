@@ -3826,6 +3826,7 @@ caniuse-lite@^1.0.30001579, caniuse-lite@^1.0.30001646, caniuse-lite@^1.0.300016
   version "0.1.0"
   resolved "file:apps/management"
   dependencies:
+    "@radix-ui/react-progress" "^1.1.2"
     "@radix-ui/react-scroll-area" "^1.2.3"
     "@radix-ui/react-select" "^2.1.6"
     "@radix-ui/react-slot" "^1.1.2"

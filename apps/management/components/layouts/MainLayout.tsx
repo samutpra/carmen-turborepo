@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import Header from "@/components/layouts/Header"
-import Sidebar from "./Sidebar"
+import { SidebarProvider, SidebarTrigger } from "../ui/sidebar"
+import { AppSidebar } from "../app-sidebar"
 
 interface Props {
   children: ReactNode
@@ -8,12 +9,16 @@ interface Props {
 
 export default function MainLayout({ children }: Props) {
   return (
-    <div className="flex h-screen">
-      <Sidebar />
+    <SidebarProvider>
+      <AppSidebar />
+
       <div className="flex-1 overflow-auto">
-        <Header />
+        <div className="flex items-center">
+          {/* <SidebarTrigger /> */}
+          <Header />
+        </div>
         <main className="p-8">{children}</main>
       </div>
-    </div>
+    </SidebarProvider>
   )
 } 
