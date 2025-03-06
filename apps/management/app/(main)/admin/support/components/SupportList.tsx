@@ -4,34 +4,34 @@ import { ClipboardMinus, TicketCheck, View } from 'lucide-react'
 import OverviewTab from './tabs/OverviewTab'
 import TicketTab from './tabs/TicketTab'
 import ReportTab from './tabs/ReportTab'
-
+import { SUPPORT_TAB } from '@/constants/enum'
 const SupportList = () => {
     return (
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue={SUPPORT_TAB.OVERVIEW} className="space-y-4">
             <TabsList>
-                <TabsTrigger value="overview" className="flex items-center gap-2">
+                <TabsTrigger value={SUPPORT_TAB.OVERVIEW} className="flex items-center gap-2">
                     <View className="h-4 w-4" />
                     Overview
                 </TabsTrigger>
-                <TabsTrigger value="tickets" className="flex items-center gap-2">
+                <TabsTrigger value={SUPPORT_TAB.TICKETS} className="flex items-center gap-2">
                     <TicketCheck className="h-4 w-4" />
                     Tickets
                 </TabsTrigger>
-                <TabsTrigger value="reports" className="flex items-center gap-2">
+                <TabsTrigger value={SUPPORT_TAB.REPORTS} className="flex items-center gap-2">
                     <ClipboardMinus className="h-4 w-4" />
                     Reports
                 </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview">
+            <TabsContent value={SUPPORT_TAB.OVERVIEW}>
                 <OverviewTab />
             </TabsContent>
 
-            <TabsContent value="tickets">
+            <TabsContent value={SUPPORT_TAB.TICKETS}>
                 <TicketTab />
             </TabsContent>
 
-            <TabsContent value="reports">
+            <TabsContent value={SUPPORT_TAB.REPORTS}>
                 <ReportTab />
             </TabsContent>
         </Tabs>
