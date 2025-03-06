@@ -1,9 +1,12 @@
 import React from 'react'
+import { TicketType } from '@/types/main';
+import SupportTable from './SupportTable';
 
-const TicketTab = () => {
-    return (
-        <div>TicketTab</div>
-    )
+interface TicketTabProps {
+    tickets: TicketType[];
+}
+const TicketTab = ({ tickets }: TicketTabProps) => {
+    return <SupportTable tickets={tickets} />
 }
 
 export default TicketTab

@@ -5,7 +5,9 @@ import OverviewTab from './tabs/OverviewTab'
 import TicketTab from './tabs/TicketTab'
 import ReportTab from './tabs/ReportTab'
 import { SUPPORT_TAB } from '@/constants/enum'
-const SupportList = () => {
+import { getSupport } from '@/services/support/support'
+const SupportList = async () => {
+    const supports = await getSupport();
     return (
         <Tabs defaultValue={SUPPORT_TAB.OVERVIEW} className="space-y-4">
             <TabsList>
@@ -24,11 +26,11 @@ const SupportList = () => {
             </TabsList>
 
             <TabsContent value={SUPPORT_TAB.OVERVIEW}>
-                <OverviewTab />
+                <OverviewTab supports={supports} />
             </TabsContent>
 
             <TabsContent value={SUPPORT_TAB.TICKETS}>
-                <TicketTab />
+                <TicketTab tickets={supports.support_results} />
             </TabsContent>
 
             <TabsContent value={SUPPORT_TAB.REPORTS}>

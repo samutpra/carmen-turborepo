@@ -168,7 +168,7 @@ export interface AccessControlType {
     modules: ModuleType[];
 };
 
-export type Ticket = {
+export type TicketType = {
     ticket_id: string;
     subject: string;
     tenant: string;
@@ -196,5 +196,5 @@ export type SupportType = {
         total: number;
         resolved: number;
     };
-    support_results: Ticket[];
+    support_results: TicketType[];
 };
