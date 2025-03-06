@@ -1,0 +1,27 @@
+import { z } from "zod";
+
+export const settingsFormSchema = z.object({
+    general: z.object({
+        name: z.string().min(1, "Name is required"),
+        email: z.string().email("Invalid email address"),
+        phone: z.string().min(1, "Phone is required"),
+        address: z.object({
+            house_number: z.string().min(1, "House number is required"),
+            road: z.string().min(1, "Road is required"),
+            sub_district: z.string().min(1, "Sub-district is required"),
+            district: z.string().min(1, "District is required"),
+            province: z.string().min(1, "Province is required"),
+            postal_code: z.string().min(1, "Postal code is required"),
+        })
+    }),
+    localization: z.object({
+        language: z.string().min(1, "Language is required"),
+        timezone: z.string().min(1, "Timezone is required"),
+    }),
+    maintenance: z.object({
+        enabled: z.boolean(),
+        message: z.string().min(1, "Message is required"),
+    })
+});
+
+export type SettingsFormValues = z.infer<typeof settingsFormSchema>;
