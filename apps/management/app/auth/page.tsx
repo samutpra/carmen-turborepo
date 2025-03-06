@@ -9,6 +9,8 @@ const AuthPage = () => {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('login');
+
         // Implement login logic here
     };
 
