@@ -1,4 +1,4 @@
-import { AccessControlType, BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ROLE_TYPE, SupportType, UserPlatformType, UserType } from "@/types/main";
+import { AccessControlType, BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ROLE_TYPE, SettingsType, SupportType, UserPlatformType, UserType } from "@/types/main";
 
 export const statusAdminDashboard = [
     {
@@ -919,4 +919,28 @@ export const mockSupport: SupportType = {
             updated_at: "2025-03-06T12:00:00Z",
         },
     ],
+}
+
+export const mockSettings: SettingsType = {
+    general: {
+        name: "Carmen",
+        email: "support@carmensoftware.com",
+        phone: "+6622840429",
+        address: {
+            house_number: "891/24-25",
+            road: "ถนนพระราม 3 (สะพานภูมิพล)",
+            sub_district: "บางโพงพาง",
+            district: "ยานนาวา",
+            province: "กรุงเทพฯ",
+            postal_code: "10120",
+        }
+    },
+    localization: {
+        language: "th",
+        timezone: "Asia/Bangkok",
+    },
+    maintenance: {
+        enabled: true,
+        message: "We are currently performing scheduled maintenance. The system will be unavailable for a short period of time. We apologize for any inconvenience this may cause.",
+    }
 }

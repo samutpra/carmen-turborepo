@@ -198,3 +198,36 @@ export type SupportType = {
     };
     support_results: TicketType[];
 };
+
+
+export type AddressType = {
+    house_number: string;
+    road: string;
+    sub_district: string;
+    district: string;
+    province: string;
+    postal_code: string;
+};
+
+export type GeneralSettingsType = {
+    name: string;
+    email: string;
+    phone: string;
+    address: AddressType;
+};
+
+export type LocalizationSettingsType = {
+    language: string;
+    timezone: string;
+};
+
+export type MaintenanceSettingsType = {
+    enabled: boolean;
+    message: string;
+};
+
+export type SettingsType = {
+    general: GeneralSettingsType;
+    localization: LocalizationSettingsType;
+    maintenance: MaintenanceSettingsType;
+};
