@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input'
 import React from 'react'
 
@@ -10,6 +11,9 @@ const BusinessReport = () => {
                     <Input placeholder='Search' className='h-8 w-64' />
                 </div>
             </div>
+            <Card>
+
+            </Card>
         </div>
     )
 }
