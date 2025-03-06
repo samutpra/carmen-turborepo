@@ -12,6 +12,9 @@ import { settingsFormSchema, SettingsFormValues } from '@/types/form/form';
 import LocalizationCard from './LocalizationCard';
 import MaintenanceCard from './MaintenanceCard';
 import { defaultSettingValues } from '@/types/form/default-value';
+import { updateSettings } from '@/actions/settings';
+import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+
 const GeneralSetting = () => {
     const { settings } = useSettings();
     const form = useForm<SettingsFormValues>({
@@ -26,9 +29,15 @@ const GeneralSetting = () => {
     }, [settings, form]);
 
     const onSubmit = async (data: SettingsFormValues) => {
-
-        console.log(data);
-        // TODO: Implement save functionality
+        try {
+            const result = await updateSettings(data);
+            if (result.success) {
+                toastSuccess({ message: 'Settings updated successfully' });
+            }
+        } catch (error) {
+            console.error('Failed to update settings:', error);
+            toastError({ message: 'Failed to update settings' });
+        }
     };
 
 

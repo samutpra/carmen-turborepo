@@ -6,7 +6,7 @@ type ToastProps = {
 
 export const toastSuccess = ({ message }: ToastProps) => {
     toast.success(message, {
-        className: 'bg-green-500 text-white shadow-lg rounded-md', // กำหนดสไตล์ Toast
+        className: 'bg-green-500 text-white shadow-lg rounded-md',
     });
 };
 
