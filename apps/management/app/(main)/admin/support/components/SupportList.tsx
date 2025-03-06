@@ -40,4 +40,4 @@ const SupportList = async () => {
     )
 }
 
-export default SupportList
+export default SupportList;
