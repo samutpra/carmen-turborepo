@@ -3,7 +3,7 @@ import { FormField, FormMessage } from "@/components/ui/form";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { SettingsFormValues } from "@/types/form";
+import { SettingsFormValues } from "@/types/form/form";
 import { Control } from "react-hook-form";
 
 interface MaintenanceCardProps {

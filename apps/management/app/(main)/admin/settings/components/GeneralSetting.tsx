@@ -1,50 +1,22 @@
 'use client';
 
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Save } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import { useSettings } from '@/hooks/setting';
 import GeneralCard from './GeneralCard';
-import { settingsFormSchema, SettingsFormValues } from '@/types/form';
+import { settingsFormSchema, SettingsFormValues } from '@/types/form/form';
 import LocalizationCard from './LocalizationCard';
 import MaintenanceCard from './MaintenanceCard';
-
-const defaultValues: SettingsFormValues = {
-    general: {
-        name: '',
-        email: '',
-        phone: '',
-        address: {
-            house_number: '',
-            road: '',
-            sub_district: '',
-            district: '',
-            province: '',
-            postal_code: '',
-        }
-    },
-    localization: {
-        language: '',
-        timezone: '',
-    },
-    maintenance: {
-        enabled: false,
-        message: '',
-    }
-};
-
+import { defaultSettingValues } from '@/types/form/default-value';
 const GeneralSetting = () => {
     const { settings } = useSettings();
     const form = useForm<SettingsFormValues>({
         resolver: zodResolver(settingsFormSchema),
-        defaultValues
+        defaultValues: defaultSettingValues
     });
 
     useEffect(() => {

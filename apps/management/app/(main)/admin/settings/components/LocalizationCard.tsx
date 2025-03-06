@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Control } from 'react-hook-form';
-import { SettingsFormValues } from '@/types/form';
+import { SettingsFormValues } from '@/types/form/form';
 
 interface LocalizationCardProps {
     control: Control<SettingsFormValues>;
