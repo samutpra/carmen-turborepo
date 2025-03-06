@@ -1,11 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
+  output = "../node_modules"
   previewFeatures = ["postgresqlExtensions", "relationJoins"]
 }
 
 generator markdown {
   provider = "prisma-markdown"
-  output   = "../../ERD/tenant.md"
+  output   = "../ERD/tenant.md"
   title    = "Carmen Inventory Tenant Database"
 }
 
