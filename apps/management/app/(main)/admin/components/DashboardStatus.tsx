@@ -12,6 +12,7 @@ const iconMap = {
 };
 
 const DashboardStatus = async () => {
+
     const statusData = await fetchAdminStatus() as StatItem[];
 
     const DisplayData = statusData.map((stat: StatItem, index: number) => {
