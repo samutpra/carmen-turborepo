@@ -3,15 +3,12 @@ import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prism
 
 import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private prismaClientManager: PrismaClientManagerService) {
     super();
   }
-
-  private db_System: dbSystem;
 
   private logger = new Logger(JwtAuthGuard.name);
 

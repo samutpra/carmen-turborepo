@@ -23,8 +23,9 @@ erDiagram
 }
 "tb_credit_note" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -33,8 +34,11 @@ erDiagram
 }
 "tb_credit_note_detail" {
   String id PK
+  String inventory_transaction_id FK "nullable"
   String credit_note_id FK
   String name "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal qty "nullable"
   Decimal amount "nullable"
   DateTime created_at "nullable"
@@ -86,9 +90,9 @@ erDiagram
 }
 "tb_good_receive_note" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
   String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -97,9 +101,12 @@ erDiagram
 }
 "tb_good_receive_note_detail" {
   String id PK
+  String inventory_transaction_id FK "nullable"
   String good_receive_note_id FK
   String purchase_order_detail_id FK
   String location_id FK
+  String product_id FK
+  String product_name "nullable"
   Decimal received_qty "nullable"
   String received_unit_id FK
   String received_unit_name "nullable"
@@ -117,6 +124,7 @@ erDiagram
   Boolean is_tax_adjustment "nullable"
   String lot_number "nullable"
   DateTime expired_date "nullable"
+  Json info "nullable"
   String comment "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -125,7 +133,6 @@ erDiagram
 }
 "tb_inventory_transaction" {
   String id PK
-  String name UK
   enum_inventory_doc_type inventory_doc_type
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -191,7 +198,8 @@ erDiagram
   String name UK
   String local_name "nullable"
   String description "nullable"
-  String primary_unit_id FK
+  String inventory_unit_id FK
+  String inventory_unit_name
   enum_product_status_type product_status_type
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -250,7 +258,8 @@ erDiagram
 }
 "tb_product_tb_vendor" {
   String id PK
-  String product_id FK "nullable"
+  String product_id FK
+  String product_name "nullable"
   String vendor_id FK "nullable"
   String vendor_product_name "nullable"
   String description "nullable"
@@ -280,8 +289,10 @@ erDiagram
   String buyer_name "nullable"
   String credit_term "nullable"
   String remarks "nullable"
+  Json info "nullable"
   Json history "nullable"
   Boolean is_active "nullable"
+  Decimal doc_version
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -314,6 +325,7 @@ erDiagram
   Decimal base_net_amount "nullable"
   Decimal total_price "nullable"
   Decimal base_total_price "nullable"
+  Json info "nullable"
   Json history "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -335,6 +347,7 @@ erDiagram
   String budget_code "nullable"
   Decimal allocated_budget_amount "nullable"
   Boolean is_active "nullable"
+  Decimal doc_version
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -344,8 +357,11 @@ erDiagram
   String id PK
   String purchase_request_id FK "nullable"
   String location_id FK "nullable"
-  String product_id FK "nullable"
+  String location_name "nullable"
+  String product_id FK
+  String product_name "nullable"
   String unit_id FK "nullable"
+  String unit_name "nullable"
   String vendor_id FK "nullable"
   String vendor_name "nullable"
   String price_list_id FK "nullable"
@@ -373,8 +389,9 @@ erDiagram
 }
 "tb_stock_in" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -383,8 +400,11 @@ erDiagram
 }
 "tb_stock_in_detail" {
   String id PK
+  String inventory_transaction_id FK "nullable"
   String stock_in_id FK
   String name "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal qty "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -393,8 +413,9 @@ erDiagram
 }
 "tb_stock_out" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -403,8 +424,11 @@ erDiagram
 }
 "tb_stock_out_detail" {
   String id PK
-  String stock_in_id FK
+  String inventory_transaction_id FK "nullable"
+  String stock_out_id FK
   String name "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal qty "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -413,8 +437,9 @@ erDiagram
 }
 "tb_stock_take" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -423,8 +448,11 @@ erDiagram
 }
 "tb_stock_take_detail" {
   String id PK
+  String inventory_transaction_id FK "nullable"
   String stock_take_id FK
   String name "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal qty "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -433,8 +461,9 @@ erDiagram
 }
 "tb_store_requisition" {
   String id PK
-  String inventory_transaction_id FK
   String name "nullable"
+  String ref_no "nullable"
+  enum_doc_status doc_status
   Json workflow "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -443,8 +472,11 @@ erDiagram
 }
 "tb_store_requisition_detail" {
   String id PK
+  String inventory_transaction_id FK "nullable"
   String store_requisition_id FK
   String name "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal qty "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -466,11 +498,13 @@ erDiagram
   String product_id FK "nullable"
   enum_unit_type unit_type
   String from_unit_id FK "nullable"
+  String from_unit_name
   Decimal from_unit_qty "nullable"
   String to_unit_id FK "nullable"
+  String to_unit_name
   Decimal to_unit_qty "nullable"
   Boolean is_default "nullable"
-  String description "nullable"
+  Json description "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -481,6 +515,7 @@ erDiagram
   String id PK
   String name UK
   String description "nullable"
+  Json info "nullable"
   Boolean is_active "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -528,6 +563,7 @@ erDiagram
   DateTime end_date "nullable"
   String location_id
   String notes "nullable"
+  Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -537,6 +573,7 @@ erDiagram
   String id PK
   String count_stock_id FK
   String product_id FK
+  String product_name "nullable"
   Decimal qty
   DateTime created_at "nullable"
   String created_by_id "nullable"
@@ -582,9 +619,11 @@ erDiagram
   String vendor_id FK "nullable"
   DateTime from_date
   DateTime to_date
-  String product_id FK "nullable"
+  String product_id FK
+  String product_name "nullable"
   Decimal price
   String unit_id FK "nullable"
+  String unit_name "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -599,13 +638,14 @@ erDiagram
   String id PK
   String user_id
   String department_id FK
-  Boolean hod "nullable"
+  Boolean is_hod "nullable"
 }
 "tb_attachment" {
   String id PK
   String filename "nullable"
   String filetype "nullable"
   Bytes data "nullable"
+  Json info "nullable"
 }
 "tb_currency_comment" {
   String id PK
@@ -613,6 +653,7 @@ erDiagram
   String user_id "nullable"
   String message "nullable"
   Json attachments "nullable"
+  Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -624,6 +665,7 @@ erDiagram
   String user_id "nullable"
   String message "nullable"
   Json attachments "nullable"
+  Json info "nullable"
   DateTime created_at "nullable"
   String created_by_id "nullable"
   DateTime updated_at "nullable"
@@ -638,14 +680,20 @@ erDiagram
   String id PK
   String type "nullable"
   Json config "nullable"
+  DateTime created_at "nullable"
+  String created_by_id "nullable"
+  DateTime updated_at "nullable"
+  String updated_by_id "nullable"
 }
-"tb_credit_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_credit_note_detail" }o--|| "tb_credit_note" : tb_credit_note
+"tb_credit_note_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_credit_note_detail" }o--|| "tb_product" : tb_product
 "tb_exchange_rate" }o--o| "tb_currency" : tb_currency
-"tb_good_receive_note" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_good_receive_note_detail" }o--o| "tb_delivery_point" : tb_delivery_point
 "tb_good_receive_note_detail" }o--|| "tb_good_receive_note" : tb_good_receive_note
+"tb_good_receive_note_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
 "tb_good_receive_note_detail" }o--|| "tb_location" : tb_location
+"tb_good_receive_note_detail" }o--|| "tb_product" : tb_product
 "tb_good_receive_note_detail" }o--|| "tb_purchase_order_detail" : tb_purchase_order_detail
 "tb_good_receive_note_detail" }o--|| "tb_unit" : tb_unit
 "tb_inventory_transaction_closing_balance" }o--|| "tb_inventory_transaction_detail" : tb_inventory_transaction_detail
@@ -656,7 +704,7 @@ erDiagram
 "tb_product_info" }o--o| "tb_product_item_group" : tb_product_item_group
 "tb_product_item_group" }o--|| "tb_product_sub_category" : tb_product_sub_category
 "tb_product_sub_category" }o--|| "tb_product_category" : tb_product_category
-"tb_product_tb_vendor" }o--o| "tb_product" : tb_product
+"tb_product_tb_vendor" }o--|| "tb_product" : tb_product
 "tb_product_tb_vendor" }o--o| "tb_vendor" : tb_vendor
 "tb_purchase_order" }o--o| "tb_currency" : tb_currency_tb_purchase_order_base_currency_idTotb_currency
 "tb_purchase_order" }o--o| "tb_currency" : tb_currency_tb_purchase_order_currency_idTotb_currency
@@ -669,17 +717,21 @@ erDiagram
 "tb_purchase_request_detail" }o--o| "tb_currency" : tb_currency
 "tb_purchase_request_detail" }o--o| "tb_location" : tb_location
 "tb_purchase_request_detail" }o--o| "tb_price_list" : tb_price_list
-"tb_purchase_request_detail" }o--o| "tb_product" : tb_product
+"tb_purchase_request_detail" }o--|| "tb_product" : tb_product
 "tb_purchase_request_detail" }o--o| "tb_purchase_request" : tb_purchase_request
 "tb_purchase_request_detail" }o--o| "tb_unit" : tb_unit
 "tb_purchase_request_detail" }o--o| "tb_vendor" : tb_vendor
-"tb_stock_in" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_in_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_in_detail" }o--|| "tb_product" : tb_product
 "tb_stock_in_detail" }o--|| "tb_stock_in" : tb_stock_in
-"tb_stock_out" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_out_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_out_detail" }o--|| "tb_product" : tb_product
 "tb_stock_out_detail" }o--|| "tb_stock_out" : tb_stock_out
-"tb_stock_take" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_take_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_stock_take_detail" }o--|| "tb_product" : tb_product
 "tb_stock_take_detail" }o--|| "tb_stock_take" : tb_stock_take
-"tb_store_requisition" }o--|| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_store_requisition_detail" }o--o| "tb_inventory_transaction" : tb_inventory_transaction
+"tb_store_requisition_detail" }o--|| "tb_product" : tb_product
 "tb_store_requisition_detail" }o--|| "tb_store_requisition" : tb_store_requisition
 "tb_unit_conversion" }o--o| "tb_unit" : tb_unit_tb_unit_conversion_from_unit_idTotb_unit
 "tb_unit_conversion" }o--o| "tb_product" : tb_product
@@ -693,7 +745,7 @@ erDiagram
 "tb_jv_detail" }o--|| "tb_jv_header" : tb_jv_header
 "tb_jv_header" }o--|| "tb_currency" : tb_currency_tb_jv_header_base_currency_idTotb_currency
 "tb_jv_header" }o--|| "tb_currency" : tb_currency_tb_jv_header_currency_idTotb_currency
-"tb_price_list" }o--o| "tb_product" : tb_product
+"tb_price_list" }o--|| "tb_product" : tb_product
 "tb_price_list" }o--o| "tb_unit" : tb_unit
 "tb_price_list" }o--o| "tb_vendor" : tb_vendor
 "tb_product_location" }o--|| "tb_location" : tb_location
@@ -723,8 +775,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -735,8 +788,11 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `inventory_transaction_id`: 
   - `credit_note_id`: 
   - `name`: 
+  - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `amount`: 
   - `created_at`: 
@@ -798,9 +854,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
   - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -811,9 +867,12 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `inventory_transaction_id`: 
   - `good_receive_note_id`: 
   - `purchase_order_detail_id`: 
   - `location_id`: 
+  - `product_id`: 
+  - `product_name`: 
   - `received_qty`: 
   - `received_unit_id`: 
   - `received_unit_name`: 
@@ -831,6 +890,7 @@ erDiagram
   - `is_tax_adjustment`: 
   - `lot_number`: 
   - `expired_date`: 
+  - `info`: 
   - `comment`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -841,7 +901,6 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `name`: 
   - `inventory_doc_type`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -917,7 +976,8 @@ erDiagram
   - `name`: 
   - `local_name`: 
   - `description`: 
-  - `primary_unit_id`: 
+  - `inventory_unit_id`: 
+  - `inventory_unit_name`: 
   - `product_status_type`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -987,6 +1047,7 @@ erDiagram
 **Properties**
   - `id`: 
   - `product_id`: 
+  - `product_name`: 
   - `vendor_id`: 
   - `vendor_product_name`: 
   - `description`: 
@@ -1018,8 +1079,10 @@ erDiagram
   - `buyer_name`: 
   - `credit_term`: 
   - `remarks`: 
+  - `info`: 
   - `history`: 
   - `is_active`: 
+  - `doc_version`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1054,6 +1117,7 @@ erDiagram
   - `base_net_amount`: 
   - `total_price`: 
   - `base_total_price`: 
+  - `info`: 
   - `history`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1077,6 +1141,7 @@ erDiagram
   - `budget_code`: 
   - `allocated_budget_amount`: 
   - `is_active`: 
+  - `doc_version`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1088,8 +1153,11 @@ erDiagram
   - `id`: 
   - `purchase_request_id`: 
   - `location_id`: 
+  - `location_name`: 
   - `product_id`: 
+  - `product_name`: 
   - `unit_id`: 
+  - `unit_name`: 
   - `vendor_id`: 
   - `vendor_name`: 
   - `price_list_id`: 
@@ -1119,8 +1187,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1131,8 +1200,11 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `inventory_transaction_id`: 
   - `stock_in_id`: 
   - `name`: 
+  - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1143,8 +1215,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1155,8 +1228,11 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `stock_in_id`: 
+  - `inventory_transaction_id`: 
+  - `stock_out_id`: 
   - `name`: 
+  - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1167,8 +1243,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1179,8 +1256,11 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `inventory_transaction_id`: 
   - `stock_take_id`: 
   - `name`: 
+  - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1191,8 +1271,9 @@ erDiagram
 
 **Properties**
   - `id`: 
-  - `inventory_transaction_id`: 
   - `name`: 
+  - `ref_no`: 
+  - `doc_status`: 
   - `workflow`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1203,8 +1284,11 @@ erDiagram
 
 **Properties**
   - `id`: 
+  - `inventory_transaction_id`: 
   - `store_requisition_id`: 
   - `name`: 
+  - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1230,8 +1314,10 @@ erDiagram
   - `product_id`: 
   - `unit_type`: 
   - `from_unit_id`: 
+  - `from_unit_name`: 
   - `from_unit_qty`: 
   - `to_unit_id`: 
+  - `to_unit_name`: 
   - `to_unit_qty`: 
   - `is_default`: 
   - `description`: 
@@ -1247,6 +1333,7 @@ erDiagram
   - `id`: 
   - `name`: 
   - `description`: 
+  - `info`: 
   - `is_active`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1302,6 +1389,7 @@ erDiagram
   - `end_date`: 
   - `location_id`: 
   - `notes`: 
+  - `info`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1313,6 +1401,7 @@ erDiagram
   - `id`: 
   - `count_stock_id`: 
   - `product_id`: 
+  - `product_name`: 
   - `qty`: 
   - `created_at`: 
   - `created_by_id`: 
@@ -1365,8 +1454,10 @@ erDiagram
   - `from_date`: 
   - `to_date`: 
   - `product_id`: 
+  - `product_name`: 
   - `price`: 
   - `unit_id`: 
+  - `unit_name`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1385,7 +1476,7 @@ erDiagram
   - `id`: 
   - `user_id`: 
   - `department_id`: 
-  - `hod`: 
+  - `is_hod`: 
 
 ### `tb_attachment`
 
@@ -1394,6 +1485,7 @@ erDiagram
   - `filename`: 
   - `filetype`: 
   - `data`: 
+  - `info`: 
 
 ### `tb_currency_comment`
 
@@ -1403,6 +1495,7 @@ erDiagram
   - `user_id`: 
   - `message`: 
   - `attachments`: 
+  - `info`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1416,6 +1509,7 @@ erDiagram
   - `user_id`: 
   - `message`: 
   - `attachments`: 
+  - `info`: 
   - `created_at`: 
   - `created_by_id`: 
   - `updated_at`: 
@@ -1434,3 +1528,7 @@ erDiagram
   - `id`: 
   - `type`: 
   - `config`: 
+  - `created_at`: 
+  - `created_by_id`: 
+  - `updated_at`: 
+  - `updated_by_id`: 
