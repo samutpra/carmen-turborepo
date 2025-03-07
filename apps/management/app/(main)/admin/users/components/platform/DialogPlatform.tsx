@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { userPlatformFormSchema, UserPlatformFormValues } from "@/types/form/form";
+import { userPlatformFormSchema, UserPlatformFormValues, UserPlatformType } from "@/types/form/form";
 import { defaultUserPlatformValues } from "@/types/form/default-value";
 import { DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,11 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, X } from "lucide-react";
-import { UserPlatformType } from "@/types/main";
 import { postUserPlatform } from "@/services/user/platform";
+
 interface RoleItem {
     name: string;
     id?: string;
+    status: boolean;
 }
 
 interface DialogPlatformProps {
@@ -50,7 +51,7 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
     // Handle adding a role
     const handleAddRole = (value: string) => {
         if (!selectedRoles.some(r => r.name === value)) {
-            const newRole = { name: value };
+            const newRole = { name: value, status: true };
             const newRoles = [...selectedRoles, newRole];
             setSelectedRoles(newRoles);
             form.setValue('role', newRoles);
@@ -67,7 +68,7 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
     // Handle adding a business unit
     const handleAddBusinessUnit = (value: string) => {
         if (!selectedBusinessUnits.some(bu => bu.name === value)) {
-            const newBU = { name: value };
+            const newBU = { name: value, status: true };
             const newBUs = [...selectedBusinessUnits, newBU];
             setSelectedBusinessUnits(newBUs);
             form.setValue('business_unit', newBUs);
@@ -82,7 +83,6 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
     };
 
     const handleSubmit = async (data: UserPlatformFormValues) => {
-        // First create the form data object that matches our schema
         const formData: UserPlatformFormValues = {
             name: data.name,
             email: data.email,
@@ -99,9 +99,17 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
             id: crypto.randomUUID(),
             name: data.name,
             email: data.email,
-            roles: data.role.map(r => r.name),
-            businessUnits: data.business_unit.map(bu => bu.name),
-            status: data.status ? 'active' : 'inactive',
+            roles: data.role.map(r => ({
+                name: r.name,
+                status: data.status,
+                id: r.id
+            })),
+            business_units: data.business_unit.map(bu => ({
+                name: bu.name,
+                status: data.status,
+                id: bu.id
+            })),
+            status: data.status,
             hotelGroup: 'default',
             modules: [],
             department: 'default',

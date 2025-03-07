@@ -64,3 +64,29 @@ export const userPlatformFormSchema = z.object({
 
 export type UserPlatformFormValues = z.infer<typeof userPlatformFormSchema>;
 
+
+export const userPlatformSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    roles: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Role must be at least 2 characters"),
+        status: z.boolean().describe("Status is required"),
+    })),
+    business_units: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Business unit name must be at least 2 characters"),
+    })),
+    status: z.boolean().describe("Status is required"),
+    hotelGroup: z.string().describe("Hotel group is required"),
+    modules: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Module name must be at least 2 characters"),
+    })),
+    department: z.string().describe("Department is required"),
+    lastActive: z.string().describe("Last active is required"),
+    hotel: z.string().describe("Hotel is required"),
+});
+
+export type UserPlatformType = z.infer<typeof userPlatformSchema>;

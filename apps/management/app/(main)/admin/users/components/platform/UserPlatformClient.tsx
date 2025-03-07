@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react'
-import { UserPlatformType } from '@/types/main';
 import { User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ROLE_OPTION, STATUS_OPTION } from '@/types/option';
 import DialogPlatform from './DialogPlatform';
 import UserPlatform from './UserPlatform';
+import { UserPlatformType } from '@/types/form/form';
 
 interface UserPlatformClientProps {
     users: UserPlatformType[];

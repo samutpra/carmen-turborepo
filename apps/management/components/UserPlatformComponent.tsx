@@ -1,7 +1,6 @@
 'use client';
 
 import { useUserPlatform } from "@/hooks/useUserPlatform";
-import { UserPlatformType } from "@/types/main";
 import { useState } from "react";
 import DialogPlatform from "@/app/(main)/admin/users/components/platform/DialogPlatform";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, SearchIcon, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { UserPlatformType } from "@/types/form/form";
 
 interface UserPlatformComponentProps {
     initialData?: UserPlatformType[];
@@ -125,7 +125,7 @@ const UserPlatformComponent = ({ initialData = [] }: UserPlatformComponentProps)
 
                                 {user.roles && user.roles.length > 0 && (
                                     <div className="flex flex-wrap gap-1 mb-2">
-                                        {user.roles.map((role, index) => (
+                                        {user.roles.map((role: string, index: number) => (
                                             <Badge key={index} variant="outline" className="text-xs">
                                                 {role}
                                             </Badge>
@@ -133,9 +133,9 @@ const UserPlatformComponent = ({ initialData = [] }: UserPlatformComponentProps)
                                     </div>
                                 )}
 
-                                {user.businessUnits && user.businessUnits.length > 0 && (
+                                {user.business_units && user.business_units.length > 0 && (
                                     <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-medium">หน่วยธุรกิจ:</span> {user.businessUnits.join(', ')}
+                                        <span className="font-medium">หน่วยธุรกิจ:</span> {user.business_units.join(', ')}
                                     </p>
                                 )}
 
