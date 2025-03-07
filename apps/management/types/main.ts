@@ -281,3 +281,14 @@ export interface ReportTemplateType {
     created_at: string;
     updated_at: string;
 }
+
+export interface TemplateReportType {
+    id: string;
+    title: string;
+    description: string;
+    type: string;
+    count_assigned: number;
+    last_updated: string;
+    created_at: string;
+    updated_at: string;
+}
