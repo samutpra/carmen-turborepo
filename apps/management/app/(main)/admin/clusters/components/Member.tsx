@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Mail } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
+import DialogFormMember from './DialogFormMember'
 
 const Member = async () => {
     const members = await fetchMembers()
@@ -23,7 +24,7 @@ const Member = async () => {
             {/* <ClusterUsers /> */}
             <div className='flex items-center justify-between'>
                 <h2 className="text-2xl font-bold tracking-tight">Cluster Members</h2>
-                <Button>Add Member</Button>
+                <DialogFormMember />
             </div>
             <Card>
                 <CardHeader>

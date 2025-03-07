@@ -1,4 +1,4 @@
-import { SettingsFormValues } from "./form";
+import { ClusterMemberFormValues, SettingsFormValues } from "./form";
 
 export const defaultSettingValues: SettingsFormValues = {
     general: {
@@ -22,4 +22,12 @@ export const defaultSettingValues: SettingsFormValues = {
         enabled: false,
         message: '',
     }
+};
+
+export const defaultClusterMemberValues: ClusterMemberFormValues = {
+    name: '',
+    email: '',
+    platform: '',
+    role: '',
+    business_unit: [],
 };

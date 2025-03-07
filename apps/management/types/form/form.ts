@@ -25,3 +25,21 @@ export const settingsFormSchema = z.object({
 });
 
 export type SettingsFormValues = z.infer<typeof settingsFormSchema>;
+
+
+export const clusterMemberFormSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    platform: z.string().describe("Platform is required"),
+    role: z.string().describe("Role is required"),
+    business_unit: z.array(
+        z.object({
+            id: z.string().optional(),
+            name: z.string().min(2, "Business unit name must be at least 2 characters"),
+            role: z.string().min(2, "Role must be at least 2 characters"),
+            department: z.string().min(2, "Department must be at least 2 characters"),
+        })
+    ).min(1, "At least one business unit is required"),
+});
+
+export type ClusterMemberFormValues = z.infer<typeof clusterMemberFormSchema>;
