@@ -1,6 +1,7 @@
+'use server';
+
 import { API_URL } from "@/lib/api-url";
 export const getTemplateReports = async () => {
-    'use server';
     const url = `${API_URL}/api/cluster/template-report`
     const options = {
         method: 'GET',

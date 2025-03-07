@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { clusterMemberFormSchema, ClusterMemberFormValues } from "@/types/form/form";
-import { createClusterMember } from "@/actions/member";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { postMember } from "@/services/cluster/member";
 
 const DialogFormMember = () => {
     const [open, setOpen] = useState(false);
@@ -43,8 +43,7 @@ const DialogFormMember = () => {
     }, [open, form]);
 
     const handleSubmit = async (data: ClusterMemberFormValues) => {
-        console.log(data);
-        const response = await createClusterMember(data);
+        const response = await postMember(data);
         if (response.success) {
             console.log("success");
         } else {
@@ -169,7 +168,7 @@ const DialogFormMember = () => {
                                     size="sm"
                                     onClick={handleAddBusinessUnit}
                                 >
-                                    <PlusCircle className="h-4 w-4 mr-2" />
+                                    <PlusCircle className="h-4 w-4" />
                                     Add Business Unit
                                 </Button>
                             </div>

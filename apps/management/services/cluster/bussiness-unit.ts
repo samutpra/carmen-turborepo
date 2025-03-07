@@ -1,7 +1,8 @@
+'use server';
+
 import { API_URL } from "@/lib/api-url"
 
 export const fetchBusinessUnits = async () => {
-    'use server'
     const url = `${API_URL}/api/business-unit`;
 
     const options = {

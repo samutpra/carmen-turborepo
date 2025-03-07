@@ -12,8 +12,8 @@ import { settingsFormSchema, SettingsFormValues } from '@/types/form/form';
 import LocalizationCard from './LocalizationCard';
 import MaintenanceCard from './MaintenanceCard';
 import { defaultSettingValues } from '@/types/form/default-value';
-import { updateSettings } from '@/actions/settings';
 import { toastError, toastSuccess } from '@/components/ui-custom/Toast';
+import { updateSettings } from '@/services/setting/setting';
 
 const GeneralSetting = () => {
     const { settings } = useSettings();
@@ -31,7 +31,7 @@ const GeneralSetting = () => {
     const onSubmit = async (data: SettingsFormValues) => {
         try {
             const result = await updateSettings(data);
-            if (result.success) {
+            if (result) {
                 toastSuccess({ message: 'Settings updated successfully' });
             }
         } catch (error) {

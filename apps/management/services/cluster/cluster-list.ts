@@ -1,7 +1,7 @@
+'use server';
 import { API_URL } from "@/lib/api-url"
 
 export const fetchClusters = async () => {
-    'use server'
     const url = `${API_URL}/api/cluster`
 
     const options = {
@@ -17,7 +17,6 @@ export const fetchClusters = async () => {
 
 
 export const fetchClusterById = async (id: string) => {
-    'use server'
     const url = `${API_URL}/api/cluster/${id}`
     const options = {
         method: 'GET',

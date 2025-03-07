@@ -9,7 +9,7 @@ import { format } from 'date-fns'
 import DialogFormMember from './DialogFormMember'
 
 const Member = async () => {
-    const members = await fetchMembers()
+    const members = await fetchMembers();
     return (
         <div className="space-y-6">
 
