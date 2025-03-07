@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { UserPlatformType } from '@/types/main';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +11,8 @@ interface UserPlatformProps {
     users: UserPlatformType[];
 }
 
-const UserPlatform = async ({ users }: UserPlatformProps) => {
+const UserPlatform = ({ users }: UserPlatformProps) => {
+
     return (
         <Card>
             <CardHeader>

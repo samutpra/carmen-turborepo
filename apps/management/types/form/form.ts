@@ -43,3 +43,24 @@ export const clusterMemberFormSchema = z.object({
 });
 
 export type ClusterMemberFormValues = z.infer<typeof clusterMemberFormSchema>;
+
+
+export const userPlatformFormSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    role: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Role must be at least 2 characters"),
+    })),
+    business_unit: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Business unit name must be at least 2 characters"),
+    })),
+    status: z.boolean().describe("Status is required"),
+    last_active: z.string().describe("Last active is required"),
+    created_at: z.string().describe("Created at is required"),
+    updated_at: z.string().describe("Updated at is required"),
+});
+
+export type UserPlatformFormValues = z.infer<typeof userPlatformFormSchema>;
+

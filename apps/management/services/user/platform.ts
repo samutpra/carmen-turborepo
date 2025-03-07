@@ -1,7 +1,9 @@
+'use server';
+
 import { API_URL } from "@/lib/api-url"
+import { UserPlatformFormValues } from "@/types/form/form";
 
 export const fetchUserPlatform = async () => {
-    'use server';
 
     const url = `${API_URL}/api/user/platform`;
     const options = {
@@ -15,4 +17,16 @@ export const fetchUserPlatform = async () => {
     return response.json();
 }
 
-
+export const postUserPlatform = async (data: UserPlatformFormValues) => {
+    console.log('data', data);
+    const url = `${API_URL}/api/user/platform`;
+    const options = {
+        method: 'POST',
+        body: JSON.stringify(data)
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error('Failed to create user platform');
+    }
+    return response.json();
+}

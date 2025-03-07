@@ -14,25 +14,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { clusterMemberFormSchema, ClusterMemberFormValues } from "@/types/form/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { postMember } from "@/services/cluster/member";
+import { defaultClusterMemberValues } from "@/types/form/default-value";
 
 const DialogFormMember = () => {
     const [open, setOpen] = useState(false);
 
     const form = useForm<ClusterMemberFormValues>({
         resolver: zodResolver(clusterMemberFormSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            platform: "",
-            role: "",
-            business_unit: [
-                {
-                    name: "",
-                    role: "",
-                    department: ""
-                }
-            ]
-        }
+        defaultValues: defaultClusterMemberValues
     });
 
     // Reset form when dialog closes

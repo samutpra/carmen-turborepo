@@ -17,8 +17,6 @@ export const fetchMembers = async () => {
 }
 
 export const postMember = async (data: ClusterMemberFormValues) => {
-    console.log('data post member', data);
-
     const url = `${API_URL}/api/member`
     const options = {
         method: 'POST',
