@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { PlusCircle, X } from "lucide-react";
 import { UserPlatformType } from "@/types/main";
 import { postUserPlatform } from "@/services/user/platform";
 interface RoleItem {
@@ -127,7 +127,10 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Add User</Button>
+                <Button size={'sm'}>
+                    <PlusCircle className="w-4 h-4" />
+                    Add User
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -264,7 +267,7 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
                             />
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Add User</Button>
+                            <Button type="submit" size={'sm'}>Add User</Button>
                         </DialogFooter>
                     </form>
                 </Form>

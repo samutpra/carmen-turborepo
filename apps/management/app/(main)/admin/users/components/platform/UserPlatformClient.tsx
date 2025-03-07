@@ -55,7 +55,9 @@ const UserPlatformClient = ({ users }: UserPlatformClientProps) => {
                     </Select>
                 </div>
             </div>
-            <DialogPlatform setUserPlatform={setUserPlatform} userPlatform={userPlatform} />
+            <div className='flex items-center justify-end'>
+                <DialogPlatform setUserPlatform={setUserPlatform} userPlatform={userPlatform} />
+            </div>
             <UserPlatform users={userPlatform} />
         </div>
     )
