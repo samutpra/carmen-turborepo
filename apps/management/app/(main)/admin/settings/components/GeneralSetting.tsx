@@ -28,6 +28,7 @@ const GeneralSetting = () => {
         }
     }, [settings, form]);
 
+
     const onSubmit = async (data: SettingsFormValues) => {
         try {
             const result = await updateSettings(data);
