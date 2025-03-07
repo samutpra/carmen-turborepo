@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { clusterMemberFormSchema, ClusterMemberFormValues } from "@/types/form/form";
 import { createClusterMember } from "@/actions/member";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const DialogFormMember = () => {
     const [open, setOpen] = useState(false);
@@ -173,78 +174,84 @@ const DialogFormMember = () => {
                                 </Button>
                             </div>
 
-                            <div className="border rounded-md overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Business Unit Name</TableHead>
-                                            <TableHead>Role</TableHead>
-                                            <TableHead>Department</TableHead>
-                                            <TableHead className="w-[80px]"></TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {form.watch("business_unit").map((_, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`business_unit.${index}.name`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="mb-0">
-                                                                <FormControl>
-                                                                    <Input placeholder="Enter name" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`business_unit.${index}.role`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="mb-0">
-                                                                <FormControl>
-                                                                    <Input placeholder="Enter role" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`business_unit.${index}.department`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="mb-0">
-                                                                <FormControl>
-                                                                    <Input placeholder="Enter department" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    {index > 0 && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-8 w-8 p-0"
-                                                            onClick={() => handleRemoveBusinessUnit(index)}
-                                                        >
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </TableCell>
+                            <div className="border rounded-md">
+                                <div className="w-full">
+                                    <Table className="w-full">
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[30%]">Business Unit Name</TableHead>
+                                                <TableHead className="w-[30%]">Role</TableHead>
+                                                <TableHead className="w-[30%]">Department</TableHead>
+                                                <TableHead className="w-[10%]"></TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                    </Table>
+                                </div>
+                                <ScrollArea className="h-[200px]">
+                                    <Table className="w-full">
+                                        <TableBody>
+                                            {form.watch("business_unit").map((_, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell className="w-[30%]">
+                                                        <FormField
+                                                            control={form.control}
+                                                            name={`business_unit.${index}.name`}
+                                                            render={({ field }) => (
+                                                                <FormItem className="mb-0">
+                                                                    <FormControl>
+                                                                        <Input placeholder="Enter name" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="w-[30%]">
+                                                        <FormField
+                                                            control={form.control}
+                                                            name={`business_unit.${index}.role`}
+                                                            render={({ field }) => (
+                                                                <FormItem className="mb-0">
+                                                                    <FormControl>
+                                                                        <Input placeholder="Enter role" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="w-[30%]">
+                                                        <FormField
+                                                            control={form.control}
+                                                            name={`business_unit.${index}.department`}
+                                                            render={({ field }) => (
+                                                                <FormItem className="mb-0">
+                                                                    <FormControl>
+                                                                        <Input placeholder="Enter department" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="w-[10%] text-right">
+                                                        {index > 0 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-8 w-8 p-0"
+                                                                onClick={() => handleRemoveBusinessUnit(index)}
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </ScrollArea>
                             </div>
                             {form.formState.errors.business_unit?.message && (
                                 <p className="text-sm font-medium text-destructive mt-2">{form.formState.errors.business_unit.message}</p>
