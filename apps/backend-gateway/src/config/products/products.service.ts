@@ -1,55 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { AxiosInstance } from 'axios';
+import { buAxios } from 'src/common/helpers/requests/axios.helper';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly httpService: HttpService) {}
+  private buAxios: AxiosInstance;
+  constructor() {
+    this.buAxios = buAxios();
+  }
 
   async findOne(id: string) {
-    return this.httpService.get(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/${id}`,
-    );
+    return await this.buAxios.get(`/products/${id}`);
   }
 
   async findAll() {
-    return this.httpService.get(`${process.env.PRODUCTS_SERVICE_URL}/products`);
+    return await this.buAxios.get(`/products`);
   }
 
   async getProductByItemsGroup(id: string) {
-    return this.httpService.get(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/by-item-group-id/${id}`,
-    );
+    return await this.buAxios.get(`/products/by-item-group-id/${id}`);
   }
 
   async getOrderUnitByProductId(id: string) {
-    return this.httpService.get(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/order-unit/${id}`,
-    );
+    return await this.buAxios.get(`/products/order-unit/${id}`);
   }
 
   async getRecipeUnitByProductId(id: string) {
-    return this.httpService.get(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/recipe-unit/${id}`,
-    );
+    return await this.buAxios.get(`/products/recipe-unit/${id}`);
   }
 
   async create(createDto: any) {
-    return this.httpService.post(
-      `${process.env.PRODUCTS_SERVICE_URL}/products`,
-      createDto,
-    );
+    return await this.buAxios.post(`/products`, createDto);
   }
 
   async update(id: string, updateDto: any) {
-    return this.httpService.put(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/${id}`,
-      updateDto,
-    );
+    return await this.buAxios.put(`/products/${id}`, updateDto);
   }
 
   async delete(id: string) {
-    return this.httpService.delete(
-      `${process.env.PRODUCTS_SERVICE_URL}/products/${id}`,
-    );
+    return await this.buAxios.delete(`/products/${id}`);
   }
 }

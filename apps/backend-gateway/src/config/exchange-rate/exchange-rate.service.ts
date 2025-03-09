@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { AxiosInstance } from 'axios';
+import { buAxios } from 'src/common/helpers/requests/axios.helper';
 
 @Injectable()
 export class ExchangeRateService {
-  constructor(private readonly httpService: HttpService) {}
+  private buAxios: AxiosInstance;
+  constructor() {
+    this.buAxios = buAxios();
+  }
 
   async findOne(id: string) {
-    return this.httpService.get(
-      `${process.env.EXCHANGE_RATE_SERVICE_URL}/exchange-rate/${id}`,
-    );
+    return await this.buAxios.get(`/exchange-rate/${id}`);
   }
 
   async findAll() {
-    return this.httpService.get(
-      `${process.env.EXCHANGE_RATE_SERVICE_URL}/exchange-rate`,
-    );
+    return await this.buAxios.get(`/exchange-rate`);
   }
 
   async create(createDto: any) {
-    return this.httpService.post(
-      `${process.env.EXCHANGE_RATE_SERVICE_URL}/exchange-rate`,
-      createDto,
-    );
+    return await this.buAxios.post(`/exchange-rate`, createDto);
   }
 
   async update(id: string, updateDto: any) {
-    return this.httpService.put(
-      `${process.env.EXCHANGE_RATE_SERVICE_URL}/exchange-rate/${id}`,
-      updateDto,
-    );
+    return await this.buAxios.put(`/exchange-rate/${id}`, updateDto);
   }
 
   async delete(id: string) {
-    return this.httpService.delete(
-      `${process.env.EXCHANGE_RATE_SERVICE_URL}/exchange-rate/${id}`,
-    );
+    return await this.buAxios.delete(`/exchange-rate/${id}`);
   }
 }

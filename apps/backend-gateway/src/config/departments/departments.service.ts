@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { AxiosInstance } from 'axios';
+import { buAxios } from 'src/common/helpers/requests/axios.helper';
 
 @Injectable()
 export class DepartmentsService {
-  constructor(private readonly httpService: HttpService) {}
+  private buAxios: AxiosInstance;
+  constructor() {
+    this.buAxios = buAxios();
+  }
 
   async findOne(id: string) {
-    return this.httpService.get(
-      `${process.env.DEPARTMENTS_SERVICE_URL}/departments/${id}`,
-    );
+    return await this.buAxios.get(`/departments/${id}`);
   }
 
   async findAll() {
-    return this.httpService.get(
-      `${process.env.DEPARTMENTS_SERVICE_URL}/departments`,
-    );
+    return await this.buAxios.get(`/departments`);
   }
 
   async create(createDto: any) {
-    return this.httpService.post(
-      `${process.env.DEPARTMENTS_SERVICE_URL}/departments`,
-      createDto,
-    );
+    return await this.buAxios.post(`/departments`, createDto);
   }
 
   async update(id: string, updateDto: any) {
-    return this.httpService.put(
-      `${process.env.DEPARTMENTS_SERVICE_URL}/departments/${id}`,
-      updateDto,
-    );
+    return await this.buAxios.put(`/departments/${id}`, updateDto);
   }
 
   async delete(id: string) {
-    return this.httpService.delete(
-      `${process.env.DEPARTMENTS_SERVICE_URL}/departments/${id}`,
-    );
+    return await this.buAxios.delete(`/departments/${id}`);
   }
 }

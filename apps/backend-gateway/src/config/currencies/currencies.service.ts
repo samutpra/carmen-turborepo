@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { AxiosInstance } from 'axios';
+import { buAxios } from 'src/common/helpers/requests/axios.helper';
 
 @Injectable()
 export class CurrenciesService {
-  constructor(private readonly httpService: HttpService) {}
+  private buAxios: AxiosInstance;
+  constructor() {
+    this.buAxios = buAxios();
+  }
 
   async findOne(id: string) {
-    return this.httpService.get(
-      `${process.env.CURRENCIES_SERVICE_URL}/currencies/${id}`,
-    );
+    return await this.buAxios.get(`/currencies/${id}`);
   }
 
   async findAll() {
-    return this.httpService.get(
-      `${process.env.CURRENCIES_SERVICE_URL}/currencies`,
-    );
+    return await this.buAxios.get(`/currencies`);
   }
 
   async create(createDto: any) {
-    return this.httpService.post(
-      `${process.env.CURRENCIES_SERVICE_URL}/currencies`,
-      createDto,
-    );
+    return await this.buAxios.post(`/currencies`, createDto);
   }
 
   async update(id: string, updateDto: any) {
-    return this.httpService.put(
-      `${process.env.CURRENCIES_SERVICE_URL}/currencies/${id}`,
-      updateDto,
-    );
+    return await this.buAxios.put(`/currencies/${id}`, updateDto);
   }
 
   async delete(id: string) {
-    return this.httpService.delete(
-      `${process.env.CURRENCIES_SERVICE_URL}/currencies/${id}`,
-    );
+    return await this.buAxios.delete(`/currencies/${id}`);
   }
 }

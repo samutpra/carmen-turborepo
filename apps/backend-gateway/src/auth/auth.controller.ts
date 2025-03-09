@@ -8,32 +8,26 @@ export class AuthController {
   private logger = new Logger(AuthController.name);
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Query('version') version: string) {
-    this.logger.log('ogin');
+  async login(@Body() loginDto: any, @Query('version') version: string) {
+    this.logger.log('login');
     return this.authService.login(loginDto, version);
   }
 
   @Post('register')
-  async register(
-    @Body() registerDto: RegisterDto,
-    @Query('version') version: string,
-  ) {
+  async register(@Body() registerDto: any, @Query('version') version: string) {
     this.logger.log('Register');
     return this.authService.register(registerDto, version);
   }
 
   @Post('logout')
-  async logout(
-    @Body() logoutDto: LogoutDto,
-    @Query('version') version: string,
-  ) {
+  async logout(@Body() logoutDto: any, @Query('version') version: string) {
     this.logger.log('Logout');
     return this.authService.logout(logoutDto, version);
   }
 
   @Post('refresh-token')
   async refreshToken(
-    @Body() refreshTokenDto: RefreshTokenDto,
+    @Body() refreshTokenDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Refresh Token');
@@ -42,7 +36,7 @@ export class AuthController {
 
   @Post('verify-token')
   async verifyToken(
-    @Body() verifyTokenDto: VerifyTokenDto,
+    @Body() verifyTokenDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Verify Token');
@@ -51,7 +45,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(
-    @Body() forgotPasswordDto: ForgotPasswordDto,
+    @Body() forgotPasswordDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Forgot Password');
@@ -60,7 +54,7 @@ export class AuthController {
 
   @Post('reset-password')
   async resetPassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
+    @Body() resetPasswordDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Reset Password');
@@ -69,7 +63,7 @@ export class AuthController {
 
   @Post('change-password')
   async changePassword(
-    @Body() changePasswordDto: ChangePasswordDto,
+    @Body() changePasswordDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Change Password');
@@ -78,7 +72,7 @@ export class AuthController {
 
   @Post('change-email')
   async changeEmail(
-    @Body() changeEmailDto: ChangeEmailDto,
+    @Body() changeEmailDto: any,
     @Query('version') version: string,
   ) {
     this.logger.log('Change Email');
