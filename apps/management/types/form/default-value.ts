@@ -39,6 +39,11 @@ export const defaultUserPlatformValues: UserPlatformFormValues = {
         id: '',
         name: '',
     }],
+    modules: [{
+        id: '',
+        name: '',
+        status: true,
+    }],
     business_unit: [{
         id: '',
         name: '',

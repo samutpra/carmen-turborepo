@@ -1,4 +1,5 @@
-import { AccessControlType, BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ReportAssignmentType, ReportClusterType, ReportTemplateType, ROLE_TYPE, SettingsType, SupportType, TemplateReportType, UserPlatformType, UserType } from "@/types/main";
+import { UserPlatformType } from "@/types/form/form";
+import { AccessControlType, BusinessUnitCluster, BusinessUnitType, BusinessUnitUserRoleType, ReportAssignmentType, ReportClusterType, ReportTemplateType, ROLE_TYPE, SettingsType, SupportType, TemplateReportType, UserType } from "@/types/main";
 
 export const statusAdminDashboard = [
     {
@@ -419,81 +420,184 @@ export const mockUserPlatform: UserPlatformType[] = [
         id: "g3XBVEmN_crP",
         name: "Sarah Johnson",
         email: "sarah.johnson@luxurycollection.com",
-        roles: ["manager", "finance", "inventory"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
+        roles: [
+            { id: "role_1", name: "manager", status: true },
+            { id: "role_2", name: "finance", status: true },
+            { id: "role_3", name: "inventory", status: true }
+        ],
+        business_units: [
+            { id: "bu_1", name: "BU-1234" },
+            { id: "bu_2", name: "BU-1235" },
+            { id: "bu_3", name: "BU-1236" }
+        ],
+        status: true,
         lastActive: "2024-03-15T08:30:00Z",
         hotelGroup: "Luxury Collection",
         hotel: "The Ritz-Carlton",
         department: "Operations",
-        modules: ["supply-chain", "inventory", "procurement"],
+        modules: [
+            { id: "module_1", name: "supply-chain" },
+            { id: "module_2", name: "inventory" },
+            { id: "module_3", name: "procurement" }
+        ]
     },
     {
-        id: "Z-drA8X3JZJa",
-        name: "Michael Chen",
-        email: "michael.chen@businesshotels.com",
-        roles: ["manager", "procurement"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
-        lastActive: "2024-03-15T09:15:00Z",
-        hotelGroup: "Business Hotels",
-        hotel: "Four Seasons Hotel",
-        department: "Operations",
-        modules: ["supply-chain", "maintenance"],
+        id: "h7YBXEmN_xzT",
+        name: "Michael Smith",
+        email: "michael.smith@grandresorts.com",
+        roles: [{ id: "role_4", name: "admin", status: true }],
+        business_units: [{ id: "bu_4", name: "BU-2234" }],
+        status: false,
+        lastActive: "2024-03-10T12:45:00Z",
+        hotelGroup: "Grand Resorts",
+        hotel: "Four Seasons",
+        department: "IT",
+        modules: [
+            { id: "module_4", name: "cybersecurity" },
+            { id: "module_5", name: "networking" }
+        ]
     },
     {
-        id: "BHpyxRLhp8AP",
-        name: "Maria Garcia",
-        email: "maria.garcia@resortcollection.com",
-        roles: ["manager", "inventory", "spa-manager"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
-        lastActive: "2024-03-15T07:45:00Z",
-        hotelGroup: "Resort Collection",
+        id: "x9KZLQEmN_yuV",
+        name: "Emily Davis",
+        email: "emily.davis@elitehotels.com",
+        roles: [{ id: "role_6", name: "reception", status: true }],
+        business_units: [{ id: "bu_6", name: "BU-3234" }],
+        status: true,
+        lastActive: "2024-03-17T09:15:00Z",
+        hotelGroup: "Elite Hotels",
         hotel: "Mandarin Oriental",
-        department: "Operations",
-        modules: ["supply-chain", "spa-booking", "restaurant"],
+        department: "Front Desk",
+        modules: [
+            { id: "module_6", name: "reservations" },
+            { id: "module_7", name: "customer-service" }
+        ]
     },
     {
-        id: "chd2_66jRwpq",
-        name: "John Smith",
-        email: "john.smith@luxurycollection.com",
-        roles: ["inventory", "reports"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
-        lastActive: "2024-03-15T08:00:00Z",
+        id: "b5JTKVEmN_zpW",
+        name: "David Brown",
+        email: "david.brown@prestigehotels.com",
+        roles: [{ id: "role_7", name: "housekeeping", status: true }],
+        business_units: [{ id: "bu_7", name: "BU-4234" }],
+        status: true,
+        lastActive: "2024-03-18T14:20:00Z",
+        hotelGroup: "Prestige Hotels",
+        hotel: "InterContinental",
+        department: "Housekeeping",
+        modules: [
+            { id: "module_8", name: "cleaning" },
+            { id: "module_9", name: "maintenance" }
+        ]
+    },
+    {
+        id: "m2PLJXEmN_opD",
+        name: "Sophia Wilson",
+        email: "sophia.wilson@luxurycollection.com",
+        roles: [{ id: "role_9", name: "marketing", status: true }],
+        business_units: [
+            { id: "bu_8", name: "BU-5234" },
+            { id: "bu_9", name: "BU-5235" }
+        ],
+        status: false,
+        lastActive: "2024-03-11T11:10:00Z",
         hotelGroup: "Luxury Collection",
         hotel: "The Peninsula",
-        department: "Reports",
-        modules: ["supply-chain", "inventory", "reports"],
+        department: "Marketing",
+        modules: [
+            { id: "module_10", name: "advertising" },
+            { id: "module_11", name: "CRM" }
+        ]
     },
     {
-        id: "eeHp9tAjzRnf",
-        name: "Emily Brown",
-        email: "emily.brown@businesshotels.com",
-        roles: ["procurement", "reports"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
-        lastActive: "2024-03-15T09:30:00Z",
-        hotelGroup: "Business Hotels",
-        hotel: "Waldorf Astoria",
-        department: "Reports",
-        modules: ["supply-chain", "procurement", "reports"],
+        id: "w8QTZVEmN_lkH",
+        name: "Daniel Martinez",
+        email: "daniel.martinez@elitehotels.com",
+        roles: [{ id: "role_10", name: "concierge", status: true }],
+        business_units: [{ id: "bu_10", name: "BU-6234" }],
+        status: true,
+        lastActive: "2024-03-19T16:30:00Z",
+        hotelGroup: "Elite Hotels",
+        hotel: "St. Regis",
+        department: "Guest Services",
+        modules: [
+            { id: "module_12", name: "VIP-services" },
+            { id: "module_13", name: "guest-experience" }
+        ]
     },
     {
-        id: "fZy755555555",
-        name: "David Wilson",
-        email: "david.wilson@resortcollection.com",
-        roles: ["inventory", "restaurant-manager"],
-        businessUnits: ["BU-1234", "BU-1235", "BU-1236"],
-        status: "active",
-        lastActive: "2024-03-15T10:00:00Z",
-        hotelGroup: "Resort Collection",
-        hotel: "Shangri-La Hotel",
-        department: "Kitchen",
-        modules: ["supply-chain", "inventory", "restaurant"],
+        id: "k3XBVEmN_crL",
+        name: "Olivia Anderson",
+        email: "olivia.anderson@grandresorts.com",
+        roles: [{ id: "role_11", name: "manager", status: true }],
+        business_units: [
+            { id: "bu_11", name: "BU-7234" },
+            { id: "bu_12", name: "BU-7235" }
+        ],
+        status: true,
+        lastActive: "2024-03-20T10:50:00Z",
+        hotelGroup: "Grand Resorts",
+        hotel: "Bulgari Hotels",
+        department: "Events",
+        modules: [
+            { id: "module_14", name: "wedding-planning" },
+            { id: "module_15", name: "conferences" }
+        ]
+    },
+    {
+        id: "y5NQAVEmN_mpX",
+        name: "James White",
+        email: "james.white@prestigehotels.com",
+        roles: [{ id: "role_13", name: "security", status: true }],
+        business_units: [{ id: "bu_13", name: "BU-8234" }],
+        status: false,
+        lastActive: "2024-03-09T22:05:00Z",
+        hotelGroup: "Prestige Hotels",
+        hotel: "JW Marriott",
+        department: "Security",
+        modules: [
+            { id: "module_16", name: "monitoring" },
+            { id: "module_17", name: "safety" }
+        ]
+    },
+    {
+        id: "v9MLTVEmN_xtF",
+        name: "Lucas Harris",
+        email: "lucas.harris@grandresorts.com",
+        roles: [
+            { id: "role_14", name: "finance", status: true },
+            { id: "role_15", name: "operations", status: true }
+        ],
+        business_units: [
+            { id: "bu_14", name: "BU-9234" },
+            { id: "bu_15", name: "BU-9235" }
+        ],
+        status: true,
+        lastActive: "2024-03-14T18:40:00Z",
+        hotelGroup: "Grand Resorts",
+        hotel: "The Savoy",
+        department: "Finance",
+        modules: [
+            { id: "module_18", name: "accounting" },
+            { id: "module_19", name: "budgeting" }
+        ]
+    },
+    {
+        id: "z4PYRVEmN_qwL",
+        name: "Emma Scott",
+        email: "emma.scott@elitehotels.com",
+        roles: [{ id: "role_16", name: "spa", status: true }],
+        business_units: [{ id: "bu_16", name: "BU-10234" }],
+        status: true,
+        lastActive: "2024-03-16T20:55:00Z",
+        hotelGroup: "Elite Hotels",
+        hotel: "Raffles Hotels",
+        department: "Wellness",
+        modules: [
+            { id: "module_20", name: "spa-management" },
+            { id: "module_21", name: "wellness-programs" }
+        ]
     }
-]
+];
 
 export const platformRoles: ROLE_TYPE[] = [
     {

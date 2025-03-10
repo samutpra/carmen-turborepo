@@ -1,13 +1,18 @@
+"use client";
+
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { fetchUserPlatform } from '@/services/user/platform'
 import { HOTEL_GROUP_OPTION, MODULE_OPTION, ROLE_OPTION, STATUS_OPTION } from '@/types/option'
 import { User } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import ClusterPlatformList from './ClusterPlatformList'
-
-const ClusterPlatformComponent = async () => {
-    const users = await fetchUserPlatform();
+import { UserPlatformType } from '@/types/form/form'
+import DialogCluster from './DialogCluster';
+interface Props {
+    users: UserPlatformType[]
+}
+const ClusterPlatformComponent = ({ users }: Props) => {
+    const [clusterUsers, setClusterUsers] = useState<UserPlatformType[]>(users);
     return (
         <div className='space-y-6'>
             <div className='space-y-1 flex items-end justify-between'>
@@ -19,7 +24,7 @@ const ClusterPlatformComponent = async () => {
                 </div>
                 <div className='flex items-center gap-2'>
                     <User className='w-6 h-6' />
-                    <span className='text-lg font-medium text-muted-foreground'>{users.length} users</span>
+                    <span className='text-lg font-medium text-muted-foreground'>{clusterUsers?.length} users</span>
                 </div>
             </div>
             <div className="flex flex-col gap-2 md:grid md:grid-cols-3 md:items-center">
@@ -81,7 +86,10 @@ const ClusterPlatformComponent = async () => {
                     </Select>
                 </div>
             </div>
-            <ClusterPlatformList users={users} />
+            <div className='flex justify-end'>
+                <DialogCluster setClusterUsers={setClusterUsers} />
+            </div>
+            <ClusterPlatformList users={clusterUsers} />
         </div>
     )
 }

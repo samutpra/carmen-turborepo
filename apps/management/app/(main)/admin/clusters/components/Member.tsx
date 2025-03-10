@@ -19,8 +19,6 @@ const Member = async () => {
                     Manage users and roles across clusters
                 </p>
             </div>
-
-
             {/* <ClusterUsers /> */}
             <div className='flex items-center justify-between'>
                 <h2 className="text-2xl font-bold tracking-tight">Cluster Members</h2>

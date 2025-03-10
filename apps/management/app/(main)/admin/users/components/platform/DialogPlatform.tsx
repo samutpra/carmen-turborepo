@@ -88,6 +88,7 @@ const DialogPlatform: React.FC<DialogPlatformProps> = ({ setUserPlatform, userPl
             email: data.email,
             role: data.role,
             business_unit: data.business_unit,
+            modules: data.modules,
             status: data.status,
             last_active: new Date().toISOString(),
             created_at: new Date().toISOString(),

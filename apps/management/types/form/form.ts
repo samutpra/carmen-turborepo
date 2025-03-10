@@ -52,6 +52,12 @@ export const userPlatformFormSchema = z.object({
         id: z.string().optional(),
         name: z.string().min(2, "Role must be at least 2 characters"),
     })),
+    modules: z.array(z.object({
+        id: z.string().optional(),
+        name: z.string().min(2, "Module name must be at least 2 characters"),
+        status: z.boolean().default(true),
+    })),
+    hotel_group: z.string().optional().describe("Hotel group is required"),
     business_unit: z.array(z.object({
         id: z.string().optional(),
         name: z.string().min(2, "Business unit name must be at least 2 characters"),

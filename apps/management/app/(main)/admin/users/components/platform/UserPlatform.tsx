@@ -1,17 +1,18 @@
 'use client';
 
 import React from 'react';
-import { UserPlatformType } from '@/types/main';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { UserPlatformType } from '@/types/form/form';
 
 interface UserPlatformProps {
     users: UserPlatformType[];
 }
 
 const UserPlatform = ({ users }: UserPlatformProps) => {
+    console.log('users', users);
 
     return (
         <Card>
@@ -36,18 +37,18 @@ const UserPlatform = ({ users }: UserPlatformProps) => {
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell className='space-x-1'>
-                                    {user.roles.map((role: string) => (
-                                        <Badge variant="outline" className="capitalize" key={role}>
-                                            {role}
+                                    {user.roles?.map((role: { name: string; status: boolean; id?: string | undefined; }) => (
+                                        <Badge variant="outline" className="capitalize" key={role.id}>
+                                            {role.name}
                                         </Badge>
-                                    ))}
+                                    )) || null}
                                 </TableCell>
                                 <TableCell className='space-x-1'>
-                                    {user.businessUnits.map((businessUnit: string) => (
-                                        <Badge variant="outline" className="capitalize" key={businessUnit}>
-                                            {businessUnit}
+                                    {user.business_units?.map((bu: { name: string; id?: string | undefined; }) => (
+                                        <Badge variant="outline" className="capitalize" key={bu.id}>
+                                            {bu.name}
                                         </Badge>
-                                    ))}
+                                    )) || null}
                                 </TableCell>
                                 <TableCell>{user.status}</TableCell>
                                 <TableCell>{format(user.lastActive, 'dd/MM/yyyy')}</TableCell>
