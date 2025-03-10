@@ -6,9 +6,7 @@ import UserPlatformClient from './UserPlatformClient';
 
 const UserPlatformComponent = async () => {
     const users = await fetchUserPlatform();
-    return (
-        <UserPlatformClient users={users} />
-    )
+    return <UserPlatformClient users={users} />
 }
 
 export default UserPlatformComponent

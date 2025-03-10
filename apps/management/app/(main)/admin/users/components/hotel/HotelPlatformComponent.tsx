@@ -1,14 +1,18 @@
-import { User } from 'lucide-react'
-import React from 'react'
+'use client';
+
+import React, { useState } from 'react'
 import HotelPlatformList from './HotelPlatformList';
 import FilterHotelPlatform from './FilterHotelPlatform';
 import { UserPlatformType } from '@/types/form/form';
+import { User } from 'lucide-react'
+import DialogHotel from './DialogHotel';
 
 interface HotelPlatformComponentProps {
     users: UserPlatformType[]
 }
 
 const HotelPlatformComponent = ({ users }: HotelPlatformComponentProps) => {
+    const [hotelUsers, setHotelUsers] = useState<UserPlatformType[]>(users);
     return (
         <div className='space-y-6'>
             <div className='space-y-1 flex items-end justify-between'>
@@ -25,6 +29,9 @@ const HotelPlatformComponent = ({ users }: HotelPlatformComponentProps) => {
                 </div>
             </div>
             <FilterHotelPlatform />
+            <div className='flex items-center justify-end'>
+                <DialogHotel setHotelUsers={setHotelUsers} hotelUsers={hotelUsers} />
+            </div>
             <HotelPlatformList users={users} />
         </div>
     )
