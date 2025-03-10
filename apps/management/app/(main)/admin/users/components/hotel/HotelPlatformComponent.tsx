@@ -1,12 +1,14 @@
-import { fetchUserPlatform } from '@/services/user/platform';
 import { User } from 'lucide-react'
 import React from 'react'
 import HotelPlatformList from './HotelPlatformList';
 import FilterHotelPlatform from './FilterHotelPlatform';
+import { UserPlatformType } from '@/types/form/form';
 
+interface HotelPlatformComponentProps {
+    users: UserPlatformType[]
+}
 
-const HotelPlatformComponent = async () => {
-    const users = await fetchUserPlatform();
+const HotelPlatformComponent = ({ users }: HotelPlatformComponentProps) => {
     return (
         <div className='space-y-6'>
             <div className='space-y-1 flex items-end justify-between'>

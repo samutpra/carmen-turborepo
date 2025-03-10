@@ -1,8 +1,8 @@
 import React from 'react'
-import HotelPlatformComponent from '../components/hotel/HotelPlatformComponent';
+import HotelPlatformServer from '../components/hotel/HotelPlatformServer';
 
 const HotelsUsersPage = () => {
-    return <HotelPlatformComponent />
+    return <HotelPlatformServer />
 }
 
 export default HotelsUsersPage;
