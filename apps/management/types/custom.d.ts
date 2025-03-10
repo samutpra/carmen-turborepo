@@ -3,6 +3,7 @@
 declare module '@/components/UserPlatformForm' {
     import { z } from 'zod';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export const formSchema: z.ZodObject<any>;
 
     export type FormValues = {
