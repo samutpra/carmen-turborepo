@@ -7,31 +7,32 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "../context/AuthContext";
-import NextTopLoader from 'nextjs-toploader';
+import { FontConfigProvider } from "@/components/provider/FontConfigProvider";
+// import NextTopLoader from 'nextjs-toploader';
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+	src: "./fonts/GeistVF.woff",
+	variable: "--font-geist-sans",
+	weight: "100 900",
 });
 
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+	src: "./fonts/GeistMonoVF.woff",
+	variable: "--font-geist-mono",
+	weight: "100 900",
 });
 
 export const metadata: Metadata = {
-  title: "Carmen Inventory",
-  description: "Carmen Inventory",
+	title: "Carmen Inventory",
+	description: "Carmen Inventory",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
+	return (
 		<LanguageProvider>
 			<html lang={languageTag()}>
 				<body
@@ -44,8 +45,10 @@ export default function RootLayout({
 						disableTransitionOnChange
 					>
 						<AuthProvider>
-							<NextTopLoader color="hsl(var(--primary))" />
-							{children}
+							<FontConfigProvider>
+								{/* <NextTopLoader color="hsl(var(--primary))" /> */}
+								{children}
+							</FontConfigProvider>
 						</AuthProvider>
 					</ThemeProvider>
 					<Toaster />

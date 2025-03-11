@@ -1,16 +1,16 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_config_running_code,
-} from "@prisma-carmen-client-tenant";
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
+} from '@prisma/client';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
 import {
   ConfigRunningCodeCreateDto,
   ConfigRunningCodeUpdateDto,
-} from "shared-dtos/config/config-running-code";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+} from 'shared-dtos/config/config-running-code';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 @Injectable()
 export class RunningCodeService {
@@ -51,7 +51,7 @@ export class RunningCodeService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Running code not found");
+      throw new NotFoundException('Running code not found');
     }
 
     const res: ResponseSingle<tb_config_running_code> = {
@@ -136,7 +136,7 @@ export class RunningCodeService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Running code not found");
+      throw new NotFoundException('Running code not found');
     }
 
     const updatedObj = await this.db_tenant.tb_config_running_code.update({
@@ -163,7 +163,7 @@ export class RunningCodeService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Running code not found");
+      throw new NotFoundException('Running code not found');
     }
 
     await this.db_tenant.tb_config_running_code.delete({

@@ -1,13 +1,10 @@
-import { ResponseList } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseList } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import { Injectable, Logger } from "@nestjs/common";
-import {
-  enum_location_type,
-  PrismaClient as dbTenant,
-} from "@prisma-carmen-client-tenant";
+import { Injectable, Logger } from '@nestjs/common';
+import { enum_location_type, PrismaClient as dbTenant } from '@prisma/client';
 
 @Injectable()
 export class ProductLocationService {
@@ -35,7 +32,7 @@ export class ProductLocationService {
         tb_location: {
           is_active: true,
           OR: [
-            { name: { contains: q.search, mode: "insensitive" } },
+            { name: { contains: q.search, mode: 'insensitive' } },
             {
               location_type: Object.values(enum_location_type).includes(
                 q.search as enum_location_type,
@@ -54,7 +51,7 @@ export class ProductLocationService {
         tb_location: {
           is_active: true,
           OR: [
-            { name: { contains: q.search, mode: "insensitive" } },
+            { name: { contains: q.search, mode: 'insensitive' } },
             {
               location_type: Object.values(enum_location_type).includes(
                 q.search as enum_location_type,

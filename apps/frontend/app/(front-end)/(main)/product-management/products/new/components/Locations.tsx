@@ -59,7 +59,7 @@ const Locations: React.FC<LocationsProps> = ({ control }) => {
 	};
 
 	return (
-		<Card>
+		<Card className="h-full">
 			<CardHeader className="flex flex-row items-center justify-between">
 				<CardTitle>Locations</CardTitle>
 				<Button
@@ -67,111 +67,114 @@ const Locations: React.FC<LocationsProps> = ({ control }) => {
 					variant="outline"
 					size="sm"
 					onClick={handleAddLocation}
+					className="flex items-center gap-1"
 				>
-					<Plus className="mr-1 h-4 w-4" />
+					<Plus className="h-4 w-4" />
 					Add Location
 				</Button>
 			</CardHeader>
 			<CardContent className="pt-0">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Location</TableHead>
-							<TableHead>Type</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead className="w-[50px]"></TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{fields.map((field, index) => {
-							const location = getLocationById(field.location_id);
+				<div className="overflow-x-auto">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Location</TableHead>
+								<TableHead>Type</TableHead>
+								<TableHead>Status</TableHead>
+								<TableHead className="w-[50px]"></TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{fields.map((field, index) => {
+								const location = getLocationById(field.location_id);
 
-							return (
-								<TableRow key={field.id}>
-									<TableCell>
-										<Form.FormField
-											control={control}
-											name={`locations.add.${index}.location_id`}
-											render={({ field: formField }) => (
-												<Form.FormItem>
-													<Form.FormControl>
-														{editingIndex === index ? (
-															<SearchableDropdown
-																data={locations}
-																value={location || null}
-																onChange={(selectedLocation) => {
-																	if (selectedLocation?.id) {
-																		formField.onChange(selectedLocation.id);
-																		handleLocationSelect(selectedLocation.id, index);
-																	}
-																}}
-																displayValue={(loc) => loc?.name || ''}
-																getItemText={(loc) => loc.name || 'Unnamed Location'}
-																getItemId={(loc) => loc.id || ''}
-																searchFields={['name', 'location_type']}
-																placeholder="Select a location"
-																searchPlaceholder="Search locations..."
-																noResultsText="No matching locations found"
-																noDataText="No locations available"
-																className="w-full"
-															/>
-														) : (
-															<div
-																className="flex items-center cursor-pointer text-sm"
-																onClick={() => setEditingIndex(index)}
-															>
-																{location?.name || 'Select a location'}
-															</div>
-														)}
-													</Form.FormControl>
-												</Form.FormItem>
+								return (
+									<TableRow key={field.id}>
+										<TableCell>
+											<Form.FormField
+												control={control}
+												name={`locations.add.${index}.location_id`}
+												render={({ field: formField }) => (
+													<Form.FormItem>
+														<Form.FormControl>
+															{editingIndex === index ? (
+																<SearchableDropdown
+																	data={locations}
+																	value={location || null}
+																	onChange={(selectedLocation) => {
+																		if (selectedLocation?.id) {
+																			formField.onChange(selectedLocation.id);
+																			handleLocationSelect(selectedLocation.id, index);
+																		}
+																	}}
+																	displayValue={(loc) => loc?.name || ''}
+																	getItemText={(loc) => loc.name || 'Unnamed Location'}
+																	getItemId={(loc) => loc.id || ''}
+																	searchFields={['name', 'location_type']}
+																	placeholder="Select a location"
+																	searchPlaceholder="Search locations..."
+																	noResultsText="No matching locations found"
+																	noDataText="No locations available"
+																	className="w-full"
+																/>
+															) : (
+																<div
+																	className="flex items-center cursor-pointer text-sm"
+																	onClick={() => setEditingIndex(index)}
+																>
+																	{location?.name || 'Select a location'}
+																</div>
+															)}
+														</Form.FormControl>
+													</Form.FormItem>
+												)}
+											/>
+										</TableCell>
+										<TableCell>
+											{location ? (
+												<Badge variant="secondary" className="font-normal">
+													{location.location_type?.toUpperCase() || 'N/A'}
+												</Badge>
+											) : (
+												<span className="text-muted-foreground">-</span>
 											)}
-										/>
-									</TableCell>
-									<TableCell>
-										{location ? (
-											<Badge variant="secondary" className="font-normal">
-												{location.location_type?.toUpperCase() || 'N/A'}
-											</Badge>
-										) : (
-											<span className="text-muted-foreground">-</span>
-										)}
-									</TableCell>
-									<TableCell>
-										{location ? (
-											<Badge
-												variant={location.is_active ? 'default' : 'destructive'}
-												className={`font-normal ${location.is_active ? 'bg-green-100 text-green-700' : ''}`}
+										</TableCell>
+										<TableCell>
+											{location ? (
+												<Badge
+													variant={location.is_active ? 'default' : 'destructive'}
+													className={`font-normal ${location.is_active ? 'bg-green-100 text-green-700' : ''}`}
+												>
+													{location.is_active ? 'Active' : 'Inactive'}
+												</Badge>
+											) : (
+												<span className="text-muted-foreground">-</span>
+											)}
+										</TableCell>
+										<TableCell>
+											<Button
+												type="button"
+												variant="destructive"
+												size="icon"
+												onClick={() => remove(index)}
+												aria-label={`Remove ${location?.name || 'location'}`}
 											>
-												{location.is_active ? 'Active' : 'Inactive'}
-											</Badge>
-										) : (
-											<span className="text-muted-foreground">-</span>
-										)}
-									</TableCell>
-									<TableCell>
-										<Button
-											type="button"
-											variant="destructive"
-											size="icon"
-											onClick={() => remove(index)}
-											aria-label={`Remove ${location?.name || 'location'}`}
-										>
-											<Trash2 className="h-4 w-4" />
-										</Button>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</TableCell>
+									</TableRow>
+								);
+							})}
+							{fields.length === 0 && (
+								<TableRow>
+									<TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
+										No locations added. Click &quot;Add Location&quot; to add a location.
 									</TableCell>
 								</TableRow>
-							);
-						})}
-						{fields.length === 0 && (
-							<TableRow>
-								<TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
-									No locations added. Click &quot;Add Location&quot; to add a location.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
+							)}
+						</TableBody>
+					</Table>
+				</div>
 			</CardContent>
 		</Card>
 	);

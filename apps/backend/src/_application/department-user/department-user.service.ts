@@ -1,18 +1,15 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { PrismaClientManagerService } from "../../_lib/prisma-client-manager/prisma-client-manager.service";
-import {
-  PrismaClient as dbTenant,
-  tb_department_user,
-} from "@prisma-carmen-client-tenant";
-import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { PrismaClientManagerService } from '../../_lib/prisma-client-manager/prisma-client-manager.service';
+import { PrismaClient as dbTenant, tb_department_user } from '@prisma/client';
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
 import {
   DepartmentUserCreateDto,
   DepartmentUserUpdateDto,
-} from "shared-dtos/department-user/department-user.dto";
-import { DuplicateException } from "lib/utils";
+} from 'shared-dtos/department-user/department-user.dto';
+import { DuplicateException } from 'lib/utils';
 
 @Injectable()
 export class DepartmentUserService {
@@ -32,7 +29,7 @@ export class DepartmentUserService {
       select: {
         id: true,
         user_id: true,
-        hod: true,
+        is_hod: true,
         tb_department: {
           select: {
             id: true,
@@ -50,7 +47,7 @@ export class DepartmentUserService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department user not found");
+      throw new NotFoundException('Department user not found');
     }
 
     const res: ResponseSingle<any> = {
@@ -74,7 +71,7 @@ export class DepartmentUserService {
       select: {
         id: true,
         user_id: true,
-        hod: true,
+        is_hod: true,
         tb_department: {
           select: {
             id: true,
@@ -100,22 +97,22 @@ export class DepartmentUserService {
   async create(req: Request, createDto: DepartmentUserCreateDto) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant = await this.prisma.getTenantDB(business_unit_id);
-    this.db_system = this.prisma.getSystemDB();
+    // this.db_system = this.prisma.getSystemDB();
 
-    const user = await this.db_system.tb_user.findUnique({
-      where: { id: createDto.user_id },
-    });
+    // const user = await this.db_system.tb_user.findUnique({
+    //   where: { id: createDto.user_id },
+    // });
 
-    if (!user) {
-      throw new NotFoundException("User not found");
-    }
+    // if (!user) {
+    //   throw new NotFoundException('User not found');
+    // }
 
     const department = await this.db_tenant.tb_department.findUnique({
       where: { id: createDto.department_id },
     });
 
     if (!department) {
-      throw new NotFoundException("Department not found");
+      throw new NotFoundException('Department not found');
     }
 
     const found = await this.db_tenant.tb_department_user.findUnique({
@@ -128,7 +125,7 @@ export class DepartmentUserService {
     });
 
     if (found) {
-      throw new DuplicateException("Department user already exists");
+      throw new DuplicateException('Department user already exists');
     }
 
     const createObj = await this.db_tenant.tb_department_user.create({
@@ -150,7 +147,7 @@ export class DepartmentUserService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department user not found");
+      throw new NotFoundException('Department user not found');
     }
 
     if (updateDto.user_id) {
@@ -159,7 +156,7 @@ export class DepartmentUserService {
       });
 
       if (!user) {
-        throw new NotFoundException("User not found");
+        throw new NotFoundException('User not found');
       }
     }
 
@@ -169,7 +166,7 @@ export class DepartmentUserService {
       });
 
       if (!department) {
-        throw new NotFoundException("Department not found");
+        throw new NotFoundException('Department not found');
       }
     }
 
@@ -191,7 +188,7 @@ export class DepartmentUserService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Department user not found");
+      throw new NotFoundException('Department user not found');
     }
 
     await this.db_tenant.tb_department_user.delete({

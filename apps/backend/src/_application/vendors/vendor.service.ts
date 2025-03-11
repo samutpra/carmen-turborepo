@@ -1,20 +1,17 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils";
-import { VendorCreateDto, VendorUpdateDto } from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils';
+import { VendorCreateDto, VendorUpdateDto } from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
-import {
-  PrismaClient as dbTenant,
-  tb_vendor,
-} from "@prisma-carmen-client-tenant";
+} from '@nestjs/common';
+import { PrismaClient as dbTenant, tb_vendor } from '@prisma/client';
 
 @Injectable()
 export class VendorService {
@@ -43,7 +40,7 @@ export class VendorService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Vendor not found");
+      throw new NotFoundException('Vendor not found');
     }
     const res: ResponseSingle<tb_vendor> = {
       data: oneObj,
@@ -92,7 +89,7 @@ export class VendorService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "Vendor already exists",
+        message: 'Vendor already exists',
         id: found.id,
       });
     }
@@ -123,7 +120,7 @@ export class VendorService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Vendor not found");
+      throw new NotFoundException('Vendor not found');
     }
 
     const updateObj = await this.db_tenant.tb_vendor.update({
@@ -147,7 +144,7 @@ export class VendorService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Vendor not found");
+      throw new NotFoundException('Vendor not found');
     }
 
     await this.db_tenant.tb_vendor.delete({

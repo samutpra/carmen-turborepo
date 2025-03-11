@@ -10,26 +10,26 @@ import {
   Query,
   Req,
   UseGuards,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiParam,
   ApiTags,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/_lib/auth/guards/jwt.guard";
-import QueryParams, { QueryAdvance } from "lib/types";
-import { UnitCommentService } from "./unit-comment.service";
-import { UnitCommentCreateDto, UnitCommentUpdateDto } from "shared-dtos";
-import { ApiUserFilterQueries } from "lib/decorator/userfilter.decorator";
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/_lib/auth/guards/jwt.guard';
+import QueryParams, { QueryAdvance } from 'lib/types';
+import { UnitCommentService } from './unit-comment.service';
+import { UnitCommentCreateDto, UnitCommentUpdateDto } from 'shared-dtos';
+import { ApiUserFilterQueries } from 'lib/decorator/userfilter.decorator';
 
-@Controller("api/v1/unit-comment")
-@ApiTags("unit-comment")
+@Controller('api/v1/unit-comment')
+@ApiTags('unit-comment')
 @ApiBearerAuth()
 @ApiHeader({
-  name: "x-tenant-id",
-  description: "tenant id",
+  name: 'x-tenant-id',
+  description: 'tenant id',
 })
 @UseGuards(JwtAuthGuard)
 export class UnitCommentController {
@@ -37,14 +37,14 @@ export class UnitCommentController {
 
   private readonly logger = new Logger(UnitCommentController.name);
 
-  @Get(":id")
+  @Get(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async findOne(@Param("id") id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.unitCommentService.findOne(req, id);
   }
@@ -53,19 +53,19 @@ export class UnitCommentController {
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
-    @Query("page") page?: number,
-    @Query("perpage") perpage?: number,
-    @Query("search") search?: string,
-    @Query("searchfields") searchfields?: string,
-    @Query("filter") filter?: Record<string, string>,
-    @Query("sort") sort?: string,
-    @Query("advance") advance?: QueryAdvance,
+    @Query('page') page?: number,
+    @Query('perpage') perpage?: number,
+    @Query('search') search?: string,
+    @Query('searchfields') searchfields?: string,
+    @Query('filter') filter?: Record<string, string>,
+    @Query('sort') sort?: string,
+    @Query('advance') advance?: QueryAdvance,
   ) {
     this.logger.debug({
       file: UnitCommentController.name,
       function: this.findAll.name,
     });
-    const defaultSearchFields: string[] = ["message"];
+    const defaultSearchFields: string[] = ['message'];
 
     this.logger.debug({
       page: page,
@@ -95,7 +95,7 @@ export class UnitCommentController {
   @Post()
   @ApiBody({
     type: UnitCommentCreateDto,
-    description: "UnitCommentCreateDto",
+    description: 'UnitCommentCreateDto',
   })
   async create(@Req() req: Request, @Body() body: UnitCommentCreateDto) {
     this.logger.debug({
@@ -106,19 +106,19 @@ export class UnitCommentController {
     return this.unitCommentService.create(req, body);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
   @ApiBody({
     type: UnitCommentUpdateDto,
-    description: "UnitCommentUpdateDto",
+    description: 'UnitCommentUpdateDto',
   })
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Req() req: Request,
     @Body() body: any,
   ) {
@@ -131,14 +131,14 @@ export class UnitCommentController {
     return this.unitCommentService.update(req, id, body);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @ApiParam({
-    name: "id",
-    description: "id",
+    name: 'id',
+    description: 'id',
     required: true,
-    type: "uuid",
+    type: 'uuid',
   })
-  async delete(@Param("id") id: string, @Req() req: Request) {
+  async delete(@Param('id') id: string, @Req() req: Request) {
     this.logger.debug({ id: id });
     return this.unitCommentService.delete(req, id);
   }

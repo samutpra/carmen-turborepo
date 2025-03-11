@@ -1,10 +1,10 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { PrismaClientManagerService } from "../../../_lib/prisma-client-manager/prisma-client-manager.service";
-import { PrismaClient as dbTenant } from "@prisma-carmen-client-tenant";
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { PrismaClientManagerService } from '../../../_lib/prisma-client-manager/prisma-client-manager.service';
+import { PrismaClient as dbTenant } from '@prisma/client';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
 
-import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
 
 @Injectable()
 export class UserBusinessUnitService {
@@ -22,7 +22,7 @@ export class UserBusinessUnitService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     const userBusinessUnit = await this.db_system.tb_user_tb_business_unit
       .findMany({
@@ -73,7 +73,7 @@ export class UserBusinessUnitService {
 
   async setDefaultTenant(req: Request) {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     // Update the default tenant
     await this.db_system.tb_user_tb_business_unit.updateMany({

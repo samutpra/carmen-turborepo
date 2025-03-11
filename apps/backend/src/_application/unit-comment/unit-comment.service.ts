@@ -1,14 +1,11 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { PrismaClientManagerService } from "../../_lib/prisma-client-manager/prisma-client-manager.service";
-import {
-  PrismaClient as dbTenant,
-  tb_unit_comment,
-} from "@prisma-carmen-client-tenant";
-import { PrismaClient as dbSystem } from "@prisma-carmen-client-system";
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { UnitCommentCreateDto, UnitCommentUpdateDto } from "shared-dtos";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { PrismaClientManagerService } from '../../_lib/prisma-client-manager/prisma-client-manager.service';
+import { PrismaClient as dbTenant, tb_unit_comment } from '@prisma/client';
+import { PrismaClient as dbSystem } from '@prisma-carmen-client-system';
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { UnitCommentCreateDto, UnitCommentUpdateDto } from 'shared-dtos';
 // import {
 //   UnitCommentCreateDto,
 //   UnitCommentUpdateDto,
@@ -31,7 +28,7 @@ export class UnitCommentService {
       file: UnitCommentService.name,
       function: this._getById.name,
     });
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
     const res = await db_tenant.tb_unit_comment
       .findUnique({
         where: { id },
@@ -78,7 +75,7 @@ export class UnitCommentService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Unit comment not found");
+      throw new NotFoundException('Unit comment not found');
     }
 
     const res: ResponseSingle<tb_unit_comment> = {
@@ -97,7 +94,7 @@ export class UnitCommentService {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
     this.db_tenant =
       await this.prismaClientManager.getTenantDB(business_unit_id);
-    this.db_system = this.prismaClientManager.getSystemDB();
+    // this.db_system = this.prismaClientManager.getSystemDB();
 
     const max = await this.db_tenant.tb_unit_comment.count({
       where: q.where(),
@@ -198,7 +195,7 @@ export class UnitCommentService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Unit comment not found");
+      throw new NotFoundException('Unit comment not found');
     }
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {
@@ -233,7 +230,7 @@ export class UnitCommentService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("Unit comment not found");
+      throw new NotFoundException('Unit comment not found');
     }
 
     const tx = this.db_tenant.$transaction(async (transactionClient) => {

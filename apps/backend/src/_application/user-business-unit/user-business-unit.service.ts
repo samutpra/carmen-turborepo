@@ -1,15 +1,15 @@
-import { ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   PrismaClient as dbSystem,
   tb_user_tb_business_unit,
-} from "@prisma-carmen-client-system";
+} from '@prisma-carmen-client-system';
 
-import { UserBusinessUnitController } from "./user-business-unit.controller";
+import { UserBusinessUnitController } from './user-business-unit.controller';
 
 @Injectable()
 export class UserBusinessUnitService {
@@ -53,11 +53,11 @@ export class UserBusinessUnitService {
     id: string,
   ): Promise<ResponseSingle<tb_user_tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientManager.getSystemDB();
+    // this.db_System = this.prismaClientManager.getSystemDB();
     const oneObj = await this._getById(this.db_System, id, user_id);
 
     if (!oneObj) {
-      throw new NotFoundException("User - BusinessUnit not found");
+      throw new NotFoundException('User - BusinessUnit not found');
     }
     const res: ResponseSingle<tb_user_tb_business_unit> = {
       data: oneObj,
@@ -70,7 +70,7 @@ export class UserBusinessUnitService {
     q: QueryParams,
   ): Promise<ResponseList<tb_user_tb_business_unit>> {
     const { user_id, business_unit_id } = this.extractReqService.getByReq(req);
-    this.db_System = this.prismaClientManager.getSystemDB();
+    // this.db_System = this.prismaClientManager.getSystemDB();
     const q_where = {
       ...q.where(),
       AND: {

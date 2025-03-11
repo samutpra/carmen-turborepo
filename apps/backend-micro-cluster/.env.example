@@ -1,0 +1,41 @@
+# Service port number
+
+## gateway service
+
+GATEWAY_SERVICE_HOST=0.0.0.0
+GATEWAY_SERVICE_PORT=4000
+
+## microservice authentication
+
+AUTH_SERVICE_HOST=0.0.0.0
+AUTH_SERVICE_PORT=5001
+
+## microservice cluster
+
+CLUSTER_SERVICE_HOST=0.0.0.0
+CLUSTER_SERVICE_PORT=5002
+
+## microservice license
+
+LICENSE_SERVICE_HOST=0.0.0.0
+LICENSE_SERVICE_PORT=5003
+
+## microservice reports
+
+REPORT_SERVICE_HOST=0.0.0.0
+REPORT_SERVICE_PORT=5004
+
+## microservice tenant
+
+TENANT_SERVICE_HOST=0.0.0.0
+TENANT_SERVICE_PORT=5005
+
+## microservice notifications
+
+NOTIFICATION_SERVICE_HOST=0.0.0.0
+NOTIFICATION_SERVICE_PORT=5006
+
+## microservice files
+
+FILE_SERVICE_HOST=0.0.0.0
+FILE_SERVICE_PORT=5007

@@ -1,23 +1,23 @@
-import { ResponseId, ResponseList, ResponseSingle } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { DuplicateException } from "lib/utils/exceptions";
+import { ResponseId, ResponseList, ResponseSingle } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { DuplicateException } from 'lib/utils/exceptions';
 import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
-} from "shared-dtos";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+} from 'shared-dtos';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
 import {
   HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 import {
   PrismaClient as dbTenant,
   tb_product_sub_category,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma/client';
 
 @Injectable()
 export class ProductSubCategoryService {
@@ -52,7 +52,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("ProductSubCategory not found");
+      throw new NotFoundException('ProductSubCategory not found');
     }
     const res: ResponseSingle<tb_product_sub_category> = {
       data: oneObj,
@@ -109,7 +109,7 @@ export class ProductSubCategoryService {
     if (found) {
       throw new DuplicateException({
         statusCode: HttpStatus.CONFLICT,
-        message: "ProductSubCategory already exists",
+        message: 'ProductSubCategory already exists',
         id: found.id,
       });
     }
@@ -140,7 +140,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("ProductSubCategory not found");
+      throw new NotFoundException('ProductSubCategory not found');
     }
 
     const updateObj = await this.db_tenant.tb_product_sub_category.update({
@@ -164,7 +164,7 @@ export class ProductSubCategoryService {
     const oneObj = await this._getById(this.db_tenant, id);
 
     if (!oneObj) {
-      throw new NotFoundException("ProductSubCategory not found");
+      throw new NotFoundException('ProductSubCategory not found');
     }
 
     await this.db_tenant.tb_product_sub_category.delete({

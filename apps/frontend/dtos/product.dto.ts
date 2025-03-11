@@ -342,7 +342,6 @@ export interface ProductModel {
 }
 
 export const productFormSchema = z.object({
-	code: z.string().optional(),
 	name: z.string(),
 	local_name: z.string(),
 	description: z.string(),
@@ -404,12 +403,10 @@ export const productFormSchema = z.object({
 					unit_quantity: z.number(),
 					to_unit_id: z.string(),
 					to_unit_quantity: z.number(),
-					description: z.string(),
 				})
 			),
 		})
 		.optional(),
-
 	countUnits: z
 		.object({
 			add: z.array(
@@ -418,7 +415,18 @@ export const productFormSchema = z.object({
 					unit_quantity: z.number(),
 					to_unit_id: z.string(),
 					to_unit_quantity: z.number(),
-					description: z.string(),
+				})
+			),
+		})
+		.optional(),
+	ingredientsUnits: z
+		.object({
+			add: z.array(
+				z.object({
+					unit_id: z.string(),
+					unit_quantity: z.number(),
+					to_unit_id: z.string(),
+					to_unit_quantity: z.number(),
 				})
 			),
 		})

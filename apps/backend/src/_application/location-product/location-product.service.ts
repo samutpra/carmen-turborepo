@@ -1,13 +1,13 @@
-import { ResponseList } from "lib/helper/iResponse";
-import QueryParams from "lib/types";
-import { ExtractReqService } from "src/_lib/auth/extract-req/extract-req.service";
-import { PrismaClientManagerService } from "src/_lib/prisma-client-manager/prisma-client-manager.service";
+import { ResponseList } from 'lib/helper/iResponse';
+import QueryParams from 'lib/types';
+import { ExtractReqService } from 'src/_lib/auth/extract-req/extract-req.service';
+import { PrismaClientManagerService } from 'src/_lib/prisma-client-manager/prisma-client-manager.service';
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 import {
   enum_product_status_type,
   PrismaClient as dbTenant,
-} from "@prisma-carmen-client-tenant";
+} from '@prisma/client';
 
 @Injectable()
 export class LocationProductService {
@@ -33,8 +33,8 @@ export class LocationProductService {
       where: {
         location_id: id,
         OR: [
-          { tb_product: { name: { contains: q.search, mode: "insensitive" } } },
-          { tb_product: { code: { contains: q.search, mode: "insensitive" } } },
+          { tb_product: { name: { contains: q.search, mode: 'insensitive' } } },
+          { tb_product: { code: { contains: q.search, mode: 'insensitive' } } },
           {
             tb_product: {
               product_status_type: Object.values(
@@ -52,8 +52,8 @@ export class LocationProductService {
       where: {
         location_id: id,
         OR: [
-          { tb_product: { name: { contains: q.search, mode: "insensitive" } } },
-          { tb_product: { code: { contains: q.search, mode: "insensitive" } } },
+          { tb_product: { name: { contains: q.search, mode: 'insensitive' } } },
+          { tb_product: { code: { contains: q.search, mode: 'insensitive' } } },
           {
             tb_product: {
               product_status_type: Object.values(

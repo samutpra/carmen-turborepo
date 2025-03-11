@@ -18,7 +18,7 @@ const Attributes = ({ control }: AttributesProps) => {
 	});
 
 	return (
-		<Card>
+		<Card className="h-full">
 			<CardHeader className="flex flex-row items-center justify-between">
 				<CardTitle>Attributes</CardTitle>
 				<Button
@@ -33,12 +33,15 @@ const Attributes = ({ control }: AttributesProps) => {
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{fields.map((field, index) => (
-					<div key={field.id} className="flex gap-4 items-start">
+					<div
+						key={field.id}
+						className="grid grid-cols-[1fr_1fr_auto] gap-3 items-start"
+					>
 						<Form.FormField
 							control={control}
 							name={`info.0.attribute.${index}.label`}
 							render={({ field }) => (
-								<Form.FormItem className="flex-1">
+								<Form.FormItem>
 									<Form.FormLabel>Label</Form.FormLabel>
 									<Form.FormControl>
 										<Input {...field} />
@@ -50,7 +53,7 @@ const Attributes = ({ control }: AttributesProps) => {
 							control={control}
 							name={`info.0.attribute.${index}.value`}
 							render={({ field }) => (
-								<Form.FormItem className="flex-1">
+								<Form.FormItem>
 									<Form.FormLabel>Value</Form.FormLabel>
 									<Form.FormControl>
 										<Input {...field} />
@@ -64,11 +67,17 @@ const Attributes = ({ control }: AttributesProps) => {
 							size="icon"
 							className="mt-8"
 							onClick={() => remove(index)}
+							aria-label="Remove attribute"
 						>
 							<Trash2 className="h-4 w-4" />
 						</Button>
 					</div>
 				))}
+				{fields.length === 0 && (
+					<div className="text-center py-4 text-muted-foreground text-xs">
+						No attributes added. Click &quot;Add Attribute&quot; to add an attribute.
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);

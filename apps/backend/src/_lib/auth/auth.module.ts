@@ -1,6 +1,5 @@
 import * as dotenv from 'dotenv';
 import { SendMailModule } from 'src/_lib/send-mail/send-mail.module';
-import { SystemUserModule } from 'src/_system/system-users/system-users.module';
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -20,7 +19,6 @@ dotenv.config();
 @Module({
   imports: [
     PrismaClientManagerModule,
-    SystemUserModule,
     PassportModule,
     SendMailModule,
     JwtModule.register({
