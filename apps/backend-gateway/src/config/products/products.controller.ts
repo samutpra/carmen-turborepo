@@ -53,13 +53,13 @@ export class ProductsController {
     // return this.productsService.getOrderUnitByProductId(id);
   }
 
-  @Get('recipe-unit/:id')
-  async getRecipeUnitByProductId(@Param('id') id: string) {
+  @Get('ingredient-unit/:id')
+  async getIngredientUnitByProductId(@Param('id') id: string) {
     this.logger.debug({
       file: ProductsController.name,
-      function: this.getRecipeUnitByProductId.name,
+      function: this.getIngredientUnitByProductId.name,
     });
-    // return this.productsService.getRecipeUnitByProductId(id);
+    // return this.productsService.getIngredientUnitByProductId(id);
   }
 
   @Post('')

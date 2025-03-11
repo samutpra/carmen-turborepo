@@ -25,8 +25,8 @@ export class ProductsService {
     return await this.buAxios.get(`/products/order-unit/${id}`);
   }
 
-  async getRecipeUnitByProductId(id: string) {
-    return await this.buAxios.get(`/products/recipe-unit/${id}`);
+  async getIngredientUnitByProductId(id: string) {
+    return await this.buAxios.get(`/products/ingredient-unit/${id}`);
   }
 
   async create(createDto: any) {
