@@ -1,5 +1,5 @@
 /** @format */
 
-export { prisma } from './client';
+export { prisma_system } from './client';
 
 export * from '../generated/client';
