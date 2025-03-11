@@ -10161,6 +10161,10 @@ prisma-markdown@^1.0.9:
   dependencies:
     "@prisma/generator-helper" "^5.0.0"
 
+"prisma-shared-schema-platform@file:/Users/samutpra/Documents/GitHub/turbo-repo/carmen-turborepo/apps/prisma-shared-schema-platform":
+  version "1.0.0"
+  resolved "file:apps/prisma-shared-schema-platform"
+
 prisma@*, prisma@^6.3.1, prisma@^6.4.1, "prisma@>= 5.0.0":
   version "6.4.1"
   resolved "https://registry.npmjs.org/prisma/-/prisma-6.4.1.tgz"
