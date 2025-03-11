@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosInstance } from 'axios';
 import { buAxios } from 'src/common/helpers/requests/axios.helper';
+import { ICreditNoteCreate } from './dto/credit-note.dto';
 
 @Injectable()
 export class CreditNoteService {
@@ -17,7 +18,7 @@ export class CreditNoteService {
     return await this.buAxios.get(`/credit-notes`);
   }
 
-  async create(createDto: any) {
+  async create(createDto: ICreditNoteCreate) {
     return await this.buAxios.post(`/credit-notes`, createDto);
   }
 

@@ -6,8 +6,11 @@ import {
   Body,
   Put,
   Delete,
+  UsePipes,
 } from '@nestjs/common';
 import { CreditNoteService } from './credit-note.service';
+import { CreditNoteCreateDto } from './dto/credit-note.dto';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('credit-note')
 export class CreditNoteController {
@@ -23,8 +26,9 @@ export class CreditNoteController {
     return this.creditNoteService.findAll();
   }
 
+  @UsePipes(ZodValidationPipe)
   @Post()
-  async create(@Body() createDto: any) {
+  async create(@Body() createDto: CreditNoteCreateDto) {
     return this.creditNoteService.create(createDto);
   }
 
