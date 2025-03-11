@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
-import { FileUploadResponseDto } from '../dto/file-upload.dto';
+import { FileUploadResponseDto } from '../../shared-dto/file-upload.dto';
 
 @Injectable()
 export class FileUploadService {

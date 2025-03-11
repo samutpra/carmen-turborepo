@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ClusterService } from './cluster.service';
 import { ClusterController } from './cluster.controller';
+import { ClusterService } from './cluster.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   controllers: [ClusterController],
-  providers: [ClusterService],
+  providers: [ClusterService, PrismaService],
 })
 export class ClusterModule {}
