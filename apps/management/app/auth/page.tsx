@@ -1,17 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
 
 const AuthPage = () => {
+    const { login, loading, error: authError } = useAuth();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('login');
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-        // Implement login logic here
+    const handleLogin = async (e: FormEvent) => {
+        e.preventDefault();
+        setError('');
+
+        try {
+            const { email, password } = formData;
+            await login(email, password, rememberMe);
+        } catch (err) {
+            setError('Login failed. Please check your credentials and try again.');
+            console.error('Login error:', err);
+        }
     };
 
     return (
@@ -29,81 +50,86 @@ const AuthPage = () => {
                         <p className="text-gray-400">Welcome to Carmen Platform</p>
                     </div>
 
+                    {(error || authError) && (
+                        <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded">
+                            {error || authError}
+                        </div>
+                    )}
+
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="space-y-4">
                             <div>
+                                <label htmlFor="email" className="block text-sm font-medium mb-2">
+                                    Email
+                                </label>
                                 <input
-                                    type="text"
-                                    placeholder="Username"
-                                    className="w-full bg-[#27272a] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    required
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-white"
+                                    placeholder="Enter your email"
+
                                 />
                             </div>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Password"
-                                    className="w-full bg-[#27272a] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                                >
-                                    {showPassword ? "👁️" : "👁️‍🗨️"}
-                                </button>
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium mb-2">
+                                    Password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        required
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-white"
+                                        placeholder="Enter your password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showPassword ? 'Hide' : 'Show'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="remember"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                            />
-                            <label htmlFor="remember" className="ml-2 text-sm text-gray-400">
-                                Remember me
-                            </label>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input
+                                    id="remember-me"
+                                    name="remember-me"
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={() => setRememberMe(!rememberMe)}
+                                    className="h-4 w-4 bg-zinc-800 border-zinc-700 rounded"
+                                />
+                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+                                    Remember me
+                                </label>
+                            </div>
+                            <div className="text-sm">
+                                <Link href="/auth/forgot-password" className="text-primary hover:text-primary/80">
+                                    Forgot your password?
+                                </Link>
+                            </div>
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 transition-opacity"
+                            disabled={loading}
+                            className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-4 rounded-lg flex justify-center"
                         >
-                            Login
+                            {loading ? 'Signing in...' : 'Sign in'}
                         </button>
-
-                        <div className="text-center">
-                            <Link href="/forgot-password" className="text-sm text-gray-400 hover:text-white">
-                                Forgot password ?
-                            </Link>
-                        </div>
-
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-600"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-[#18181b] text-gray-400">Or</span>
-                            </div>
-                        </div>
-                        <div className="text-center text-sm text-gray-400">
-                            Don&apos;t have an account ?{" "}
-                            <Link href="/signup" className="text-white hover:underline">
-                                Signup
-                            </Link>
-                        </div>
                     </form>
-
-                    <div className="flex justify-center space-x-6 text-sm text-gray-400">
-                        <Link href="/terms" className="hover:text-white">
-                            Terms & Conditions
-                        </Link>
-                        <Link href="/support" className="hover:text-white">
-                            Support
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
