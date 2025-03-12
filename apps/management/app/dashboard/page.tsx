@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProtectedRoute from '@/components/auth/protected-route';
 import { useAuth } from '@/contexts/auth-context';
+import { ProtectedLayout } from '@/components/layout/protected-layout';
 
 // Define role color configuration
 const roleColorConfig: Record<string, { bg: string, text: string, cardBg: string, highlight: string }> = {
@@ -59,21 +59,17 @@ const DashboardPage = () => {
         }
     }, [user]);
 
-    const handleLogout = () => {
-        logout();
-    };
-
     // Get the appropriate color scheme based on the user's role
     const colorScheme = user?.role_user ? roleColorConfig[user.role_user] || roleColorConfig.default : roleColorConfig.default;
 
     return (
-        <ProtectedRoute>
-            <div className={`min-h-screen ${colorScheme.bg} ${colorScheme.text}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <ProtectedLayout>
+            <div className={`${colorScheme.text}`}>
+                <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-3xl font-bold">Dashboard</h1>
                         <button
-                            onClick={handleLogout}
+                            onClick={logout}
                             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
                         >
                             Logout
@@ -176,7 +172,7 @@ const DashboardPage = () => {
                     </div>
                 </div>
             </div>
-        </ProtectedRoute>
+        </ProtectedLayout>
     );
 };
 
