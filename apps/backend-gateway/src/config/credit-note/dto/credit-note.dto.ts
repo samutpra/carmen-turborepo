@@ -1,4 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
+import { createZodDto, zodToOpenAPI } from 'nestjs-zod';
 import { z } from 'zod';
 
 export const CreditNoteCreateSchema = z.object({
@@ -22,7 +22,7 @@ export class CreditNoteCreateDto extends createZodDto(CreditNoteCreateSchema) {}
 // }
 
 export const CreditNoteUpdateSchema = z.object({
-  id: z.string().uuid().optional(),
+  // id: z.string().uuid().optional(),
   name: z.string().optional(),
   description: z.string().optional(),
   amount: z.number().optional(),
@@ -30,7 +30,9 @@ export const CreditNoteUpdateSchema = z.object({
   inventory_transaction_id: z.string().uuid().optional(),
 });
 
-export type ICreditNoteUpdate = z.infer<typeof CreditNoteUpdateSchema>;
+export type ICreditNoteUpdate = z.infer<typeof CreditNoteUpdateSchema> & {
+  id?: string;
+};
 
 export class CreditNoteUpdateDto extends createZodDto(CreditNoteUpdateSchema) {}
 // export class CreditNoteUpdateDto implements CreditNoteUpdateModel {
