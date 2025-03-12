@@ -1,7 +1,7 @@
 import { Controller, Logger, Post, Body, Query, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -9,19 +9,34 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: any, @Query('version') version: string) {
-    this.logger.log('login');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.login.name,
+      loginDto: loginDto,
+      version: version,
+    });
     return this.authService.login(loginDto, version);
   }
 
   @Post('register')
   async register(@Body() registerDto: any, @Query('version') version: string) {
-    this.logger.log('Register');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.register.name,
+      registerDto: registerDto,
+      version: version,
+    });
     return this.authService.register(registerDto, version);
   }
 
   @Post('logout')
   async logout(@Body() logoutDto: any, @Query('version') version: string) {
-    this.logger.log('Logout');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.logout.name,
+      logoutDto: logoutDto,
+      version: version,
+    });
     return this.authService.logout(logoutDto, version);
   }
 
@@ -30,7 +45,12 @@ export class AuthController {
     @Body() refreshTokenDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Refresh Token');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.refreshToken.name,
+      refreshTokenDto: refreshTokenDto,
+      version: version,
+    });
     return this.authService.refreshToken(refreshTokenDto, version);
   }
 
@@ -39,7 +59,12 @@ export class AuthController {
     @Body() verifyTokenDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Verify Token');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.verifyToken.name,
+      verifyTokenDto: verifyTokenDto,
+      version: version,
+    });
     return this.authService.verifyToken(verifyTokenDto, version);
   }
 
@@ -48,7 +73,12 @@ export class AuthController {
     @Body() forgotPasswordDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Forgot Password');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.forgotPassword.name,
+      forgotPasswordDto: forgotPasswordDto,
+      version: version,
+    });
     return this.authService.forgotPassword(forgotPasswordDto, version);
   }
 
@@ -57,7 +87,12 @@ export class AuthController {
     @Body() resetPasswordDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Reset Password');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.resetPassword.name,
+      resetPasswordDto: resetPasswordDto,
+      version: version,
+    });
     return this.authService.resetPassword(resetPasswordDto, version);
   }
 
@@ -66,7 +101,12 @@ export class AuthController {
     @Body() changePasswordDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Change Password');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.changePassword.name,
+      changePasswordDto: changePasswordDto,
+      version: version,
+    });
     return this.authService.changePassword(changePasswordDto, version);
   }
 
@@ -75,7 +115,12 @@ export class AuthController {
     @Body() changeEmailDto: any,
     @Query('version') version: string,
   ) {
-    this.logger.log('Change Email');
+    this.logger.log({
+      file: AuthController.name,
+      function: this.changeEmail.name,
+      changeEmailDto: changeEmailDto,
+      version: version,
+    });
     return this.authService.changeEmail(changeEmailDto, version);
   }
 }

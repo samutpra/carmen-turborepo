@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { FileUploadService } from './services/file-upload.service';
+import { FileUploadController } from './file-upload/file-upload.controller';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    FileUploadModule,
   ],
-  controllers: [AppController],
-  providers: [FileUploadService],
+  controllers: [FileUploadController],
 })
 export class AppModule {}

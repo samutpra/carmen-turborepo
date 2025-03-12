@@ -6,6 +6,9 @@ import { VendorProductModule } from './vendor-product/vendor-product.module';
 import { LocationsUserModule } from './locations-user/locations-user.module';
 import { UnitCommentModule } from './unit-comment/unit-comment.module';
 import { DepartmentUserModule } from './department-user/department-user.module';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { APP_PIPE } from '@nestjs/core';
+import { CreditNoteModule } from './config/credit-note/credit-note.module';
 
 @Module({
   imports: [
@@ -14,8 +17,15 @@ import { DepartmentUserModule } from './department-user/department-user.module';
     UnitCommentModule,
     LocationsUserModule,
     VendorProductModule,
+    CreditNoteModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
+    },
+  ],
 })
 export class AppModule {}

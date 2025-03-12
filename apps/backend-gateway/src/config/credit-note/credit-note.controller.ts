@@ -6,10 +6,17 @@ import {
   Body,
   Put,
   Delete,
+  UsePipes,
 } from '@nestjs/common';
 import { CreditNoteService } from './credit-note.service';
+import {
+  CreditNoteCreateDto,
+  CreditNoteUpdateDto,
+} from './dto/credit-note.dto';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('credit-note')
+@UsePipes(ZodValidationPipe)
 export class CreditNoteController {
   constructor(private readonly creditNoteService: CreditNoteService) {}
 
@@ -24,12 +31,16 @@ export class CreditNoteController {
   }
 
   @Post()
-  async create(@Body() createDto: any) {
+  async create(@Body() createDto: CreditNoteCreateDto) {
     return this.creditNoteService.create(createDto);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateDto: any) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: CreditNoteUpdateDto,
+  ) {
+    // updateDto.id = id;
     return this.creditNoteService.update(id, updateDto);
   }
 

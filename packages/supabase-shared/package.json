@@ -1,0 +1,16 @@
+{
+  "name": "@repo/supabase-shared",
+  "version": "1.0.0",
+  "description": "Shared supabase client and utils",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
