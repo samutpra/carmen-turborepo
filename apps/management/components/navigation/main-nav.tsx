@@ -12,7 +12,12 @@ type MenuItem = {
     requiredRoles: string[];
 };
 
-export const MainNav = () => {
+type MainNavProps = {
+    isSidebar?: boolean;
+    sidebarColorClass?: string;
+};
+
+export const MainNav = ({ isSidebar = false, sidebarColorClass = 'hover:bg-zinc-700' }: MainNavProps) => {
     const pathname = usePathname();
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
@@ -73,6 +78,28 @@ export const MainNav = () => {
     // Mobile menu toggle
     const toggleMenu = () => setIsOpen(!isOpen);
 
+    // Sidebar layout
+    if (isSidebar) {
+        return (
+            <nav className="space-y-1">
+                {filteredMenuItems.map(item => (
+                    <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`flex items-center px-4 py-3 rounded-md text-sm font-medium transition-colors ${pathname === item.href
+                            ? 'bg-primary/20 text-primary'
+                            : `text-gray-300 ${sidebarColorClass}`
+                            }`}
+                    >
+                        <span className="mr-3">{item.icon}</span>
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+        );
+    }
+
+    // Original horizontal navbar layout
     return (
         <>
             {/* Desktop Navigation */}
@@ -82,8 +109,8 @@ export const MainNav = () => {
                         key={item.name}
                         href={item.href}
                         className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${pathname === item.href
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                             }`}
                     >
                         <span className="mr-2">{item.icon}</span>
@@ -111,8 +138,8 @@ export const MainNav = () => {
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${pathname === item.href
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                                     }`}
                                 onClick={() => setIsOpen(false)}
                             >

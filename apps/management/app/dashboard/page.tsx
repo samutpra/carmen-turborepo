@@ -33,7 +33,7 @@ const roleColorConfig: Record<string, { bg: string, text: string, cardBg: string
 };
 
 const DashboardPage = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const [platformRoles, setPlatformRoles] = useState<string[]>([]);
     const [clusterRoles, setClusterRoles] = useState<Array<{
         description: string;
@@ -66,14 +66,8 @@ const DashboardPage = () => {
         <ProtectedLayout>
             <div className={`${colorScheme.text}`}>
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
+                    <div className="mb-8">
                         <h1 className="text-3xl font-bold">Dashboard</h1>
-                        <button
-                            onClick={logout}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                        >
-                            Logout
-                        </button>
                     </div>
 
                     <div className={`${colorScheme.cardBg} rounded-xl p-6 mb-8`}>
