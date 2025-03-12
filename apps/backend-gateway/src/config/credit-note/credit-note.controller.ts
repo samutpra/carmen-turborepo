@@ -12,7 +12,7 @@ import { CreditNoteService } from './credit-note.service';
 import { CreditNoteCreateDto } from './dto/credit-note.dto';
 import { ZodValidationPipe } from 'nestjs-zod';
 
-@Controller('credit-note')
+@Controller('api/credit-note')
 export class CreditNoteController {
   constructor(private readonly creditNoteService: CreditNoteService) {}
 
