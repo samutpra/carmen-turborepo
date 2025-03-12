@@ -9,8 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('departments')
+@Controller('api/config/departments')
+@ApiTags('Config - Departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 

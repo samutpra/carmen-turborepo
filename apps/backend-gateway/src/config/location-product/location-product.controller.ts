@@ -1,7 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { LocationProductService } from './location-product.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('location-product')
+@Controller('api/config/location-product')
+@ApiTags('Config - Location Product')
 export class LocationProductController {
   constructor(
     private readonly locationProductService: LocationProductService,

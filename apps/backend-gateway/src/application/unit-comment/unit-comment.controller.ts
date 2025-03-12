@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UnitCommentService } from './unit-comment.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('unit-comment')
+@Controller('api/application/unit-comment')
+@ApiTags('Application - Unit Comment')
 export class UnitCommentController {
   constructor(private readonly unitCommentService: UnitCommentService) {}
 

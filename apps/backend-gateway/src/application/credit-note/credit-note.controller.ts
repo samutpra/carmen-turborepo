@@ -14,8 +14,10 @@ import {
   CreditNoteUpdateDto,
 } from './dto/credit-note.dto';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('credit-note')
+@Controller('api/credit-note')
+@ApiTags('Application - Credit Note')
 @UsePipes(ZodValidationPipe)
 export class CreditNoteController {
   constructor(private readonly creditNoteService: CreditNoteService) {}

@@ -1,7 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { UserBusinessUnitService } from './user-business-unit.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('user-business-unit')
+@Controller('api/config/user-business-unit')
+@ApiTags('Config - User Business Unit')
 export class UserBusinessUnitController {
   constructor(
     private readonly userBusinessUnitService: UserBusinessUnitService,

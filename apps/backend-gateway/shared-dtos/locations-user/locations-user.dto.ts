@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const location_user_item_schema = z.object({
   location_id: z.string().uuid(),
@@ -32,11 +33,14 @@ export const UpdateLocationUserSchema = z.object({
   }),
 });
 
-export type UpdateLocationUserModel = z.infer<typeof UpdateLocationUserSchema>;
+export type IUpdateLocationUser = z.infer<typeof UpdateLocationUserSchema>;
 
-export class UpdateLocationUserDto implements UpdateLocationUserModel {
-  locations?: {
-    add?: location_user_item[];
-    remove?: location_user_item_remove[];
-  };
-}
+export class UpdateLocationUserDto extends createZodDto(
+  UpdateLocationUserSchema,
+) {}
+// export class UpdateLocationUserDto implements UpdateLocationUserModel {
+//   locations?: {
+//     add?: location_user_item[];
+//     remove?: location_user_item_remove[];
+//   };
+// }

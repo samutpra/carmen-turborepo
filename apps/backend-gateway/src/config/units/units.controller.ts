@@ -9,8 +9,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('units')
+@Controller('api/config/units')
+@ApiTags('Config - Units')
 export class UnitsController {
   constructor(private readonly unitsService: UnitsService) {}
 

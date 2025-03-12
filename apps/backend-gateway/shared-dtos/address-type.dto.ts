@@ -1,5 +1,5 @@
 import { z } from 'zod';
-
+import { createZodDto } from 'nestjs-zod';
 export const AddressTypeCreateSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().uuid(),
@@ -7,14 +7,17 @@ export const AddressTypeCreateSchema = z.object({
   is_active: z.boolean().default(true).nullable().optional(),
 });
 
-export type AddressTypeCreateModel = z.infer<typeof AddressTypeCreateSchema>;
+export type IAddressTypeCreate = z.infer<typeof AddressTypeCreateSchema>;
 
-export class AddressTypeCreateDto implements AddressTypeCreateModel {
-  id?: string;
-  name!: string;
-  description?: string;
-  is_active?: boolean | null;
-}
+export class AddressTypeCreateDto extends createZodDto(
+  AddressTypeCreateSchema,
+) {}
+// export class AddressTypeCreateDto implements AddressTypeCreateModel {
+//   id?: string;
+//   name!: string;
+//   description?: string;
+//   is_active?: boolean | null;
+// }
 
 export const AddressTypeUpdateSchema = z.object({
   id: z.string().uuid(),
@@ -23,14 +26,17 @@ export const AddressTypeUpdateSchema = z.object({
   is_active: z.boolean().default(true).nullable().optional(),
 });
 
-export type AddressTypeUpdateModel = z.infer<typeof AddressTypeUpdateSchema>;
+export type IAddressTypeUpdate = z.infer<typeof AddressTypeUpdateSchema>;
 
-export class AddressTypeUpdateDto implements AddressTypeUpdateModel {
-  id!: string;
-  name?: string;
-  description?: string;
-  is_active?: boolean | null;
-}
+export class AddressTypeUpdateDto extends createZodDto(
+  AddressTypeUpdateSchema,
+) {}
+// export class AddressTypeUpdateDto implements AddressTypeUpdateModel {
+//   id!: string;
+//   name?: string;
+//   description?: string;
+//   is_active?: boolean | null;
+// }
 
 export const mockAddressTypes = [
   {

@@ -8,7 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
-@Controller('product-category')
+import { ApiTags } from '@nestjs/swagger';
+
+@Controller('api/config/product-category')
+@ApiTags('Config - Product Category')
 export class ProductCategoryController {
   constructor(
     private readonly productCategoryService: ProductCategoryService,

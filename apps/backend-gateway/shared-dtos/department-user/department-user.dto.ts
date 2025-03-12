@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const DepartmentUserCreateSchema = z.object({
   department_id: z.string().uuid(),
@@ -6,15 +7,16 @@ export const DepartmentUserCreateSchema = z.object({
   hod: z.boolean().optional().default(false),
 });
 
-export type DepartmentUserCreateModel = z.infer<
-  typeof DepartmentUserCreateSchema
->;
+export type IDepartmentUserCreate = z.infer<typeof DepartmentUserCreateSchema>;
 
-export class DepartmentUserCreateDto implements DepartmentUserCreateModel {
-  department_id!: string;
-  user_id!: string;
-  hod?: boolean;
-}
+export class DepartmentUserCreateDto extends createZodDto(
+  DepartmentUserCreateSchema,
+) {}
+// export class DepartmentUserCreateDto implements DepartmentUserCreateModel {
+//   department_id!: string;
+//   user_id!: string;
+//   hod?: boolean;
+// }
 
 export const DepartmentUserUpdateSchema = z.object({
   department_id: z.string().uuid(),
@@ -22,12 +24,13 @@ export const DepartmentUserUpdateSchema = z.object({
   hod: z.boolean().optional(),
 });
 
-export type DepartmentUserUpdateModel = z.infer<
-  typeof DepartmentUserUpdateSchema
->;
+export type IDepartmentUserUpdate = z.infer<typeof DepartmentUserUpdateSchema>;
 
-export class DepartmentUserUpdateDto implements DepartmentUserUpdateModel {
-  department_id!: string;
-  user_id!: string;
-  hod?: boolean;
-}
+export class DepartmentUserUpdateDto extends createZodDto(
+  DepartmentUserUpdateSchema,
+) {}
+// export class DepartmentUserUpdateDto implements DepartmentUserUpdateModel {
+//   department_id!: string;
+//   user_id!: string;
+//   hod?: boolean;
+// }

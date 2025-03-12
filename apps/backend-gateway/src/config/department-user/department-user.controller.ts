@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { DepartmentUserService } from './department-user.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('department-user')
+@Controller('api/user/department')
+@ApiTags('Application - User Department')
 export class DepartmentUserController {
   constructor(private readonly departmentUserService: DepartmentUserService) {}
 
