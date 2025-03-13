@@ -9,8 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { LocationsService } from './locations.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('locations')
+@Controller('api/config/locations')
+@ApiTags('Config - Locations')
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {}
 

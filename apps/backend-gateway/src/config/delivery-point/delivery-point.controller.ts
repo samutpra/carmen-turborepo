@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { DeliveryPointService } from './delivery-point.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('delivery-point')
+@Controller('api/config/delivery-point')
+@ApiTags('Config - Delivery Point')
 export class DeliveryPointController {
   constructor(private readonly deliveryPointService: DeliveryPointService) {}
 

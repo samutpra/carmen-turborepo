@@ -9,8 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('products')
+@Controller('api/config/products')
+@ApiTags('Config - Products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -53,13 +55,13 @@ export class ProductsController {
     // return this.productsService.getOrderUnitByProductId(id);
   }
 
-  @Get('recipe-unit/:id')
-  async getRecipeUnitByProductId(@Param('id') id: string) {
+  @Get('ingredient-unit/:id')
+  async getIngredientUnitByProductId(@Param('id') id: string) {
     this.logger.debug({
       file: ProductsController.name,
-      function: this.getRecipeUnitByProductId.name,
+      function: this.getIngredientUnitByProductId.name,
     });
-    // return this.productsService.getRecipeUnitByProductId(id);
+    // return this.productsService.getIngredientUnitByProductId(id);
   }
 
   @Post('')

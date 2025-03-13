@@ -9,8 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { ExchangeRateService } from './exchange-rate.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('exchange-rate')
+@Controller('api/config/exchange-rate')
+@ApiTags('Config - Exchange Rate')
 export class ExchangeRateController {
   constructor(private readonly exchangeRateService: ExchangeRateService) {}
 

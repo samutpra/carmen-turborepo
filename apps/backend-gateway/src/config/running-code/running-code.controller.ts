@@ -8,7 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RunningCodeService } from './running-code.service';
-@Controller('running-code')
+import { ApiTags } from '@nestjs/swagger';
+
+@Controller('api/running-code')
+@ApiTags('Running Code')
 export class RunningCodeController {
   constructor(private readonly runningCodeService: RunningCodeService) {}
 

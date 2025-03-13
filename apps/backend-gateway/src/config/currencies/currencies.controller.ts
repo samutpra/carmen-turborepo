@@ -9,8 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { CurrenciesService } from './currencies.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('currencies')
+@Controller('api/config/currencies')
+@ApiTags('Config - Currencies')
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 

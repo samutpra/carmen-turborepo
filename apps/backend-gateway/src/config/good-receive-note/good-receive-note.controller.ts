@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { GoodReceiveNoteService } from './good-receive-note.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('good-receive-note')
+@Controller('api/config/good-receive-note')
+@ApiTags('Config - Good Receive Note')
 export class GoodReceiveNoteController {
   constructor(
     private readonly goodReceiveNoteService: GoodReceiveNoteService,

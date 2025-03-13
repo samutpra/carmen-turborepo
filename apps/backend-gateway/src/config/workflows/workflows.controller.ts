@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('workflows')
+@Controller('api/config/workflows')
+@ApiTags('Config - Workflows')
 export class WorkflowsController {
   constructor(private readonly workflowsService: WorkflowsService) {}
 
